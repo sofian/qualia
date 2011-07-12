@@ -24,6 +24,7 @@
 class Environment {
 
 public:
+  virtual ~Environment() {}
   virtual void init() {}
   virtual const observation_t start() { return 0; }
   virtual const reward_observation_terminal_t* step(const action_t action) { return 0; }

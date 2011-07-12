@@ -24,6 +24,7 @@
 class Agent {
 
 public:
+  virtual ~Agent() {}
   virtual void init() {}
   virtual const action_t start(const observation_t observation) { return 0; }
   virtual const action_t step(real reward, const observation_t observation) { return 0; }
