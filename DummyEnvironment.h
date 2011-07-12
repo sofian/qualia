@@ -34,6 +34,7 @@ public:
   }
   virtual const reward_observation_terminal_t* step(const action_t action) {
     static reward_observation_terminal_t rot = {0, 0, 0};
+    currentObservation++;
     return &rot;
   }
 //  const char* env_message(const char * message);
