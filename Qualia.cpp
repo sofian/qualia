@@ -29,7 +29,7 @@ void Qualia::init() {
 }
 
 const observation_action_t* Qualia::start() {
-  const observation_t lastState=0;
+  observation_t lastState=0;
   /*Make this static so that it is safe to return it*/
   static observation_action_t oa;
 
@@ -88,7 +88,7 @@ const reward_observation_action_terminal_t* Qualia::step() {
   static reward_observation_action_terminal_t roa={0,0,0,0};
   const reward_observation_terminal_t *ro;
   real thisReward=0;
-  const observation_t *lastState;
+  observation_t lastState;
 
 //  __RL_CHECK_STRUCT(lastAction)
     ro = environment->step(lastAction);
@@ -164,8 +164,7 @@ int Qualia::episode(const unsigned int maxStepsThisEpisode) {
   const reward_observation_action_terminal_t *rlStepResult=0;
   int isTerminal=0;
 
-
-    start();
+  start();
   /*RL_start sets steps to 1*/
     for (; !isTerminal && (maxStepsThisEpisode == 0 ? 1 : nSteps < maxStepsThisEpisode); ) {
       rlStepResult=step();
@@ -176,15 +175,15 @@ int Qualia::episode(const unsigned int maxStepsThisEpisode) {
   return isTerminal;
 }
 
-double RL_return() {
-  return totalReward;
-}
-
-int RL_nSteps() {
-  /* number of steps of the current or just completed episodes of run */
-  return nSteps;
-}
-
-int RL_nEpisodes() {
-  return nEpisodes;
-}
+//double RL_return() {
+//  return totalReward;
+//}
+//
+//int RL_nSteps() {
+//  /* number of steps of the current or just completed episodes of run */
+//  return nSteps;
+//}
+//
+//int RL_nEpisodes() {
+//  return nEpisodes;
+//}

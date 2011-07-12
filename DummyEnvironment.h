@@ -1,5 +1,5 @@
 /*
- * Agent.h
+ * DummyEnvironment.h
  *
  * (c) 2011 Sofian Audry | info(@)sofianaudry(.)com
  *
@@ -16,22 +16,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef AGENT_H_
-#define AGENT_H_
+#ifndef DUMMY_ENVIRONMENT_H_
+#define DUMMY_ENVIRONMENT_H_
 
-#include "common.h"
+#include "Environment.h"
 
-class Agent {
+class DummyEnvironment : public Environment {
 
 public:
-  virtual void init() {}
-  virtual const action_t start(const observation_t observation) { return 0; }
-  virtual const action_t step(real reward, const observation_t observation) { return 0; }
-  virtual void end(real reward) {}
-  virtual void cleanup() {}
+  real currentObservation;
 
-//  const char* agent_message(const char* message);
+  virtual void init() {
+    currentObservation = 100;
+  }
+  virtual const observation_t start() {
+    return &currentObservation;
+  }
+  virtual const reward_observation_terminal_t* step(const action_t action) {
+    static reward_observation_terminal_t rot = {0, 0, 0};
+    return &rot;
+  }
+//  const char* env_message(const char * message);
 
 };
 
-#endif
+#endif /* DUMMYENVIRONMENT_H_ */

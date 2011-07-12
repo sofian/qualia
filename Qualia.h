@@ -16,7 +16,7 @@
 // TODO remplacer terminal par isTerminal (boolean)
 class Qualia {
 
-private:
+public:
   Agent* agent;
   Environment* environment;
   action_t lastAction;
@@ -33,9 +33,9 @@ public:
 //  const char* RL_agent_message(const char* message);
 //  const char* RL_env_message(const char* message);
 
-  real totalReward();
-  int nSteps();
-  int nEpisodes();
+//  real getotalReward();
+//  int nSteps();
+//  int nEpisodes();
   int episode(unsigned int nSteps);
 
   /**
