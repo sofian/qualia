@@ -90,17 +90,17 @@ const reward_observation_action_terminal_t* Qualia::step() {
   real thisReward=0;
   observation_t lastState;
 
-//  __RL_CHECK_STRUCT(lastAction)
-    ro = environment->step(lastAction);
-//  __RL_CHECK_STRUCT(ro->observation)
-    thisReward = ro->reward;
-    lastState = ro->observation;
+  //  __RL_CHECK_STRUCT(lastAction)
+  ro = environment->step(lastAction);
+  //  __RL_CHECK_STRUCT(ro->observation)
+  thisReward = ro->reward;
+  lastState = ro->observation;
 
-    roa.reward = ro->reward;
-    roa.observation = ro->observation;
-    roa.terminal = ro->terminal;
+  roa.reward = ro->reward;
+  roa.observation = ro->observation;
+  roa.terminal = ro->terminal;
 
-    totalReward += thisReward;
+  totalReward += thisReward;
 
   /* Sept 28/08, The reason that we only increment stepcount if we're not terminal is that if an episode ends on
   its first env_step, num_step will be 1 from env_start, but we don't want to go to num_step=2.*/
