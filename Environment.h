@@ -19,41 +19,17 @@
 #ifndef ENVIRONMENT_H_
 #define ENVIRONMENT_H_
 
-#include "general.h"
-#include "State.h"
-#include "Action.h"
+#include "common.h"
 
-class Environment : public State {
-protected:
-  unsigned int nActions;
+class Environment {
 
 public:
-  Environment(int continuousStates, int discreteStates, int numActions) :
-    State(continuousStates, discreteStates),
-    nActions(numActions) {}
-//  virtual ~Environment() {}
+  virtual void init() {}
+  virtual const observation_t start() = 0;
+  virtual const reward_observation_terminal_t* step(const action_t action) = 0;
+  virtual void cleanup() {}
+//  const char* env_message(const char * message);
 
-  void initialize() {
-    doInitialize();
-    reset();
-  }
-  virtual void reset() {}
-
-  unsigned int getNumActions() const { return nActions; }
-
-  virtual bool finalStateReached() const {
-    return false;
-  }
-
-  virtual real actionToReal(action_t action) const {
-    return nActions > 1 ? action / ((real)nActions-1) : 0;
-  }
-
-  // Take action and return reward.
-  virtual real nextState(action_t action) = 0;
-
-protected:
-  virtual void doInitialize() {}
 };
 
 #endif /* ENVIRONMENT_H_ */

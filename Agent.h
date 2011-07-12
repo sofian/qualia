@@ -16,51 +16,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef AGENT_INC
-#define AGENT_INC
+#ifndef AGENT_H_
+#define AGENT_H_
 
-#include "Environment.h"
-#include "Action.h"
+#include "common.h"
 
 class Agent {
-protected:
-  Environment* environment;
 
 public:
-  Agent(Environment* env) : environment(env) {}
+  virtual void init() {}
+  virtual const action_t start(const observation_t observation) = 0;
+  virtual const action_t step(real reward, const observation_t observation) = 0;
+  virtual void end(real reward) {}
+  void cleanup() {}
 
-  virtual void initialize() {}
+//  const char* agent_message(const char* message);
 
-  unsigned int getNumActions() const {
-    return environment->getNumActions();
-  }
-
-  real actionToReal(action_t action) {
-    return environment->actionToReal(action);
-  }
-
-  virtual action_t chooseAction() = 0;
-
-  // Do action #action# and get a reward.
-  virtual real doAction(action_t action) {
-    return environment->nextState(action);
-  }
-
-  Environment* getEnvironment() const { return environment; }
-
-  // Return the value corresponding to action #a#.
-  // TODO Rendre le mecanisme plus generique
-//  real getActionContinuousValue(action_t action) {
-//    return action / (float)nActions;
-//  }
-
-  virtual void run(int nSteps = -1) {}
-
-//#ifdef DEBUG
-// XXX DON'T UNCOMMENT THIS!!! FOR A REASON YET TO BE UNDERSTOOD, MAKING THIS METHOD
-// VIRTUAL INTERFERED WITH THE exp() FUNCTION (WTF???) AND YIELDED NaN VALUES!!!
-//  virtual void debug() {}
-//#endif
 };
 
 #endif
