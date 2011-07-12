@@ -166,7 +166,7 @@ int Qualia::episode(const unsigned int maxStepsThisEpisode) {
 
   start();
   /*RL_start sets steps to 1*/
-    for (; !isTerminal && (maxStepsThisEpisode == 0 ? 1 : nSteps < maxStepsThisEpisode); ) {
+    for (; !isTerminal && (maxStepsThisEpisode == 0 ? 1 : nSteps < (int)maxStepsThisEpisode); ) {
       rlStepResult=step();
     isTerminal=rlStepResult->terminal;
     }
