@@ -19,7 +19,23 @@ typedef float real;
 #endif
 
 typedef real* observation_t;
-typedef real* action_t;
+//class observation_t {
+//public:
+//  real* continuous;
+//  int*  discrete;
+//
+//  observation_t(int nContinuous, int nDiscrete) {
+//    continous = malloc(nContinuous * sizeof(real));
+//    discrete  = malloc(nDiscrete   * sizeof(int) );
+//  }
+//  ~observation_t() {
+//    free(continuous);
+//    free(discrete);
+//  }
+//};
+
+// TODO: should eventually be an array or struct
+typedef int action_t;
 
 typedef struct {
   observation_t observation;
