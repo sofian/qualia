@@ -13,19 +13,20 @@
 class DummyAgent : public Agent {
 
 public:
-  real currentAction;
+  action_t currentAction;
 
   virtual void init() {
     currentAction = 0;
   }
 
   virtual const action_t start(const observation_t observation) {
-    return &currentAction;
+    return currentAction;
   }
 
   virtual const action_t step(real reward, const observation_t observation) {
     currentAction++;
-    return &currentAction;
+    currentAction % 100; // max action
+    return currentAction;
   }
 
 };
