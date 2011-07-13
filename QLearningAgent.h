@@ -1,6 +1,12 @@
 /*
  * QLearningAgent.h
  *
+ * An agent that behaves according to an action-value, TD-lambda reinforcement
+ * learning algorithm. The model allows for both on-policy (SARSA) and off-policy
+ * (Q learning) learning.
+ *
+ * This file is part of Qualia https://github.com/sofian/qualia
+ *
  * (c) 2011 Sofian Audry | info(@)sofianaudry(.)com
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,7 +22,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 #ifndef QLEARNINGAGENT_H_
 #define QLEARNINGAGENT_H_
 

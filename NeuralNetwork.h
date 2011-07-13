@@ -1,6 +1,9 @@
 /*
  * NeuralNetwork.h
  *
+ * A simple MLP with one hidden layer.
+ *
+ * This file is part of Qualia https://github.com/sofian/qualia
  * (c) 2011 Sofian Audry | info(@)sofianaudry(.)com
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20,6 +23,8 @@
 #define NEURAL_NETWORK_INC
 
 #include <stdlib.h>
+
+// TODO: simplifier le code
 
 //#define DEBUG 1
 

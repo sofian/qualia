@@ -1,5 +1,6 @@
 /*
  * Random.h
+ *
  * Static class providing 32-bit random generator (using random number
  * generator from stdlib.h) as well as various probability distributions
  * for generating random numbers.
