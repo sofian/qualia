@@ -25,7 +25,7 @@ public:
 
   virtual const action_t step(real reward, const observation_t observation) {
     currentAction++;
-    currentAction % 100; // max action
+    currentAction %= 100; // max action
     return currentAction;
   }
 
