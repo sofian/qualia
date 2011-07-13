@@ -100,6 +100,7 @@ public:
 
   // Remaps a value in [-1, 1].
   real remapValue(real x, real minVal, real maxVal) {
+//    return (x - minVal) / (maxVal - minVal);
     return (2 * (x - minVal) / (maxVal - minVal) - 1);
   }
 

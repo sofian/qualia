@@ -26,11 +26,9 @@
 class QLearningAgent : public Agent {
 
 public:
-  // Internal use.
-
-  real *_nnInput; // a bit inefficient
-
 //  real *_softmax; // softmax probabilities (internal use)
+  NeuralNetwork* function;
+
   action_t _lastAction;
   action_t _nextAction;
   observation_t _lastObservation;
@@ -46,11 +44,11 @@ public:
 
   bool _qLearning; // use Q-Learning (off-policy) instead of Sarsa
 
-  NeuralNetwork* function;
+  real *_nnInput; // a bit inefficient
 
   QLearningAgent(NeuralNetwork* func,
                  int observationSize, int nActions,
-                 float lambda, float gamma, bool qLearning = false);
+                 float lambda, float gamma, float epsilon, bool qLearning = false);
   virtual ~QLearningAgent();
 
   virtual void init();

@@ -21,21 +21,28 @@
 
 #include "Environment.h"
 
+#define DUMMY_ENVIRONMENT_N_ACTIONS 10
+
 class DummyEnvironment : public Environment {
 
 public:
   real currentObservation;
 
   virtual void init() {
-    currentObservation = 100;
+    currentObservation = 0;
   }
+
   virtual const observation_t start() {
     return &currentObservation;
   }
+
   virtual const reward_observation_terminal_t* step(const action_t action) {
     static reward_observation_terminal_t rot = {0, &currentObservation, 0};
-    currentObservation++;
-    rot.reward = ((int)currentObservation) % 10; // soooo dummy
+    currentObservation = (real)action / (real)DUMMY_ENVIRONMENT_N_ACTIONS; // observation = action
+    // Favors "big" actions, small actions are equally bad
+    rot.reward = (currentObservation < 0.5f ?
+                  0 :
+                  currentObservation);
     return &rot;
   }
 //  const char* env_message(const char * message);

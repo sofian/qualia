@@ -22,15 +22,22 @@
 #include <assert.h>
 #include "Random.h"
 
+#define DEBUG 0
+
+#if DEBUG
+#include <stdio.h>
+#endif
+
 QLearningAgent::QLearningAgent(NeuralNetwork* func,
                                int observationSize, int nActions,
-                               float lambda, float gamma, bool qLearning) :
+                               float lambda, float gamma, float epsilon, bool qLearning) :
   function(func),
-  _observationSize(observationSize), _nActions(nActions),
-  _lambdaTimesGamma(lambda*gamma), _gamma(gamma),
-  _qLearning(qLearning),
   _lastAction(0),
-  _nextAction(0) {
+  _nextAction(0),
+  _observationSize(observationSize), _nActions(nActions),
+  _lambdaTimesGamma(lambda*gamma), _gamma(gamma), _epsilon(epsilon),
+  _qLearning(qLearning)
+ {
   // TODO : ARRAY_ALLOC
   // TODO: allocateur
   // TODO: destructeur (ARRAY_DEALLOC)
@@ -53,15 +60,15 @@ QLearningAgent::~QLearningAgent() {
 }
 
 void QLearningAgent::init() {
-}
-
-const action_t QLearningAgent::start(const observation_t observation) {
   // Initialize action-value function.
   function->init();
 
   // Initialize
   for (int i=0; i<function->nWeights(); i++)
     _e[i]=0;
+}
+
+const action_t QLearningAgent::start(const observation_t observation) {
 
 //  prepare();
 
@@ -71,24 +78,12 @@ const action_t QLearningAgent::start(const observation_t observation) {
 
 const action_t QLearningAgent::step(real reward, const observation_t observation) {
   /////////////// START UPDATE
-  //update(reward);
+  //ie. update(reward);
   real outErr = 1;
 
   real Qs = Q(_lastObservation, _lastAction);
 
   function->backpropagate(&outErr);
-
-#if DEBUG_ATMEGA328
-  Serial.print("Qs = ");
-  Serial.println(Qs);
-#endif
-
-//#if DEBUG_ATMEGA328
-//  Serial.print("Did action = ");
-//  Serial.println(_action);
-//  Serial.print("R = ");
-//  Serial.println(reward);
-//#endif
 
   // Get the new state.
   //getState(_nextState);
@@ -115,16 +110,25 @@ const action_t QLearningAgent::step(real reward, const observation_t observation
   // Compute mean squared error.
   //real mse = delta * delta * 0.5;
 
+  // Update weights.
   real deltaTimesLearningRate = function->_learningRate * delta;
 //  Serial.print("DTL "); Serial.println(deltaTimesLearningRate);
   // TODO: changer les dWeights() / weights() pour de simples variables
   real* dWeights = function->dWeights();
   real* weights  = function->weights();
+#if DEBUG
+  printf("dw: [");
+#endif
   for (int i=0; i<function->nWeights(); i++) {
     _e[i] = _lambdaTimesGamma * _e[i] + dWeights[i];
     weights[i] += deltaTimesLearningRate * _e[i];
+#if DEBUG
+    printf("%f ", dWeights[i]);
+#endif
   }
-
+#if DEBUG
+  printf(" ]\n");
+#endif
   function->clearDelta();
   /////////////// END UPDATE
 

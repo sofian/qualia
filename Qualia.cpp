@@ -17,6 +17,7 @@ Qualia::Qualia(Agent* theAgent, Environment* theEnv) :
 void Qualia::init() {
   environment->init();
   agent->init();
+
 //  const char* task_spec;
 //  task_spec = env_init();
 //  agent_init(task_spec);
@@ -105,13 +106,13 @@ const reward_observation_action_terminal_t* Qualia::step() {
   /* Sept 28/08, The reason that we only increment stepcount if we're not terminal is that if an episode ends on
   its first env_step, num_step will be 1 from env_start, but we don't want to go to num_step=2.*/
    if (ro->terminal == 1) {
-     nEpisodes += 1;
+     nEpisodes++;
      agent->end(thisReward);
    }
    else {
-    nSteps+=1;
+     nSteps++;
      lastAction = agent->step(thisReward,lastState);
-//     __RL_CHECK_STRUCT(lastAction)
+     //     __RL_CHECK_STRUCT(lastAction)
      roa.action = lastAction;
    }
 
