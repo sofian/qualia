@@ -124,7 +124,7 @@ NeuralNetwork::NeuralNetwork(int nInputs,
                               float learningRate) {
   _allocate(nInputs, nHidden, nOutputs);
   _learningRate = learningRate;
-  initialize();
+  init();
 }
 
 //void NeuralNetwork::_deallocateLayer(Layer& layer) {
@@ -154,7 +154,7 @@ NeuralNetwork::NeuralNetwork(int nInputs,
 ////  _deallocate();
 //}
 
-void NeuralNetwork::initialize() {
+void NeuralNetwork::init() {
   // randomize weights
   for (int i=0; i<_nParams; i++) {
     _weights[i] = Random::boundedUniform(-1, +1);

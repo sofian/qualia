@@ -39,7 +39,7 @@
 
 class NeuralNetwork {
 
-protected:
+public:
 //  Alloc alloc;
 
   struct Layer {
@@ -80,7 +80,7 @@ public:
                 float learningRate = 0.01);
 //  virtual ~NeuralNetwork();
 
-  void initialize();
+  void init();
 
   int nInput() const { return _inputLayer.n; }
   int nHidden() const { return _hiddenLayer.n; }
@@ -97,6 +97,11 @@ public:
   void propagate();
 
   void update();
+
+  // Remaps a value in [-1, 1].
+  real remapValue(real x, real minVal, real maxVal) {
+    return (2 * (x - minVal) / (maxVal - minVal) - 1);
+  }
 
   void setWeights(real* weights);
   int nWeights() const { return _nParams; }
