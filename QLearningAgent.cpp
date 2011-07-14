@@ -3,7 +3,7 @@
  *
  * This file is part of Qualia https://github.com/sofian/qualia
  *
- * (c) 2011 Sofian Audry | info(@)sofianaudry(.)com
+ * (c) 2011 Sofian Audry -- info(@)sofianaudry(.)com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

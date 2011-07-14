@@ -1,7 +1,7 @@
 /*
  * NeuralNetwork.cpp
  *
- * (c) 2011 Sofian Audry | info(@)sofianaudry(.)com
+ * (c) 2011 Sofian Audry -- info(@)sofianaudry(.)com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,11 +26,11 @@
 
 void NeuralNetwork::_allocateLayer(Layer& layer, int nInputs, int nOutputs, int& k) {
   layer.n = nOutputs;
-  layer.output   = (real*) malloc( nOutputs * sizeof(real) );
-  layer.error    = (real*) malloc( nOutputs * sizeof(real) );
+  layer.output   = (real*) Alloc.malloc( nOutputs * sizeof(real) );
+  layer.error    = (real*) Alloc.malloc( nOutputs * sizeof(real) );
   if (nInputs > 0) {
-    layer.weight   = (real**) malloc( nOutputs * sizeof(real*) );
-    layer.dWeight  = (real**) malloc( nOutputs * sizeof(real*) );
+    layer.weight   = (real**) Alloc.malloc( nOutputs * sizeof(real*) );
+    layer.dWeight  = (real**) Alloc.malloc( nOutputs * sizeof(real*) );
     for (int i=0; i<nOutputs; i++) {
       layer.weight[i]  = &_weights[k];
       layer.dWeight[i] = &_dWeights[k];
@@ -127,32 +127,27 @@ NeuralNetwork::NeuralNetwork(int nInputs,
   init();
 }
 
-//void NeuralNetwork::_deallocateLayer(Layer& layer) {
-//  free(layer.output);
-//  free(layer.error);
-//  if (layer.weight) {
-//    free(layer.weight);
-//    free(layer.dWeight);
-//  }
-//}
-//
-//void NeuralNetwork::_deallocate() {
-//  free(_weights);
-//  free(_dWeights);
-//  _deallocateLayer(_inputLayer);
-//  _deallocateLayer(_hiddenLayer);
-//  _deallocateLayer(_outputLayer);
-//}
+void NeuralNetwork::_deallocateLayer(Layer& layer) {
+  Alloc.free(layer.output);
+  Alloc.free(layer.error);
+  if (layer.weight) {
+    Alloc.free(layer.weight);
+    Alloc.free(layer.dWeight);
+  }
+}
+
+void NeuralNetwork::_deallocate() {
+  Alloc.free(_weights);
+  Alloc.free(_dWeights);
+  _deallocateLayer(_inputLayer);
+  _deallocateLayer(_hiddenLayer);
+  _deallocateLayer(_outputLayer);
+}
 
 
-//NeuralNetwork::~NeuralNetwork() {
-//  free(_weights);
-//  free(_dWeights);
-//  _deallocateLayer(_inputLayer);
-//  _deallocateLayer(_hiddenLayer);
-//  _deallocateLayer(_outputLayer);
-////  _deallocate();
-//}
+NeuralNetwork::~NeuralNetwork() {
+  _deallocate();
+}
 
 void NeuralNetwork::init() {
   // randomize weights

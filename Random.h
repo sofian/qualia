@@ -5,7 +5,7 @@
  * generator from stdlib.h) as well as various probability distributions
  * for generating random numbers.
  * 
- * (c) 2008 Sofian Audry | info(@)sofianaudry(.)com
+ * (c) 2008 Sofian Audry -- info(@)sofianaudry(.)com
  *
  * This class was adapted from the files Random.{h,cc} in the Torch 
  * library (http://torch.ch)

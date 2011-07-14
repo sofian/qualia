@@ -4,7 +4,8 @@
  * A simple MLP with one hidden layer.
  *
  * This file is part of Qualia https://github.com/sofian/qualia
- * (c) 2011 Sofian Audry | info(@)sofianaudry(.)com
+ *
+ * (c) 2011 Sofian Audry -- info(@)sofianaudry(.)com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +35,6 @@
 // http://www.ip-atlas.com/pub/nap/nn-src/bpn.txt
 // by Karsten Kutza
 #include "common.h"
-//#include "rllib/Alloc.h"
 
 // TODO: IMPORTANT l'output layer ne devrait pas etre sigmoide mais lineaire...
 
@@ -45,6 +45,7 @@
 class NeuralNetwork {
 
 public:
+//  Allocator* alloc;
 //  Alloc alloc;
 
   struct Layer {
@@ -75,15 +76,15 @@ public:
 
   void _allocate(int nInputs, int nHidden, int nOutputs);
 
-//  void _deallocateLayer(Layer& layer);
-//  void _deallocate();
+  void _deallocateLayer(Layer& layer);
+  void _deallocate();
 
 public:
   NeuralNetwork(int nInputs,
                 int nHidden,
                 int nOutputs,
                 float learningRate = 0.01);
-//  virtual ~NeuralNetwork();
+  virtual ~NeuralNetwork();
 
   void init();
 

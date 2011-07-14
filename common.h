@@ -5,7 +5,7 @@
  *
  * This file is part of Qualia https://github.com/sofian/qualia
  *
- * (c) 2011 Sofian Audry | info(@)sofianaudry(.)com
+ * (c) 2011 Sofian Audry -- info(@)sofianaudry(.)com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,14 +23,25 @@
 #ifndef COMMON_H_
 #define COMMON_H_
 
-//#include "cpp_include.h"
 
+// Parameters.
 #define USE_FLOAT
+#define STATIC_ALLOC 1
+#define STATIC_ALLOCATOR_SIZE 100
+
+#include "Allocator.h"
+
 
 #ifdef USE_DOUBLE
 typedef double real;
 #else
 typedef float real;
+#endif
+
+#ifdef STATIC_ALLOC
+extern StaticAllocator Alloc;
+#else
+extern BaseAllocator Alloc;
 #endif
 
 typedef real* observation_t;

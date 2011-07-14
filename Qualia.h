@@ -5,7 +5,7 @@
  *
  * This file is part of Qualia https://github.com/sofian/qualia
  *
- * (c) 2011 Sofian Audry | info(@)sofianaudry(.)com
+ * (c) 2011 Sofian Audry -- info(@)sofianaudry(.)com
  *
  * Uses source code from the RL-Glue library (http://rl-glue.googlecode.com)
  * RL-Glue is licensed under an Apache License 2.0 (compatible with Gnu GPL)
