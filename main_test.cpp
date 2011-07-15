@@ -3,6 +3,11 @@
 #include "DummyEnvironment.h"
 #include "QLearningAgent.h"
 
+#include "NeuralNetwork.h"
+
+#define STATIC_ALLOCATOR_SIZE 100
+#include "StaticAllocator.h"
+
 #include <stdio.h>
 
 void testDummy() {
@@ -37,6 +42,7 @@ void testQLearning() {
 }
 
 int main() {
+  Alloc::init(new StaticAllocator);
 //  testDummy();
   testQLearning();
 
