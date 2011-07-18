@@ -34,22 +34,23 @@ public:
 //  real *_softmax; // softmax probabilities (internal use)
   NeuralNetwork* function;
 
-  action_t _lastAction;
-  action_t _nextAction;
-  observation_t _lastObservation;
+  action_t lastAction;
+  action_t nextAction;
+  observation_t lastObservation;
 
   // Parameters.
-  real *_e; // elligibility traces
+  real *e; // elligibility traces
 
-  int _observationSize;
-  int _nActions;
-  float _lambdaTimesGamma; // lambda is always used like that...
-  float _gamma;
-  float _epsilon;
+  int observationSize;
+  int nActions;
+  float lambdaTimesGamma; // lambda is always used like that...
+  float gamma;
+  float epsilon;
 
-  bool _qLearning; // use Q-Learning (off-policy) instead of Sarsa
+  bool qLearning; // use Q-Learning (off-policy) instead of Sarsa
 
-  real *_nnInput; // a bit inefficient
+  // Internal use.
+  real *nnInput; // a bit inefficient
 
   QLearningAgent(NeuralNetwork* func,
                  int observationSize, int nActions,

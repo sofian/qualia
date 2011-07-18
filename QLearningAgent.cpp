@@ -31,34 +31,34 @@
 #endif
 
 QLearningAgent::QLearningAgent(NeuralNetwork* func,
-                               int observationSize, int nActions,
-                               float lambda, float gamma, float epsilon, bool qLearning) :
+                               int observationSize_, int nActions_,
+                               float lambda_, float gamma_, float epsilon_, bool qLearning_) :
   function(func),
-  _lastAction(0),
-  _nextAction(0),
-  _observationSize(observationSize), _nActions(nActions),
-  _lambdaTimesGamma(lambda*gamma), _gamma(gamma), _epsilon(epsilon),
-  _qLearning(qLearning)
+  lastAction(0),
+  nextAction(0),
+  observationSize(observationSize_), nActions(nActions_),
+  lambdaTimesGamma(lambda_*gamma_), gamma(gamma_), epsilon(epsilon_),
+  qLearning(qLearning_)
  {
   // TODO : ARRAY_ALLOC
   // TODO: allocateur
   // TODO: destructeur (ARRAY_DEALLOC)
-  _e = (real*) malloc( function->nWeights() * sizeof(real) );
-  _nnInput   = (real*) malloc( (observationSize + 1) * sizeof(real) ); // + 1 for action
+  e = (real*) malloc( function->nParams * sizeof(real) );
+  nnInput   = (real*) malloc( (observationSize + 1) * sizeof(real) ); // + 1 for action
 
-  _lastObservation = (real*) malloc(observationSize * sizeof(real));
+  lastObservation = (real*) malloc(observationSize * sizeof(real));
   // TODO: m
 //  _lastObservation.continuous = (real*) malloc( observationSize * sizeof(real) );
 //  _lastObservation.discrete = 0;
 
-  assert( function->nInput() == _observationSize + 1 );
+  assert( function->nInput() == observationSize + 1 );
 }
 
 QLearningAgent::~QLearningAgent() {
   // TODO: deallocateur
-  free(_e);
-  free(_nnInput);
-  free(_lastObservation);
+  free(e);
+  free(nnInput);
+  free(lastObservation);
 }
 
 void QLearningAgent::init() {
@@ -66,8 +66,8 @@ void QLearningAgent::init() {
   function->init();
 
   // Initialize
-  for (int i=0; i<function->nWeights(); i++)
-    _e[i]=0;
+  for (int i=0; i<function->nParams; i++)
+    e[i]=0;
 }
 
 const action_t QLearningAgent::start(const observation_t observation) {
@@ -75,7 +75,7 @@ const action_t QLearningAgent::start(const observation_t observation) {
 //  prepare();
 
   // TODO: La start action devrait tre settŽe au hasard
-  return _lastAction;
+  return lastAction;
 }
 
 const action_t QLearningAgent::step(real reward, const observation_t observation) {
@@ -83,7 +83,7 @@ const action_t QLearningAgent::step(real reward, const observation_t observation
   //ie. update(reward);
   real outErr = 1;
 
-  real Qs = Q(_lastObservation, _lastAction);
+  real Qs = Q(lastObservation, lastAction);
 
   function->backpropagate(&outErr);
 
@@ -94,36 +94,36 @@ const action_t QLearningAgent::step(real reward, const observation_t observation
   // TODO: verifier: est-ce qu'on chooseAction a partir de _state ou de _nextState
   // e-greedy
   // TODO: _nextAction = policy->chooseAction();
-  if (Random::uniform() < _epsilon)
-    _nextAction = (action_t) (random() % _nActions); // TODO: changer le % _nActions pour une fonction random(min, max)
+  if (Random::uniform() < epsilon)
+    nextAction = (action_t) (random() % nActions); // TODO: changer le % _nActions pour une fonction random(min, max)
   else
-    _nextAction = getMaxAction(observation);
+    nextAction = getMaxAction(observation);
 
   // Update.
   real updateQ; // q-value for update
-  if (_qLearning)
+  if (qLearning)
     getMaxAction(observation, &updateQ);
   else
-    updateQ = Q(observation, _nextAction);
+    updateQ = Q(observation, nextAction);
 
   // Compute difference between estimated Q value and actual/outputed Q value.
-  real delta = ((reward + _gamma * updateQ) - Qs);
+  real delta = ((reward + gamma * updateQ) - Qs);
 
   // Compute mean squared error.
   //real mse = delta * delta * 0.5;
 
   // Update weights.
-  real deltaTimesLearningRate = function->_learningRate * delta;
+  real deltaTimesLearningRate = function->learningRate * delta;
 //  Serial.print("DTL "); Serial.println(deltaTimesLearningRate);
   // TODO: changer les dWeights() / weights() pour de simples variables
-  real* dWeights = function->dWeights();
-  real* weights  = function->weights();
+  real* dWeights = function->dWeights;
+  real* weights  = function->weights;
 #if DEBUG
   printf("dw: [");
 #endif
-  for (int i=0; i<function->nWeights(); i++) {
-    _e[i] = _lambdaTimesGamma * _e[i] + dWeights[i];
-    weights[i] += deltaTimesLearningRate * _e[i];
+  for (int i=0; i<function->nParams; i++) {
+    e[i] = lambdaTimesGamma * e[i] + dWeights[i];
+    weights[i] += deltaTimesLearningRate * e[i];
 #if DEBUG
     printf("%f ", dWeights[i]);
 #endif
@@ -136,10 +136,10 @@ const action_t QLearningAgent::step(real reward, const observation_t observation
 
   // Reassign.
   // TODO: find a more elegant way to copy
-  memcpy(_lastObservation, observation, _observationSize * sizeof(real));
-  _lastAction = _nextAction;
+  memcpy(lastObservation, observation, observationSize * sizeof(real));
+  lastAction = nextAction;
 
-  return _nextAction;
+  return nextAction;
 }
 
 void QLearningAgent::end(real reward) {
@@ -153,9 +153,9 @@ void QLearningAgent::cleanup() {
 real QLearningAgent::Q(real* input, action_t action) {
   real output;
   for (int i = 0; i < function->nInput() - 1; i++)
-    _nnInput[i] = input[i];
-  _nnInput[ function->nInput()-1 ] = function->remapValue((real)action, 0, _nActions-1);//_agent->getEnvironment()->actionToReal(action);
-  function->setInput(_nnInput);
+    nnInput[i] = input[i];
+  nnInput[ function->nInput()-1 ] = function->remapValue((real)action, 0, nActions-1);//_agent->getEnvironment()->actionToReal(action);
+  function->setInput(nnInput);
   function->propagate();
   function->getOutput(&output);
   return output;
@@ -168,7 +168,7 @@ action_t QLearningAgent::getMaxAction(observation_t observation, real *maxQ) {
   real outMax = Q(observation, 0);
   action_t action = 0;
 
-  for (action_t a = 1; a < (action_t)_nActions; a++) {
+  for (action_t a = 1; a < (action_t)nActions; a++) {
     real out = Q(observation, a);
     if (out > outMax) {
       outMax = out;

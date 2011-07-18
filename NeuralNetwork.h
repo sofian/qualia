@@ -45,9 +45,6 @@
 class NeuralNetwork {
 
 public:
-//  Allocator* alloc;
-//  Alloc alloc;
-
   struct Layer {
     int n;           // number of units in this layer
     real *output;   // output of ith unit
@@ -57,26 +54,23 @@ public:
     real **dWeight; // last weight deltas for momentum
   };
 
-  real *_weights, *_dWeights;
+  real *weights;
+  real *dWeights;
+  int nParams;
 
-  Layer _inputLayer, _hiddenLayer, _outputLayer;
-  int _nParams;
+  float learningRate;
 
-  float _learningRate;
-  real _error;
+  Layer inputLayer, hiddenLayer, outputLayer;
 
+  // Internal use.
   void _allocateLayer(Layer& layer, int nInputs, int nOutputs, int& k);
-//  void _deallocateLayer(Layer& layer);
+  void _deallocateLayer(Layer& layer);
 
   void _propagateLayer(Layer& lower, Layer& upper);
-
   void _backpropagateLayer(Layer& upper, Layer& lower);
-
   void _updateLayer(Layer& upper, Layer& lower);
 
   void _allocate(int nInputs, int nHidden, int nOutputs);
-
-  void _deallocateLayer(Layer& layer);
   void _deallocate();
 
 public:
@@ -88,9 +82,9 @@ public:
 
   void init();
 
-  int nInput() const { return _inputLayer.n; }
-  int nHidden() const { return _hiddenLayer.n; }
-  int nOutput() const { return _outputLayer.n; }
+  int nInput() const { return inputLayer.n; }
+  int nHidden() const { return hiddenLayer.n; }
+  int nOutput() const { return outputLayer.n; }
 
   void setInput(real *input);
 
@@ -106,20 +100,12 @@ public:
 
   // Remaps a value in [-1, 1].
   real remapValue(real x, real minVal, real maxVal) {
-//    return (x - minVal) / (maxVal - minVal);
     return (2 * (x - minVal) / (maxVal - minVal) - 1);
   }
 
-  void setWeights(real* weights);
-  int nWeights() const { return _nParams; }
-  real* weights() const { return _weights; }
-  real* dWeights() const { return _dWeights; }
-
   // TODO: ceci ne devrait pas etre dans cette classe car ca ne marchera pas sur Arduino
-
   /// Save all the parameters to params.
 //  virtual void save();
-
   /// Load all the parameters from params.
 //  virtual void load();
 
