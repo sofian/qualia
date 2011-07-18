@@ -1,6 +1,15 @@
 /*
  * StaticAllocator.h
  *
+ * An allocator (see Allocator.h) that "allocated" memory based on a
+ * pre-allocated static memory pool/buffer. Useful to manage memory on
+ * architectures that don't support well dynamic allocation (such as
+ * AVR-based systems).
+ * You can define STATIC_ALLOCATOR_SIZE before including this file in
+ * order to specify the buffer size (in bytes).
+ *
+ * This file is part of Qualia https://github.com/sofian/qualia
+ *
  * (c) 2011 Sofian Audry | info(@)sofianaudry(.)com
  *
  * This program is free software: you can redistribute it and/or modify

@@ -1,6 +1,15 @@
 /*
  * Allocator.h
  *
+ * Allows for different implementation of memory allocation methods.
+ * Example use:
+ * Alloc::init(new Allocator);
+ * int* val = (int*) Alloc::malloc(10*sizeof(int));
+ * ...
+ * Alloc::free(val);
+ *
+ * This file is part of Qualia https://github.com/sofian/qualia
+ *
  * (c) 2011 Sofian Audry -- info(@)sofianaudry(.)com
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20,7 +29,6 @@
 #define ALLOCATOR_H_
 
 #include <stddef.h>
-
 
 class Allocator {
 public:

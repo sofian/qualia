@@ -25,23 +25,19 @@
 
 
 // Parameters.
-#define USE_FLOAT
-#define STATIC_ALLOC 1
-#define STATIC_ALLOCATOR_SIZE 100
+//#define USE_DOUBLE
+//#define USE_STATIC_ALLOC
+//#define STATIC_ALLOCATOR_SIZE 100
 
+#define DEBUG_LEVEL 2
+
+#include "error.h"
 #include "Allocator.h"
-
 
 #ifdef USE_DOUBLE
 typedef double real;
 #else
 typedef float real;
-#endif
-
-#ifdef STATIC_ALLOC
-extern StaticAllocator Alloc;
-#else
-extern BaseAllocator Alloc;
 #endif
 
 typedef real* observation_t;

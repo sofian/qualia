@@ -5,6 +5,8 @@
  * generator from stdlib.h) as well as various probability distributions
  * for generating random numbers.
  * 
+ * This file is part of Qualia https://github.com/sofian/qualia
+ *
  * (c) 2008 Sofian Audry -- info(@)sofianaudry(.)com
  *
  * This class was adapted from the files Random.{h,cc} in the Torch 
