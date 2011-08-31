@@ -19,13 +19,17 @@
 
 #include "StaticAllocator.h"
 
-unsigned char StaticAllocator::buffer[STATIC_ALLOCATOR_SIZE];
-unsigned int StaticAllocator::bufferIdx = 0;
+StaticAllocator::StaticAllocator(unsigned char* _buffer, size_t size) :
+  buffer(_buffer), bufferSize(size), bufferIdx(0) { }
 
 void* StaticAllocator::malloc(size_t size) {
-  if (bufferIdx + size > STATIC_ALLOCATOR_SIZE)
+  if (bufferIdx + size > bufferSize)
     return NULL;
   unsigned char* tmp = (buffer + bufferIdx);
   bufferIdx += size;
   return (void*)tmp;
+}
+
+void StaticAllocator::freeAll() {
+  bufferIdx = 0;
 }

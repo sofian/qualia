@@ -41,8 +41,10 @@ void testQLearning() {
 
 }
 
+unsigned char buffer[200];
+StaticAllocator myAlloc(buffer, 100);
 int main() {
-  Alloc::init(new StaticAllocator);
+  Alloc::init(&myAlloc);
 //  testDummy();
   testQLearning();
 

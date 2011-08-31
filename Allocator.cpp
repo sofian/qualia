@@ -28,7 +28,6 @@ void Allocator::free(void* ptr) {
   if (ptr) ::free(ptr);
 }
 
-
 Allocator* Alloc::instance = 0;
 
 void* Alloc::malloc(size_t size) {
@@ -48,3 +47,14 @@ void Alloc::free(void* ptr) {
 void Alloc::init(Allocator* alloc) {
   instance = alloc;
 }
+
+void* operator new(size_t size, Allocator& alloc)
+{
+  return alloc.malloc(size);
+}
+
+void operator delete(void* ptr, Allocator& alloc)
+{
+  alloc.free(ptr);
+}
+

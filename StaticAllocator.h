@@ -4,9 +4,21 @@
  * An allocator (see Allocator.h) that "allocated" memory based on a
  * pre-allocated static memory pool/buffer. Useful to manage memory on
  * architectures that don't support well dynamic allocation (such as
- * AVR-based systems).
- * You can define STATIC_ALLOCATOR_SIZE before including this file in
- * order to specify the buffer size (in bytes).
+ * AVR-based systems). On such systems, it is usually recommended NOT
+ * to use dynamic allocation to avoid problems.
+ *
+ * Notice that the free(void*) method doesn't do anything for now.
+ *
+ * NOTE: An alternative is to tune the heap start and end in malloc.
+ * http://www.nongnu.org/avr-libc/user-manual/malloc.html
+ *
+ * Usage:
+ * <code>
+ * unsigned char mybuffer[100];
+ * StaticAllocator alloc(mybuffer, 100);
+ * int* myarray = (int*)alloc.malloc(10*sizeof(int));
+ * Object myobject = new(alloc) Object(1,2);
+ * </code>
  *
  * This file is part of Qualia https://github.com/sofian/qualia
  *
@@ -31,20 +43,20 @@
 
 #include "Allocator.h"
 
-#ifndef STATIC_ALLOCATOR_SIZE
-#define STATIC_ALLOCATOR_SIZE 100
-#endif
-
 class StaticAllocator: public Allocator {
-  static unsigned char buffer[STATIC_ALLOCATOR_SIZE];
-  static unsigned int  bufferIdx;
+  unsigned char* buffer;
+  size_t bufferSize;
+  unsigned int bufferIdx;
 
 public:
-  StaticAllocator() {}
+  StaticAllocator(unsigned char* buffer, size_t size);
 
 protected:
   virtual void* malloc(size_t size);
   virtual void free(void* ptr) {}
+
+  // Frees all pointers.
+  virtual void freeAll();
 };
 
 #endif /* STATICALLOCATOR_H_ */

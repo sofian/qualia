@@ -47,4 +47,7 @@ public:
   static void init(Allocator* alloc);
 };
 
+void* operator new(size_t size, Allocator& alloc);
+void operator delete(void* ptr, Allocator& alloc);
+
 #endif /* ALLOCATOR_H_ */
