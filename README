@@ -1,0 +1,31 @@
+Description
+-----------
+Qualia is a free software library for embedded AVR agent-based systems written in simple C++.
+The software is licensed under the Gnu GPL version 3 (see LICENSE file).
+
+Author
+------
+Sofian Audry
+info(@)sofianaudry(.)com
+
+Objectives
+----------
+
+1. Allow to easily switch between different environments
+ * Two modes: simulation (computer) vs embedded (AVR).
+ * The agent should stay the same.
+ * Interchangeable environment simulation vs embedded
+ * Easy switch between the two modes
+
+2. Well-managed on AVR chips
+ * Low memory trace (Flash and SRAM)
+ * Static allocation
+
+3. Modular
+ * Agent can stay the same while environments are exchanged
+ * eg. easy switch of reward function (reinforcement learning)
+
+4. Multi-paradigm
+ * Procedural
+ * FSM
+ * Reinforcement learning
