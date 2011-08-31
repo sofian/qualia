@@ -27,7 +27,7 @@
 #ifndef CPP_INCLUDE_H_
 #define CPP_INCLUDE_H_
 
-#if defined(__AVR__)
+#if defined(__AVR__) && defined(__cplusplus)
 
 #include <avr/interrupt.h> // for cli()
 #include <stdlib.h>        // for malloc and free
