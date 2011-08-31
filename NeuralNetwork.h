@@ -28,7 +28,7 @@
 // Inspired from
 // http://www.ip-atlas.com/pub/nap/nn-src/bpn.txt
 // by Karsten Kutza
-#include "rllib/general.h"
+#include "general.h"
 //#include "rllib/Alloc.h"
 
 // TODO: IMPORTANT l'output layer ne devrait pas etre sigmoide mais lineaire...

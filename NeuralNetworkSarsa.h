@@ -26,8 +26,8 @@
 //#define DEBUG 1
 
 #include "NeuralNetwork.h"
-#include "rllib/Agent.h"
-#include "rllib/Environment.h"
+#include "Agent.h"
+#include "Environment.h"
 //#include "Math.h"
 //#include "Print.h"
 #include <stdlib.h>
