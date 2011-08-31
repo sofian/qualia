@@ -1,5 +1,12 @@
 /*
- * DummyAgent.h
+ * Allocator.h
+ *
+ * Allows for different implementation of memory allocation methods.
+ * Example use:
+ * Alloc::init(new Allocator);
+ * int* val = (int*) Alloc::malloc(10*sizeof(int));
+ * ...
+ * Alloc::free(val);
  *
  * This file is part of Qualia https://github.com/sofian/qualia
  *
@@ -18,30 +25,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef DUMMYAGENT_H_
-#define DUMMYAGENT_H_
+#ifndef ALLOCATOR_H_
+#define ALLOCATOR_H_
 
-#include "Agent.h"
+#include <stddef.h>
 
-class DummyAgent : public Agent {
-
+class Allocator {
 public:
-  action_t currentAction;
+  virtual ~Allocator() {}
 
-  virtual void init() {
-    currentAction = 0;
-  }
-
-  virtual const action_t start(const observation_t observation) {
-    return currentAction;
-  }
-
-  virtual const action_t step(real reward, const observation_t observation) {
-    currentAction++;
-    currentAction %= 100; // max action
-    return currentAction;
-  }
-
+  virtual void* malloc(size_t size);
+  virtual void free(void* ptr);
 };
 
-#endif /* DUMMYAGENT_H_ */
+class Alloc {
+  static Allocator* instance;
+
+public:
+  static void* malloc(size_t size);
+  static void free(void* ptr);
+  static void init(Allocator* alloc);
+};
+
+void* operator new(size_t size, Allocator& alloc);
+void operator delete(void* ptr, Allocator& alloc);
+
+#endif /* ALLOCATOR_H_ */

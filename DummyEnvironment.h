@@ -1,7 +1,9 @@
 /*
  * DummyEnvironment.h
  *
- * (c) 2011 Sofian Audry | info(@)sofianaudry(.)com
+ * This file is part of Qualia https://github.com/sofian/qualia
+ *
+ * (c) 2011 Sofian Audry -- info(@)sofianaudry(.)com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,19 +23,28 @@
 
 #include "Environment.h"
 
+#define DUMMY_ENVIRONMENT_N_ACTIONS 10
+
 class DummyEnvironment : public Environment {
 
 public:
   real currentObservation;
 
   virtual void init() {
-    currentObservation = 100;
+    currentObservation = 0;
   }
+
   virtual const observation_t start() {
     return &currentObservation;
   }
+
   virtual const reward_observation_terminal_t* step(const action_t action) {
-    static reward_observation_terminal_t rot = {0, 0, 0};
+    static reward_observation_terminal_t rot = {0, &currentObservation, 0};
+    currentObservation = (real)action / (real)DUMMY_ENVIRONMENT_N_ACTIONS; // observation = action
+    // Favors "big" actions, small actions are equally bad
+    rot.reward = (currentObservation < 0.5f ?
+                  0 :
+                  currentObservation);
     return &rot;
   }
 //  const char* env_message(const char * message);

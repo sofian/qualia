@@ -1,7 +1,11 @@
 /*
  * NeuralNetwork.h
  *
- * (c) 2011 Sofian Audry | info(@)sofianaudry(.)com
+ * A simple MLP with one hidden layer.
+ *
+ * This file is part of Qualia https://github.com/sofian/qualia
+ *
+ * (c) 2011 Sofian Audry -- info(@)sofianaudry(.)com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +25,8 @@
 
 #include <stdlib.h>
 
+// TODO: simplifier le code
+
 //#define DEBUG 1
 
 //#define BIAS 1
@@ -28,8 +34,7 @@
 // Inspired from
 // http://www.ip-atlas.com/pub/nap/nn-src/bpn.txt
 // by Karsten Kutza
-#include "general.h"
-//#include "rllib/Alloc.h"
+#include "common.h"
 
 // TODO: IMPORTANT l'output layer ne devrait pas etre sigmoide mais lineaire...
 
@@ -39,9 +44,7 @@
 
 class NeuralNetwork {
 
-protected:
-//  Alloc alloc;
-
+public:
   struct Layer {
     int n;           // number of units in this layer
     real *output;   // output of ith unit
@@ -51,40 +54,37 @@ protected:
     real **dWeight; // last weight deltas for momentum
   };
 
-  real *_weights, *_dWeights;
+  real *weights;
+  real *dWeights;
+  int nParams;
 
-  Layer _inputLayer, _hiddenLayer, _outputLayer;
-  int _nParams;
+  float learningRate;
 
-  float _learningRate;
-  real _error;
+  Layer inputLayer, hiddenLayer, outputLayer;
 
+  // Internal use.
   void _allocateLayer(Layer& layer, int nInputs, int nOutputs, int& k);
-//  void _deallocateLayer(Layer& layer);
+  void _deallocateLayer(Layer& layer);
 
   void _propagateLayer(Layer& lower, Layer& upper);
-
   void _backpropagateLayer(Layer& upper, Layer& lower);
-
   void _updateLayer(Layer& upper, Layer& lower);
 
   void _allocate(int nInputs, int nHidden, int nOutputs);
-
-//  void _deallocateLayer(Layer& layer);
-//  void _deallocate();
+  void _deallocate();
 
 public:
   NeuralNetwork(int nInputs,
                 int nHidden,
                 int nOutputs,
                 float learningRate = 0.01);
-//  virtual ~NeuralNetwork();
+  virtual ~NeuralNetwork();
 
-  void initialize();
+  void init();
 
-  int nInput() const { return _inputLayer.n; }
-  int nHidden() const { return _hiddenLayer.n; }
-  int nOutput() const { return _outputLayer.n; }
+  int nInput() const { return inputLayer.n; }
+  int nHidden() const { return hiddenLayer.n; }
+  int nOutput() const { return outputLayer.n; }
 
   void setInput(real *input);
 
@@ -98,16 +98,14 @@ public:
 
   void update();
 
-  void setWeights(real* weights);
-  int nWeights() const { return _nParams; }
-  real* weights() const { return _weights; }
-  real* dWeights() const { return _dWeights; }
+  // Remaps a value in [-1, 1].
+  real remapValue(real x, real minVal, real maxVal) {
+    return (2 * (x - minVal) / (maxVal - minVal) - 1);
+  }
 
   // TODO: ceci ne devrait pas etre dans cette classe car ca ne marchera pas sur Arduino
-
   /// Save all the parameters to params.
 //  virtual void save();
-
   /// Load all the parameters from params.
 //  virtual void load();
 

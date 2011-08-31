@@ -1,7 +1,14 @@
 /*
  * Environment.h
  *
- * (c) 2011 Sofian Audry | info(@)sofianaudry(.)com
+ * Interface for an environment in the Qualia framework.
+ *
+ * This file is part of Qualia https://github.com/sofian/qualia
+ *
+ * (c) 2011 Sofian Audry -- info(@)sofianaudry(.)com
+ *
+ * Based on code from the RL-Glue library (http://rl-glue.googlecode.com)
+ * RL-Glue is licensed under an Apache License 2.0 (compatible with Gnu GPL)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +31,7 @@
 class Environment {
 
 public:
+  virtual ~Environment() {}
   virtual void init() {}
   virtual const observation_t start() { return 0; }
   virtual const reward_observation_terminal_t* step(const action_t action) { return 0; }

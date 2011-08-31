@@ -1,5 +1,5 @@
 /*
- * general.cpp
+ * Allocator.cpp
  *
  * (c) 2011 Sofian Audry | info(@)sofianaudry(.)com
  *
@@ -16,10 +16,45 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "general.h"
+#include "Allocator.h"
+#include <stdlib.h>
 
-void error(const char* msg) {
-  // Iff not arduino.
-  std::cout << msg << std::endl;
-  exit(-1);
+
+void* Allocator::malloc(size_t size) {
+  return ::malloc(size);
 }
+
+void Allocator::free(void* ptr) {
+  if (ptr) ::free(ptr);
+}
+
+Allocator* Alloc::instance = 0;
+
+void* Alloc::malloc(size_t size) {
+  if (!instance)
+    return ::malloc(size);
+  else
+    return instance->malloc(size);
+}
+
+void Alloc::free(void* ptr) {
+  if (!instance)
+    ::free(ptr);
+  else
+    instance->free(ptr);
+}
+
+void Alloc::init(Allocator* alloc) {
+  instance = alloc;
+}
+
+void* operator new(size_t size, Allocator& alloc)
+{
+  return alloc.malloc(size);
+}
+
+void operator delete(void* ptr, Allocator& alloc)
+{
+  alloc.free(ptr);
+}
+

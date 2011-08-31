@@ -1,5 +1,5 @@
 /*
- * general.h
+ * StaticAllocator.cpp
  *
  * (c) 2011 Sofian Audry | info(@)sofianaudry(.)com
  *
@@ -16,36 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef GENERAL_H_
-#define GENERAL_H_
 
-// Iff not Arduino
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-//#include <cstdlib>
-//#include <iostream>
-// endif
+#include "StaticAllocator.h"
 
-//#define USE_DOUBLE
-#define USE_FLOAT
+StaticAllocator::StaticAllocator(unsigned char* _buffer, size_t size) :
+  buffer(_buffer), bufferSize(size), bufferIdx(0) { }
 
-#ifdef USE_DOUBLE
-typedef double real;
-#else
-typedef float real;
-#endif
+void* StaticAllocator::malloc(size_t size) {
+  if (bufferIdx + size > bufferSize)
+    return NULL;
+  unsigned char* tmp = (buffer + bufferIdx);
+  bufferIdx += size;
+  return (void*)tmp;
+}
 
-void error(const char* msg);
-
-#define ARRAY_ALLOC(array, size, type) \
-  if (size > 0) { \
-    /*unsigned int sz = size * sizeof(type); */\
-    array = (type*) calloc(size, sizeof(type)); \
-    memset(array, 0, size * sizeof(type)); \
-  } else array = 0;
-
-#define ARRAY_DEALLOC(array) if (array) free(array);
-
-
-#endif /* GENERAL_H_ */
+void StaticAllocator::freeAll() {
+  bufferIdx = 0;
+}
