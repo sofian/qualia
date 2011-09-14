@@ -3,7 +3,9 @@ from dependencies import getDependencies
 env = Environment()
 targetSource = ["main.cpp"]
 (includes, sources) = getDependencies(targetSource)
+print "Includes = " + str(includes)
+print "Sources = " + str(sources)
 env.Program(target="main", source=sources)
 
-# printgetDependencies(['main.cpp'], [os.getcwd()], [os.getcwd()])
+#printgetDependencies(['main.cpp'], [os.getcwd()], [os.getcwd()])
 

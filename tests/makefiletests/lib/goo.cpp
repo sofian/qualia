@@ -3,5 +3,5 @@
 #include <stdio.h>
 
 void goo() {
-  printf("Goo");
+  printf("Goo\n");
 }

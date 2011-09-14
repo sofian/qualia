@@ -78,6 +78,8 @@ def _recursiveGetDependencies(sources, includePaths=[], sourcePaths=[], includes
         currentDepthSources.add(file)
 
   includes = includes | currentDepthIncludes
+  sources = Set(sources)
+  sources = sources | currentDepthSources
   if currentDepthSources:
     # print"CurrentDepthSrc = " + str(currentDepthSources)
     # print"CurrentDepthInc = " + str(currentDepthIncludes)
@@ -85,6 +87,6 @@ def _recursiveGetDependencies(sources, includePaths=[], sourcePaths=[], includes
     # print"Unite includes = " + str(includes)
     (inc, src) = _recursiveGetDependencies(currentDepthSources, includePaths, sourcePaths, includes)
     includes = includes | inc
-    currentDepthSources = currentDepthSources | src
+    sources = sources | src
 
-  return (includes, currentDepthSources)
+  return (includes, sources)

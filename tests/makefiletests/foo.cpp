@@ -1,5 +1,5 @@
 #include "foo.h"
 
 void foo() {
-  printf("Foo");
+  printf("Foo\n");
 }
