@@ -1,0 +1,18 @@
+# Compiled code
+*.o
+*.a
+*.elf
+*.hex
+*.pyc
+
+# Eclipse
+.project
+.cproject
+.settings
+
+# Scons
+.sconsign.dblite
+
+# Waf
+.waf-*
+
