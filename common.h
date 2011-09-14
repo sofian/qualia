@@ -23,6 +23,8 @@
 #ifndef COMMON_H_
 #define COMMON_H_
 
+#define is_avr() defined(__AVR__)
+#define is_computer() !defined(__AVR__)
 
 // Parameters.
 //#define USE_DOUBLE
