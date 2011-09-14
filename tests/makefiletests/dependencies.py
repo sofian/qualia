@@ -25,13 +25,10 @@ def _findFile(filename, paths):
   else:
     return ret[0]
 
-DEFAULT_GCC_INCLUDE_PATH = [getcwd(), "/usr/local/include", "/usr/include"]
-DEFAULT_GCC_PATH = [getcwd()]
-
-def getDependencies(sources, includePaths=[], sourcePaths=[]):
+def getDependencies(sources, includePaths=["/usr/local/include", "/usr/include"], sourcePaths=[]):
   sources = unique(map(abspath, sources))
-  includePaths = unique(map(realpath, includePaths) + DEFAULT_GCC_INCLUDE_PATH)
-  sourcePaths = unique(map(realpath, sourcePaths) + DEFAULT_GCC_PATH)
+  includePaths = unique(map(realpath, includePaths) + [getcwd()])
+  sourcePaths = unique(map(realpath, sourcePaths) + [getcwd()])
   (inc, src) = _recursiveGetDependencies(sources, includePaths, sourcePaths)
   return (list(inc), list(src))
 
