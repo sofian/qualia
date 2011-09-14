@@ -1,9 +1,42 @@
-from dependencies import getDependencies
+from dependencies import *
+import os
+from os.path import *
 
-env = Environment()
-targetSource = ["main.cpp"]
-(includes, sources) = getDependencies(targetSource)
-env.Program(target="main", source=sources)
+includePaths = ARGUMENTS.get('INCLUDE_PATH', "").split(":")
+includePaths = unique(includePaths + [os.getcwd()])
 
-#printgetDependencies(['main.cpp'], [os.getcwd()], [os.getcwd()])
+arg  = 0
+#MODES = ['gcc', 'avr-gcc', 'arduino']
+#mode = COMMAND_LINE_TARGETS[arg]
+#if (mode in MODES):
+#  arg += 1
+#else:
+#  mode = 'gcc' # default mode
+
+target = COMMAND_LINE_TARGETS[0]
+arg += 1
+mode = 'gcc'
+
+if (mode == 'avr'):
+  print "Not supported"
+elif (mode == 'arduino'):
+  print "Not supported"
+else:
+  env = Environment()
+  targetSource = None
+  for ext in ['.c', '.cpp', '.cxx']:
+    filename = target + ext
+    if exists(filename):
+      targetSource = filename
+  if not targetSource:
+    print "No source found for target " + target
+    exit(-1)
+  targetSource = [targetSource]
+  env.Append(CPPPATH=includePaths)
+  (includes, sources) = getDependencies(targetSource, includePaths + ["/usr/local/include", "/usr/include"])
+  print "INCLUDES: " +str(includes)
+  print "SOURCES: " +str(sources)
+  env.Clean('all', includePaths)
+  env.Program(target=target, source=sources)
+  
 
