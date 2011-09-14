@@ -1,0 +1,3 @@
+### creating include.mk
+SRCFILES = dummy.cpp foo.cpp main.cpp
+HFILES = dummy.h foo.h

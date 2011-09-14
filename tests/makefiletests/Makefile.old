@@ -1,0 +1,22 @@
+CC=g++
+CFLAGS=-c -Wall
+LDFLAGS=
+EXECUTABLE=main
+
+SOURCE=$(EXECUTABLE).cpp
+DEPENDENCIES=$(subst .cpp, .d, $(SOURCES))
+
+all: $(EXECUTABLE)
+
+$(EXECUTABLE): $(EXECUTABLE).o
+#	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
+
+%.h: %.o
+
+%.o: %.cpp
+	$(CC) -c $(CFLAGS) $*.cpp -o $*.o
+
+include $(DEPENDENCIES)
+
+%.d: %.cpp
+	$(CC) -MM $(CFLAGS) $*.cpp > $*.d

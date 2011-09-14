@@ -1,0 +1,15 @@
+CC=g++
+CFLAGS=-c -Wall
+LDFLAGS=
+EXECUTABLE=main
+
+all: $(EXECUTABLE)
+
+$(EXECUTABLE): $(EXECUTABLE).o
+#	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
+
+%.h: %.o
+
+%.o: %.cpp
+	$(CC) -c $(CFLAGS) $*.cpp -o $*.o
+	$(CC) -MM $(CFLAGS) $*.cpp > $*.d

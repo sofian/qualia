@@ -1,0 +1,24 @@
+#! /usr/bin/env python
+# encoding: utf-8
+# Thomas Nagy, 2010 (ita)
+
+VERSION='0.0.1'
+APPNAME='crazy_test'
+
+top = '.'
+out = 'build'
+
+def configure(ctx):
+        for compiler in ['avr-gcc']:
+                try:
+                        ctx.env.stash()
+                        ctx.load(compiler)
+                        print "OK: " + compiler
+                except ctx.errors.ConfigurationError:
+                        ctx.env.revert()
+                        print "NO"
+                else:
+                        print "ELSE"
+                        break
+        else:
+                ctx.fatal('Could not find a compiler')
