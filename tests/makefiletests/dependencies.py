@@ -29,18 +29,19 @@ def getDependencies(sources, includePaths=["/usr/local/include", "/usr/include"]
   sources = unique(map(abspath, sources))
   includePaths = unique(map(realpath, includePaths) + [getcwd()])
   sourcePaths = unique(map(realpath, sourcePaths) + [getcwd()])
-  (inc, src) = _recursiveGetDependencies(sources, includePaths, sourcePaths)
+  (inc, src) = _recursiveGetDependencies(sources, [], includePaths, sourcePaths)
   return (list(inc), list(src))
 
 # Dependencies find
 # NOTE:
-def _recursiveGetDependencies(sources, includePaths=[], sourcePaths=[], includes = Set([])):
-  # print"Calling getDep(" + str(sources) + "," + str(includePaths) + "," + str(sourcePaths) + "," + str(includes)
+def _recursiveGetDependencies(sources, headers, includePaths=[], sourcePaths=[], includes = Set([])):
+  #print"Calling getDep(" + str(sources) + "," + str(includePaths) + "," + str(sourcePaths) + "," + str(includes)
   currentDepthIncludes = Set([]) # Files included for that depth
   includeRegexp = re.compile(r'^[ ]*#[ ]*include [<"](.*)\.h[>"]')
+  allSources = sources + headers
 
   # Run through all source files, detect the includes and add them to currentDepthIncludes
-  for source in sources:
+  for source in allSources:
     # print"Looking into " + source
     sourceIncludePaths = unique(includePaths + [dirname(source)])
     for line in open (source):
@@ -78,11 +79,11 @@ def _recursiveGetDependencies(sources, includePaths=[], sourcePaths=[], includes
   sources = Set(sources)
   sources = sources | currentDepthSources
   if currentDepthSources:
-    # print"CurrentDepthSrc = " + str(currentDepthSources)
-    # print"CurrentDepthInc = " + str(currentDepthIncludes)
-    # print"Current includes = " + str(includes)
-    # print"Unite includes = " + str(includes)
-    (inc, src) = _recursiveGetDependencies(currentDepthSources, includePaths, sourcePaths, includes)
+    #print"CurrentDepthSrc = " + str(currentDepthSources)
+    #print"CurrentDepthInc = " + str(currentDepthIncludes)
+    #print"Current includes = " + str(includes)
+    #print"Unite includes = " + str(includes)
+    (inc, src) = _recursiveGetDependencies(list(currentDepthSources), list(currentDepthIncludes), includePaths, sourcePaths, includes)
     includes = includes | inc
     sources = sources | src
 
