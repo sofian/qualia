@@ -2,14 +2,21 @@ CONFIG = ['INCLUDE_PATH', 'MCU', 'F_CPU', 'EXTRA_LIBS', 'AVR_GCC_DIR', 'MODE', '
 
 Import(CONFIG)
 
-INCLUDE_PATH = "/Users/tats/Documents/workspace/qualia:/Applications/Arduino.app/Contents/Resources/Java/hardware/tools/avr/avr/include/"
+if (MODE == 'computer'):
+  INCLUDE_PATH = "/Users/tats/Documents/workspace/qualia"
+else:
+  INCLUDE_PATH = "/Users/tats/Documents/workspace/qualia:/Applications/Arduino.app/Contents/Resources/Java/hardware/tools/avr/avr/include/"
+
 MCU = 'atmega168'
 F_CPU = 16000000
 EXTRA_LIBS = ""
 
-AVR_GCC_DIR = "/Applications/Arduino.app/Contents/Resources/Java/hardware/tools/avr/bin/"
+if (MODE == 'avr'):
+  AVR_GCC_DIR = "/Applications/Arduino.app/Contents/Resources/Java/hardware/tools/avr/bin/"
 
-#MODE = 'arduino'
-#TARGET = "MainTest"
+if (MODE == 'arduino'):
+  TARGET = 'MainTest'
+else:
+  TARGET = "main_test"
 
 Return(CONFIG)
