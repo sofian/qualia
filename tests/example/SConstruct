@@ -35,7 +35,26 @@ F_CPU = 16000000
 EXTRA_LIBS = ""
 AVR_GCC_DIR = ""
 
-MODE = 'computer'
+AddOption('--avr',
+          dest='avr',
+          action="store_true",
+          default=False,
+          help="AVR mode");
+AddOption('--arduino',
+          dest='arduino',
+          action="store_true",
+          default=False,
+          help="Arduino mode");
+
+print "TARGET" + str(TARGET)
+if TARGET == None:
+  TARGET = COMMAND_LINE_TARGETS[0]
+
+if GetOption('arduino'):
+  MODE = 'arduino'
+elif GetOption('avr'):
+  MODE = 'avr'
+
 TARGET = None
 
 # Import settings
@@ -66,26 +85,6 @@ if AVR_GCC_DIR:
   AVR_GCC_DIR += '/'
 
 AVR_BIN_PREFIX = AVR_GCC_DIR + 'avr-'
-
-AddOption('--avr',
-          dest='avr',
-          action="store_true",
-          default=False,
-          help="AVR mode");
-AddOption('--arduino',
-          dest='arduino',
-          action="store_true",
-          default=False,
-          help="Arduino mode");
-
-print "TARGET" + str(TARGET)
-if TARGET == None:
-  TARGET = COMMAND_LINE_TARGETS[0]
-
-if GetOption('arduino'):
-  MODE = 'arduino'
-elif GetOption('avr'):
-  MODE = 'avr'
 
 # Create environment and set default configurations ###################################
 if (MODE == 'avr'):
