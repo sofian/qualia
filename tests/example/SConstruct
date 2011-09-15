@@ -29,25 +29,39 @@ from os.path import *
 from glob import glob
 
 # General arguments
-INCLUDE_PATH = ARGUMENTS.get('INCLUDE_PATH', "").split(":")
+INCLUDE_PATH = ""
+MCU = 'atmega168'
+F_CPU = 16000000
+EXTRA_LIBS = ""
+AVR_GCC_DIR = ""
+
+MODE = 'computer'
+TARGET = None
+
+# Import settings
+CONFIG = ['INCLUDE_PATH', 'MCU', 'F_CPU', 'EXTRA_LIBS', 'AVR_GCC_DIR', 'MODE', 'TARGET']
+conf = SConscript(dirs='.', exports=CONFIG)
+for i in range(len(CONFIG)):
+  vars()[CONFIG[i]] = conf[i]
+  
+# Set arguments (commandline has higher priority than settings file)
+INCLUDE_PATH = ARGUMENTS.get('INCLUDE_PATH', INCLUDE_PATH).split(":")
 INCLUDE_PATH = unique(INCLUDE_PATH + [os.getcwd()])
 
 # AVR arguments
-MCU = 'atmega168'
 #MCU = getBoardConf(r'^%s\.build\.mcu=(.*)'%ARDUINO_BOARD)
 MCU = ARGUMENTS.get('MCU', MCU)
-F_CPU = 16000000
 #F_CPU = getBoardConf(r'^%s\.build\.f_cpu=(.*)'%ARDUINO_BOARD)
 F_CPU = ARGUMENTS.get('F_CPU', F_CPU)
 
 # Arduino arguments
-EXTRA_LIBS = ARGUMENTS.get('EXTRA_LIBS', '').split(':')
+EXTRA_LIBS = ARGUMENTS.get('EXTRA_LIBS', EXTRA_LIBS).split(':')
 
 # There should be a file with the same name as the folder and with the extension .pde
 #TARGET = os.path.basename(os.path.realpath(os.curdir))
 #assert(os.path.exists(TARGET+'.pde'))
 
-AVR_GCC_DIR = ARGUMENTS.get('AVR_GCC_DIR', '')
+AVR_GCC_DIR = ARGUMENTS.get('AVR_GCC_DIR', AVR_GCC_DIR)
 if AVR_GCC_DIR:
   AVR_GCC_DIR += '/'
 
@@ -64,16 +78,17 @@ AddOption('--arduino',
           default=False,
           help="Arduino mode");
 
-TARGET = COMMAND_LINE_TARGETS[0]
+print "TARGET" + str(TARGET)
+if TARGET == None:
+  TARGET = COMMAND_LINE_TARGETS[0]
 
-mode = 'computer'
 if GetOption('arduino'):
-  mode = 'arduino'
+  MODE = 'arduino'
 elif GetOption('avr'):
-  mode = 'avr'
+  MODE = 'avr'
 
 # Create environment and set default configurations ###################################
-if (mode == 'avr'):
+if (MODE == 'avr'):
   cFlags = ['-ffunction-sections', '-fdata-sections', '-fno-exceptions',
       '-funsigned-char', '-funsigned-bitfields', '-fpack-struct', '-fshort-enums',
       '-Os', '-mmcu=%s'%MCU]
@@ -81,7 +96,7 @@ if (mode == 'avr'):
       CPPPATH = INCLUDE_PATH, CPPDEFINES = {'F_CPU':F_CPU}, 
       CFLAGS = cFlags+['-std=gnu99'], CCFLAGS = cFlags, TOOLS = ['gcc','g++'])
 
-elif (mode == 'arduino'):
+elif (MODE == 'arduino'):
   def getUsbTty(rx):
       usb_ttys = glob(rx)
       if len(usb_ttys) == 1: return usb_ttys[0]
@@ -89,15 +104,7 @@ elif (mode == 'arduino'):
 
   ARDUINO_VER     = ARGUMENTS.get('ARDUINO_VER', 22) # Arduino 0022
 
-  # TODO: repetition avec avr ici... en fait Arduino devrait juste etre une modif de AVR
-  # (ie. des options par defaut)
-  cFlags = ['-ffunction-sections', '-fdata-sections', '-fno-exceptions',
-      '-funsigned-char', '-funsigned-bitfields', '-fpack-struct', '-fshort-enums',
-      '-Os', '-mmcu=%s'%MCU]
-  env = Environment(CC = AVR_BIN_PREFIX+'gcc', CXX = AVR_BIN_PREFIX+'g++',
-      CPPDEFINES = {'F_CPU':F_CPU, 'ARDUINO':ARDUINO_VER}, 
-      CFLAGS = cFlags+['-std=gnu99'], CCFLAGS = cFlags, TOOLS = ['gcc','g++'])
-  
+  env = Environment() # dummy
   platform = env['PLATFORM']
 
   if platform == 'darwin':
@@ -146,8 +153,16 @@ elif (mode == 'arduino'):
       if isdir(subdir):
         INCLUDE_PATH.append(subdir)
   INCLUDE_PATH.append(ARDUINO_CORE)
-  print "INCPATH = " + str(INCLUDE_PATH)
-  env.Append(CPPPATH=INCLUDE_PATH)
+
+  # TODO: repetition avec avr ici... en fait Arduino devrait juste etre une modif de AVR
+  # (ie. des options par defaut)
+  cFlags = ['-ffunction-sections', '-fdata-sections', '-fno-exceptions',
+      '-funsigned-char', '-funsigned-bitfields', '-fpack-struct', '-fshort-enums',
+      '-Os', '-mmcu=%s'%MCU]
+  env = Environment(CC = AVR_BIN_PREFIX+'gcc', CXX = AVR_BIN_PREFIX+'g++',
+      CPPPATH = INCLUDE_PATH, CPPDEFINES = {'F_CPU':F_CPU, 'ARDUINO':ARDUINO_VER}, 
+      CFLAGS = cFlags+['-std=gnu99'], CCFLAGS = cFlags, TOOLS = ['gcc','g++'])
+  
   
 else:
   INCLUDE_PATH += ["/usr/local/include", "/usr/include"]
@@ -155,7 +170,7 @@ else:
 
 # Get sources #########################################################################
 targetSource = None
-if (mode == 'arduino'):
+if (MODE == 'arduino'):
   filename = TARGET + '.pde'
   if exists(filename):
     targetSource = filename
@@ -172,7 +187,7 @@ if not targetSource:
 targetSource = [targetSource]
 
 # Get all necessary object files
-if (mode == 'arduino'): # Generate the .cpp from the .pde
+if (MODE == 'arduino'): # Generate the .cpp from the .pde
   # Replace .pde by .cpp
   extraHeaders = [join(ARDUINO_CORE, 'WProgram.h')]
   targetSource = [TARGET+'.pde']
@@ -194,7 +209,7 @@ else:
 #print "SOURCES: " +str(sources)
 
 # Compilation #########################################################################
-if (mode == 'computer'):
+if (MODE == 'computer'):
   env.Program(target=TARGET, source=sources)
 else:
   print "GO"
@@ -247,7 +262,7 @@ else:
   env.Append(BUILDERS = {'Processing':Builder(action = fnProcessing,
       suffix = '.cpp', src_suffix = '.pde')})
   
-  if (mode == 'arduino'):
+  if (MODE == 'arduino'):
     env.Processing(TARGET+'.cpp', TARGET +'.pde')
 
   # Finally Build!!
