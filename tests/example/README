@@ -1,0 +1,13 @@
+Example usage
+-------------
+
+Build main_test.cpp on a computer (eg. i386 architecture):
+scons main_test INCLUDE_PATH=/Users/tats/Documents/workspace/qualia
+
+Build main_test.cpp for AVR:
+scons main_test --avr INCLUDE_PATH=/Users/tats/Documents/workspace/qualia:/Applications/Arduino.app/Contents/Resources/Java/hardware/tools/avr/avr/include/ AVR_GCC_DIR=/Applications/Arduino.app/Contents/Resources/Java/hardware/tools/avr/bin/
+
+Build MainTest.pde for Arduino:
+scons MainTest INCLUDE_PATH=/Users/tats/Documents/workspace/qualia:/Applications/Arduino.app/Contents/Resources/Java/hardware/tools/avr/avr/include/ --arduino
+
+Cleaning: Just add -c to the previous commandlines to clean (it's risky right now though)

@@ -25,17 +25,17 @@ def _findFile(filename, paths):
   else:
     return ret[0]
 
-def getDependencies(sources, includePaths=["/usr/local/include", "/usr/include"], sourcePaths=[]):
+def getDependencies(sources, includePaths=["/usr/local/include", "/usr/include"], sourcePaths=[], extraHeaders=[]):
   sources = unique(map(abspath, sources))
   includePaths = unique(map(realpath, includePaths) + [getcwd()])
   sourcePaths = unique(map(realpath, sourcePaths) + [getcwd()])
-  (inc, src) = _recursiveGetDependencies(sources, [], includePaths, sourcePaths)
+  (inc, src) = _recursiveGetDependencies(sources, extraHeaders, includePaths, sourcePaths)
   return (list(inc), list(src))
 
 # Dependencies find
 # NOTE:
 def _recursiveGetDependencies(sources, headers, includePaths=[], sourcePaths=[], includes = Set([])):
-  #print"Calling getDep(" + str(sources) + "," + str(includePaths) + "," + str(sourcePaths) + "," + str(includes)
+#  print "Calling getDep(" + str(sources) + "," + str(headers) + ',' + str(includePaths) + "," + str(sourcePaths) + "," + str(includes)
   currentDepthIncludes = Set([]) # Files included for that depth
   includeRegexp = re.compile(r'^[ ]*#[ ]*include [<"](.*)\.h[>"]')
   allSources = sources + headers
@@ -48,7 +48,7 @@ def _recursiveGetDependencies(sources, headers, includePaths=[], sourcePaths=[],
       result = includeRegexp.findall(line)
       if result:
         basename = result[0]
-        # print"Found " + basename
+#        print "Found " + basename
         filename = basename + '.h'
         incFilename = _findFile(filename, sourceIncludePaths)
         if incFilename:
@@ -70,19 +70,19 @@ def _recursiveGetDependencies(sources, headers, includePaths=[], sourcePaths=[],
     # print"Looking at " + filepath + "(" + directory + "," + filename + "," + basename + ")"
     for ext in ['.c', '.cpp', '.cxx']:
       file = _findFile(basename + ext, unique(sourcePaths + [directory]))
-      # print"Trying to find file " + basename + ext
+      print"Trying to find file " + basename + ext
       if file:
-        # print"File found, adding it"
+        print"File found, adding it"
         currentDepthSources.add(file)
 
   includes = includes | currentDepthIncludes
   sources = Set(sources)
   sources = sources | currentDepthSources
-  if currentDepthSources:
-    #print"CurrentDepthSrc = " + str(currentDepthSources)
-    #print"CurrentDepthInc = " + str(currentDepthIncludes)
-    #print"Current includes = " + str(includes)
-    #print"Unite includes = " + str(includes)
+  if currentDepthSources or currentDepthIncludes:
+#    print "CurrentDepthSrc = " + str(currentDepthSources)
+#    print "CurrentDepthInc = " + str(currentDepthIncludes)
+#    print "Current includes = " + str(includes)
+#    print "Unite includes = " + str(includes)
     (inc, src) = _recursiveGetDependencies(list(currentDepthSources), list(currentDepthIncludes), includePaths, sourcePaths, includes)
     includes = includes | inc
     sources = sources | src
