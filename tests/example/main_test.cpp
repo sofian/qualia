@@ -3,6 +3,7 @@
 #include "Qualia.h"
 #include "DummyAgent.h"
 #include "DummyEnvironment.h"
+#include "DummyRewardEnvironment.h"
 #include "QLearningAgent.h"
 
 #include "NeuralNetwork.h"
@@ -31,7 +32,8 @@ void testDummy() {
 void testQLearning() {
   NeuralNetwork net(2, 3, 1, 0.01f);
   QLearningAgent agent(&net, 1, DUMMY_ENVIRONMENT_N_ACTIONS, 0.1f, 0.1f, 0.1f, false);
-  DummyEnvironment env;
+  BigDummyReward rew;
+  DummyRewardEnvironment env(&rew);
   Qualia qualia(&agent, &env);
 
   qualia.init();
