@@ -33,16 +33,17 @@
 
 #define DEBUG_LEVEL 2
 
-#include "error.h"
-#include "Allocator.h"
-
 #ifdef USE_DOUBLE
 typedef double real;
 #else
 typedef float real;
 #endif
 
-typedef real* observation_t;
+#include "error.h"
+#include "Allocator.h"
+#include "Action.h"
+
+//typedef real* observation_t;
 //class observation_t {
 //public:
 //  real* continuous;
@@ -59,24 +60,24 @@ typedef real* observation_t;
 //};
 
 // TODO: should eventually be an array or struct
-typedef int action_t;
+//typedef int action_t;
 
-typedef struct {
-  observation_t observation;
-  action_t action;
-} observation_action_t;
-
-typedef struct {
-  real reward;
-  observation_t observation;
-  int terminal;
-} reward_observation_terminal_t;
-
-typedef struct {
-  real reward;
-  observation_t observation;
-  action_t action;
-  int terminal;
-} reward_observation_action_terminal_t;
+//typedef struct {
+//  observation_t observation;
+//  action_t action;
+//} observation_action_t;
+//
+//typedef struct {
+//  real reward;
+//  observation_t observation;
+//  int terminal;
+//} reward_observation_terminal_t;
+//
+//typedef struct {
+//  real reward;
+//  observation_t observation;
+//  action_t action;
+//  int terminal;
+//} reward_observation_action_terminal_t;
 
 #endif
