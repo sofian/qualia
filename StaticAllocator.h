@@ -48,12 +48,21 @@ class StaticAllocator: public Allocator {
   size_t bufferSize;
   unsigned int bufferIdx;
 
+  // Keeps track of leaks, for debugging.
+  unsigned int nLeaks;
+  unsigned char* lastLeak;
+
 public:
   StaticAllocator(unsigned char* buffer, size_t size);
 
 protected:
   virtual void* malloc(size_t size);
-  virtual void free(void* ptr) {}
+
+  // WARNING: Calling StaticAllocator::free() does NOT free the pointer at all. You should in fact
+  // NEVER have to call that function (because the memory then becomes completely useless). The
+  // object keeps track of any calls to free() by incrementing the nLeaks counter. The variable
+  // lastLeak is also updated with the value of the pointer on which free() was called last.
+  virtual void free(void* ptr);
 
   // Frees all pointers.
   virtual void freeAll();
