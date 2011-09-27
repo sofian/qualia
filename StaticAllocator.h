@@ -7,7 +7,10 @@
  * AVR-based systems). On such systems, it is usually recommended NOT
  * to use dynamic allocation to avoid problems.
  *
- * Notice that the free(void*) method doesn't do anything for now.
+ * WARNING: Calling StaticAllocator::free() does NOT free the pointer at all. You should in fact
+ * NEVER have to call that function (because the memory then becomes completely useless). The
+ * object keeps track of any calls to free() by incrementing the nLeaks counter. The variable
+ * lastLeak is also updated with the value of the pointer on which free() was called last.
  *
  * NOTE: An alternative is to tune the heap start and end in malloc.
  * http://www.nongnu.org/avr-libc/user-manual/malloc.html
@@ -58,10 +61,7 @@ public:
 protected:
   virtual void* malloc(size_t size);
 
-  // WARNING: Calling StaticAllocator::free() does NOT free the pointer at all. You should in fact
-  // NEVER have to call that function (because the memory then becomes completely useless). The
-  // object keeps track of any calls to free() by incrementing the nLeaks counter. The variable
-  // lastLeak is also updated with the value of the pointer on which free() was called last.
+  // WARNING: Calling StaticAllocator::free() does NOT free the pointer at all. See note above.
   virtual void free(void* ptr);
 
   // Frees all pointers.
