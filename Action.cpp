@@ -30,7 +30,7 @@ Action::Action(unsigned int dim_, const unsigned int* nActions_) : dim(dim_) {
   if (nActions_)
     memcpy(nActions, nActions_, dim * sizeof(unsigned int));
   else
-    memcpy(nActions, 0, dim * sizeof(unsigned int));
+    memset(nActions, 0, dim * sizeof(unsigned int));
 
   // Set nConflated.
   nConflated = 1;

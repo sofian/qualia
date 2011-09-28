@@ -16,9 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <stdio.h>
 
 #include "common.h"
 #include "Action.h"
+#include "RLObservation.h"
 
 #include <assert.h>
 #include <stdio.h>
@@ -44,6 +46,31 @@ void testActions() {
   printf("-> PASSED\n");
 }
 
+const observation_t observation[]  = {1.0f, 2.0f, 3.0f};
+const observation_t observation2[] = {2.0f, 3.0f, 4.0f};
+
+void testObservations() {
+  printf("- Testing construction\n");
+  RLObservation obs(3, observation);
+  RLObservation obs2(3, observation2);
+  printf("-> PASSED\n");
+
+  printf("- Testing [] operator\n");
+  for (int i=0; i<3; i++) {
+    printf("%f %f\n", obs.observations[i], observation[i]);
+    assert( obs[i] == observation[i] );
+  }
+  printf("-> PASSED\n");
+
+  printf("- Testing copyFrom\n");
+  obs.copyFrom(&obs2);
+  for (int i=0; i<3; i++)
+    assert( obs[i] == observation2[i] );
+  printf("-> PASSED\n");
+
+}
+
 int main() {
   testActions();
+  testObservations();
 }
