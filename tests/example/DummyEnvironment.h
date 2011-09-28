@@ -22,30 +22,34 @@
 #define DUMMY_ENVIRONMENT_H_
 
 #include "Environment.h"
-
-#define DUMMY_ENVIRONMENT_N_ACTIONS 10
+#include "RLObservation.h"
 
 class DummyEnvironment : public Environment {
 
 public:
-  real currentObservation;
+  RLObservation currentObservation;
+
+  DummyEnvironment() : currentObservation(2) {}
 
   virtual void init() {
-    currentObservation = 0;
+    for (int i=0; i<2; i++)
+      currentObservation[i] = 0;
   }
 
-  virtual const observation_t start() {
+  virtual Observation* start() {
+    init();
     return &currentObservation;
   }
 
-  virtual const reward_observation_terminal_t* step(const action_t action) {
-    static reward_observation_terminal_t rot = {0, &currentObservation, 0};
-    currentObservation = (real)action / (real)DUMMY_ENVIRONMENT_N_ACTIONS; // observation = action
+  virtual Observation* step(const Action* action) {
+    for (int i=0; i<2; i++)
+      currentObservation[i] = (real)action->actions[i] / (real)action->nActions[i]; // observation = action
+    real val = (real)action->conflated() / (real)action->nConflated;
     // Favors "big" actions, small actions are equally bad
-    rot.reward = (currentObservation < 0.5f ?
-                  0 :
-                  currentObservation);
-    return &rot;
+    currentObservation.reward = (val < 0.5f ?
+                                 0 :
+                                 val);
+    return &currentObservation;
   }
 //  const char* env_message(const char * message);
 

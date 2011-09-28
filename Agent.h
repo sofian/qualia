@@ -34,10 +34,10 @@ public:
   virtual ~Agent() {}
 
   virtual void init() {}
-  virtual const action_t start(const observation_t observation) = 0;
-  virtual const action_t step(real reward, const observation_t observation) = 0;
-  virtual void end(real reward) {}
-  virtual void cleanup() {}
+  virtual Action* start(const Observation* observation) = 0;
+  virtual Action* step(const Observation* observation) = 0;
+  virtual void end(const Observation* observation) {}
+//  virtual void cleanup() {}
 
 //  const char* agent_message(const char* message);
 

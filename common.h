@@ -42,6 +42,7 @@ typedef float real;
 #include "error.h"
 #include "Allocator.h"
 #include "Action.h"
+#include "Observation.h"
 
 //typedef real* observation_t;
 //class observation_t {

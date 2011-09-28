@@ -30,6 +30,11 @@
 #include "Agent.h"
 #include "Environment.h"
 
+struct ObservationAction {
+  Observation* observation;
+  Action* action;
+};
+
 // TODO verifier les experimental methods (en bas) pcq sans elles les episodes/reward total sont pas calcules
 // TODO remplacer terminal par isTerminal (boolean)
 class Qualia {
@@ -37,7 +42,9 @@ class Qualia {
 public:
   Agent* agent;
   Environment* environment;
-  action_t lastAction;
+
+  Action* lastAction;
+  ObservationAction observationAction;
   real totalReward;
   int nSteps, nEpisodes;
 
@@ -45,16 +52,16 @@ public:
   Qualia(Agent* agent, Environment* env);
 
   void init();
-  const observation_action_t* start();
-  const reward_observation_action_terminal_t* step();
-  void cleanup();
+  ObservationAction* start();
+  ObservationAction* step();
+//  void cleanup();
 //  const char* RL_agent_message(const char* message);
 //  const char* RL_env_message(const char* message);
 
 //  real getotalReward();
 //  int nSteps();
 //  int nEpisodes();
-  int episode(unsigned int nSteps);
+  int episode(unsigned int maxSteps);
 
   /**
     New Experimental Methods, not part of the public API

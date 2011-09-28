@@ -51,6 +51,7 @@ class StaticAllocator: public Allocator {
   size_t bufferSize;
   unsigned int bufferIdx;
 
+public:
   // Keeps track of leaks, for debugging.
   unsigned int nLeaks;
   unsigned char* lastLeak;

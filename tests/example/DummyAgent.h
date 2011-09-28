@@ -23,23 +23,26 @@
 
 #include "Agent.h"
 
+const unsigned int DUMMY_AGENT_N_ACTIONS[] = {5, 20};
 class DummyAgent : public Agent {
 
 public:
-  action_t currentAction;
+  Action currentAction;
+
+  DummyAgent() : currentAction(2, DUMMY_AGENT_N_ACTIONS) {}
 
   virtual void init() {
-    currentAction = 0;
+    currentAction.reset();
   }
 
-  virtual const action_t start(const observation_t observation) {
-    return currentAction;
+  virtual Action* start(const Observation* observation) {
+    currentAction.reset();
+    return &currentAction;
   }
 
-  virtual const action_t step(real reward, const observation_t observation) {
-    currentAction++;
-    currentAction %= 100; // max action
-    return currentAction;
+  virtual Action* step(const Observation* observation) {
+    currentAction.next();
+    return &currentAction;
   }
 
 };

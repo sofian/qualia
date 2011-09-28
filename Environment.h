@@ -34,9 +34,9 @@ public:
   virtual ~Environment() {}
 
   virtual void init() {}
-  virtual const observation_t start() = 0;
-  virtual const reward_observation_terminal_t* step(const action_t action) = 0;
-  virtual void cleanup() {}
+  virtual Observation* start() = 0;
+  virtual Observation* step(const Action* action) = 0;
+//  virtual void cleanup() {}
 //  const char* env_message(const char * message);
 
 };

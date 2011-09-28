@@ -38,29 +38,25 @@ void Qualia::init() {
 //  task_spec = env_init();
 //  agent_init(task_spec);
 
-  totalReward=0;
+//  RLQ totalReward=0;
   nSteps=0;
   nEpisodes=0;
 /* **WORRYSOME** */
 //  return task_spec;
 }
 
-const observation_action_t* Qualia::start() {
-  observation_t lastState=0;
-  /*Make this static so that it is safe to return it*/
-  static observation_action_t oa;
-
-  totalReward=0;
+ObservationAction* Qualia::start() {
+//  RLQ totalReward=0;
   nSteps=1;
 
-  lastState = environment->start();
-  lastAction = agent->start(lastState);
+  Observation* lastObservation = environment->start();
+  lastAction = agent->start(lastObservation);
 
-  oa.observation = lastState;
-  oa.action = lastAction;
+  observationAction.observation = lastObservation;
+  observationAction.action = lastAction;
 
 /* **WORRYSOME** */
-  return &oa;
+  return &observationAction;
 }
 
 //const action_t* RL_agent_start(const observation_t* observation){
@@ -101,45 +97,37 @@ const observation_action_t* Qualia::start() {
 //     return ro;
 //  }
 
-const reward_observation_action_terminal_t* Qualia::step() {
-  static reward_observation_action_terminal_t roa={0,0,0,0};
-  const reward_observation_terminal_t *ro;
-  real thisReward=0;
-  observation_t lastState;
+ObservationAction* Qualia::step() {
+  //RLQ real thisReward=0;
 
-  //  __RL_CHECK_STRUCT(lastAction)
-  ro = environment->step(lastAction);
-  //  __RL_CHECK_STRUCT(ro->observation)
-  thisReward = ro->reward;
-  lastState = ro->observation;
+  Observation* lastObservation = environment->step(lastAction);
 
-  roa.reward = ro->reward;
-  roa.observation = ro->observation;
-  roa.terminal = ro->terminal;
+  observationAction.observation = lastObservation;
 
-  totalReward += thisReward;
+// RLQ  totalReward += thisReward;
 
   /* Sept 28/08, The reason that we only increment stepcount if we're not terminal is that if an episode ends on
   its first env_step, num_step will be 1 from env_start, but we don't want to go to num_step=2.*/
-   if (ro->terminal == 1) {
+   if (lastObservation->terminal) {
      nEpisodes++;
-     agent->end(thisReward);
+     agent->end(lastObservation);
+     observationAction.action = 0; // ???
    }
    else {
      nSteps++;
-     lastAction = agent->step(thisReward,lastState);
+     lastAction = agent->step(lastObservation);
      //     __RL_CHECK_STRUCT(lastAction)
-     roa.action = lastAction;
+     observationAction.action = lastAction;
    }
 
 /* **WORRYSOME** */
-   return &roa;
+   return &observationAction;
 }
 
-void Qualia::cleanup() {
-  environment->cleanup();
-  agent->cleanup();
-}
+//void Qualia::cleanup() {
+//  environment->cleanup();
+//  agent->cleanup();
+//}
 //
 //const char* RL_agent_message(const char* message) {
 //  const char *theAgentResponse=0;
@@ -177,18 +165,18 @@ void Qualia::cleanup() {
 //  return theEnvResponse;
 //}
 
-int Qualia::episode(const unsigned int maxStepsThisEpisode) {
-  const reward_observation_action_terminal_t *rlStepResult=0;
-  int isTerminal=0;
+int Qualia::episode(const unsigned int maxSteps) {
+  ObservationAction* stepResult = 0;
+  bool isTerminal = false;
 
   start();
-  /*RL_start sets steps to 1*/
-    for (; !isTerminal && (maxStepsThisEpisode == 0 ? 1 : nSteps < (int)maxStepsThisEpisode); ) {
-      rlStepResult=step();
-    isTerminal=rlStepResult->terminal;
-    }
+  // start() sets steps to 1
+  while (!isTerminal && (maxSteps == 0 ? 1 : nSteps < (int)maxSteps)) {
+    stepResult = step();
+    isTerminal = stepResult->observation->terminal;
+  }
 
-  /*Return the value of terminal to tell the caller whether the episode ended naturally or was cut off*/
+  // Return the value of terminal to tell the caller whether the episode ended naturally or was cut off
   return isTerminal;
 }
 
