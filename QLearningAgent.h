@@ -27,6 +27,7 @@
 
 #include "Agent.h"
 #include "NeuralNetwork.h"
+#include "RLObservation.h"
 
 class QLearningAgent : public Agent {
 
@@ -34,15 +35,16 @@ public:
 //  real *_softmax; // softmax probabilities (internal use)
   NeuralNetwork* function;
 
-  action_t lastAction;
-  action_t nextAction;
-  observation_t lastObservation;
+  // TODO: if we ever make subclasses of Action we will need to change this...
+  Action currentAction;
+  Action bufferAction;
+  RLObservation lastObservation;
 
   // Parameters.
   real *e; // elligibility traces
 
-  int observationSize;
-  int nActions;
+  unsigned int observationDim;
+  unsigned long nConflatedActions;
   float lambdaTimesGamma; // lambda is always used like that...
   float gamma;
   float epsilon;
@@ -53,18 +55,20 @@ public:
   real *nnInput; // a bit inefficient
 
   QLearningAgent(NeuralNetwork* func,
-                 int observationSize, int nActions,
+                 unsigned int observationDim, unsigned int actionDim, const unsigned int* nActions,
                  float lambda, float gamma, float epsilon, bool qLearning = false);
   virtual ~QLearningAgent();
 
   virtual void init();
-  virtual const action_t start(const observation_t observation);
-  virtual const action_t step(real reward, const observation_t observation);
-  virtual void end(real reward);
-  virtual void cleanup();
+  virtual Action* start(const Observation* observation);
+  virtual Action* step(const Observation* observation);
+  virtual void end(const Observation* observation);
+//  virtual void cleanup();
 
-  real Q(real *input, action_t action);
-  action_t getMaxAction(observation_t observation, real *maxQ = 0);
+  real Q(const Observation* observation, const Action* action);
+
+  // dst is optional (won't be recorded if set to NULL)
+  void getMaxAction(Action* dst, const Observation* observation, real *maxQ = 0);
 
 };
 

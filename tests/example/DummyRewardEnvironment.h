@@ -33,11 +33,11 @@ public:
     currentObservation = 0;
   }
 
-  virtual const observation_t start() {
+  virtual Observation* start() {
     return &currentObservation;
   }
 
-  virtual const reward_observation_terminal_t* step(const action_t action) {
+  virtual Observation* step(const action_t action) {
     static reward_observation_terminal_t rot = {0, &currentObservation, 0};
     real lastObservation = currentObservation;
     currentObservation = (real)action / (real)DUMMY_ENVIRONMENT_N_ACTIONS; // observation = action

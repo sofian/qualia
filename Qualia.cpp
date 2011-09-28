@@ -23,9 +23,12 @@
  */
 #include "Qualia.h"
 
+// DEBUG
+#include <stdio.h>
+
 Qualia::Qualia(Agent* theAgent, Environment* theEnv) :
   agent(theAgent), environment(theEnv),
-  lastAction(0), totalReward(0), nSteps(0), nEpisodes(0)
+  lastAction(0), nSteps(0), nEpisodes(0)
 {
 
 }
@@ -100,6 +103,7 @@ ObservationAction* Qualia::start() {
 ObservationAction* Qualia::step() {
   //RLQ real thisReward=0;
 
+  // printf("DEBUG: step env\n");
   Observation* lastObservation = environment->step(lastAction);
 
   observationAction.observation = lastObservation;
@@ -115,6 +119,7 @@ ObservationAction* Qualia::step() {
    }
    else {
      nSteps++;
+     // printf("DEBUG: step agent\n");
      lastAction = agent->step(lastObservation);
      //     __RL_CHECK_STRUCT(lastAction)
      observationAction.action = lastAction;
@@ -172,9 +177,13 @@ int Qualia::episode(const unsigned int maxSteps) {
   start();
   // start() sets steps to 1
   while (!isTerminal && (maxSteps == 0 ? 1 : nSteps < (int)maxSteps)) {
+//    printf("Stepping: %d\n", nSteps);
     stepResult = step();
     isTerminal = stepResult->observation->terminal;
   }
+
+  if (!isTerminal) // stopped because maxSteps was reached
+    nEpisodes++;
 
   // Return the value of terminal to tell the caller whether the episode ended naturally or was cut off
   return isTerminal;

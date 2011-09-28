@@ -22,14 +22,17 @@
 #define DUMMYAGENT_H_
 
 #include "Agent.h"
+//#include <stdio.h>
 
-const unsigned int DUMMY_AGENT_N_ACTIONS[] = {5, 20};
+const unsigned int DUMMY_AGENT_N_ACTIONS[] = {100};
+#define DUMMY_AGENT_ACTIONS_DIM 1
+
 class DummyAgent : public Agent {
 
 public:
   Action currentAction;
 
-  DummyAgent() : currentAction(2, DUMMY_AGENT_N_ACTIONS) {}
+  DummyAgent() : currentAction(DUMMY_AGENT_ACTIONS_DIM, DUMMY_AGENT_N_ACTIONS) {}
 
   virtual void init() {
     currentAction.reset();
@@ -42,6 +45,7 @@ public:
 
   virtual Action* step(const Observation* observation) {
     currentAction.next();
+//    printf("%d\n", currentAction.conflated());
     return &currentAction;
   }
 

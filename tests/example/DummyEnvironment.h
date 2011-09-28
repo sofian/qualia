@@ -24,15 +24,18 @@
 #include "Environment.h"
 #include "RLObservation.h"
 
+
+#define DUMMY_ENVIRONMENT_OBSERVATIONS_DIM 1
+
 class DummyEnvironment : public Environment {
 
 public:
   RLObservation currentObservation;
 
-  DummyEnvironment() : currentObservation(2) {}
+  DummyEnvironment() : currentObservation(DUMMY_ENVIRONMENT_OBSERVATIONS_DIM) {}
 
   virtual void init() {
-    for (int i=0; i<2; i++)
+    for (int i=0; i<DUMMY_ENVIRONMENT_OBSERVATIONS_DIM; i++)
       currentObservation[i] = 0;
   }
 
@@ -42,13 +45,15 @@ public:
   }
 
   virtual Observation* step(const Action* action) {
-    for (int i=0; i<2; i++)
+    for (int i=0; i<DUMMY_ENVIRONMENT_OBSERVATIONS_DIM; i++)
       currentObservation[i] = (real)action->actions[i] / (real)action->nActions[i]; // observation = action
-    real val = (real)action->conflated() / (real)action->nConflated;
+
+    // Reward is only based on first action.
+    real val = (real)action->actions[0] / (real)action->nActions[0];
     // Favors "big" actions, small actions are equally bad
-    currentObservation.reward = (val < 0.5f ?
-                                 0 :
-                                 val);
+    currentObservation.reward = ( val < 0.5f ?
+                                  0 :
+                                  2*(val - 0.5f) );
     return &currentObservation;
   }
 //  const char* env_message(const char * message);

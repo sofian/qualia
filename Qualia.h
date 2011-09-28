@@ -45,15 +45,14 @@ public:
 
   Action* lastAction;
   ObservationAction observationAction;
-  real totalReward;
   int nSteps, nEpisodes;
 
 public:
   Qualia(Agent* agent, Environment* env);
 
-  void init();
-  ObservationAction* start();
-  ObservationAction* step();
+  virtual void init();
+  virtual ObservationAction* start();
+  virtual ObservationAction* step();
 //  void cleanup();
 //  const char* RL_agent_message(const char* message);
 //  const char* RL_env_message(const char* message);
@@ -61,7 +60,7 @@ public:
 //  real getotalReward();
 //  int nSteps();
 //  int nEpisodes();
-  int episode(unsigned int maxSteps);
+  virtual int episode(unsigned int maxSteps);
 
   /**
     New Experimental Methods, not part of the public API

@@ -31,12 +31,13 @@
 #endif
 
 QLearningAgent::QLearningAgent(NeuralNetwork* func,
-                               int observationSize_, int nActions_,
+                               unsigned int observationDim_, unsigned int actionDim, const unsigned int* nActions,
                                float lambda_, float gamma_, float epsilon_, bool qLearning_) :
   function(func),
-  lastAction(0),
-  nextAction(0),
-  observationSize(observationSize_), nActions(nActions_),
+  currentAction(actionDim, nActions),
+  bufferAction(actionDim, nActions),
+  lastObservation(observationDim_),
+  observationDim(observationDim_),
   lambdaTimesGamma(lambda_*gamma_), gamma(gamma_), epsilon(epsilon_),
   qLearning(qLearning_)
  {
@@ -44,49 +45,57 @@ QLearningAgent::QLearningAgent(NeuralNetwork* func,
   // TODO: allocateur
   // TODO: destructeur (ARRAY_DEALLOC)
   e = (real*) malloc( function->nParams * sizeof(real) );
-  nnInput   = (real*) malloc( (observationSize + 1) * sizeof(real) ); // + 1 for action
+  nnInput   = (real*) malloc( (observationDim + actionDim) * sizeof(real) );
 
-  lastObservation = (real*) malloc(observationSize * sizeof(real));
+  nConflatedActions = currentAction.nConflated;
+//  lastObservation = (real*) malloc(observationSize * sizeof(real));
   // TODO: m
 //  _lastObservation.continuous = (real*) malloc( observationSize * sizeof(real) );
 //  _lastObservation.discrete = 0;
 
-  assert( function->nInput() == observationSize + 1 );
+  assert( function->nInput() == observationDim + actionDim );
+  assert( function->nOutput() == 1 );
 }
 
 QLearningAgent::~QLearningAgent() {
   // TODO: deallocateur
   free(e);
   free(nnInput);
-  free(lastObservation);
+//  free(lastObservation);
 }
 
 void QLearningAgent::init() {
   // Initialize action-value function.
   function->init();
 
-  // Initialize
+  // Initialize eligibility traces.
   for (int i=0; i<function->nParams; i++)
     e[i]=0;
 }
 
-const action_t QLearningAgent::start(const observation_t observation) {
+Action* QLearningAgent::start(const Observation* observation) {
 
-//  prepare();
+  lastObservation.copyFrom(observation);
 
-  // TODO: La start action devrait tre settŽe au hasard
-  return lastAction;
+  // Randomize starting action.
+  currentAction.setConflated( (action_t) (random() % nConflatedActions) );
+
+  return &currentAction;
 }
 
-const action_t QLearningAgent::step(real reward, const observation_t observation) {
+Action* QLearningAgent::step(const Observation* observation) {
   /////////////// START UPDATE
   //ie. update(reward);
+  // // printf("DEBUG: step\n");
   real outErr = 1;
 
-  real Qs = Q(lastObservation, lastAction);
+  // Propagate Q(s_{t-1}, a_{t-1}).
+  real Qs = Q(&lastObservation, &currentAction);
 
+  // // printf("DEBUG: Qs computed: %f\n", Qs);
   function->backpropagate(&outErr);
 
+  // // printf("DEBUG: backprop finished\n", Qs);
   // Get the new state.
   //getState(_nextState);
 
@@ -94,20 +103,22 @@ const action_t QLearningAgent::step(real reward, const observation_t observation
   // TODO: verifier: est-ce qu'on chooseAction a partir de _state ou de _nextState
   // e-greedy
   // TODO: _nextAction = policy->chooseAction();
+  // // printf("DEBUG: Choose action\n", Qs);
   if (Random::uniform() < epsilon)
-    nextAction = (action_t) (random() % nActions); // TODO: changer le % _nActions pour une fonction random(min, max)
+    currentAction.setConflated( (action_t) (random() % nConflatedActions) ); // TODO: changer le % _nActions pour une fonction random(min, max)
   else
-    nextAction = getMaxAction(observation);
+    getMaxAction(&currentAction, observation);
 
+  // // printf("DEBUG: Update\n", Qs);
   // Update.
   real updateQ; // q-value for update
   if (qLearning)
-    getMaxAction(observation, &updateQ);
+    getMaxAction(0, observation, &updateQ);
   else
-    updateQ = Q(observation, nextAction);
+    updateQ = Q(observation, &currentAction);
 
   // Compute difference between estimated Q value and actual/outputed Q value.
-  real delta = ((reward + gamma * updateQ) - Qs);
+  real delta = (( ((RLObservation*)observation)->reward + gamma * updateQ) - Qs);
 
   // Compute mean squared error.
   //real mse = delta * delta * 0.5;
@@ -136,46 +147,54 @@ const action_t QLearningAgent::step(real reward, const observation_t observation
 
   // Reassign.
   // TODO: find a more elegant way to copy
-  memcpy(lastObservation, observation, observationSize * sizeof(real));
-  lastAction = nextAction;
+  lastObservation.copyFrom(observation);
 
-  return nextAction;
+  // // printf("DEBUG: Done\n", Qs);
+  return &currentAction;
 }
 
-void QLearningAgent::end(real reward) {
-
-}
-
-void QLearningAgent::cleanup() {
+void QLearningAgent::end(const Observation* observation) {
 
 }
 
-real QLearningAgent::Q(real* input, action_t action) {
+//void QLearningAgent::cleanup() {
+//
+//}
+
+real QLearningAgent::Q(const Observation* observation, const Action* action) {
+  // Set input.
+  int k = 0;
+  for (int i = 0; i < observation->dim; i++, k++)
+    nnInput[k] = observation->observations[i];
+  for (int i = 0; i < action->dim; i++, k++)
+    nnInput[k] = function->remapValue((real)action->actions[i], 0, action->nActions[i] - 1);//_agent->getEnvironment()->actionToReal(action);
+
+  // Propagate.
   real output;
-  for (int i = 0; i < function->nInput() - 1; i++)
-    nnInput[i] = input[i];
-  nnInput[ function->nInput()-1 ] = function->remapValue((real)action, 0, nActions-1);//_agent->getEnvironment()->actionToReal(action);
   function->setInput(nnInput);
   function->propagate();
   function->getOutput(&output);
   return output;
 }
 
-action_t QLearningAgent::getMaxAction(observation_t observation, real *maxQ) {
+void QLearningAgent::getMaxAction(Action* dst, const Observation* observation, real *maxQ) {
 //  if (!state)
 //    state = _state;
 
-  real outMax = Q(observation, 0);
-  action_t action = 0;
+  bufferAction.reset();
+  //action_t actionMax = dst->conflated();
+  real outMax = Q(observation, &bufferAction);
+  // // printf("DEBUG: outMax = %f\n", outMax);
 
-  for (action_t a = 1; a < (action_t)nActions; a++) {
-    real out = Q(observation, a);
+  while (bufferAction.hasNext()) {
+    bufferAction.next();
+    real out = Q(observation, &bufferAction);
     if (out > outMax) {
       outMax = out;
-      action = a;
+      if (dst)
+        dst->copyFrom(&bufferAction);
     }
   }
   if (maxQ) // optional
     *maxQ = outMax;
-  return action;
 }

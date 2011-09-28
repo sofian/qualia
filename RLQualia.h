@@ -1,5 +1,5 @@
 /*
- * Action.h
+ * RLQualia.h
  *
  * (c) 2011 Sofian Audry -- info(@)sofianaudry(.)com
  *
@@ -17,35 +17,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef RLQUALIA_H_
+#define RLQUALIA_H_
 
-#ifndef ACTION_H_
-#define ACTION_H_
+#include "Qualia.h"
+#include "RLObservation.h"
 
-#include "common.h"
-
-typedef unsigned long action_t;
-typedef unsigned int  action_dim_t;
-
-class Action {
+class RLQualia : public Qualia {
 public:
-  action_dim_t* actions;
-  unsigned int* nActions;
-  unsigned int dim;
-  unsigned long nConflated;
+  real totalReward;
 
-  Action(unsigned int dim, const unsigned int* nActions=0);
-  virtual ~Action();
+  RLQualia(Agent* agent, Environment* env);
 
-  action_dim_t& operator[](int i) const { return actions[i]; }
+  virtual void init();
+  virtual ObservationAction* start();
+  virtual ObservationAction* step();
 
-  virtual action_t conflated() const;
-  virtual Action& setConflated(action_t action);
-
-  virtual Action& reset();
-  virtual bool hasNext();
-  virtual Action& next();
-
-  virtual Action& copyFrom(const Action* src);
 };
 
-#endif /* ACTION_H_ */
+#endif /* RLQUALIA_H_ */

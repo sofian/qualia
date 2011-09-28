@@ -28,24 +28,24 @@ void Allocator::free(void* ptr) {
   if (ptr) ::free(ptr);
 }
 
-Allocator* Alloc::instance = 0;
+Allocator* Alloc::inst = 0;
 
 void* Alloc::malloc(size_t size) {
-  if (!instance)
+  if (!inst)
     return ::malloc(size);
   else
-    return instance->malloc(size);
+    return inst->malloc(size);
 }
 
 void Alloc::free(void* ptr) {
-  if (!instance)
+  if (!inst)
     ::free(ptr);
   else
-    instance->free(ptr);
+    inst->free(ptr);
 }
 
 void Alloc::init(Allocator* alloc) {
-  instance = alloc;
+  inst = alloc;
 }
 
 void* operator new(size_t size, Allocator& alloc)

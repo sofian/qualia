@@ -24,7 +24,10 @@
 //#include "Print.h"
 //#include "Math.h"
 
+//#include <stdio.h>
+
 void NeuralNetwork::_allocateLayer(Layer& layer, int nInputs, int nOutputs, int& k) {
+//  printf("Allocating layer: %d => %d (%d)\n", nInputs, nOutputs, k);
   layer.n = nOutputs;
   layer.output   = (real*) Alloc::malloc( nOutputs * sizeof(real) );
   layer.error    = (real*) Alloc::malloc( nOutputs * sizeof(real) );
@@ -32,6 +35,7 @@ void NeuralNetwork::_allocateLayer(Layer& layer, int nInputs, int nOutputs, int&
     layer.weight   = (real**) Alloc::malloc( nOutputs * sizeof(real*) );
     layer.dWeight  = (real**) Alloc::malloc( nOutputs * sizeof(real*) );
     for (int i=0; i<nOutputs; i++) {
+//      printf("%d (%d / %d)\n", i, k, nParams);
       layer.weight[i]  = &weights[k];
       layer.dWeight[i] = &dWeights[k];
       k += (nInputs + 1);
