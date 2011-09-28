@@ -20,13 +20,30 @@
 #include "common.h"
 #include "Action.h"
 
+#include <assert.h>
+#include <stdio.h>
+
 const unsigned int nActions[] = {3, 2, 2};
 void testActions() {
   Action test(3, nActions);
-//  tests.nActions[0] = 3;
+  printf("- Testing conflated\n");
+  for (action_t i=0; i<test.nConflated; i++) {
+    action_t conf = test.setConflated(i).conflated();
+//    printf("action=%d confl=%d val = (%d %d %d)\n", i, conf, test[0], test[1], test[2] );
+    assert( conf == i );
+  }
+  printf("-> PASSED\n");
 
+  printf("- Testing iteration\n");
+  test.reset();
+  for (action_t i=0; test.hasNext(); test.next(), i++) {
+//    printf("action=%d confl=%d val = (%d %d %d)\n", i, test.conflated(), test[0], test[1], test[2] );
+    assert( i < test.nConflated );
+    assert( test.conflated() == i );
+  }
+  printf("-> PASSED\n");
 }
 
 int main() {
-
+  testActions();
 }

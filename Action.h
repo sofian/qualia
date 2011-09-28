@@ -41,8 +41,9 @@ public:
   virtual action_t conflated() const;
   virtual Action& setConflated(action_t action);
 
-  virtual void reset();
-  virtual bool next();
+  virtual Action& reset();
+  virtual bool hasNext();
+  virtual Action& next();
 };
 
 #endif /* ACTION_H_ */

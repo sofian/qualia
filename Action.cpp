@@ -45,28 +45,43 @@ Action::~Action() {
 
 action_t Action::conflated() const {
   action_t action = 0;
-  unsigned long mult = nConflated;
+  unsigned long mult = 1;
   for (int i=0; i<dim; i++) {
-    mult /= nActions[i];
     action += mult * actions[i];
+    mult *= nActions[i];
   }
   return action;
 }
 
 Action& Action::setConflated(action_t action) {
-  unsigned long div = nConflated;
   for (int i=0; i<dim; i++) {
-    div /= nActions[i];
-    actions[i] = action % div;
-    action /= div;
+    actions[i] = action % nActions[i];
+    action /= nActions[i];
   }
   return *this;
 }
 
-void Action::reset() {
-
+Action& Action::reset() {
+  // Zero.
+  memset(actions, 0, dim * sizeof(action_dim_t));
+  return *this;
 }
 
-bool Action::next() {
+bool Action::hasNext() {
+  for (int i=0; i<dim; i++)
+    if (actions[i] != nActions[i]-1)
+      return true;
+  return false;
+}
 
+Action& Action::next() {
+  for (int i=0; i<dim; i++) {
+    if (actions[i] == nActions[i]-1) {
+      actions[i] = 0;
+    } else {
+      actions[i]++;
+      break;
+    }
+  }
+  return *this;
 }
