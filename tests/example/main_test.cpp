@@ -4,14 +4,15 @@
 #include "RLQualia.h"
 #include "DummyAgent.h"
 #include "DummyEnvironment.h"
-//#include "DummyRewardEnvironment.h"
+#include "DummyRewardEnvironment.h"
 #include "QLearningAgent.h"
 
 #include "NeuralNetwork.h"
 
 #define N_HIDDEN 3
+#define RANDOM_SEED 4567
 
-#define STATIC_ALLOCATOR_SIZE 200
+#define STATIC_ALLOCATOR_SIZE 1000
 #include "StaticAllocator.h"
 
 #include <stdio.h>
@@ -32,14 +33,7 @@ void testDummy() {
   }
 }
 
-void testQLearning() {
-  DummyEnvironment env;
-  NeuralNetwork net(DUMMY_ENVIRONMENT_OBSERVATIONS_DIM + DUMMY_AGENT_ACTIONS_DIM, N_HIDDEN, 1, 0.1f);
-  QLearningAgent agent(&net,
-                       DUMMY_ENVIRONMENT_OBSERVATIONS_DIM, DUMMY_AGENT_ACTIONS_DIM, DUMMY_AGENT_N_ACTIONS,
-                       1.0f, 0.1f, 0.1f, false); // lambda = 1.0 => no history
-// BigDummyReward rew;
-//  DummyRewardEnvironment env(&rew);
+void testQLearning(Environment& env, QLearningAgent& agent) {
   RLQualia qualia(&agent, &env);
 
   printf("Starting...\n");
@@ -76,8 +70,33 @@ void testQLearning() {
 #if is_computer()
   printf("Mean reward: %f (%f/%d)\n", (double) qualia.totalReward / qualia.nSteps, qualia.totalReward, qualia.nSteps);
   printf("Current agent action: [%d] = %d\n", agent.currentAction[0], agent.currentAction.conflated());
-  printf("Current environment observation: [%f] => %f\n", env.currentObservation[0], env.currentObservation.reward);
+//  printf("Current environment observation: [%f] => %f\n", env.currentObservation[0], env.currentObservation.reward);
 #endif
+
+}
+
+void testQLearningDummy() {
+  srand(RANDOM_SEED);
+  NeuralNetwork net(DUMMY_ENVIRONMENT_OBSERVATIONS_DIM + DUMMY_AGENT_ACTIONS_DIM, N_HIDDEN, 1, 0.1f);
+  QLearningAgent agent(&net,
+                       DUMMY_ENVIRONMENT_OBSERVATIONS_DIM, DUMMY_AGENT_ACTIONS_DIM, DUMMY_AGENT_N_ACTIONS,
+                       1.0f, 0.1f, 0.1f, false); // lambda = 1.0 => no history
+  DummyEnvironment env;
+  testQLearning(env, agent);
+// BigDummyReward rew;
+//  DummyRewardEnvironment env(&rew);
+
+}
+
+void testQLearningDummyReward() {
+  srand(RANDOM_SEED);
+  NeuralNetwork net(DUMMY_ENVIRONMENT_OBSERVATIONS_DIM + DUMMY_AGENT_ACTIONS_DIM, N_HIDDEN, 1, 0.1f);
+  QLearningAgent agent(&net,
+                       DUMMY_ENVIRONMENT_OBSERVATIONS_DIM, DUMMY_AGENT_ACTIONS_DIM, DUMMY_AGENT_N_ACTIONS,
+                       1.0f, 0.1f, 0.1f, false); // lambda = 1.0 => no history
+  BigDummyReward rew;
+  DummyRewardEnvironment env(DUMMY_ENVIRONMENT_OBSERVATIONS_DIM, &rew);
+  testQLearning(env, agent);
 
 }
 
@@ -86,7 +105,8 @@ StaticAllocator myAlloc(buffer, STATIC_ALLOCATOR_SIZE);
 int main() {
   Alloc::init(&myAlloc);
 //  testDummy();
-  testQLearning();
+//  testQLearningDummy();
+  testQLearningDummyReward();
 
   if (myAlloc.nLeaks)
     printf("WARNING: Static Allocator has leaks: %d\n", myAlloc.nLeaks);

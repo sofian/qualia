@@ -20,45 +20,50 @@
 #ifndef DUMMYREWARDENVIRONMENT_H_
 #define DUMMYREWARDENVIRONMENT_H_
 
-#include "DummyEnvironment.h"
+#include "RewardEnvironment.h"
 #include "Reward.h"
 
-class DummyRewardEnvironment : public DummyEnvironment {
+class DummyRewardEnvironment : public RewardEnvironment {
 public:
-  Reward* reward;
+  RLObservation currentObservation;
 
-  DummyRewardEnvironment(Reward* _reward) : reward(_reward) {}
+  DummyRewardEnvironment(unsigned int observationDim, Reward* reward) :
+    RewardEnvironment(observationDim, reward), currentObservation(observationDim) {}
 
   virtual void init() {
-    currentObservation = 0;
+    for (int i=0; i<currentObservation.dim; i++)
+      currentObservation[i] = 0;
   }
 
-  virtual Observation* start() {
+  virtual RLObservation* doStart() {
+    init();
     return &currentObservation;
   }
 
-  virtual Observation* step(const action_t action) {
-    static reward_observation_terminal_t rot = {0, &currentObservation, 0};
-    real lastObservation = currentObservation;
-    currentObservation = (real)action / (real)DUMMY_ENVIRONMENT_N_ACTIONS; // observation = action
-    // Favors "big" actions, small actions are equally bad
-    rot.reward = reward->reward(&lastObservation, action, &currentObservation, this);
-    return &rot;
+  virtual RLObservation* doAction(const Action* action) {
+    for (int i=0; i<DUMMY_ENVIRONMENT_OBSERVATIONS_DIM; i++)
+      currentObservation[i] = (real)action->actions[i] / (real)action->nActions[i]; // observation = action
+    return &currentObservation;
   }
-
 };
 
 class BigDummyReward : public Reward {
 public:
-  virtual real reward(const observation_t before, const action_t action, const observation_t after, Environment* environment = 0) {
-    return (*after < 0.5f ? 0 : *after);
+  virtual real reward(const Observation* before, const Action* action, const Observation* after) {
+    real val = (real)action->actions[0] / (real)action->nActions[0];
+    return ( val < 0.5f ?
+             0 :
+             2*(val - 0.5f) );
   }
 };
 
 class SmallDummyReward : public Reward {
 public:
-  virtual real reward(const observation_t before, const action_t action, const observation_t after, Environment* environment = 0) {
-    return (*after > 0.5f ? 0 : 1-*after);
+  virtual real reward(const Observation* before, const Action* action, const Observation* after) {
+    real val = (real)action->actions[0] / (real)action->nActions[0];
+    return ( val > 0.5f ?
+             0 :
+             1-2*val);
   }
 };
 

@@ -1,5 +1,5 @@
 /*
- * Reward.h
+ * RewardEnvironment.cpp
  *
  * (c) 2011 Sofian Audry -- info(@)sofianaudry(.)com
  *
@@ -17,21 +17,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef REWARD_H_
-#define REWARD_H_
+#include "RewardEnvironment.h"
 
-#include "Environment.h"
+RewardEnvironment::RewardEnvironment(unsigned int observationDim, Reward* reward_) :
+  reward(reward_), lastObservation(observationDim)
+{
+  reward->setEnvironment(this);
+}
 
-class Reward {
-public:
-  Environment* environment;
-  Reward() : environment(0) {}
-  virtual ~Reward() {}
+RewardEnvironment::~RewardEnvironment() { }
 
-  virtual void setEnvironment(Environment* environment_) {
-    environment = environment_;
-  }
-  virtual real reward(const Observation* before, const Action* action, const Observation* after) = 0;
-};
 
-#endif /* REWARD_H_ */
+Observation* RewardEnvironment::start()
+{
+   RLObservation* currentObservation = doStart();
+   lastObservation.copyFrom(currentObservation);
+   return currentObservation;
+ }
+
+Observation* RewardEnvironment::step(const Action* action) {
+  RLObservation* currentObservation = doAction(action);
+  currentObservation->reward = reward->reward(&lastObservation, action, currentObservation);
+  return currentObservation;
+}
+
