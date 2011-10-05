@@ -6,6 +6,7 @@
 #include "DummyEnvironment.h"
 #include "DummyRewardEnvironment.h"
 #include "QLearningAgent.h"
+#include "QLearningEGreedyPolicy.h"
 
 #include "NeuralNetwork.h"
 
@@ -65,7 +66,7 @@ void testQLearning(Environment& env, QLearningAgent& agent) {
 
   // Put epsilon on ice.
   printf("Final episode (without random moves)\n");
-  agent.epsilon = 0;
+  ((QLearningEGreedyPolicy *)agent.policy)->epsilon = 0;
   qualia.episode(1000);
 #if is_computer()
   printf("Mean reward: %f (%f/%d)\n", (double) qualia.totalReward / qualia.nSteps, qualia.totalReward, qualia.nSteps);
@@ -78,9 +79,10 @@ void testQLearning(Environment& env, QLearningAgent& agent) {
 void testQLearningDummy() {
   srand(RANDOM_SEED);
   NeuralNetwork net(DUMMY_ENVIRONMENT_OBSERVATIONS_DIM + DUMMY_AGENT_ACTIONS_DIM, N_HIDDEN, 1, 0.1f);
+  QLearningEGreedyPolicy egreedy(0.1f);
   QLearningAgent agent(&net,
                        DUMMY_ENVIRONMENT_OBSERVATIONS_DIM, DUMMY_AGENT_ACTIONS_DIM, DUMMY_AGENT_N_ACTIONS,
-                       1.0f, 0.1f, 0.1f, false); // lambda = 1.0 => no history
+                       1.0f, 0.1f, &egreedy, false); // lambda = 1.0 => no history
   DummyEnvironment env;
   testQLearning(env, agent);
 // BigDummyReward rew;
@@ -91,9 +93,10 @@ void testQLearningDummy() {
 void testQLearningDummyReward() {
   srand(RANDOM_SEED);
   NeuralNetwork net(DUMMY_ENVIRONMENT_OBSERVATIONS_DIM + DUMMY_AGENT_ACTIONS_DIM, N_HIDDEN, 1, 0.1f);
+  QLearningEGreedyPolicy egreedy(0.1f);
   QLearningAgent agent(&net,
                        DUMMY_ENVIRONMENT_OBSERVATIONS_DIM, DUMMY_AGENT_ACTIONS_DIM, DUMMY_AGENT_N_ACTIONS,
-                       1.0f, 0.1f, 0.1f, false); // lambda = 1.0 => no history
+                       1.0f, 0.1f, &egreedy, false); // lambda = 1.0 => no history
   BigDummyReward rew;
   DummyRewardEnvironment env(DUMMY_ENVIRONMENT_OBSERVATIONS_DIM, &rew);
   testQLearning(env, agent);

@@ -32,13 +32,14 @@
 
 QLearningAgent::QLearningAgent(NeuralNetwork* func,
                                unsigned int observationDim_, unsigned int actionDim, const unsigned int* nActions,
-                               float lambda_, float gamma_, float epsilon_, bool qLearning_) :
+                               float lambda_, float gamma_, Policy* policy_, bool qLearning_) :
   function(func),
   currentAction(actionDim, nActions),
   bufferAction(actionDim, nActions),
   lastObservation(observationDim_),
   observationDim(observationDim_),
-  lambdaTimesGamma(lambda_*gamma_), gamma(gamma_), epsilon(epsilon_),
+  lambdaTimesGamma(lambda_*gamma_), gamma(gamma_),
+  policy(policy_),
   qLearning(qLearning_)
  {
   // TODO : ARRAY_ALLOC
@@ -55,6 +56,8 @@ QLearningAgent::QLearningAgent(NeuralNetwork* func,
 
   assert( function->nInput() == observationDim + actionDim );
   assert( function->nOutput() == 1 );
+
+  policy->setAgent(this);
 }
 
 QLearningAgent::~QLearningAgent() {
@@ -104,10 +107,7 @@ Action* QLearningAgent::step(const Observation* observation) {
   // e-greedy
   // TODO: _nextAction = policy->chooseAction();
   // // printf("DEBUG: Choose action\n", Qs);
-  if (Random::uniform() < epsilon)
-    currentAction.setConflated( (action_t) (random() % nConflatedActions) ); // TODO: changer le % _nActions pour une fonction random(min, max)
-  else
-    getMaxAction(&currentAction, observation);
+  policy->chooseAction(&currentAction, observation);
 
   // // printf("DEBUG: Update\n", Qs);
   // Update.

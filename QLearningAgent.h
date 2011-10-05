@@ -28,6 +28,7 @@
 #include "Agent.h"
 #include "NeuralNetwork.h"
 #include "RLObservation.h"
+#include "Policy.h"
 
 class QLearningAgent : public Agent {
 
@@ -47,7 +48,8 @@ public:
   unsigned long nConflatedActions;
   float lambdaTimesGamma; // lambda is always used like that...
   float gamma;
-  float epsilon;
+
+  Policy* policy;
 
   bool qLearning; // use Q-Learning (off-policy) instead of Sarsa
 
@@ -56,7 +58,7 @@ public:
 
   QLearningAgent(NeuralNetwork* func,
                  unsigned int observationDim, unsigned int actionDim, const unsigned int* nActions,
-                 float lambda, float gamma, float epsilon, bool qLearning = false);
+                 float lambda, float gamma, Policy* policy, bool qLearning = false);
   virtual ~QLearningAgent();
 
   virtual void init();
