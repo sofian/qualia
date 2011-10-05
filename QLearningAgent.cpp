@@ -103,9 +103,6 @@ Action* QLearningAgent::step(const Observation* observation) {
   //getState(_nextState);
 
   // Choose next action.
-  // TODO: verifier: est-ce qu'on chooseAction a partir de _state ou de _nextState
-  // e-greedy
-  // TODO: _nextAction = policy->chooseAction();
   // // printf("DEBUG: Choose action\n", Qs);
   policy->chooseAction(&currentAction, observation);
 
