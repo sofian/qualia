@@ -198,6 +198,7 @@ if (MODE == 'arduino'): # Generate the .cpp from the .pde
   # Replace .pde by .cpp
   extraHeaders = [join(ARDUINO_CORE, 'WProgram.h')]
   targetSource = [TARGET+'.pde']
+  targetSource += map(lambda x : join(ARDUINO_CORE, x), ["HardwareSerial.cpp", "Print.cpp", "Tone.cpp", "WInterrupts.c", "WMath.cpp", "WString.cpp", "pins_arduino.c", "wiring.c", "wiring_analog.c", "wiring_digital.c", "wiring_pulse.c", "wiring_shift.c"])
 else:
   extraHeaders = []
 
@@ -219,11 +220,8 @@ else:
 if (MODE == 'computer'):
   env.Program(target=TARGET, source=sources, LIBS=LIBS, LIBPATH=LIBPATH)
 else:
-  print "GO"
   def fnProcessing(target, source, env):
     wp = open ('%s'%target[0], 'wb')
-    print "OPENING " + ARDUINO_SKEL
-    wp.write(open(ARDUINO_SKEL).read())
 
     types='''void
     int char word long
@@ -241,26 +239,28 @@ else:
 
     prototypes = {}
 
-    for file in glob(os.path.realpath(os.curdir) + "/*.pde"):
-      for line in open(file):
-        result = re_signature.findall(line)
-        if result:
-          prototypes[result[0][0]] = result[0][1]
-
-    for name in prototypes.keys():
-      print ("%s;"%(name))
-      wp.write("%s;\n"%name)
+#    for file in glob(os.path.realpath(os.curdir) + "/*.pde"):
+#      for line in open(file):
+#        result = re_signature.findall(line)
+#        if result:
+#          prototypes[result[0][0]] = result[0][1]
+#
+#    for name in prototypes.keys():
+#      print ("%s;"%(name))
+#      wp.write("%s;\n"%name)
 
     for file in glob(os.path.realpath(os.curdir) + "/*.pde"):
       print file, TARGET
       if not os.path.samefile(file, TARGET+".pde"):
-        wp.write('#line 1 "%s"\r\n' % file)
-        wp.write(open(file).read())
+        wp.write('#include "%s"\r\n' % file)
+        #wp.write(open(file).read())
 
     # Add this preprocessor directive to localize the errors.
     sourcePath = str(source[0]).replace('\\', '\\\\');
-    wp.write('#line 1 "%s"\r\n' % sourcePath)
-    wp.write(open('%s'%source[0]).read())
+    print "OPENING " + ARDUINO_SKEL
+    wp.write(open(ARDUINO_SKEL).read())
+    wp.write('#include "%s"\r\n' % sourcePath)
+    #wp.write(open('%s'%source[0]).read())
 
   env.Append(BUILDERS={'Elf':Builder(action=AVR_BIN_PREFIX+'gcc '+
           '-mmcu=%s -Os -Wl,--gc-sections -o $TARGET $SOURCES -lm'%MCU)})
