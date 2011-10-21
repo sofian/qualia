@@ -20,7 +20,11 @@
 #ifndef QLEARNINGSOFTMAXPOLICY_H_
 #define QLEARNINGSOFTMAXPOLICY_H_
 
-class QLearningSoftmaxPolicy {
+#include "Policy.h"
+#include "Random.h"
+#include "QLearningAgent.h"
+
+class QLearningSoftmaxPolicy : public Policy {
 public:
   real temperature;
   real epsilon;

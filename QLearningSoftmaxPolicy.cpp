@@ -23,6 +23,9 @@ QLearningSoftmaxPolicy::QLearningSoftmaxPolicy(real temperature_, real epsilon_)
   : temperature(temperature_), epsilon(epsilon_) {}
 QLearningSoftmaxPolicy::~QLearningSoftmaxPolicy() {}
 
+// DEBUG
+//#include <stdio.h>
+
 void QLearningSoftmaxPolicy::chooseAction(Action* action, const Observation* observation) {
   QLearningAgent* qlagent = (QLearningAgent*)agent;
 
@@ -35,21 +38,26 @@ void QLearningSoftmaxPolicy::chooseAction(Action* action, const Observation* obs
     action->reset();
     real n = action->nConflated;
     real outMax = exp( qlagent->Q(observation, action) / temperature );
+//    printf("[%f ", outMax);
     real sum = 1/n;
     while (action->hasNext()) {
       action->next();
       real out = exp( qlagent->Q(observation, action) / temperature );
+//      printf("%f ", out);
       if (out > outMax) {
         sum *= outMax / out;
+        outMax = out;
       }
       sum += out / outMax / n;
     }
+//    printf("\nSUM: %f\n", sum);
+//    printf("AVG: %f\n", sum * outMax); // already divided by n ...
 
     // Second pass: pick a random action according to the softmax distribution.
     real rnd = Random::uniform() * sum;
     action->reset();
     while (action->hasNext()) {
-      real out = exp( qlagent->Q(observation, action) / temperature ) / outMax;
+      real out = exp( qlagent->Q(observation, action) / temperature ) / outMax / n;
       rnd -= out;
       if (rnd <= 0) // Action picked!
         break;
