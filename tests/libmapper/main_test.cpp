@@ -2,10 +2,19 @@
 
 #include "Qualia.h"
 #include "DummyAgent.h"
+#include "QLearningAgent.h"
+#include "QLearningEGreedyPolicy.h"
 #include "LibMapperEnvironment.h"
+#include "NeuralNetwork.h"
+#include "RLQualia.h"
 
 //#define STATIC_ALLOCATOR_SIZE 10000
 //#include "StaticAllocator.h"
+
+#define N_HIDDEN 3
+#define DIM_OBSERVATIONS 1
+#define DIM_ACTIONS 1
+const unsigned int N_ACTIONS[] = { 100 };
 
 #include <stdio.h>
 
@@ -13,9 +22,13 @@
 //StaticAllocator myAlloc(buffer, STATIC_ALLOCATOR_SIZE);
 int main() {
   //Alloc::init(&myAlloc);
-  DummyAgent agent;
+//  DummyAgent agent;
+  QLearningEGreedyPolicy egreedy(0.1f);
+  NeuralNetwork net(DIM_OBSERVATIONS + DIM_ACTIONS, N_HIDDEN, 1, 0.1f);
+  QLearningAgent agent(&net, DIM_OBSERVATIONS, DIM_ACTIONS, N_ACTIONS,
+                       1.0f, 0.1f, &egreedy, false); // lambda = 1.0 => no history
   LibMapperEnvironment env;
-  Qualia qualia(&agent, &env);
+  RLQualia qualia(&agent, &env);
 
   qualia.init();
   qualia.start();
