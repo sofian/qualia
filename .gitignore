@@ -16,3 +16,5 @@
 # Waf
 .waf-*
 
+# OS X
+.DS_Store
