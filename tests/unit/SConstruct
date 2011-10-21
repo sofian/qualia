@@ -62,6 +62,7 @@ TARGET = None
 CONFIG = ['INCLUDE_PATH', 'MCU', 'F_CPU', 'EXTRA_LIBS', 'AVR_GCC_DIR', 'MODE', 'TARGET', 'LIBS', 'LIBPATH']
 conf = SConscript(dirs='.', exports=CONFIG)
 for i in range(len(CONFIG)):
+  print i
   vars()[CONFIG[i]] = conf[i]
 
 if TARGET == None:
