@@ -62,10 +62,15 @@ typedef float real;
 #define INF FLT_MAX
 #endif
 
+#if is_avr()
+#include "avrdefs.h"
+#endif
+
 #include "error.h"
 #include "Allocator.h"
 #include "Action.h"
 #include "Observation.h"
+
 
 //typedef real* observation_t;
 //class observation_t {
