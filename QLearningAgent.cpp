@@ -21,7 +21,6 @@
 
 #include "QLearningAgent.h"
 #include <string.h>
-#include <assert.h>
 #include "Random.h"
 
 #define DEBUG 0

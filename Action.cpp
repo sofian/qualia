@@ -20,8 +20,6 @@
 #include "Action.h"
 #include <string.h>
 
-#include <assert.h>
-
 Action::Action(unsigned int dim_, const unsigned int* nActions_) : dim(dim_) {
   // Allocate.
   actions =  (action_dim_t*) Alloc::malloc(dim * sizeof(action_dim_t));

@@ -20,7 +20,6 @@
 #include "Observation.h"
 
 #include <string.h>
-#include <assert.h>
 
 //#include <stdio.h>
 Observation::Observation(unsigned int dim_, const observation_t* copyFrom_) : dim(dim_), terminal(false) {

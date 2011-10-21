@@ -23,6 +23,27 @@
 #ifndef COMMON_H_
 #define COMMON_H_
 
+#include <assert.h>
+#include <stdlib.h>
+#include <float.h>
+#include <limits.h>
+
+// Old systems need that to define FLT_MAX and DBL_MAX
+#ifndef DBL_MAX
+#include <values.h>
+#endif
+
+#ifdef _MSC_VER
+#ifndef for
+#define for if (0) {} else for
+#endif
+#define M_PI 3.14159265358979323846
+#define popen(x,y) _popen(x,y)
+#define pclose(x) _pclose(x)
+#define isnan(x) _isnan(x)
+#define log1p(x) log(1+(x))
+#endif
+
 #define is_avr() defined(__AVR__)
 #define is_computer() !defined(__AVR__)
 
@@ -35,8 +56,10 @@
 
 #ifdef USE_DOUBLE
 typedef double real;
+#define INF DBL_MAX
 #else
 typedef float real;
+#define INF FLT_MAX
 #endif
 
 #include "error.h"
