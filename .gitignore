@@ -4,6 +4,11 @@
 *.elf
 *.hex
 *.pyc
+*.dylib
+*.a
+*.os
+*.so
+*.log
 
 # Eclipse
 .project
