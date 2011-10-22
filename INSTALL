@@ -1,1 +1,8 @@
-We don't provide a Makefile for now. Please use Eclipse or your own Makefile.
+To compile:
+$ scons
+
+To install to default directory (/usr/local/lib):
+$ scons install
+
+To install to alternative directory:
+$ scons install PREFIX=/usr
