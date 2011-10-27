@@ -1,0 +1,381 @@
+# This scons script allows to build a target file with either gcc
+# (for computer-based apps) or avr-gcc (for AVR systems) 
+#
+# This file is part of Qualia https://github.com/sofian/qualia
+# (c) 2011 Sofian Audry -- info(@)sofianaudry(.)com
+#
+# The AVR/Arduino part is inspired from Arscons
+# http://code.google.com/p/arscons/
+# Copyright (C) 2010 by Homin Lee <ff4500@gmail.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#from dependencies import *
+#from arduino import *
+import os
+from os.path import *
+
+from glob import glob
+
+# General arguments
+INCLUDE_PATH = ""
+MCU = 'atmega168'
+F_CPU = 16000000
+EXTRA_LIBS = ""
+AVR_GCC_DIR = ""
+LIBS = ""
+LIBPATH = ""
+
+# Get mode.
+AddOption('--avr',
+          dest='avr',
+          action="store_true",
+          default=False,
+          help="AVR mode");
+AddOption('--arduino',
+          dest='arduino',
+          action="store_true",
+          default=False,
+          help="Arduino mode");
+
+if GetOption('arduino'):
+  MODE = 'arduino'
+elif GetOption('avr'):
+  MODE = 'avr'
+else:
+  MODE = 'computer'
+
+TARGET = None
+
+# Import settings
+CONFIG = ['INCLUDE_PATH', 'MCU', 'F_CPU', 'EXTRA_LIBS', 'AVR_GCC_DIR', 'MODE', 'TARGET', 'LIBS', 'LIBPATH']
+conf = SConscript(dirs='.', exports=CONFIG)
+for i in range(len(CONFIG)):
+  print i
+  print CONFIG[i]
+  vars()[CONFIG[i]] = conf[i]
+
+if TARGET == None:
+  TARGET = COMMAND_LINE_TARGETS[0]
+  
+# Set arguments (commandline has higher priority than settings file)
+INCLUDE_PATH = ARGUMENTS.get('INCLUDE_PATH', INCLUDE_PATH).split(":")
+INCLUDE_PATH = unique(INCLUDE_PATH + [os.getcwd()])
+
+# AVR arguments
+#MCU = getBoardConf(r'^%s\.build\.mcu=(.*)'%ARDUINO_BOARD)
+MCU = ARGUMENTS.get('MCU', MCU)
+#F_CPU = getBoardConf(r'^%s\.build\.f_cpu=(.*)'%ARDUINO_BOARD)
+F_CPU = ARGUMENTS.get('F_CPU', F_CPU)
+
+# Arduino arguments
+EXTRA_LIBS = ARGUMENTS.get('EXTRA_LIBS', EXTRA_LIBS).split(':')
+
+# Shared library arguments.
+LIBS = ARGUMENTS.get('LIBS', LIBS).split(',')
+LIBPATH = ARGUMENTS.get('LIBPATH', LIBPATH).split(':')
+
+# There should be a file with the same name as the folder and with the extension .pde
+#TARGET = os.path.basename(os.path.realpath(os.curdir))
+#assert(os.path.exists(TARGET+'.pde'))
+
+AVR_GCC_DIR = ARGUMENTS.get('AVR_GCC_DIR', AVR_GCC_DIR)
+if AVR_GCC_DIR:
+  AVR_GCC_DIR += '/'
+
+AVR_BIN_PREFIX = AVR_GCC_DIR + 'avr-'
+
+# Create environment and set default configurations ###################################
+if (MODE == 'avr'):
+  cFlags = ['-ffunction-sections', '-fdata-sections', '-fno-exceptions',
+      '-funsigned-char', '-funsigned-bitfields', '-fpack-struct', '-fshort-enums',
+      '-Os', '-mmcu=%s'%MCU]
+  env = Environment(CC = AVR_BIN_PREFIX+'gcc', CXX = AVR_BIN_PREFIX+'g++',
+      CPPPATH = INCLUDE_PATH, CPPDEFINES = {'F_CPU':F_CPU}, 
+      CFLAGS = cFlags+['-std=gnu99'], CCFLAGS = cFlags, TOOLS = ['gcc','g++'])
+
+elif (MODE == 'arduino'):
+  def getUsbTty(rx):
+      usb_ttys = glob(rx)
+      if len(usb_ttys) == 1: return usb_ttys[0]
+      else: return None
+
+  ARDUINO_VER     = ARGUMENTS.get('ARDUINO_VER', 22) # Arduino 0022
+
+  env = Environment() # dummy
+  platform = env['PLATFORM']
+
+  if platform == 'darwin':
+    # For MacOS X, pick up the AVR tools from within Arduino.app
+    ARDUINO_HOME_DEFAULT = '/Applications/Arduino.app/Contents/Resources/Java'
+    ARDUINO_PORT_DEFAULT = getUsbTty('/dev/tty.usbserial*')
+  elif platform == 'win32':
+    # For Windows, use environment variables.
+    ARDUINO_HOME_DEFAULT = os.environ.get('ARDUINO_HOME')
+    ARDUINO_PORT_DEFAULT = os.environ.get('ARDUINO_PORT')
+  else:
+    # For Ubuntu Linux (9.10 or higher)
+    ARDUINO_HOME_DEFAULT = '/usr/share/arduino/' #'/home/YOU/apps/arduino-00XX/'
+    ARDUINO_PORT_DEFAULT = getUsbTty('/dev/ttyUSB*')
+    AVR_BIN_PREFIX = 'avr-'
+  
+  ARDUINO_BOARD_DEFAULT = os.environ.get('ARDUINO_BOARD', 'atmega328')
+  
+  ARDUINO_HOME    = ARGUMENTS.get('ARDUINO_HOME', ARDUINO_HOME_DEFAULT)
+  ARDUINO_PORT    = ARGUMENTS.get('ARDUINO_PORT', ARDUINO_PORT_DEFAULT)
+  ARDUINO_BOARD   = ARGUMENTS.get('ARDUINO_BOARD', ARDUINO_BOARD_DEFAULT)
+  RST_TRIGGER     = ARGUMENTS.get('RST_TRIGGER', None) # use built-in pulseDTR() by default
+  EXTRA_LIB       = ARGUMENTS.get('EXTRA_LIB', None) # handy for adding another arduino-lib dir
+  
+  if not ARDUINO_HOME:
+    print 'ARDUINO_HOME must be defined.'
+    raise KeyError('ARDUINO_HOME')
+  
+  ARDUINO_CORE = join(ARDUINO_HOME, 'hardware/arduino/cores/arduino')
+  ARDUINO_SKEL = join(ARDUINO_CORE, 'main.cpp')
+  ARDUINO_CONF = join(ARDUINO_HOME, 'hardware/arduino/boards.txt')
+  
+  # Some OSs need bundle with IDE tool-chain
+  if platform == 'darwin' or platform == 'win32':
+    AVR_BIN_PREFIX = join(ARDUINO_HOME, 'hardware/tools/avr/bin', 'avr-')
+    AVRDUDE_CONF = join(ARDUINO_HOME, 'hardware/tools/avr/etc/avrdude.conf')
+
+  ARDUINO_LIBS = []
+  if EXTRA_LIBS:
+    ARDUINO_LIBS += map(realpath, EXTRA_LIBS)
+  ARDUINO_LIBS += [join(ARDUINO_HOME, 'libraries')]
+  
+  for directory in ARDUINO_LIBS:
+    dirList = os.listdir(directory)
+    for subdir in dirList:
+      if isdir(subdir):
+        INCLUDE_PATH.append(subdir)
+  INCLUDE_PATH.append(ARDUINO_CORE)
+
+  # TODO: repetition avec avr ici... en fait Arduino devrait juste etre une modif de AVR
+  # (ie. des options par defaut)
+  cFlags = ['-ffunction-sections', '-fdata-sections', '-fno-exceptions',
+      '-funsigned-char', '-funsigned-bitfields', '-fpack-struct', '-fshort-enums',
+      '-Os', '-mmcu=%s'%MCU]
+  env = Environment(CC = AVR_BIN_PREFIX+'gcc', CXX = AVR_BIN_PREFIX+'g++',
+      CPPPATH = INCLUDE_PATH, CPPDEFINES = {'F_CPU':F_CPU, 'ARDUINO':ARDUINO_VER}, 
+      CFLAGS = cFlags+['-std=gnu99'], CCFLAGS = cFlags, TOOLS = ['gcc','g++'])
+  
+  
+else:
+  INCLUDE_PATH += ["/usr/local/include", "/usr/include"]
+  env = Environment(CPPPATH=INCLUDE_PATH)
+
+# Get sources #########################################################################
+targetSource = None
+if (MODE == 'arduino'):
+  filename = TARGET + '.pde'
+  if exists(filename):
+    targetSource = filename
+else:
+  targetSource = None
+  for ext in ['.c', '.cpp', '.cxx']:
+    filename = TARGET + ext
+    if exists(filename):
+      targetSource = filename
+
+if not targetSource:
+  print "No source found for target " + TARGET
+  exit(-1)
+targetSource = [targetSource]
+
+# Get all necessary object files
+if (MODE == 'arduino'): # Generate the .cpp from the .pde
+  # Replace .pde by .cpp
+  extraHeaders = [join(ARDUINO_CORE, 'WProgram.h')]
+  targetSource = [TARGET+'.pde']
+  targetSource += map(lambda x : join(ARDUINO_CORE, x), ["HardwareSerial.cpp", "Print.cpp", "Tone.cpp", "WInterrupts.c", "WMath.cpp", "WString.cpp", "pins_arduino.c", "wiring.c", "wiring_analog.c", "wiring_digital.c", "wiring_pulse.c", "wiring_shift.c"])
+else:
+  extraHeaders = []
+
+#  print "Appending processing"
+#  env.Append(BUILDERS = {'Processing':Builder(action = fnProcessing,
+#      suffix = '.cpp', src_suffix = '.pde')})
+#  
+#  env.Processing(TARGET+'.cpp', TARGET +'.pde')
+#  # Replace .pde by .cpp
+#  targetSource = [TARGET+'.cpp']
+
+# Search for dependencies
+(includes, sources) = getDependencies(targetSource, INCLUDE_PATH, [], extraHeaders)
+
+#print "INCLUDES: " +str(includes)
+#print "SOURCES: " +str(sources)
+
+# Compilation #########################################################################
+env['OBJPREFIX']="build/"+MODE+"/"
+if (MODE == 'computer'):
+  env.Program(target=TARGET, source=sources, LIBS=LIBS, LIBPATH=LIBPATH)
+else:
+  def fnProcessing(target, source, env):
+    wp = open ('%s'%target[0], 'wb')
+
+    types='''void
+    int char word long
+    float double byte long
+    boolean
+    uint8_t uint16_t uint32_t
+    int8_t int16_t int32_t
+    '''
+    types=' | '.join(types.split())
+    re_signature=re.compile(r"""^\s* (
+        (?: (%s) \s+ )?
+        \w+ \s*
+        \( \s* ((%s) \s+ \*? \w+ (?:\s*,\s*)? )* \)
+        ) \s* {? \s* $""" % (types,types), re.MULTILINE|re.VERBOSE)
+
+    prototypes = {}
+
+#    for file in glob(os.path.realpath(os.curdir) + "/*.pde"):
+#      for line in open(file):
+#        result = re_signature.findall(line)
+#        if result:
+#          prototypes[result[0][0]] = result[0][1]
+#
+#    for name in prototypes.keys():
+#      print ("%s;"%(name))
+#      wp.write("%s;\n"%name)
+
+    for file in glob(os.path.realpath(os.curdir) + "/*.pde"):
+      print file, TARGET
+      if not os.path.samefile(file, TARGET+".pde"):
+        wp.write('#include "%s"\r\n' % file)
+        #wp.write(open(file).read())
+
+    # Add this preprocessor directive to localize the errors.
+    sourcePath = str(source[0]).replace('\\', '\\\\');
+    print "OPENING " + ARDUINO_SKEL
+    wp.write(open(ARDUINO_SKEL).read())
+    wp.write('#include "%s"\r\n' % sourcePath)
+    #wp.write(open('%s'%source[0]).read())
+
+  env.Append(BUILDERS={'Elf':Builder(action=AVR_BIN_PREFIX+'gcc '+
+          '-mmcu=%s -Os -Wl,--gc-sections -o $TARGET $SOURCES -lm'%MCU)})
+  env.Append(BUILDERS={'Hex':Builder(action=AVR_BIN_PREFIX+'objcopy '+
+          '-O ihex -R .eeprom $SOURCES $TARGET')})
+  env.Append(BUILDERS = {'Processing':Builder(action = fnProcessing,
+      suffix = '.cpp', src_suffix = '.pde')})
+  
+  if (MODE == 'arduino'):
+    env.Processing(TARGET+'.cpp', TARGET +'.pde')
+
+  # Finally Build!!
+  print "SOURCES: " + str(sources)
+  sources = map(lambda x: x.replace(TARGET+'.pde', TARGET+'.cpp'), sources)
+  objs = env.Object(sources) #, LIBS=libs, LIBPATH='.')
+  env.Elf(TARGET + '.elf', objs)
+  env.Hex(TARGET + '.hex', TARGET + '.elf')
+
+  # Print Size
+  # TODO: check binary size
+  #MAX_SIZE = getBoardConf(r'^%s\.upload.maximum_size=(.*)'%ARDUINO_BOARD)
+  #print ("maximum size for hex file: %s bytes"%MAX_SIZE)
+  env.Command(None, TARGET+'.hex', AVR_BIN_PREFIX+'size --target=ihex $SOURCE')
+
+# Dependencies
+from sets import Set
+import os
+from os import getcwd
+import re
+from os.path import *
+
+# From http://code.activestate.com/recipes/502263/
+# By Paul Rubin
+def unique(seq, keepstr=True):
+  t = type(seq)
+  if t in (str, unicode):
+    t = (list, ''.join)[bool(keepstr)]
+  seen = []
+  return t(c for c in seq if not (c in seen or seen.append(c)))
+    
+def _findFile(filename, paths):
+  # print"Trying to find " + filename + " in paths " + str(paths)
+  ret = filter(lambda f: exists(f), map(lambda p: join(p, filename), paths))
+  if len(ret) == 0:
+#    print "Include filename " + filename + " not found"
+    return False
+  elif len(ret) > 1:
+    print "ERROR: Two candidates found for filename " + filename + ": " + str(ret)
+    #exit(-1)
+  else:
+    return ret[0]
+
+def getDependencies(sources, includePaths=["/usr/local/include", "/usr/include"], sourcePaths=[], extraHeaders=[]):
+  sources = unique(map(abspath, sources))
+  includePaths = unique(map(realpath, includePaths) + [getcwd()])
+  sourcePaths = unique(map(realpath, sourcePaths) + [getcwd()])
+  (inc, src) = _recursiveGetDependencies(sources, extraHeaders, includePaths, sourcePaths)
+  return (list(inc), list(src))
+
+# Dependencies find
+# NOTE:
+def _recursiveGetDependencies(sources, headers, includePaths=[], sourcePaths=[], includes = Set([])):
+#  print "Calling getDep(" + str(sources) + "," + str(headers) + ',' + str(includePaths) + "," + str(sourcePaths) + "," + str(includes)
+  currentDepthIncludes = Set([]) # Files included for that depth
+  includeRegexp = re.compile(r'^[ ]*#[ ]*include [<"](.*)\.h[>"]')
+  allSources = sources + headers
+
+  # Run through all source files, detect the includes and add them to currentDepthIncludes
+  for source in allSources:
+    # print"Looking into " + source
+    sourceIncludePaths = unique(includePaths + [dirname(source)])
+    for line in open (source):
+      result = includeRegexp.findall(line)
+      if result:
+        basename = result[0]
+#        print "Found " + basename
+        filename = basename + '.h'
+        incFilename = _findFile(filename, sourceIncludePaths)
+        if incFilename:
+          incFileRealpath = realpath(incFilename)
+          if (incFileRealpath not in includes):
+            currentDepthIncludes.add(incFileRealpath)
+        else:
+          print "ERROR: File " + filename + " included from file " \
+            + source + " not found in include paths"
+          #exit(-1)
+
+  # Construct the next list of sources (.c, .cpp, .cxx) by looking at files with the same
+  # name as the include file (eg. if "goo.h" we will look for "goo.c", "goo.cpp", "goo.cxx"
+  # files in the sourcePaths
+  currentDepthSources = Set([])
+  for filepath in currentDepthIncludes:
+    (directory, filename) = split(filepath)
+    (basename, extension) = splitext(filename)
+    # print"Looking at " + filepath + "(" + directory + "," + filename + "," + basename + ")"
+    for ext in ['.c', '.cpp', '.cxx']:
+      file = _findFile(basename + ext, unique(sourcePaths + [directory]))
+      print"Trying to find file " + basename + ext
+      if file:
+        print"File found, adding it"
+        currentDepthSources.add(file)
+
+  includes = includes | currentDepthIncludes
+  sources = Set(sources)
+  sources = sources | currentDepthSources
+  if currentDepthSources or currentDepthIncludes:
+#    print "CurrentDepthSrc = " + str(currentDepthSources)
+#    print "CurrentDepthInc = " + str(currentDepthIncludes)
+#    print "Current includes = " + str(includes)
+#    print "Unite includes = " + str(includes)
+    (inc, src) = _recursiveGetDependencies(list(currentDepthSources), list(currentDepthIncludes), includePaths, sourcePaths, includes)
+    includes = includes | inc
+    sources = sources | src
+
+  return (includes, sources)
