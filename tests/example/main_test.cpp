@@ -1,5 +1,3 @@
-#include "cpp_include.h"
-
 #include "Qualia.h"
 #include "RLQualia.h"
 #include "DummyAgent.h"
