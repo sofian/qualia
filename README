@@ -7,10 +7,20 @@ Version
 -------
 Current version is 0.1.
 
-Author
-------
+Authors
+-------
+
+Head developer:
 Sofian Audry
 info(@)sofianaudry(.)com
+
+
+Thanks
+------
+
+This project is realized with the support of CINQ as part of the Emerge research project with 
+LabXmodal (Concordia Univeristy, Montréal), IDMIL (McGill University, Montréal) and 
+Moment Factory (Montréal).
 
 Objectives
 ----------
@@ -33,3 +43,5 @@ Objectives
  * Procedural
  * FSM
  * Reinforcement learning
+
+ 
