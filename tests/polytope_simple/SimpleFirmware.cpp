@@ -20,39 +20,40 @@
 #include "SimpleFirmware.h"
 #include <assert.h>
 
-Arduino::Arduino() : fd(-1) {
+int Arduino::fd = -1;
+
+Arduino::Arduino(uint8_t nid_) : nid(nid_) {
 }
 
 bool Arduino::init(const char* serialPort) {
-  fd = serialInit(serialPort, BAUDRATE);
-  flush();
-//  delay(1);
-  if (fd == -1)
-    return false;
+  if (fd == -1) {
+    fd = serialInit(serialPort, BAUDRATE);
+    sleep(2); // let the Arduinos setup
+    flush();
+    if (fd == -1)
+      return false;
+  }
   return true;
 }
 
 void Arduino::pinMode(uint8_t pin, uint8_t mode) {
-//  printf("[%d]\n", command(PIN_MODE, pin, mode));
-//  int x =  ;
-//  printf("%d\n", x);
-  assert( command(PIN_MODE, pin, mode) == 0 );
+  assert( command(nid, PIN_MODE, pin, mode) == 0 );
 }
 
 void Arduino::digitalWrite(uint8_t pin, uint8_t val) {
-  assert( command(DIGITAL_WRITE, pin, val) == 0 );
+  assert( command(nid, DIGITAL_WRITE, pin, val) == 0 );
 }
 
 int Arduino::digitalRead(uint8_t pin) {
-  return command(DIGITAL_READ, pin, 0x0);
+  return command(nid, DIGITAL_READ, pin, 0x0);
 }
 
 int Arduino::analogRead(uint8_t pin) {
-  return command(ANALOG_READ, pin, 0x0);
+  return command(nid, ANALOG_READ, pin, 0x0);
 }
 //  void analogReference(uint8_t mode);
 void Arduino::analogWrite(uint8_t pin, int val) {
-  assert( command(ANALOG_WRITE, pin, val) == 0);
+  assert( command(nid, ANALOG_WRITE, pin, val) == 0);
 }
 
 void Arduino::serialWrite(uint8_t byte) {
@@ -70,25 +71,32 @@ void Arduino::delay(unsigned long millis) {
     usleep(1000 * millis);
   else
     for (int i=0; i<100; i++) { // unrolled loop
-      usleep(millis);
-      usleep(millis);
-      usleep(millis);
-      usleep(millis);
-      usleep(millis);
-      usleep(millis);
-      usleep(millis);
-      usleep(millis);
-      usleep(millis);
-      usleep(millis);
+      usleep(millis); usleep(millis); usleep(millis); usleep(millis); usleep(millis);
+      usleep(millis); usleep(millis); usleep(millis); usleep(millis); usleep(millis);
     }
 }
 
-uint16_t Arduino::command(uint8_t b1, uint8_t b2, uint8_t b3) {
-  serialWrite(b1);
-  serialWrite(b2);
-  serialWrite(b3);
+uint16_t Arduino::command(uint8_t nid, uint8_t cmd, uint8_t pin, uint8_t val) {
+  // Send.
+//  printf("Sending command\n");
+  serialWrite(MESSAGE_HEADER);
+  serialWrite(nid);
+  serialWrite(cmd);
+  serialWrite(pin);
+  serialWrite(val);
+
+  usleep(100); // let it time to reply
+
+  // Receive.
+  char rd = serialRead();
+  if (rd != MESSAGE_HEADER) {
+    printf("Error: wrong message header received from node %d: '%c'\n", nid, rd);
+    exit(-1);
+  }
   uint8_t h = serialRead();
   uint8_t l = serialRead();
+
+  // Return received value.
   return (uint16_t) ( (h << 8) | l );
 }
 

@@ -46,55 +46,73 @@ int serialport_writebyte(int fd, uint8_t b);
 int serialport_write(int fd, const char* str);
 int serialport_read_until(int fd, char* buf, char until);
 
-void usage(void) {
-  printf("Usage: arduino-serial -p <serialport> [OPTIONS]\n"
-      "\n"
-      "Options:\n"
-      "  -h, --help                   Print this help message\n"
-      "  -p, --port=serialport        Serial port Arduino is on\n"
-      "  -b, --baud=baudrate          Baudrate (bps) of Arduino\n"
-      "  -s, --send=data              Send data to Arduino\n"
-      "  -r, --receive                Receive data from Arduino & print it out\n"
-      "  -n  --num=num                Send a number as a single byte\n"
-      "  -d  --delay=millis           Delay for specified milliseconds\n"
-      "\n"
-      "Note: Order is important. Set '-b' before doing '-p'. \n"
-      "      Used to make series of actions:  '-d 2000 -s hello -d 100 -r' \n"
-      "      means 'wait 2secs, send 'hello', wait 100msec, get reply'\n"
-      "\n");
-}
+#define NODE_ID 4
 
 int main(int argc, char *argv[])
 {
-  int fd = serialport_init("/dev/tty.usbserial-A700eYle", 57600);
+  int fd = serialport_init(argv[1], 57600L);
+  char hdr;
   uint16_t ret;
   if(fd==-1) {
     printf("Problem\n");
     return -1;
   }
 
+//  printf("Shit I get at first: [\n");
+  sleep( 2 ); // sleep milliseconds
+//  while (read(fd, &hdr, 1) != 0)
+//    printf("%c ", &hdr); // flush
+//  printf("]\n");
+
   // Set pinMode(13, OUTPUT);
+  serialport_writebyte(fd, 'S');
+  serialport_writebyte(fd, NODE_ID);
   serialport_writebyte(fd, 'M');
   serialport_writebyte(fd, 9);
   serialport_writebyte(fd, 1);
-  usleep( 25000L ); // sleep milliseconds
+  sleep( 1 ); // sleep milliseconds
+  printf("receive header\n");
+  do {
+    int n = read(fd, &hdr, 1);
+    printf("Received header: '%c' (%d) => n = %d\n", hdr, (uint8_t)hdr, n);
+    sleep(1);
+    if (n == -1 || n == 0) {
+      serialport_writebyte(fd, 'S');
+      serialport_writebyte(fd, NODE_ID);
+      serialport_writebyte(fd, 'M');
+      serialport_writebyte(fd, 9);
+      serialport_writebyte(fd, 1);
+      printf("Got wrong response: %d\n", n);
+      continue;
+    }
+  } while (hdr != 'S');
   read(fd, &ret, 2);
-  printf("1st Read value: %d\n", ret);
+//  char *copyret = (char*)&ret;
+  printf("1st Read value: %d (%c %c)\n", ret);//, copyret[0], copyret[1]);
 
+  printf("C\n");
   for (;;) {
     // Set digitalWrite(13, HIGH).
+    serialport_writebyte(fd, 'S');
+    serialport_writebyte(fd, NODE_ID);
     serialport_writebyte(fd, 'W');
     serialport_writebyte(fd, 9);
     serialport_writebyte(fd, 1);
     usleep( 250000L ); // sleep milliseconds
+    read(fd, &hdr, 1);
+    printf("Received header: '%c'\n", hdr);
     read(fd, &ret, 2);
     printf("1. Read value: %d\n", ret);
 
     // Set analogRead(1).
+    serialport_writebyte(fd, 'S');
+    serialport_writebyte(fd, NODE_ID);
     serialport_writebyte(fd, 'r');
     serialport_writebyte(fd, 1);
     serialport_writebyte(fd, 0); // dummy
     usleep( 250000L ); // sleep milliseconds
+    read(fd, &hdr, 1);
+    printf("Received header: '%c'\n", hdr);
     unsigned char h, l;
     read(fd, &h, 1);
     read(fd, &l, 1);
@@ -102,10 +120,14 @@ int main(int argc, char *argv[])
     printf("2. Read value: (%d %d) : %d\n", h, l, ret);
 
     // Set digitalWrite(13, LOW).
+    serialport_writebyte(fd, 'S');
+    serialport_writebyte(fd, NODE_ID);
     serialport_writebyte(fd, 'W');
     serialport_writebyte(fd, 9);
     serialport_writebyte(fd, 0);
     usleep( 250000L ); // sleep milliseconds
+    read(fd, &hdr, 1);
+    printf("Received header: '%c'\n", hdr);
     read(fd, &ret, 2);
     printf("3. Read value: %d\n", ret);
   }

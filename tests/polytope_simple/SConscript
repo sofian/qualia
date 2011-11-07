@@ -18,6 +18,7 @@ if (MODE == 'avr'):
 if (MODE == 'arduino'):
   TARGET = 'SimpleFirmware'
 else:
+#  TARGET = "firmata_serial_simple"
   TARGET = "test_simple_firmware"
 
 Return(CONFIG)

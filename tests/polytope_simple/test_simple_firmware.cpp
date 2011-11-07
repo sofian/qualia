@@ -25,39 +25,47 @@
 int main(int argc, char *argv[]) {
   char* serialPort = argv[1];
 
-  Arduino arduino;
-
-  if (!arduino.init(serialPort)) {
+  if (!Arduino::init(serialPort)) {
     printf("Cannot open serial port %s.\n", serialPort);
     return -1;
   }
 
-  printf("Init\n");
-  arduino.pinMode(LED_OUT, OUTPUT);
+  for (int nid = 4; nid <= 4; nid++) {
+    Arduino arduino(nid);
 
-  for (;;) {
-    int val;
+    printf("Init node #%d\n", nid);
 
-    printf("LED on\n");
-    arduino.digitalWrite(LED_OUT, HIGH);
+    arduino.pinMode(LED_OUT, OUTPUT);
     arduino.delay(1000);
+    printf("done\n");
 
-    val = arduino.analogRead(PHOTO_AIN);
-    printf("Photo value: %d (%d %%)\n", val, val * 100 / 1023);
-    arduino.delay(1000);
+    for (int i=0; i<3; i++) {
+      int val;
 
-    printf("LED off\n");
-    arduino.digitalWrite(LED_OUT, LOW);
-    arduino.delay(1000);
+      printf("LED on\n");
+      arduino.digitalWrite(LED_OUT, HIGH);
+      arduino.delay(1000);
+      printf("done.\n");
 
-    val = arduino.analogRead(PHOTO_AIN);
-    printf("Photo value: %d (%d %%)\n", val, val * 100 / 1023);
-    arduino.delay(1000);
+      val = arduino.analogRead(PHOTO_AIN);
+      printf("Photo value: %d (%d %%)\n", val, val * 100 / 1023);
+      arduino.delay(1000);
 
-    printf("LED slowly on\n");
-    for (int i=0; i<=255; i++) {
-      arduino.analogWrite(LED_OUT, i);
-      arduino.delay(10);
+      printf("LED off\n");
+      arduino.digitalWrite(LED_OUT, LOW);
+      arduino.delay(1000);
+      printf("done.\n");
+
+      val = arduino.analogRead(PHOTO_AIN);
+      printf("Photo value: %d (%d %%)\n", val, val * 100 / 1023);
+      arduino.delay(1000);
+
+      printf("LED slowly on\n");
+      for (int i=0; i<=255; i++) {
+        arduino.analogWrite(LED_OUT, i);
+        arduino.delay(10);
+      }
+      printf("done.\n");
     }
-}
+  }
 }

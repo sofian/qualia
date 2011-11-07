@@ -47,13 +47,16 @@
 
 #define BAUDRATE 57600L
 
+#define MESSAGE_HEADER 'S'
+
 class Arduino {
 public:
-  int fd;
+  static int fd;
+  uint8_t nid;
 
-  Arduino();
+  Arduino(uint8_t nid = 0);
 
-  bool init(const char* serialPort);
+  static bool init(const char* serialPort);
 
   void pinMode(uint8_t pin, uint8_t mode);
   void digitalWrite(uint8_t pin, uint8_t val);
@@ -63,12 +66,13 @@ public:
   void analogWrite(uint8_t pin, int val);
 
   void delay(unsigned long millis);
-  void flush();
+  static void flush();
 
-  uint16_t command(uint8_t b1, uint8_t b2, uint8_t b3);
+  // Sends a command to the arduino and return the result.
+  static uint16_t command(uint8_t nid, uint8_t cmd, uint8_t pin, uint8_t val);
 
-  void serialWrite(uint8_t byte);
-  uint8_t serialRead();
+  static void serialWrite(uint8_t byte);
+  static uint8_t serialRead();
 
   static int serialInit(const char* serialPort, int baud);
 };
