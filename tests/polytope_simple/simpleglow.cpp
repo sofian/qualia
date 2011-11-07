@@ -45,11 +45,15 @@
 
 int main(int argc, char** argv) {
   srand(RANDOM_SEED);
+
   NeuralNetwork net(GLOW_ENVIRONMENT_OBSERVATIONS_DIM + GLOW_AGENT_ACTIONS_DIM, N_HIDDEN, 1, LEARNING_RATE);
-  QLearningEGreedyPolicy policy(EPSILON);
+  //QLearningEGreedyPolicy policy(EPSILON);
+  QLearningSoftmaxPolicy policy(0.5f, EPSILON);
+
   QLearningAgent agent(&net,
                        GLOW_ENVIRONMENT_OBSERVATIONS_DIM, GLOW_AGENT_ACTIONS_DIM, GLOW_AGENT_N_ACTIONS,
                        1.0f, 0.1f, &policy, false); // lambda = 1.0 => no history
+
   SimpleGlowEnvironment env(argv[1], LED_OUT, PHOTO_AIN);
 
 //  BigDummyReward rew;

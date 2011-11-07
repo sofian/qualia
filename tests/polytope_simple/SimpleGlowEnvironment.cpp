@@ -32,6 +32,7 @@ void SimpleGlowEnvironment::init() {
 
 Observation* SimpleGlowEnvironment::start() {
 //  printf("Starting env\n");
+  arduino.analogWrite(ledPin, 255);
   currentObservation[0] = arduino.analogRead(photoPin) / 1023.0f;
   return &currentObservation;
 }
@@ -42,7 +43,10 @@ Observation* SimpleGlowEnvironment::step(const Action* action) {
   arduino.analogWrite(ledPin, action->actions[0]);
   arduino.delay(1);
   currentObservation[0] = arduino.analogRead(photoPin) / 1023.0f;
-  currentObservation.reward = (1-currentObservation[0]);
+
+  // Darkness reward.
+  currentObservation.reward = (1 - currentObservation[0]);
+
 //  printf("--> receiving %f\n", currentObservation[0]);
   return &currentObservation;
 }

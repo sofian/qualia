@@ -33,6 +33,7 @@ public:
   Arduino arduino;
   const char* serialPort;
   int ledPin, photoPin;
+
   RLObservation currentObservation;
 
   SimpleGlowEnvironment(const char* serialPort, int ledPin, int photoPin);

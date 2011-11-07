@@ -32,7 +32,9 @@ int main(int argc, char *argv[]) {
     return -1;
   }
 
+  printf("Init\n");
   arduino.pinMode(LED_OUT, OUTPUT);
+
   for (;;) {
     int val;
 
@@ -51,5 +53,11 @@ int main(int argc, char *argv[]) {
     val = arduino.analogRead(PHOTO_AIN);
     printf("Photo value: %d (%d %%)\n", val, val * 100 / 1023);
     arduino.delay(1000);
-  }
+
+    printf("LED slowly on\n");
+    for (int i=0; i<=255; i++) {
+      arduino.analogWrite(LED_OUT, i);
+      arduino.delay(10);
+    }
+}
 }
