@@ -16,9 +16,11 @@ if (MODE == 'avr'):
   AVR_GCC_DIR = "/Applications/Arduino.app/Contents/Resources/Java/hardware/tools/avr/bin/"
 
 if (MODE == 'arduino'):
-  TARGET = 'SimpleFirmware'
+  TARGET = 'PolytopeSimpleFirmware'
 else:
 #  TARGET = "firmata_serial_simple"
-  TARGET = "test_simple_firmware"
+#  TARGET = "test_simple_firmware"
+  TARGET = "test_simple_firmware_shiftreg"
+#	TARGET = "test_simple_firmware_4in9"
 
 Return(CONFIG)
