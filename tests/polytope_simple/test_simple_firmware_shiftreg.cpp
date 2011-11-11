@@ -40,7 +40,7 @@ void loop();
 #define ALLOUTPUTSOFF 0
 #define ALLOUTPUTSON 2048 - 1
 
-void matrix(uint8_t dataPin, uint8_t clockPin, uint16_t val);
+void matrix(uint16_t val);
 void bangShiftRegister();
 
 int accessDiscreteIO[13] = {ALLOUTPUTSOFF, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, ALLOUTPUTSON};
@@ -62,24 +62,49 @@ int main(int argc, char *argv[]) {
 
 void setup()
 {
-//  Serial.begin(57600);
   arduino.pinMode(CLOCKPIN, OUTPUT);
   arduino.pinMode(LATCHPIN, OUTPUT);
   arduino.pinMode(DATAPIN, OUTPUT);
 
+  printf("Turning all off\n");
+  matrix(ALLOUTPUTSOFF );
+  arduino.delay(2000);
+
+  printf("Turning all on\n");
+  matrix(ALLOUTPUTSON );
+  arduino.delay(2000);
+
+  printf("Turning all off\n");
+  matrix(ALLOUTPUTSOFF );
+  arduino.delay(2000);
+
+  printf("Turning all on\n");
+  matrix(ALLOUTPUTSON );
+  arduino.delay(2000);
+
+  printf("One at a time\n");
+//    int accessDiscreteIO[13] = {ALLOUTPUTSOFF, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, ALLOUTPUTSON};
+  for (int i=1; i<=9; i++) {
+    printf("Access #%d\n", i);
+    matrix(accessDiscreteIO[i]);
+    arduino.delay(100);
+  }
+
+
+////  Serial.begin(57600);
+//  arduino.pinMode(CLOCKPIN, OUTPUT);
+//  arduino.pinMode(LATCHPIN, OUTPUT);
+//  arduino.pinMode(DATAPIN, OUTPUT);
+//
   /* All LEDS off - Brute Force - Zero Out All I/O Pins */
-  arduino.digitalWrite(LATCHPIN, LOW);
-  matrix(DATAPIN, CLOCKPIN, ALLOUTPUTSOFF);
-  arduino.digitalWrite(LATCHPIN, HIGH);
+  matrix(ALLOUTPUTSOFF);
   arduino.delay(1000);
 
   /* Test all I/O Pins - Move through the Shift Register,
   and turn each Led on & off, one at a time in sequence. */
   for(int i = 1; i < 12; i++)
   {
-    arduino.digitalWrite(LATCHPIN, LOW);
-    matrix(DATAPIN, CLOCKPIN, accessDiscreteIO[i]);
-    arduino.digitalWrite(LATCHPIN, HIGH);
+    matrix(accessDiscreteIO[i]);
     arduino.delay(100);
   }
 
@@ -87,48 +112,36 @@ void setup()
   and turn each Led on & off, one at a time in sequence in reverse. */
   for(int i = 12; i >= 0; i--)
   {
-    arduino.digitalWrite(LATCHPIN, LOW);
-    matrix(DATAPIN, CLOCKPIN, accessDiscreteIO[i]);
-    arduino.digitalWrite(LATCHPIN, HIGH);
+    matrix(accessDiscreteIO[i]);
     arduino.delay(100);
   }
 
   /* All LEDS off - Brute Force - Zero Out All I/O Pins */
-  arduino.digitalWrite(LATCHPIN, LOW);
-  matrix(DATAPIN, CLOCKPIN, ALLOUTPUTSOFF);
-  arduino.digitalWrite(LATCHPIN, HIGH);
+  matrix(ALLOUTPUTSOFF);
   arduino.delay(1000);
 
   /* Test all I/O Pins - Move through the Shift Register,
   and turn on and hold each Led, one at a time in sequence. */
   for(int i = 1; i < 13; i++)
   {
-    arduino.digitalWrite(LATCHPIN, LOW);
-    matrix(DATAPIN, CLOCKPIN, accessDiscreteIO[i] - 1);
-    arduino.digitalWrite(LATCHPIN, HIGH);
+    matrix(accessDiscreteIO[i] - 1);
     arduino.delay(100);
   }
 
   /* All LEDS off - Brute Force - Zero Out All I/O Pins */
-  arduino.digitalWrite(LATCHPIN, LOW);
-  matrix(DATAPIN, CLOCKPIN, ALLOUTPUTSOFF);
-  arduino.digitalWrite(LATCHPIN, HIGH);
+  matrix(ALLOUTPUTSOFF);
   arduino.delay(1000);
 
   /* Test all I/O Pins - Move through the Shift Register,
   and turn on and hold each Led, one at a time in sequence in reverse. */
   for(int i = 13; i > 0; i--)
   {
-    arduino.digitalWrite(LATCHPIN, LOW);
-    matrix(DATAPIN, CLOCKPIN, accessDiscreteIO[i] - 1);
-    arduino.digitalWrite(LATCHPIN, HIGH);
+    matrix(accessDiscreteIO[i] - 1);
     arduino.delay(100);
   }
 
   /* All LEDS off - Brute Force - Zero Out All I/O Pins */
-  arduino.digitalWrite(LATCHPIN, LOW);
-  matrix(DATAPIN, CLOCKPIN, ALLOUTPUTSOFF);
-  arduino.digitalWrite(LATCHPIN, HIGH);
+  matrix(ALLOUTPUTSOFF);
   arduino.delay(1000);
 }
 
@@ -141,23 +154,24 @@ void loop()
 void bangShiftRegister()
 {
   /* All On and All Off for EVER and EVER... */
-  arduino.digitalWrite(LATCHPIN, LOW);
-  matrix(DATAPIN, CLOCKPIN, ALLOUTPUTSON);
-  arduino.digitalWrite(LATCHPIN, HIGH);
+//  arduino.digitalWrite(LATCHPIN, LOW);
+  matrix(ALLOUTPUTSON);
+//  arduino.digitalWrite(LATCHPIN, HIGH);
   //delay(shiftBits[i]*i*random(0, 250));
   arduino.delay(250);
 
-  arduino.digitalWrite(LATCHPIN, LOW);
-  matrix(DATAPIN, CLOCKPIN, ALLOUTPUTSOFF);
-  arduino.digitalWrite(LATCHPIN, HIGH);
+//  arduino.digitalWrite(LATCHPIN, LOW);
+  matrix(ALLOUTPUTSOFF);
+//  arduino.digitalWrite(LATCHPIN, HIGH);
   //delay(shiftBits[i]*i*random(0, 250));
   arduino.delay(250);
 
 }
   /* Shift Out Data - One Bit at a time. */
-void matrix(uint8_t dataPin, uint8_t clockPin, uint16_t val)
+void matrix(uint16_t val)
 {
   uint8_t i;
+  arduino.digitalWrite(LATCHPIN, LOW);
 
   for (i = 0; i < 11; i++)
   {
@@ -167,6 +181,8 @@ void matrix(uint8_t dataPin, uint8_t clockPin, uint16_t val)
     arduino.digitalWrite(CLOCKPIN, HIGH);
     arduino.digitalWrite(CLOCKPIN, LOW);
   }
-    //Serial.println(" ");
+
+  arduino.digitalWrite(LATCHPIN, HIGH);
+//Serial.println(" ");
 }
 
