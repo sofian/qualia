@@ -1,6 +1,0 @@
-#!/bin/bash
-
-# Builds a sub-project
-# Example use:
-# $ ./makesub tests/example
-cd $1 && /usr/local/bin/scons
