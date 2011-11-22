@@ -15,4 +15,4 @@ if [ "$FOLDER" != "all" ]; then
 fi
 
 echo "Compiling $FOLDER"
-/usr/local/bin/scons
+/usr/local/bin/scons ${@:2:$#}
