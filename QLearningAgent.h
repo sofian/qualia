@@ -33,8 +33,44 @@
 class QLearningAgent : public Agent {
 
 public:
-//  real *_softmax; // softmax probabilities (internal use)
+  // Configurable parameters /////
+
+  // NOTICE: These parameters can be changed during the course of learning, although the user must be
+  // aware of the consequences on learning (which might be severely hampered).
+
+  // Discounting factor. Value should be in [0, 1], typical value in [0.9, 1).
+  // The discount factor determines the importance of future rewards. A factor of 0 will make the agent
+  // "opportunistic" by only considering current rewards, while a factor approaching 1 will make it strive
+  // for a long-term high reward. If the discount factor meets or exceeds 1, the Q values may diverge.
+  // Source: http://en.wikipedia.org/wiki/Q-learning#Discount_factor
+  float gamma;
+
+  // Trace decay. Value should be in [0, 1], typical value in (0, 0.1].
+  // Heuristic parameter controlling the temporal credit assignment of how an error detected at a given time
+  // step feeds back to correct previous estimates. When lambda = 0, no feedback occurs beyond the current time
+  // step, while when lambda = 1, the error feeds back without decay arbitrarily far in time. Intermediate
+  // values of lambda provide a smooth way to interpolate between these two limiting cases.
+  // Source: http://www.research.ibm.com/massive/tdl.html
+  float lambda;
+
+  // Controls wether to use the off-policy learning algorithm (Q-Learning) or the on-policy algorithm (Sarsa).
+  // Default value: false ie. on-policy (Sarsa) learning
+  // NOTE: Off-policy learning should be used at all time when training on a pre-generated dataset. When the agent is
+  // trained online (eg. in real time) the on-policy algorithm will result in the agent showing a better online
+  // performance at the expense of finding a sub-optimal solution. On the opposite, the off-policy strategy will
+  // converge to the optimal solution but will usually show a lower online performance as it will more often make
+  // mistakes.
+  bool offPolicy;
+
+  // The policy used by the agent.
+  Policy* policy;
+
+  // The state-action value approximator function.
+  // NOTE: The current implementation only allows a feedforward neural network with one hidden layer as
+  // a function approximator.
   NeuralNetwork* function;
+
+  // Internal use ////////////////
 
   // TODO: if we ever make subclasses of Action we will need to change this...
   Action currentAction;
@@ -42,34 +78,36 @@ public:
   RLObservation lastObservation;
 
   // Parameters.
-  real *e; // elligibility traces
 
-  unsigned int observationDim;
-  unsigned long nConflatedActions;
-  float lambdaTimesGamma; // lambda is always used like that...
-  float gamma;
+  // Elligibility traces.
+  real *e;
 
-  Policy* policy;
+  // Shortcut values.
+  unsigned int observationDim;     // == lastObservation.dim
+  unsigned long nConflatedActions; // == currentAction.nConflated
 
-  bool qLearning; // use Q-Learning (off-policy) instead of Sarsa
+  // Buffer for the neural network inputs.
+  // TODO: possibly change (a bit inefficient memory).
+  real *nnInput;
 
-  // Internal use.
-  real *nnInput; // a bit inefficient
-
+  // Constructor/destructor.
   QLearningAgent(NeuralNetwork* func,
                  unsigned int observationDim, unsigned int actionDim, const unsigned int* nActions,
-                 float lambda, float gamma, Policy* policy, bool qLearning = false);
+                 float lambda, float gamma, Policy* policy, bool offPolicy = false);
   virtual ~QLearningAgent();
 
+  // Methods.
   virtual void init();
   virtual Action* start(const Observation* observation);
   virtual Action* step(const Observation* observation);
   virtual void end(const Observation* observation);
 //  virtual void cleanup();
 
+  // The state-action value function (calls the approximator function).
   real Q(const Observation* observation, const Action* action);
 
-  // dst is optional (won't be recorded if set to NULL)
+  // Computes maxQ = max_a Q(observation, a) and dst = argmax_a Q(observation, a).
+  // NOTE: dst is optional (won't be recorded if set to NULL)
   void getMaxAction(Action* dst, const Observation* observation, real *maxQ = 0);
 
 };

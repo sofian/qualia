@@ -31,15 +31,16 @@
 
 QLearningAgent::QLearningAgent(NeuralNetwork* func,
                                unsigned int observationDim_, unsigned int actionDim, const unsigned int* nActions,
-                               float lambda_, float gamma_, Policy* policy_, bool qLearning_) :
+                               float lambda_, float gamma_, Policy* policy_, bool offPolicy_) :
+  gamma(gamma_),
+  lambda(lambda_),
+  offPolicy(offPolicy_),
+  policy(policy_),
   function(func),
   currentAction(actionDim, nActions),
   bufferAction(actionDim, nActions),
   lastObservation(observationDim_),
-  observationDim(observationDim_),
-  lambdaTimesGamma(lambda_*gamma_), gamma(gamma_),
-  policy(policy_),
-  qLearning(qLearning_)
+  observationDim(observationDim_)
  {
   // TODO : ARRAY_ALLOC
   // TODO: allocateur
@@ -49,7 +50,6 @@ QLearningAgent::QLearningAgent(NeuralNetwork* func,
 
   nConflatedActions = currentAction.nConflated;
 //  lastObservation = (real*) malloc(observationSize * sizeof(real));
-  // TODO: m
 //  _lastObservation.continuous = (real*) malloc( observationSize * sizeof(real) );
 //  _lastObservation.discrete = 0;
 
@@ -60,7 +60,7 @@ QLearningAgent::QLearningAgent(NeuralNetwork* func,
 }
 
 QLearningAgent::~QLearningAgent() {
-  // TODO: deallocateur
+  // TODO: deallocator
   free(e);
   free(nnInput);
 //  free(lastObservation);
@@ -108,7 +108,7 @@ Action* QLearningAgent::step(const Observation* observation) {
   // // printf("DEBUG: Update\n", Qs);
   // Update.
   real updateQ; // q-value for update
-  if (qLearning)
+  if (offPolicy)
     getMaxAction(0, observation, &updateQ);
   else
     updateQ = Q(observation, &currentAction);
@@ -128,6 +128,7 @@ Action* QLearningAgent::step(const Observation* observation) {
 #if DEBUG
   printf("dw: [");
 #endif
+  real lambdaTimesGamma = lambda * gamma;
   for (int i=0; i<function->nParams; i++) {
     e[i] = lambdaTimesGamma * e[i] + dWeights[i];
     weights[i] += deltaTimesLearningRate * e[i];
@@ -174,8 +175,8 @@ real QLearningAgent::Q(const Observation* observation, const Action* action) {
 }
 
 void QLearningAgent::getMaxAction(Action* dst, const Observation* observation, real *maxQ) {
-//  if (!state)
-//    state = _state;
+  if (!dst && !maxQ) // Why did you call this method?
+    return;
 
   bufferAction.reset();
   //action_t actionMax = dst->conflated();
