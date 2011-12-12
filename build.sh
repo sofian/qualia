@@ -2,7 +2,7 @@
 
 # Builds a sub-project
 # Example use:
-# $ ./makesub tests/example --arduino
+# $ ./build.sh tests/example --arduino
 
 if [ $# -lt 1 ]; then
 	FOLDER="all"
