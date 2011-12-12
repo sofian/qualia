@@ -42,7 +42,16 @@ class NeuralNetwork {
 public:
   // Configurable parameters /////
 
-  // Learning rate. Value should be > 0, typical values are in (0, 1].
+  // Learning rate. Value should be >= 0, usually in [0, 1].
+  // The learning rate is used to adjust the speed of training. The higher the learning rate the faster the
+  // network is trained. However, the network has a better chance of being trained to a local minimum solution.
+  // A local minimum is a point at which the network stabilizes on a solution which is not the most optimal
+  // global solution. In the case of reinforcement learning, the learning rate determines to what extent the newly
+  // acquired information will override the old information. A factor of 0 will make the agent not learn anything,
+  // while a factor of 1 would make the agent consider only the most recent information.
+  // Source:
+  // http://pages.cs.wisc.edu/~bolo/shipyard/neural/tort.html
+  // http://en.wikipedia.org/wiki/Q-learning#Learning_rate
   float learningRate;
 
   //  float decreaseConstant;
