@@ -90,13 +90,15 @@ public:
   // TODO: possibly change (a bit inefficient memory).
   real *nnInput;
 
+  // Interface ///////////////////
+
   // Constructor/destructor.
   QLearningAgent(NeuralNetwork* func,
                  unsigned int observationDim, unsigned int actionDim, const unsigned int* nActions,
                  float lambda, float gamma, Policy* policy, bool offPolicy = false);
   virtual ~QLearningAgent();
 
-  // Methods.
+  // Public methods.
   virtual void init();
   virtual Action* start(const Observation* observation);
   virtual Action* step(const Observation* observation);
