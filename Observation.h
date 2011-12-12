@@ -30,8 +30,11 @@ public:
   unsigned int dim;
   bool terminal;
 
+  Observation();
   Observation(unsigned int dim, const observation_t* copyFrom = 0);
   virtual ~Observation();
+
+  void allocate(unsigned int dim, const observation_t* copyFrom = 0);
 
   observation_t& operator[](int i) const { return observations[i]; }
 

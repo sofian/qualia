@@ -20,7 +20,23 @@
 #include "Action.h"
 #include <string.h>
 
-Action::Action(unsigned int dim_, const unsigned int* nActions_) : dim(dim_) {
+Action::Action() : actions(0), nActions(0), dim(0), nConflated(0) {}
+Action::Action(unsigned int dim_, const unsigned int* nActions_) : actions(0), nActions(0), dim(0), nConflated(0) {
+  allocate(dim_, nActions_);
+}
+
+Action::~Action() {
+  Alloc::free(actions);
+  Alloc::free(nActions);
+}
+
+void Action::allocate(unsigned int dim_, const unsigned int* nActions_) {
+  if (actions) // already allocated
+    return; // TODO: error message
+
+  // Set dimension.
+  dim = dim_;
+
   // Allocate.
   actions =  (action_dim_t*) Alloc::malloc(dim * sizeof(action_dim_t));
   nActions = (unsigned int*) Alloc::malloc(dim * sizeof(unsigned int));
@@ -36,11 +52,6 @@ Action::Action(unsigned int dim_, const unsigned int* nActions_) : dim(dim_) {
   nConflated = 1;
   for (int i=0; i<dim; i++)
     nConflated *= nActions[i];
-}
-
-Action::~Action() {
-  Alloc::free(actions);
-  Alloc::free(nActions);
 }
 
 action_t Action::conflated() const {

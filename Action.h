@@ -33,8 +33,11 @@ public:
   unsigned int dim;
   unsigned long nConflated;
 
+  Action();
   Action(unsigned int dim, const unsigned int* nActions=0);
   virtual ~Action();
+
+  void allocate(unsigned int dim, const unsigned int* nActions=0);
 
   action_dim_t& operator[](int i) const { return actions[i]; }
 

@@ -19,6 +19,9 @@
 
 #include "RLObservation.h"
 
+RLObservation::RLObservation() :
+  Observation(), reward(0) {}
+
 RLObservation::RLObservation(unsigned int dim_, const observation_t* copyFrom_) :
   Observation(dim_, copyFrom_), reward(0) { }
 

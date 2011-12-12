@@ -25,6 +25,7 @@
 class RLObservation : public Observation {
 public:
   real reward;
+  RLObservation();
   RLObservation(unsigned int dim, const observation_t* copyFrom = 0);
   Observation& copyFrom(const Observation* src);
 };
