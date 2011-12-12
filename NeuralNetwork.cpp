@@ -26,6 +26,81 @@
 
 //#include <stdio.h>
 
+NeuralNetwork::~NeuralNetwork() {
+  _deallocate();
+}
+
+void NeuralNetwork::init() {
+  // randomize weights
+  for (int i=0; i<nParams; i++) {
+    weights[i] = Random::boundedUniform(-1, +1);
+    dWeights[i] = 0;
+  }
+//  learningRateDiv = 1;
+}
+
+void NeuralNetwork::setInput(real *input) {
+  for (int i=0; i<inputLayer.n; i++)
+    inputLayer.output[i] = input[i];
+}
+
+void NeuralNetwork::getOutput(real *output) const {
+  for (int i=0; i<outputLayer.n; i++) {
+    output[i] = outputLayer.output[i];
+  }
+}
+
+void NeuralNetwork::clearDelta() {
+  for (int i=0; i<nParams; i++)
+    dWeights[i] = 0;
+}
+
+void NeuralNetwork::backpropagate(real *outputError) {
+  // Initialize output error.
+  for (int i=0; i<outputLayer.n; i++) {
+    real out = outputLayer.output[i];
+//    print("OUT:"); println(out);
+    outputLayer.error[i] = out * (1 - out) * outputError[i];
+  }
+  _backpropagateLayer(outputLayer, hiddenLayer);
+  _backpropagateLayer(hiddenLayer, inputLayer);
+}
+
+void NeuralNetwork::propagate() {
+  _propagateLayer(inputLayer, hiddenLayer);
+  _propagateLayer(hiddenLayer, outputLayer);
+}
+
+void NeuralNetwork::update() {
+//  float lr = learningRate / learningRateDiv;
+  for (int i=0; i<nParams; i++)
+    weights[i] -= learningRate * dWeights[i];
+//    weights[i] -= lr * dWeights[i] - weightDecay * weights[i];
+  clearDelta();
+
+//  learningRateDiv += decreaseConstant;
+}
+
+#ifdef DEBUG
+
+void NeuralNetwork::printLayer(Layer* layer, Layer* lower) {
+  ::print("O:"); printArray(layer->output, layer->n);
+  ::print("E:"); printArray(layer->error, layer->n);
+  if (layer->weight) {
+    ::print("W:"); printArray(layer->weight[0], layer->n * (lower->n + 1));
+    ::print("dW:"); printArray(layer->dWeight[0], layer->n * (lower->n + 1));
+  }
+}
+
+void NeuralNetwork::debug() {
+  println("NEURAL-NET=======================");
+  ::print("n. params:"); println(nParams);
+  println("------OUTPUTS------"); printLayer(&outputLayer, &hiddenLayer);
+  println("------HIDDEN-------"); printLayer(&hiddenLayer, &inputLayer);
+  println("------INPUTS-------"); printLayer(&inputLayer, 0);
+}
+#endif
+
 void NeuralNetwork::_allocateLayer(Layer& layer, int nInputs, int nOutputs, int& k) {
 //  printf("Allocating layer: %d => %d (%d)\n", nInputs, nOutputs, k);
   layer.n = nOutputs;
@@ -46,15 +121,6 @@ void NeuralNetwork::_allocateLayer(Layer& layer, int nInputs, int nOutputs, int&
     layer.dWeight = 0; // NULL
   }
 }
-
-//void NeuralNetwork::_deallocateLayer(Layer& layer) {
-//  free(layer.output);
-//  free(layer.error);
-//  if (layer.weight)
-//    free(layer.weight);
-//  if (layer.dWeight)
-//    free(layer.dWeight);
-//}
 
 void NeuralNetwork::_propagateLayer(Layer& lower, Layer& upper) {
   for (int i=0; i<upper.n; i++) {
@@ -126,7 +192,11 @@ NeuralNetwork::NeuralNetwork(int nInputs,
                               int nHidden,
                               int nOutputs,
                               float learningRate_)
- : learningRate(learningRate_) {
+//                              float decreaseConstant_,
+//                              float weightDecay_)
+ : learningRate(learningRate_)
+//, decreaseConstant(decreaseConstant_), weightDecay(weightDecay_)
+{
   _allocate(nInputs, nHidden, nOutputs);
   init();
 }
@@ -147,99 +217,4 @@ void NeuralNetwork::_deallocate() {
   _deallocateLayer(hiddenLayer);
   _deallocateLayer(outputLayer);
 }
-
-
-NeuralNetwork::~NeuralNetwork() {
-  _deallocate();
-}
-
-void NeuralNetwork::init() {
-  // randomize weights
-  for (int i=0; i<nParams; i++) {
-    weights[i] = Random::boundedUniform(-1, +1);
-    dWeights[i] = 0;
-  }
-}
-
-void NeuralNetwork::setInput(real *input) {
-  for (int i=0; i<inputLayer.n; i++)
-    inputLayer.output[i] = input[i];
-}
-
-void NeuralNetwork::getOutput(real *output) const {
-  for (int i=0; i<outputLayer.n; i++) {
-    output[i] = outputLayer.output[i];
-  }
-}
-
-void NeuralNetwork::clearDelta() {
-  for (int i=0; i<nParams; i++)
-    dWeights[i] = 0;
-}
-
-void NeuralNetwork::backpropagate(real *outputError) {
-  // Initialize output error.
-  for (int i=0; i<outputLayer.n; i++) {
-    real out = outputLayer.output[i];
-//    print("OUT:"); println(out);
-    outputLayer.error[i] = out * (1 - out) * outputError[i];
-  }
-  _backpropagateLayer(outputLayer, hiddenLayer);
-  _backpropagateLayer(hiddenLayer, inputLayer);
-}
-
-void NeuralNetwork::propagate() {
-  _propagateLayer(inputLayer, hiddenLayer);
-  _propagateLayer(hiddenLayer, outputLayer);
-}
-
-void NeuralNetwork::update() {
-  for (int i=0; i<nParams; i++)
-    weights[i] += learningRate * dWeights[i];
-  clearDelta();
-}
-
-//void NeuralNetwork::setWeights(real* weights) {
-//  for (int i=0; i<_nParams; i++) {
-//    _weights[i] = weights[i];
-//    _dWeights[i] = 0;
-//  }
-//}
-
-//void NeuralNetwork::save() {
-//}
-//
-//void NeuralNetwork::load() {
-//}
-
-//void NeuralNetwork::loadXFile(XFile *file)
-//{
-//  file->taggedRead(_weights, sizeof(real), _nParams, "WEIGHTS");
-//}
-//
-//void NeuralNetwork::saveXFile(XFile *file)
-//{
-//  file->taggedWrite(_weights, sizeof(real), _nParams, "WEIGHTS");
-//}
-
-#ifdef DEBUG
-
-void NeuralNetwork::printLayer(Layer* layer, Layer* lower) {
-  ::print("O:"); printArray(layer->output, layer->n);
-  ::print("E:"); printArray(layer->error, layer->n);
-  if (layer->weight) {
-    ::print("W:"); printArray(layer->weight[0], layer->n * (lower->n + 1));
-    ::print("dW:"); printArray(layer->dWeight[0], layer->n * (lower->n + 1));
-  }
-}
-
-void NeuralNetwork::debug() {
-  println("NEURAL-NET=======================");
-  ::print("n. params:"); println(nParams);
-  println("------OUTPUTS------"); printLayer(&outputLayer, &hiddenLayer);
-  println("------HIDDEN-------"); printLayer(&hiddenLayer, &inputLayer);
-  println("------INPUTS-------"); printLayer(&inputLayer, 0);
-}
-#endif
-
 

@@ -1,11 +1,13 @@
 /*
  * NeuralNetwork.h
  *
- * A simple MLP with one hidden layer.
+ * A simple feedforward neural network with one hidden layer.
  *
  * This file is part of Qualia https://github.com/sofian/qualia
  *
  * (c) 2011 Sofian Audry -- info(@)sofianaudry(.)com
+ * Inspired by code by Karsten Kutza
+ * http://www.ip-atlas.com/pub/nap/nn-src/bpn.txt
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,22 +33,26 @@
 
 //#define BIAS 1
 
-// Inspired from
-// http://www.ip-atlas.com/pub/nap/nn-src/bpn.txt
-// by Karsten Kutza
 #include "common.h"
 
 // TODO: IMPORTANT l'output layer ne devrait pas etre sigmoide mais lineaire...
 
-// TODO: a enlever (Arduino comp...)
-//#include "core/XFile.h"
-//using namespace Torch;
-
 class NeuralNetwork {
 
 public:
+  // Configurable parameters /////
+
+  // Learning rate. Value should be > 0, typical values are in (0, 1].
+  float learningRate;
+
+  //  float decreaseConstant;
+  //  float weightDecay;
+
+  // Internal use ////////////////
+
+  // Layer structure.
   struct Layer {
-    int n;           // number of units in this layer
+    int n;          // number of units in this layer
     real *output;   // output of ith unit
     real *error;    // error term of ith unit
     real **weight;  // connection weights to ith unit
@@ -54,31 +60,27 @@ public:
     real **dWeight; // last weight deltas for momentum
   };
 
-  real *weights;
-  real *dWeights;
-  int nParams;
+  // Parameters.
+  real *weights;  // weights
+  real *dWeights; // weights derivatives
+  int nParams;    // number of parameters
 
-  float learningRate;
-
+  // The three MLP layers (inputs -> hidden -> outputs).
   Layer inputLayer, hiddenLayer, outputLayer;
 
-  // Internal use.
-  void _allocateLayer(Layer& layer, int nInputs, int nOutputs, int& k);
-  void _deallocateLayer(Layer& layer);
-
-  void _propagateLayer(Layer& lower, Layer& upper);
-  void _backpropagateLayer(Layer& upper, Layer& lower);
-  void _updateLayer(Layer& upper, Layer& lower);
-
-  void _allocate(int nInputs, int nHidden, int nOutputs);
-  void _deallocate();
-
 public:
+  // Interface ///////////////////
+
+  // Constructor/destructor.
   NeuralNetwork(int nInputs,
                 int nHidden,
                 int nOutputs,
                 float learningRate = 0.01);
+//                float decreaseConstant = 0,
+//                float weightDecay = 0);
   virtual ~NeuralNetwork();
+
+  // Public methods.
 
   void init();
 
@@ -99,15 +101,10 @@ public:
   void update();
 
   // Remaps a value in [-1, 1].
+  // TODO: Should be made static.
   real remapValue(real x, real minVal, real maxVal) {
     return (2 * (x - minVal) / (maxVal - minVal) - 1);
   }
-
-  // TODO: ceci ne devrait pas etre dans cette classe car ca ne marchera pas sur Arduino
-  /// Save all the parameters to params.
-//  virtual void save();
-  /// Load all the parameters from params.
-//  virtual void load();
 
 #ifdef DEBUG
 
@@ -115,6 +112,17 @@ public:
 
   void debug();
 #endif
+
+  // Internal ("private") methods.
+  void _allocateLayer(Layer& layer, int nInputs, int nOutputs, int& k);
+  void _deallocateLayer(Layer& layer);
+
+  void _propagateLayer(Layer& lower, Layer& upper);
+  void _backpropagateLayer(Layer& upper, Layer& lower);
+  void _updateLayer(Layer& upper, Layer& lower);
+
+  void _allocate(int nInputs, int nHidden, int nOutputs);
+  void _deallocate();
 };
 
 #endif
