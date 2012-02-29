@@ -53,16 +53,18 @@ const unsigned int N_ACTIONS[] = { 2 };
 //StaticAllocator myAlloc(buffer, STATIC_ALLOCATOR_SIZE);
 int main(int argc, char** argv) {
   if (argc > 6 || (argc > 1 && strcmp(argv[1], "-h") == 0)) {
-    printf("Usage: %s [n_hidden] [learning_rate] [epsilon] [lambda] [gamma]\n", argv[0]);
+    printf("Usage: %s [n_hidden=%d] [learning_rate=%f] [epsilon=%f] [lambda=%f] [gamma=%f] [dim_observations=%d]\n",
+            argv[0], N_HIDDEN, LEARNING_RATE, EPSILON, LAMBDA, GAMMA, DIM_OBSERVATIONS);
     exit(-1);
   }
 
   int arg = 0;
-  int nHidden        = (++arg < argc ? atoi(argv[arg]) : N_HIDDEN);
-  float learningRate = (++arg < argc ? atof(argv[arg]) : LEARNING_RATE);
-  float epsilon      = (++arg < argc ? atof(argv[arg]) : EPSILON);
-  float lambda       = (++arg < argc ? atof(argv[arg]) : LAMBDA);
-  float gamma        = (++arg < argc ? atof(argv[arg]) : GAMMA);
+  int nHidden         = (++arg < argc ? atoi(argv[arg]) : N_HIDDEN);
+  float learningRate  = (++arg < argc ? atof(argv[arg]) : LEARNING_RATE);
+  float epsilon       = (++arg < argc ? atof(argv[arg]) : EPSILON);
+  float lambda        = (++arg < argc ? atof(argv[arg]) : LAMBDA);
+  float gamma         = (++arg < argc ? atof(argv[arg]) : GAMMA);
+  int dimObservations = (++arg < argc ? atoi(argv[arg]) : DIM_OBSERVATIONS);
 
   printf("N hidden: %d\n", nHidden);
   printf("Learning rate: %f\n", learningRate);
@@ -73,10 +75,10 @@ int main(int argc, char** argv) {
   //Alloc::init(&myAlloc);
 //  DummyAgent agent;
   QLearningEGreedyPolicy egreedy(epsilon);
-  NeuralNetwork net(DIM_OBSERVATIONS + DIM_ACTIONS, nHidden, 1, learningRate);
-  QLearningAgent agent(&net, DIM_OBSERVATIONS, DIM_ACTIONS, N_ACTIONS,
+  NeuralNetwork net(dimObservations + DIM_ACTIONS, nHidden, 1, learningRate);
+  QLearningAgent agent(&net, dimObservations, DIM_ACTIONS, N_ACTIONS,
                        lambda, gamma, &egreedy, false); // lambda = 1.0 => no history
-  Prototype2Environment env(DIM_OBSERVATIONS, DIM_ACTIONS, "prototype2", 9000);
+  Prototype2Environment env(dimObservations, DIM_ACTIONS, "prototype2", 9000);
   RLQualia qualia(&agent, &env);
 
   qualia.init();
