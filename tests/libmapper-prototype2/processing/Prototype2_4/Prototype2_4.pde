@@ -10,6 +10,7 @@ final int COMFORT_ZONE_INIT_SIZE = 100;
 final int CENTER_ZONE_DIAM = WINDOW_SIZE * 3/4;
 
 final float DRAG = 0.1;
+final float USER_CONTROL_EASINESS = 0.1;
 
 final int BUBBLE_DIAM = 35;
 final int COLLISION_DISTANCE = BUBBLE_DIAM / 2;
@@ -76,7 +77,7 @@ void draw() // step
   println(agent.getCharge() + " " + user.getCharge() + " " + magnetism.getStrength());
   //user.getParticle().position().set( mouseX, mouseY, 0 );
   Particle p = user.getParticle();
-  p.velocity().set( 0.01*(mouseX-p.position().x()), 0.01*(mouseY-p.position().y()), 0);
+  p.velocity().set( USER_CONTROL_EASINESS*(mouseX-p.position().x()), USER_CONTROL_EASINESS*(mouseY-p.position().y()), 0);
   handleBoundaryCollisions( agent.getParticle() );
   handleBoundaryCollisions( user.getParticle() );
   physics.tick();
