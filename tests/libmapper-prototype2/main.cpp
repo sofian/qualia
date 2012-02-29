@@ -29,27 +29,53 @@
 //#define STATIC_ALLOCATOR_SIZE 10000
 //#include "StaticAllocator.h"
 
-#define N_HIDDEN 5
 
 // xa, ya, xu, yu, d(a,u), d(a,O), m_a, m_u
 #define DIM_OBSERVATIONS 8
 #define DIM_ACTIONS 1
+
+// Parameters
+
+#define N_HIDDEN 5
 #define LEARNING_RATE 0.1f
+
+#define EPSILON 0.1f
+
 #define LAMBDA 0.3f
 #define GAMMA 0.99f
+
 const unsigned int N_ACTIONS[] = { 2 };
 
 #include <stdio.h>
+#include <cstring>
 
 //unsigned char buffer[STATIC_ALLOCATOR_SIZE];
 //StaticAllocator myAlloc(buffer, STATIC_ALLOCATOR_SIZE);
-int main() {
+int main(int argc, char** argv) {
+  if (argc > 6 || (argc > 1 && strcmp(argv[1], "-h") == 0)) {
+    printf("Usage: %s [n_hidden] [learning_rate] [epsilon] [lambda] [gamma]\n", argv[0]);
+    exit(-1);
+  }
+
+  int arg = 0;
+  int nHidden        = (++arg < argc ? atoi(argv[arg]) : N_HIDDEN);
+  float learningRate = (++arg < argc ? atof(argv[arg]) : LEARNING_RATE);
+  float epsilon      = (++arg < argc ? atof(argv[arg]) : EPSILON);
+  float lambda       = (++arg < argc ? atof(argv[arg]) : LAMBDA);
+  float gamma        = (++arg < argc ? atof(argv[arg]) : GAMMA);
+
+  printf("N hidden: %d\n", nHidden);
+  printf("Learning rate: %f\n", learningRate);
+  printf("Epsilon: %f\n", epsilon);
+  printf("Lambda: %f\n", lambda);
+  printf("Gamma: %f\n", gamma);
+
   //Alloc::init(&myAlloc);
 //  DummyAgent agent;
-  QLearningEGreedyPolicy egreedy(0.1f);
-  NeuralNetwork net(DIM_OBSERVATIONS + DIM_ACTIONS, N_HIDDEN, 1, LEARNING_RATE);
+  QLearningEGreedyPolicy egreedy(epsilon);
+  NeuralNetwork net(DIM_OBSERVATIONS + DIM_ACTIONS, nHidden, 1, learningRate);
   QLearningAgent agent(&net, DIM_OBSERVATIONS, DIM_ACTIONS, N_ACTIONS,
-                       LAMBDA, GAMMA, &egreedy, false); // lambda = 1.0 => no history
+                       lambda, gamma, &egreedy, false); // lambda = 1.0 => no history
   Prototype2Environment env(DIM_OBSERVATIONS, DIM_ACTIONS, "prototype2", 9000);
   RLQualia qualia(&agent, &env);
 
