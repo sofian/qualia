@@ -31,9 +31,12 @@
 
 #define N_HIDDEN 5
 
-// xa, ya, xu, yu, d(a,u), m_a, m_u
-#define DIM_OBSERVATIONS 7
+// xa, ya, xu, yu, d(a,u), d(a,O), m_a, m_u
+#define DIM_OBSERVATIONS 8
 #define DIM_ACTIONS 1
+#define LEARNING_RATE 0.1f
+#define LAMBDA 0.3f
+#define GAMMA 0.99f
 const unsigned int N_ACTIONS[] = { 2 };
 
 #include <stdio.h>
@@ -44,9 +47,9 @@ int main() {
   //Alloc::init(&myAlloc);
 //  DummyAgent agent;
   QLearningEGreedyPolicy egreedy(0.1f);
-  NeuralNetwork net(DIM_OBSERVATIONS + DIM_ACTIONS, N_HIDDEN, 1, 0.5f);
+  NeuralNetwork net(DIM_OBSERVATIONS + DIM_ACTIONS, N_HIDDEN, 1, LEARNING_RATE);
   QLearningAgent agent(&net, DIM_OBSERVATIONS, DIM_ACTIONS, N_ACTIONS,
-                       0.3f, 0.9999f, &egreedy, false); // lambda = 1.0 => no history
+                       LAMBDA, GAMMA, &egreedy, false); // lambda = 1.0 => no history
   Prototype2Environment env(DIM_OBSERVATIONS, DIM_ACTIONS, "prototype2", 9000);
   RLQualia qualia(&agent, &env);
 
