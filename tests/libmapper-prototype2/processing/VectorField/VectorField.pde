@@ -14,7 +14,7 @@ import Mapper.Db.*;
 
 import processing.opengl.*;
 
-PImage img;
+PImage img, imgA, imgB;
 int w = 80;
 
 float[][][] matrix = {
@@ -41,11 +41,22 @@ Mapper.Device.Signal sig_obs[] = new Mapper.Device.Signal[maxAgents];
 Mapper.Device.Signal sig_act[] = new Mapper.Device.Signal[maxAgents];
 
 int[][] agentPositions = new int[maxAgents][];
+float[][] agentVelocities = new float[maxAgents][2];
 
 void setup() {
-  size(200, 200, OPENGL);
+  size(200, 200);
   frameRate(30);
-  img = createImage(200,200,ARGB);
+  imgA = createImage(200,200,ARGB);
+  imgB = createImage(200,200,ARGB);
+  img = imgA;
+  imgA.loadPixels();
+  for (int i=0; i<imgA.pixels.length; i++)
+    imgA.pixels[i] = color(0,0,0,0);
+  imgA.updatePixels();
+  imgB.loadPixels();
+  for (int i=0; i<imgB.pixels.length; i++)
+    imgB.pixels[i] = color(0,0,0,0);
+  imgB.updatePixels();
   
   for (int i=0; i<maxAgents; i++)
   {
@@ -73,31 +84,44 @@ class PositionListener extends InputListener
   PositionListener(int j) { i=j; }
   public void onInput(int [] v) {
     int [] pos = agentPositions[i];
-    if (pos==null)
+    float [] vel = agentVelocities[i];
+    if (pos==null) {
       pos = new int[2];
+      pos[0] = img.width/2;
+    }
 
     // move to the right
     // (replace with physics based on action in 'v')
-    pos[0] = (pos[0]+1)%img.width;
+    vel[0] += v[0]/10.0f;
+    pos[0] = int(pos[0]+vel[0]);
+    if (pos[0] >= img.width) {
+      pos[0] = img.width-1;
+      vel[0] = 0;
+    }
+    if (pos[0] < 0) {
+      pos[0] = 0;
+      vel[0] = 0;
+    }
     pos[1] = 15*(i-5)+100;
 
+    agentVelocities[i] = vel;
     agentPositions[i] = pos;
   }
 };
 
-void updateObservations()
+public void updateObservations()
 {
     float obs[] = new float[5];
     for (int i=0; i<maxAgents; i++)
     {
       int [] pos = agentPositions[i];
       if (pos != null) {
-        int x = constrain(pos[0]+1, 1, img.width-2);
-        int y = constrain(pos[1]+1, 1, img.height-2);
-        obs[0] = red  (img.pixels[(x+1) + img.width *     y]) / 255.0;
-        obs[1] = green(img.pixels[    x + img.width * (y+1)]) / 255.0;
-        obs[2] = blue (img.pixels[(x-1) + img.width *     y]) / 255.0;
-        obs[3] = alpha(img.pixels[    x + img.width * (y-1)]) / 255.0;
+        int x = constrain(pos[0], 1, img.width-2);
+        int y = constrain(pos[1], 1, img.height-2);
+        obs[0] = red  (img.pixels[    x + img.width * (y-1)]) / 255.0f;
+        obs[1] = green(img.pixels[(x-1) + img.width *     y]) / 255.0f;
+        obs[2] = blue (img.pixels[    x + img.width * (y+1)]) / 255.0f;
+        obs[3] = alpha(img.pixels[(x+1) + img.width *     y]) / 255.0f;
 
         obs[4] = 0; // reward
 
@@ -109,15 +133,7 @@ void updateObservations()
 void draw() {
   dev.poll(0);
   
-  background(0);
-
   updatePositions();
-
-  // Where is the small rectangle we will process
-//  int xstart = constrain(mouseX-w/2,0,img.width);
-//  int ystart = constrain(mouseY-w/2,0,img.height);
-//  int xend = constrain(mouseX+w/2,0,img.width);
-//  int yend = constrain(mouseY+w/2,0,img.height);
 
   int xstart = 0;
   int ystart = 0;
@@ -125,20 +141,26 @@ void draw() {
   int yend = img.height;
 
   int matrixsize = 3;
-  loadPixels();
+  img.loadPixels();
+
+  updateObservations();
+
+  PImage timg = imgA;
+  if (img == imgA) timg = imgB;
+  timg.loadPixels();
+
   // Begin our loop for every pixel
   for (int x = xstart; x < xend; x++) {
     for (int y = ystart; y < yend; y++ ) {
       color c = convolution(x,y,matrix,matrixsize,img);
       int loc = x + y*img.width;
-      pixels[loc] = c;
+      timg.pixels[loc] = c;
     }
   }
-  updatePixels();
-  
-  updateObservations();
-  
-  img = get();
+  timg.updatePixels();
+
+  background(timg);
+  img = timg;
 }
 
 color convolution(int x, int y, float[][][] matrix,int matrixsize, PImage img)
