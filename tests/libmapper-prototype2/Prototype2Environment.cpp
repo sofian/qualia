@@ -22,12 +22,17 @@
 #include <unistd.h>
 #include <stdio.h>
 
-Prototype2Environment::Prototype2Environment(int observationDim_, int actionDim_, const char *namePrefix, int initialPort)
-  : devNamePrefix(namePrefix), devInitialPort(initialPort), currentObservation(observationDim_), observationDim(observationDim_), actionDim(actionDim_) {
+Prototype2Environment::Prototype2Environment(int observationDim_, int actionDim_, const char *namePrefix, bool autoConnect_, int initialPort)
+  : devNamePrefix(namePrefix), devInitialPort(initialPort), autoConnect(autoConnect_), currentObservation(observationDim_), observationDim(observationDim_), actionDim(actionDim_) {
+}
+
+Prototype2Environment::~Prototype2Environment() {
+  autoDisconnectDevice();
+  if (dev)
+    mdev_free(dev);
 }
 
 void Prototype2Environment::init() {
-  printf("Initializing\n");
   dev = mdev_new(devNamePrefix, devInitialPort, 0);
 
   mdev_add_input(dev, "/observation", observationDim + 1, 'f', 0, 0, 0,
@@ -35,6 +40,9 @@ void Prototype2Environment::init() {
 
   // TODO: Actions range (min/max) should be known in advance somehow (this is a limitation of the current implemenation)
   outsig = mdev_add_output(dev, "/action", actionDim, 'i', 0, 0, 0);
+
+  if (autoConnect)
+    autoConnectDevice(dev);
 }
 
 Observation* Prototype2Environment::start() {
@@ -44,18 +52,18 @@ Observation* Prototype2Environment::start() {
 }
 
 Observation* Prototype2Environment::step(const Action* action) {
-//  printf("Stepping env\n");
-//  printf("--> sending %d ...\n", action->actions[0]);
+  printf("Stepping env\n");
+  printf("--> sending %d ...\n", action->actions[0]);
   msig_update(outsig, action->actions);
   while (!mdev_poll(dev, 1) );
-//  printf("--> receiving reward = %f, data = %f ...\n", currentObservation.reward, currentObservation[0]);
+  printf("--> receiving reward = %f, data = %f ...\n", currentObservation.reward, currentObservation[0]);
   //usleep(100);
   return &currentObservation;
 }
 
 void Prototype2Environment::updateInput(mapper_signal sig, mapper_db_signal props,
                                         mapper_timetag_t *timetag, float *value) {
-//  printf("update input called %f\n", *value);
+  printf("update input called %f\n", *value);
   RLObservation& obs = ((Prototype2Environment*)props->user_data)->currentObservation;
   int k;
   for (k=0; k<obs.dim; k++)

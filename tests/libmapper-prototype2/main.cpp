@@ -52,8 +52,8 @@ const unsigned int N_ACTIONS[] = { 2 };
 //unsigned char buffer[STATIC_ALLOCATOR_SIZE];
 //StaticAllocator myAlloc(buffer, STATIC_ALLOCATOR_SIZE);
 int main(int argc, char** argv) {
-  if (argc > 6 || (argc > 1 && strcmp(argv[1], "-h") == 0)) {
-    printf("Usage: %s [n_hidden=%d] [learning_rate=%f] [epsilon=%f] [lambda=%f] [gamma=%f] [dim_observations=%d]\n",
+  if (argc > 8 || (argc > 1 && strcmp(argv[1], "-h") == 0)) {
+    printf("Usage: %s [n_hidden=%d] [learning_rate=%f] [epsilon=%f] [lambda=%f] [gamma=%f] [dim_observations=%d] [autoconnect=0]\n",
             argv[0], N_HIDDEN, LEARNING_RATE, EPSILON, LAMBDA, GAMMA, DIM_OBSERVATIONS);
     exit(-1);
   }
@@ -65,6 +65,7 @@ int main(int argc, char** argv) {
   float lambda        = (++arg < argc ? atof(argv[arg]) : LAMBDA);
   float gamma         = (++arg < argc ? atof(argv[arg]) : GAMMA);
   int dimObservations = (++arg < argc ? atoi(argv[arg]) : DIM_OBSERVATIONS);
+  bool autoConnect    = (++arg < argc ? atoi(argv[arg]) : false);
 
   printf("N hidden: %d\n", nHidden);
   printf("Learning rate: %f\n", learningRate);
@@ -78,7 +79,7 @@ int main(int argc, char** argv) {
   NeuralNetwork net(dimObservations + DIM_ACTIONS, nHidden, 1, learningRate);
   QLearningAgent agent(&net, dimObservations, DIM_ACTIONS, N_ACTIONS,
                        lambda, gamma, &egreedy, false); // lambda = 1.0 => no history
-  Prototype2Environment env(dimObservations, DIM_ACTIONS, "prototype2", 9000);
+  Prototype2Environment env(dimObservations, DIM_ACTIONS, "prototype2", autoConnect, 9000);
   RLQualia qualia(&agent, &env);
 
   qualia.init();

@@ -22,18 +22,21 @@
 
 #include "Environment.h"
 #include "RLObservation.h"
+#include "AutoConnect.h"
 #include <mapper/mapper.h>
 
 class Prototype2Environment : public Environment {
 public:
   mapper_device dev;
   const char* devNamePrefix;
+  bool autoConnect;
   int devInitialPort;
   mapper_signal outsig;
   RLObservation currentObservation;
   int observationDim, actionDim;
 
-  Prototype2Environment(int observationDim, int actionDim, const char *namePrefix, int initialPort = 9000);
+  Prototype2Environment(int observationDim, int actionDim, const char *namePrefix, bool autoConnect = false, int initialPort = 9000);
+  virtual ~Prototype2Environment();
 
   virtual void init();
   virtual Observation* start();
