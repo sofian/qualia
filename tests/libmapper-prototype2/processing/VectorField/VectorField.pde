@@ -41,7 +41,6 @@ Mapper.Device.Signal sig_obs[] = new Mapper.Device.Signal[maxAgents];
 Mapper.Device.Signal sig_act[] = new Mapper.Device.Signal[maxAgents];
 
 int[][] agentPositions = new int[maxAgents][];
-float[][] agentVelocities = new float[maxAgents][2];
 
 void setup() {
   size(200, 200, OPENGL);
@@ -60,8 +59,8 @@ void setup() {
   
   for (int i=0; i<maxAgents; i++)
   {
-    sig_obs[i] = dev.add_output("node/"+(i+1)+"/cardinal", 5, 'f', null, 0d, 1d);
-    sig_act[i] = dev.add_input("node/"+(i+1)+"/force", 1, 'i', null, 0d, 2d,
+    sig_obs[i] = dev.add_output("node/"+(i+1)+"/observation", 4, 'f', null, 0d, 1d);
+    sig_act[i] = dev.add_input("node/"+(i+1)+"/position", 2, 'i', null, 0d, 200d,
       new ActionListener(i));
   }
 }
@@ -84,46 +83,10 @@ class ActionListener extends InputListener
   ActionListener(int j) { i=j; }
   public void onInput(int [] v) {
     int [] pos = agentPositions[i];
-    float [] vel = agentVelocities[i];
-    if (pos==null) {
-      pos = new int[2];
-      pos[0] = int(random( img.width/4, img.width*3/4 ));
-      pos[1] = int(random( img.height/4, img.height*3/4 ));
-    }
-
-    // move to the right
-    // (replace with physics based on action in 'v')
-    float obs[] = observe(pos);
-
-    // action can be 0, 1, 2 = gain of -1, 0, or 1
-    float gain = (constrain(v[0],0,2)-1)*2;
-
-    vel[0] += gain * obs[0] * obs[0] - gain * obs[2] * obs[2];
-    vel[1] += gain * obs[1] * obs[1] - gain * obs[3] * obs[3];
-
-    pos[0] = int(pos[0]+vel[0]);
-    pos[1] = int(pos[1]+vel[1]);
-
-    if (pos[0] < 0) {
-      pos[0] = 0;
-      vel[0] *= -0.95;
-    }
-    if (pos[1] < 0) {
-      pos[1] = 0;
-      vel[1] *= -0.95;
-    }
-
-    if (pos[0] >= img.width) {
-      pos[0] = img.width-1;
-      vel[0] *= -0.95;
-    }
-    if (pos[1] >= img.height) {
-      pos[1] = img.height-1;
-      vel[1] *= -0.95;
-    }
-
-    agentVelocities[i] = vel;
-    agentPositions[i] = pos;
+    if (pos==null)
+      agentPositions[i] = new int[2];
+    agentPositions[i][0] = constrain(v[0], 0, img.width-1);
+    agentPositions[i][1] = constrain(v[1], 0, img.height-1);;
   }
 };
 
@@ -133,16 +96,8 @@ public void updateObservations()
     for (int i=0; i<maxAgents; i++)
     {
       int [] pos = agentPositions[i];
-      if (pos != null) {
-        float [] o = observe(pos);
-        obs[0] = o[0];
-        obs[1] = o[1];
-        obs[2] = o[2];
-        obs[3] = o[3];
-        obs[4] = 0; // reward
-
-        sig_obs[i].update(obs);
-      }
+      if (pos != null)
+        sig_obs[i].update(observe(pos));
     }
 }
 
