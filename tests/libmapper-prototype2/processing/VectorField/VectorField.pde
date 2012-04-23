@@ -36,7 +36,7 @@ float[][][] matrix = {
 };
 
 Mapper.Device dev = new Device("vector", 9000);
-final int maxAgents = 9;
+final int maxAgents = 20;
 Mapper.Device.Signal sig_obs[] = new Mapper.Device.Signal[maxAgents];
 Mapper.Device.Signal sig_act[] = new Mapper.Device.Signal[maxAgents];
 
@@ -44,7 +44,7 @@ int[][] agentPositions = new int[maxAgents][];
 float[][] agentVelocities = new float[maxAgents][2];
 
 void setup() {
-  size(200, 200);
+  size(200, 200, OPENGL);
   frameRate(30);
   imgA = createImage(200,200,ARGB);
   imgB = createImage(200,200,ARGB);
@@ -61,8 +61,8 @@ void setup() {
   for (int i=0; i<maxAgents; i++)
   {
     sig_obs[i] = dev.add_output("node/"+(i+1)+"/cardinal", 5, 'f', null, 0d, 1d);
-    sig_act[i] = dev.add_input("node/"+(i+1)+"/force", 1, 'i', null, 0d, 1d,
-      new PositionListener(i));
+    sig_act[i] = dev.add_input("node/"+(i+1)+"/force", 1, 'i', null, 0d, 2d,
+      new ActionListener(i));
   }
 }
 
@@ -78,31 +78,49 @@ void updatePositions()
   }
 }
 
-class PositionListener extends InputListener
+class ActionListener extends InputListener
 {
   final int i;
-  PositionListener(int j) { i=j; }
+  ActionListener(int j) { i=j; }
   public void onInput(int [] v) {
     int [] pos = agentPositions[i];
     float [] vel = agentVelocities[i];
     if (pos==null) {
       pos = new int[2];
-      pos[0] = img.width/2;
+      pos[0] = int(random( img.width/4, img.width*3/4 ));
+      pos[1] = int(random( img.height/4, img.height*3/4 ));
     }
 
     // move to the right
     // (replace with physics based on action in 'v')
-    vel[0] += v[0]/10.0f;
+    float obs[] = observe(pos);
+
+    // action can be 0, 1, 2 = gain of -1, 0, or 1
+    float gain = (constrain(v[0],0,2)-1)*2;
+
+    vel[0] += gain * obs[0] * obs[0] - gain * obs[2] * obs[2];
+    vel[1] += gain * obs[1] * obs[1] - gain * obs[3] * obs[3];
+
     pos[0] = int(pos[0]+vel[0]);
-    if (pos[0] >= img.width) {
-      pos[0] = img.width-1;
-      vel[0] = 0;
-    }
+    pos[1] = int(pos[1]+vel[1]);
+
     if (pos[0] < 0) {
       pos[0] = 0;
-      vel[0] = 0;
+      vel[0] *= -0.95;
     }
-    pos[1] = 15*(i-5)+100;
+    if (pos[1] < 0) {
+      pos[1] = 0;
+      vel[1] *= -0.95;
+    }
+
+    if (pos[0] >= img.width) {
+      pos[0] = img.width-1;
+      vel[0] *= -0.95;
+    }
+    if (pos[1] >= img.height) {
+      pos[1] = img.height-1;
+      vel[1] *= -0.95;
+    }
 
     agentVelocities[i] = vel;
     agentPositions[i] = pos;
@@ -116,18 +134,28 @@ public void updateObservations()
     {
       int [] pos = agentPositions[i];
       if (pos != null) {
-        int x = constrain(pos[0], 1, img.width-2);
-        int y = constrain(pos[1], 1, img.height-2);
-        obs[0] = red  (img.pixels[    x + img.width * (y-1)]) / 255.0f;
-        obs[1] = green(img.pixels[(x-1) + img.width *     y]) / 255.0f;
-        obs[2] = blue (img.pixels[    x + img.width * (y+1)]) / 255.0f;
-        obs[3] = alpha(img.pixels[(x+1) + img.width *     y]) / 255.0f;
-
+        float [] o = observe(pos);
+        obs[0] = o[0];
+        obs[1] = o[1];
+        obs[2] = o[2];
+        obs[3] = o[3];
         obs[4] = 0; // reward
 
         sig_obs[i].update(obs);
       }
     }
+}
+
+float [] observe(int [] pos)
+{
+  float [] obs = new float [4];
+  int x = constrain(pos[0], 1, img.width-2);
+  int y = constrain(pos[1], 1, img.height-2);
+  obs[0] = red  (img.pixels[    x + img.width * (y-1)]) / 255.0f;
+  obs[1] = green(img.pixels[(x-1) + img.width *     y]) / 255.0f;
+  obs[2] = blue (img.pixels[    x + img.width * (y+1)]) / 255.0f;
+  obs[3] = alpha(img.pixels[(x+1) + img.width *     y]) / 255.0f;
+  return obs;
 }
 
 void draw() {
@@ -159,7 +187,18 @@ void draw() {
   }
   timg.updatePixels();
 
+  background(0);
   background(timg);
+
+  int [] pos;
+  int i;
+  for (i=0; i < maxAgents; i++)
+  {
+    pos = agentPositions[i];
+    if (pos != null)
+      ellipse(pos[0], pos[1], 15, 15);
+  }
+  
   img = timg;
 }
 
@@ -182,7 +221,7 @@ color convolution(int x, int y, float[][][] matrix,int matrixsize, PImage img)
         int loc = xloc + img.width*yloc;
 
         // Calculate the convolution
-        float gain = 0.95;
+        float gain = 0.99;
         rtotal = max(rtotal,red(  img.pixels[loc]) * matrix[0][i][j] * gain);
         gtotal = max(gtotal,green(img.pixels[loc]) * matrix[1][i][j] * gain);
         btotal = max(btotal,blue( img.pixels[loc]) * matrix[2][i][j] * gain);
