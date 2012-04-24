@@ -154,9 +154,9 @@ int main()
     if (!dev)
         return 1;
 
-    int pos[2];
-    pos[0] = rand()%200;
-    pos[1] = rand()%200;
+    float pos[2];
+    pos[0] = rand()%100+50;
+    pos[1] = rand()%100+50;
     float vel[2] = {0, 0};
     float gain = 1;
 
@@ -187,7 +187,10 @@ int main()
                 vel[1] *= -0.95;
             }
 
-            msig_update(sig, pos);
+            int p[2];
+            p[0] = (int)pos[0];
+            p[1] = (int)pos[1];
+            msig_update(sig, p);
         }
     }
     autoDisconnect();

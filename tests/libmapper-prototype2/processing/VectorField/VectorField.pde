@@ -14,7 +14,7 @@ import Mapper.Db.*;
 
 import processing.opengl.*;
 
-PImage img, imgA, imgB;
+PImage img1, img2, imgA, imgB, imgC, imgD;
 int w = 80;
 
 float[][][] matrix = {
@@ -42,12 +42,18 @@ Mapper.Device.Signal sig_act[] = new Mapper.Device.Signal[maxAgents];
 
 int[][] agentPositions = new int[maxAgents][];
 
+color[] colors = {color(255,0,0), color(0,255,0),
+                  color(0,0,255), color(255,255,0)};
+
 void setup() {
   size(200, 200, OPENGL);
   frameRate(30);
   imgA = createImage(200,200,ARGB);
   imgB = createImage(200,200,ARGB);
-  img = imgA;
+  imgC = createImage(200,200,ARGB);
+  imgD = createImage(200,200,ARGB);
+  img1 = imgA;
+  img2 = imgB;
   imgA.loadPixels();
   for (int i=0; i<imgA.pixels.length; i++)
     imgA.pixels[i] = color(0,0,0,0);
@@ -56,6 +62,14 @@ void setup() {
   for (int i=0; i<imgB.pixels.length; i++)
     imgB.pixels[i] = color(0,0,0,0);
   imgB.updatePixels();
+  imgC.loadPixels();
+  for (int i=0; i<imgC.pixels.length; i++)
+    imgC.pixels[i] = color(0,0,0,0);
+  imgC.updatePixels();
+  imgD.loadPixels();
+  for (int i=0; i<imgD.pixels.length; i++)
+    imgD.pixels[i] = color(0,0,0,0);
+  imgD.updatePixels();
   
   for (int i=0; i<maxAgents; i++)
   {
@@ -72,7 +86,8 @@ void updatePositions()
     if (agentPositions[i]!=null) {
       int x = agentPositions[i][0];
       int y = agentPositions[i][1];
-      img.pixels[x + img.width*y] = color(255,255,255,255);
+      img1.pixels[x + img1.width*y] = color(255,255,255,255);
+      img2.pixels[x + img2.width*y] = color(255,255,255,255);
     }
   }
 }
@@ -85,8 +100,8 @@ class ActionListener extends InputListener
     int [] pos = agentPositions[i];
     if (pos==null)
       agentPositions[i] = new int[2];
-    agentPositions[i][0] = constrain(v[0], 0, img.width-1);
-    agentPositions[i][1] = constrain(v[1], 0, img.height-1);;
+    agentPositions[i][0] = constrain(v[0], 0, img1.width-1);
+    agentPositions[i][1] = constrain(v[1], 0, img1.height-1);;
   }
 };
 
@@ -104,12 +119,12 @@ public void updateObservations()
 float [] observe(int [] pos)
 {
   float [] obs = new float [4];
-  int x = constrain(pos[0], 1, img.width-2);
-  int y = constrain(pos[1], 1, img.height-2);
-  obs[0] = red  (img.pixels[    x + img.width * (y-1)]) / 255.0f;
-  obs[1] = green(img.pixels[(x-1) + img.width *     y]) / 255.0f;
-  obs[2] = blue (img.pixels[    x + img.width * (y+1)]) / 255.0f;
-  obs[3] = alpha(img.pixels[(x+1) + img.width *     y]) / 255.0f;
+  int x = constrain(pos[0], 1, img1.width-2);
+  int y = constrain(pos[1], 1, img1.height-2);
+  obs[0] = red  (img1.pixels[    x + img1.width * (y-1)]) / 255.0f;
+  obs[1] = green(img1.pixels[(x-1) + img1.width *     y]) / 255.0f;
+  obs[2] = red  (img2.pixels[    x + img2.width * (y+1)]) / 255.0f;
+  obs[3] = green(img2.pixels[(x+1) + img2.width *     y]) / 255.0f;
   return obs;
 }
 
@@ -120,44 +135,62 @@ void draw() {
 
   int xstart = 0;
   int ystart = 0;
-  int xend = img.width;
-  int yend = img.height;
+  int xend = img1.width;
+  int yend = img1.height;
 
   int matrixsize = 3;
-  img.loadPixels();
+  img1.loadPixels();
+  img2.loadPixels();
 
   updateObservations();
 
-  PImage timg = imgA;
-  if (img == imgA) timg = imgB;
-  timg.loadPixels();
+  PImage timg1 = imgA, timg2 = imgC;
+  if (img1 == imgA) {
+    timg1 = imgB;
+    timg2 = imgD;
+  }
+  timg1.loadPixels();
+  timg2.loadPixels();
 
   // Begin our loop for every pixel
   for (int x = xstart; x < xend; x++) {
     for (int y = ystart; y < yend; y++ ) {
-      color c = convolution(x,y,matrix,matrixsize,img);
-      int loc = x + y*img.width;
-      timg.pixels[loc] = c;
+      int loc = x + y*img1.width;
+      color c = convolution(x,y,matrix,matrixsize,0,img1);
+      timg1.pixels[loc] = c;
+      c = convolution(x,y,matrix,matrixsize,1,img2);
+      timg2.pixels[loc] = c;
     }
   }
-  timg.updatePixels();
+  timg1.updatePixels();
+  timg2.updatePixels();
 
   background(0);
-  background(timg);
+
+  loadPixels();
+  for (int i=0; i < pixels.length; i++)
+    pixels[i] =
+      color((red(timg1.pixels[i]) + green(timg1.pixels[i])
+            + red(timg2.pixels[i]) + green(timg2.pixels[i]))
+            / 4);
+  updatePixels();
 
   int [] pos;
   int i;
   for (i=0; i < maxAgents; i++)
   {
     pos = agentPositions[i];
-    if (pos != null)
+    if (pos != null) {
+      fill(colors[i%4]);
       ellipse(pos[0], pos[1], 15, 15);
+    }
   }
   
-  img = timg;
+  img1 = timg1;
+  img2 = timg2;
 }
 
-color convolution(int x, int y, float[][][] matrix,int matrixsize, PImage img)
+color convolution(int x, int y, float[][][] matrix,int matrixsize, int n, PImage img)
 {
   float rtotal = 0.0;
   float gtotal = 0.0;
@@ -176,20 +209,16 @@ color convolution(int x, int y, float[][][] matrix,int matrixsize, PImage img)
         int loc = xloc + img.width*yloc;
 
         // Calculate the convolution
-        float gain = 0.99;
-        rtotal = max(rtotal,red(  img.pixels[loc]) * matrix[0][i][j] * gain);
-        gtotal = max(gtotal,green(img.pixels[loc]) * matrix[1][i][j] * gain);
-        btotal = max(btotal,blue( img.pixels[loc]) * matrix[2][i][j] * gain);
-        atotal = max(atotal,alpha(img.pixels[loc]) * matrix[3][i][j] * gain);
+        float gain = 0.95;
+        rtotal = max(rtotal,red(  img.pixels[loc]) * matrix[0+n*2][i][j] * gain);
+        gtotal = max(gtotal,green(img.pixels[loc]) * matrix[1+n*2][i][j] * gain);
       }
     }
   }
   // Make sure RGB is within range
   rtotal = constrain(rtotal,0,255);
   gtotal = constrain(gtotal,0,255);
-  btotal = constrain(btotal,0,255);
-  atotal = constrain(atotal,0,255);
   // Return the resulting color
-  return color(rtotal,gtotal,btotal,atotal);
+  return color(rtotal,gtotal,0,0);
 }
 
