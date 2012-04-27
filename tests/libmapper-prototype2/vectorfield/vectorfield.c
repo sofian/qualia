@@ -5,7 +5,9 @@
 #include "windows.h"
 #endif
 
+#include "GL/glew.h"
 #include "GL/glut.h"
+#include "GL/glu.h"
 
 #ifdef _WIN32
 #include "glext.h"
@@ -13,7 +15,8 @@
 
 
 #include <stdio.h>
-
+#include <math.h>
+#include <string.h>
 
 #ifdef _WIN32
 // As microsoft did not maintain openGL after version 1.1, Windows platform need to go throught this crap ; macosX and Linux are fine.
@@ -72,36 +75,15 @@ void getOpenGLFunctionPointers(void)
 // Expressed as float so gluPerspective division returns a float and not 0 (640/480 != 640.0/480.0).
 #define RENDER_WIDTH 640.0
 #define RENDER_HEIGHT 480.0
-#define SHADOW_MAP_RATIO 2
-
-
-//Camera position
-float p_camera[3] = {32,20,0};
-
-//Camera lookAt
-float l_camera[3] = {2,0,-10};
-
-//Light position
-float p_light[3] = {3,20,0};
-
-//Light lookAt
-float l_light[3] = {0,0,-5};
-
-
-//Light mouvement circle radius
-float light_mvnt = 30.0f;
 
 // Hold id of the framebuffer for light POV rendering
 GLuint fboId;
 
-// Z values will be rendered to this texture when using fboId framebuffer
-GLuint depthTextureId;
+// colour values will be rendered to this texture when using fboId framebuffer
+GLuint fieldTextureId;
 
-// Use to activate/disable shadowShader
-GLhandleARB shadowShaderId;
-GLuint shadowMapUniform;
-
-
+GLhandleARB fieldShaderId;
+GLuint fieldUniform;
 
 // Loading shader function
 GLhandleARB loadShader(char* filename, unsigned int type)
@@ -178,7 +160,7 @@ GLhandleARB loadShader(char* filename, unsigned int type)
 	return handle;
 }
 
-void loadShadowShader()
+void loadFieldShader()
 {
 	GLhandleARB vertexShaderHandle;
 	GLhandleARB fragmentShaderHandle;
@@ -186,27 +168,24 @@ void loadShadowShader()
 	vertexShaderHandle   = loadShader("VertexShader.c",GL_VERTEX_SHADER);
 	fragmentShaderHandle = loadShader("FragmentShader.c",GL_FRAGMENT_SHADER);
 	
-	shadowShaderId = glCreateProgramObjectARB();
+	fieldShaderId = glCreateProgramObjectARB();
 	
-	glAttachObjectARB(shadowShaderId,vertexShaderHandle);
-	glAttachObjectARB(shadowShaderId,fragmentShaderHandle);
-	glLinkProgramARB(shadowShaderId);
+	glAttachObjectARB(fieldShaderId,vertexShaderHandle);
+	glAttachObjectARB(fieldShaderId,fragmentShaderHandle);
+	glLinkProgramARB(fieldShaderId);
 	
-	shadowMapUniform = glGetUniformLocationARB(shadowShaderId,"ShadowMap");
+	fieldUniform = glGetUniformLocationARB(fieldShaderId, "field");
 }
 
 void generateShadowFBO()
 {
-	int shadowMapWidth = RENDER_WIDTH * SHADOW_MAP_RATIO;
-	int shadowMapHeight = RENDER_HEIGHT * SHADOW_MAP_RATIO;
-	
 	//GLfloat borderColor[4] = {0,0,0,0};
 	
 	GLenum FBOstatus;
 	
-	// Try to use a texture depth component
-	glGenTextures(1, &depthTextureId);
-	glBindTexture(GL_TEXTURE_2D, depthTextureId);
+	// Try to use a texture colour component
+	glGenTextures(1, &fieldTextureId);
+	glBindTexture(GL_TEXTURE_2D, fieldTextureId);
 	
 	// GL_LINEAR does not make sense for depth texture. However, next tutorial shows usage of GL_LINEAR and PCF
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -218,10 +197,10 @@ void generateShadowFBO()
 	
 	//glTexParameterfv( GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor );
 	
-	
-	
 	// No need to force GL_DEPTH_COMPONENT24, drivers usually give you the max precision if available 
-	glTexImage2D( GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, shadowMapWidth, shadowMapHeight, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 0);
+	glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16,
+                  RENDER_WIDTH, RENDER_HEIGHT, 0, GL_RGBA,
+                  GL_UNSIGNED_BYTE, 0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	
 	// create a framebuffer object
@@ -229,42 +208,36 @@ void generateShadowFBO()
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboId);
 	
 	// Instruct openGL that we won't bind a color texture with the currently binded FBO
-	glDrawBuffer(GL_NONE);
-	glReadBuffer(GL_NONE);
+	glDrawBuffer(GL_FRONT);
+	glReadBuffer(GL_FRONT);
 	
 	// attach the texture to FBO depth attachment point
-	glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,GL_TEXTURE_2D, depthTextureId, 0);
+	glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0,
+                              GL_TEXTURE_2D, fieldTextureId, 0);
 	
 	// check FBO status
 	FBOstatus = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
-	if(FBOstatus != GL_FRAMEBUFFER_COMPLETE_EXT)
+	if(FBOstatus != GL_FRAMEBUFFER_COMPLETE_EXT) {
 		printf("GL_FRAMEBUFFER_COMPLETE_EXT failed, CANNOT use FBO\n");
+        exit(1);
+    }
 	
 	// switch back to window-system-provided framebuffer
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 }
 
-void setupMatrices(float position_x,float position_y,float position_z,float lookAt_x,float lookAt_y,float lookAt_z)
+void setupMatrices()
 {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(45,RENDER_WIDTH/RENDER_HEIGHT,10,40000);
+    gluOrtho2D(0, RENDER_WIDTH, 0, RENDER_HEIGHT);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	gluLookAt(position_x,position_y,position_z,lookAt_x,lookAt_y,lookAt_z,0,1,0);
 }
 
-
-// This update only change the position of the light.
-//int elapsedTimeCounter = 0;
 void update(void)
 {
-	
-	p_light[0] = light_mvnt * cos(glutGet(GLUT_ELAPSED_TIME)/1000.0);
-	p_light[2] = light_mvnt * sin(glutGet(GLUT_ELAPSED_TIME)/1000.0);
-	
-	//p_light[0] = light_mvnt * cos(3652/1000.0);
-	//p_light[2] = light_mvnt * sin(3652/1000.0);
+    // Nothing to do.
 }
 
 
@@ -325,108 +298,40 @@ void endTranslate()
 
 void drawObjects(void)
 {
-	// Ground
+	// Square
 	glColor4f(0.3f,0.3f,0.3f,1);
 	glBegin(GL_QUADS);
-	glVertex3f(-35,2,-35);
-	glVertex3f(-35,2, 15);
-	glVertex3f( 15,2, 15);
-	glVertex3f( 15,2,-35);
+	glVertex2f(0, 0);
+	glVertex2f(0, RENDER_HEIGHT);
+	glVertex2f(RENDER_WIDTH, RENDER_HEIGHT);
+	glVertex2f(RENDER_WIDTH, 0);
 	glEnd();
-	
-	glColor4f(0.9f,0.9f,0.9f,1);
-	
-	// Instead of calling glTranslatef, we need a custom function that also maintain the light matrix
-	startTranslate(0,4,-16);
-	glutSolidCube(4);
-	endTranslate();
-	
-	startTranslate(0,4,-5);
-	glutSolidCube(4);
-	endTranslate();
-	
-	
 }
 
 void renderScene(void) 
 {
 	update();
-	
-	//First step: Render from the light POV to a FBO, story depth values only
-	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT,fboId);	//Rendering offscreen
-	
-	//Using the fixed pipeline to render to the depthbuffer
-	glUseProgramObjectARB(0);
-	
-	// In the case we render the shadowmap to a higher resolution, the viewport must be modified accordingly.
-	glViewport(0,0,RENDER_WIDTH * SHADOW_MAP_RATIO,RENDER_HEIGHT* SHADOW_MAP_RATIO);
-	
-	// Clear previous frame values
-	glClear( GL_DEPTH_BUFFER_BIT);
-	
-	//Disable color rendering, we only want to write to the Z-Buffer
-	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE); 
-	
-	setupMatrices(p_light[0],p_light[1],p_light[2],l_light[0],l_light[1],l_light[2]);
-	
-	// Culling switching, rendering only backface, this is done to avoid self-shadowing
-	glCullFace(GL_FRONT);
-	drawObjects();
-	
-	//Save modelview/projection matrice into texture7, also add a biais
-	setTextureMatrix();
-	
-	
-	// Now rendering from the camera POV, using the FBO to generate shadows
-	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT,0);
-	
-	glViewport(0,0,RENDER_WIDTH,RENDER_HEIGHT);
-	
-	//Enabling color write (previously disabled for light POV z-buffer rendering)
-	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE); 
-	
-	// Clear previous frame values
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	//Using the shadow shader
-	glUseProgramObjectARB(shadowShaderId);
-	glUniform1iARB(shadowMapUniform,7);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_DEPTH_TEST);
+	
+	glViewport(0,0, RENDER_WIDTH, RENDER_HEIGHT);
+	
+	// Clear previous frame values
+	glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+
+	setupMatrices();
+
+	//Using the field shader
+	glUseProgramObjectARB(fieldShaderId);
+	glUniform1iARB(fieldUniform,7);
 	glActiveTextureARB(GL_TEXTURE7);
-	glBindTexture(GL_TEXTURE_2D,depthTextureId);
+	glBindTexture(GL_TEXTURE_2D, fieldTextureId);
 	
-	
-	
-		
-
-	
-	setupMatrices(p_camera[0],p_camera[1],p_camera[2],l_camera[0],l_camera[1],l_camera[2]);
-	
-	glCullFace(GL_BACK);
 	drawObjects();
 	
-	// DEBUG only. this piece of code draw the depth buffer onscreen
-	/*
-	 glUseProgramObjectARB(0);
-	 glMatrixMode(GL_PROJECTION);
-	 glLoadIdentity();
-	 glOrtho(-RENDER_WIDTH/2,RENDER_WIDTH/2,-RENDER_HEIGHT/2,RENDER_HEIGHT/2,1,20);
-	 glMatrixMode(GL_MODELVIEW);
-	 glLoadIdentity();
-	 glColor4f(1,1,1,1);
-	 glActiveTextureARB(GL_TEXTURE0);
-	 glBindTexture(GL_TEXTURE_2D,depthTextureId);
-	 glEnable(GL_TEXTURE_2D);
-	 glTranslated(0,0,-1);
-	 glBegin(GL_QUADS);
-	 glTexCoord2d(0,0);glVertex3f(0,0,0);
-	 glTexCoord2d(1,0);glVertex3f(RENDER_WIDTH/2,0,0);
-	 glTexCoord2d(1,1);glVertex3f(RENDER_WIDTH/2,RENDER_HEIGHT/2,0);
-	 glTexCoord2d(0,1);glVertex3f(0,RENDER_HEIGHT/2,0);
-	 
-	 
-	 glEnd();
-	 glDisable(GL_TEXTURE_2D);
-	 */
+	/* //Save modelview/projection matrice into texture7, also add a bias */
+	/* setTextureMatrix(); */
 	
 	glutSwapBuffers();
 }
@@ -437,6 +342,11 @@ void processNormalKeys(unsigned char key, int x, int y) {
 		exit(0);
 }
 
+void onTimer(int value)
+{
+    renderScene();
+    glutTimerFunc(100, onTimer, 0);
+}
 
 int main(int argc, char** argv)
 {
@@ -445,6 +355,12 @@ int main(int argc, char** argv)
 	glutInitWindowPosition(100,100);
 	glutInitWindowSize(RENDER_WIDTH,RENDER_HEIGHT);
 	glutCreateWindow("GLSL Shadow mapping");
+
+    GLenum err = glewInit();
+    if (GLEW_OK != err) {
+        /* Problem: glewInit failed, something is seriously wrong. */
+        fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
+    }
 	
 	// This call will grab openGL extension function pointers.
 	// This is not necessary for macosx and linux
@@ -452,23 +368,17 @@ int main(int argc, char** argv)
 	getOpenGLFunctionPointers();
 #endif
 	generateShadowFBO();
-	loadShadowShader();
+	loadFieldShader();
 	
-	// This is important, if not here, FBO's depthbuffer won't be populated.
-	glEnable(GL_DEPTH_TEST);
 	glClearColor(0,0,0,1.0f);
-	
-	glEnable(GL_CULL_FACE);
-	
-	glHint(GL_PERSPECTIVE_CORRECTION_HINT,GL_NICEST);
-	
-	
-	
-	
+
 	glutDisplayFunc(renderScene);
-	glutIdleFunc(renderScene);
+	//glutIdleFunc(renderScene);
+	glutTimerFunc(100, onTimer, 0);
 	
 	glutKeyboardFunc(processNormalKeys);
 	
 	glutMainLoop();
+
+    return 0;
 }
