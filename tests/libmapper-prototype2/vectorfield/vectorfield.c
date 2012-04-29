@@ -1,4 +1,4 @@
-// This code was downloaded from
+// This code was modified from
 // http://fabiensanglard.net/shadowmapping/index.php
 
 #ifdef _WIN32
@@ -12,7 +12,6 @@
 #ifdef _WIN32
 #include "glext.h"
 #endif
-
 
 #include <stdio.h>
 #include <math.h>
@@ -31,7 +30,6 @@ PFNGLGENFRAMEBUFFERSEXTPROC glGenFramebuffersEXT ;
 PFNGLBINDFRAMEBUFFEREXTPROC glBindFramebufferEXT ;
 PFNGLFRAMEBUFFERTEXTURE2DEXTPROC glFramebufferTexture2DEXT ;
 PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC glCheckFramebufferStatusEXT ;
-
 
 // Shader functions
 PFNGLCREATEPROGRAMOBJECTARBPROC  glCreateProgramObjectARB ;
@@ -80,10 +78,13 @@ void getOpenGLFunctionPointers(void)
 GLuint fboId;
 
 // colour values will be rendered to this texture when using fboId framebuffer
-GLuint fieldTextureId;
+GLuint fieldTexIds[2] = {0,0};
 
 GLhandleARB fieldShaderId;
 GLuint fieldUniform;
+
+GLuint src = 0, dest = 1;
+int update_rate = 30;
 
 // Loading shader function
 GLhandleARB loadShader(char* filename, unsigned int type)
@@ -155,6 +156,8 @@ GLhandleARB loadShader(char* filename, unsigned int type)
 		
 		// Free the buffer malloced earlier
 		free(errorLogText);
+
+        exit(1);
 	}
 	
 	return handle;
@@ -177,50 +180,59 @@ void loadFieldShader()
 	fieldUniform = glGetUniformLocationARB(fieldShaderId, "field");
 }
 
-void generateShadowFBO()
+void generateFBO()
 {
 	//GLfloat borderColor[4] = {0,0,0,0};
 	
 	GLenum FBOstatus;
+
+    int i;
+    for (i=0; i<2; i++)
+    {
+        GLuint *id = &fieldTexIds[i];
+        glGenTextures(1, id);
+        glBindTexture(GL_TEXTURE_2D, *id);
 	
-	// Try to use a texture colour component
-	glGenTextures(1, &fieldTextureId);
-	glBindTexture(GL_TEXTURE_2D, fieldTextureId);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	
-	// GL_LINEAR does not make sense for depth texture. However, next tutorial shows usage of GL_LINEAR and PCF
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        // Remove artefact on the edges
+        glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
+        glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
+        //glTexParameterfv( GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor );
 	
-	// Remove artefact on the edges of the shadowmap
-	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
-	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
-	
-	//glTexParameterfv( GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor );
-	
-	// No need to force GL_DEPTH_COMPONENT24, drivers usually give you the max precision if available 
-	glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16,
-                  RENDER_WIDTH, RENDER_HEIGHT, 0, GL_RGBA,
-                  GL_UNSIGNED_BYTE, 0);
+        // No need to force GL_DEPTH_COMPONENT24, drivers usually give you the max precision if available 
+        glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16,
+                      RENDER_WIDTH, RENDER_HEIGHT, 0, GL_RGBA,
+                      GL_UNSIGNED_BYTE, 0);
+    }
+
 	glBindTexture(GL_TEXTURE_2D, 0);
 	
 	// create a framebuffer object
 	glGenFramebuffersEXT(1, &fboId);
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboId);
 	
-	// Instruct openGL that we won't bind a color texture with the currently binded FBO
-	glDrawBuffer(GL_FRONT);
-	glReadBuffer(GL_FRONT);
-	
-	// attach the texture to FBO depth attachment point
-	glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0,
-                              GL_TEXTURE_2D, fieldTextureId, 0);
-	
+	// attach the texture to FBO color attachment point
+	glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
+                              GL_TEXTURE_2D, fieldTexIds[0], 0);
+
+    // attach the texture to FBO color attachment point
+    glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT1_EXT,
+                              GL_TEXTURE_2D, fieldTexIds[1], 0);
+
 	// check FBO status
 	FBOstatus = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
 	if(FBOstatus != GL_FRAMEBUFFER_COMPLETE_EXT) {
 		printf("GL_FRAMEBUFFER_COMPLETE_EXT failed, CANNOT use FBO\n");
         exit(1);
     }
+
+	glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
+	glClear( GL_COLOR_BUFFER_BIT);
+
+	glDrawBuffer(GL_COLOR_ATTACHMENT1_EXT);
+	glClear( GL_COLOR_BUFFER_BIT);
 	
 	// switch back to window-system-provided framebuffer
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
@@ -240,71 +252,20 @@ void update(void)
     // Nothing to do.
 }
 
-
-void setTextureMatrix(void)
-{
-	static double modelView[16];
-	static double projection[16];
-	
-	// This is matrix transform every coordinate x,y,z
-	// x = x* 0.5 + 0.5 
-	// y = y* 0.5 + 0.5 
-	// z = z* 0.5 + 0.5 
-	// Moving from unit cube [-1,1] to [0,1]  
-	const GLdouble bias[16] = {	
-		0.5, 0.0, 0.0, 0.0, 
-		0.0, 0.5, 0.0, 0.0,
-		0.0, 0.0, 0.5, 0.0,
-	0.5, 0.5, 0.5, 1.0};
-	
-	// Grab modelview and transformation matrices
-	glGetDoublev(GL_MODELVIEW_MATRIX, modelView);
-	glGetDoublev(GL_PROJECTION_MATRIX, projection);
-	
-	
-	glMatrixMode(GL_TEXTURE);
-	glActiveTextureARB(GL_TEXTURE7);
-	
-	glLoadIdentity();	
-	glLoadMatrixd(bias);
-	
-	// concatating all matrice into one.
-	glMultMatrixd (projection);
-	glMultMatrixd (modelView);
-	
-	// Go back to normal matrix mode
-	glMatrixMode(GL_MODELVIEW);
-}
-
-// During translation, we also have to maintain the GL_TEXTURE8, used in the shadow shader
-// to determine if a vertex is in the shadow.
-void startTranslate(float x,float y,float z)
-{
-	glPushMatrix();
-	glTranslatef(x,y,z);
-	
-	glMatrixMode(GL_TEXTURE);
-	glActiveTextureARB(GL_TEXTURE7);
-	glPushMatrix();
-	glTranslatef(x,y,z);
-}
-
-void endTranslate()
-{
-	glPopMatrix();
-	glMatrixMode(GL_MODELVIEW);
-	glPopMatrix();
-}
-
-void drawObjects(void)
+void drawObjects(int i)
 {
 	// Square
 	glColor4f(0.3f,0.3f,0.3f,1);
 	glBegin(GL_QUADS);
-	glVertex2f(0, 0);
-	glVertex2f(0, RENDER_HEIGHT);
-	glVertex2f(RENDER_WIDTH, RENDER_HEIGHT);
-	glVertex2f(RENDER_WIDTH, 0);
+    glNormal3f(0,0,1);
+    glTexCoord2f(0,0);
+	glVertex2f(0,0);
+    glTexCoord2f(0,1);
+	glVertex2f(0, RENDER_HEIGHT/i);
+    glTexCoord2f(1,1);
+	glVertex2f(RENDER_WIDTH/i, RENDER_HEIGHT/i);
+    glTexCoord2f(1,0);
+	glVertex2f(RENDER_WIDTH/i, 0);
 	glEnd();
 }
 
@@ -316,24 +277,80 @@ void renderScene(void)
     glDisable(GL_DEPTH_TEST);
 	
 	glViewport(0,0, RENDER_WIDTH, RENDER_HEIGHT);
-	
-	// Clear previous frame values
-	glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
-	setupMatrices();
+    // Draw quad to the screen in the corner
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboId);
 
-	//Using the field shader
-	glUseProgramObjectARB(fieldShaderId);
-	glUniform1iARB(fieldUniform,7);
-	glActiveTextureARB(GL_TEXTURE7);
-	glBindTexture(GL_TEXTURE_2D, fieldTextureId);
-	
-	drawObjects();
-	
-	/* //Save modelview/projection matrice into texture7, also add a bias */
-	/* setTextureMatrix(); */
+    static int a = 1;
+    if (1) {
+        glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT + src);
+
+        setupMatrices();
+
+        // Draw points
+        glColor4f(1,1,1,1);
+        glBegin(GL_POINTS);
+        glVertex2f(RENDER_WIDTH/2, RENDER_HEIGHT/2);
+        glVertex2f(RENDER_WIDTH/2-50, RENDER_HEIGHT/2-50);
+        glEnd();
+        a = 0;
+    }
+
+    if (1)
+    {
+        glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT + dest);
+
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        setupMatrices();
+
+        //Using the field shader
+        glUseProgramObjectARB(fieldShaderId);
+        glUniform1iARB(fieldUniform, 7);
+        glActiveTextureARB(GL_TEXTURE7);
+        glBindTexture(GL_TEXTURE_2D, fieldTexIds[src]);
+
+        drawObjects(1);
+
+        glUseProgramObjectARB(0);
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    if (1)
+    {
+        // Draw quad to the screen in the corner
+        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+
+        glClear( GL_COLOR_BUFFER_BIT);
+
+        glActiveTextureARB(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, fieldTexIds[dest]);
+
+        glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
+        glEnable( GL_TEXTURE_2D );
+        drawObjects(1);
+        glDisable( GL_TEXTURE_2D );
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    static int cnt = 0;
+    if (cnt++ > 50) {
+        float data[50*50*4];
+        glReadBuffer(GL_COLOR_ATTACHMENT0_EXT + dest);
+        glReadPixels(RENDER_WIDTH/2-2, RENDER_HEIGHT/2-2, 3, 3, GL_RGBA, GL_FLOAT, data);
+        fprintf(stderr, "observations: %f, %f, %f, %f\n",
+                data[2*4+0+1*3*4],
+                data[1*4+1+2*3*4],
+                data[0*4+2+1*3*4],
+                data[1*4+3+0*3*4]);
+        exit(0);
+    }
 	
 	glutSwapBuffers();
+
+    src = 1-src;
+    dest = 1-dest;
 }
 
 void processNormalKeys(unsigned char key, int x, int y) {
@@ -345,13 +362,13 @@ void processNormalKeys(unsigned char key, int x, int y) {
 void onTimer(int value)
 {
     renderScene();
-    glutTimerFunc(100, onTimer, 0);
+    glutTimerFunc((int)(1000.0/update_rate), onTimer, 0);
 }
 
 int main(int argc, char** argv)
 {
 	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH);
+	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA);
 	glutInitWindowPosition(100,100);
 	glutInitWindowSize(RENDER_WIDTH,RENDER_HEIGHT);
 	glutCreateWindow("GLSL Shadow mapping");
@@ -367,17 +384,18 @@ int main(int argc, char** argv)
 #ifdef _WIN32
 	getOpenGLFunctionPointers();
 #endif
-	generateShadowFBO();
+	generateFBO();
 	loadFieldShader();
 	
 	glClearColor(0,0,0,1.0f);
 
 	glutDisplayFunc(renderScene);
 	//glutIdleFunc(renderScene);
-	glutTimerFunc(100, onTimer, 0);
+	glutTimerFunc((int)(1000.0/update_rate), onTimer, 0);
 	
 	glutKeyboardFunc(processNormalKeys);
-	
+
+    //glutFullScreen();
 	glutMainLoop();
 
     return 0;
