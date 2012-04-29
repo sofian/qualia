@@ -19,6 +19,10 @@ mapper_signal sig = 0;
 
 float obs[5] = {0,0,0,0,0};
 
+#define WIDTH 480
+
+int id = 0;
+
 void make_connections()
 {
     char signame1[1024], signame2[1024],
@@ -80,7 +84,7 @@ void link_db_callback(mapper_db_link record,
         float mn=0, mx=1;
         mdev_add_input(acs->dev, "observation", 4, 'f', "norm", &mn, &mx,
                        signal_handler, 0);
-        int imn=0, imx=200;
+        int imn=0, imx=480;
         sig = mdev_add_output(acs->dev, "position", 2, 'i', 0, &imn, &imx);
 
         acs->connected = 1;
@@ -92,11 +96,14 @@ mapper_device autoConnect()
     struct _autoConnectState *acs = &autoConnectState;
     memset(acs, 0, sizeof(struct _autoConnectState));
 
-    acs->dev = mdev_new("agent", 9000, 0);
+    acs->dev = mdev_new("agent", 9000 + id, 0);
 
     while (!mdev_ready(acs->dev)) {
-        mdev_poll(acs->dev, 1000);
+        mdev_poll(acs->dev, 100);
     }
+
+    printf("ordinal: %d\n", mdev_ordinal(acs->dev));
+    fflush(stdout);
 
     acs->mon = mapper_monitor_new(0, 0);
     mapper_db db = mapper_monitor_get_db(acs->mon);
@@ -149,32 +156,40 @@ void autoDisconnect()
     memset(acs, 0, sizeof(struct _autoConnectState));
 }
 
-int main()
+int main(int argc, char *argv[])
 {
+    if (argc > 1)
+        id = atoi(argv[1]);
+
     mapper_device dev = autoConnect();
     if (!dev)
         return 1;
 
     float pos[2];
-    pos[0] = rand()%100+50;
-    pos[1] = rand()%100+50;
+    pos[0] = rand()%WIDTH/2+WIDTH/4;
+    pos[1] = rand()%WIDTH/2+WIDTH/4;
     float vel[2] = {0, 0};
-    float gain = 10;
+    float gain = 1;
 
     while (1) {
-        if (mdev_poll(dev, 100)) {
-            vel[0] += obs[0] * gain - obs[2] * gain;
-            vel[1] += obs[1] * gain - obs[3] * gain;
+        if (mdev_poll(dev, 10)) {
+            vel[0] -= obs[0] * gain - obs[2] * gain;
+            vel[1] -= obs[1] * gain - obs[3] * gain;
             pos[0] += vel[0];
             pos[1] += vel[1];
+
+            if (vel[0] >  3.0) vel[0] =  3;
+            if (vel[0] < -3.0) vel[0] = -3;
+            if (vel[1] >  3.0) vel[1] =  3;
+            if (vel[1] < -3.0) vel[1] = -3;
 
             if (pos[0] < 0) {
                 pos[0] = 0;
                 vel[0] *= -0.95;
             }
 
-            if (pos[0] >= 200) {
-                pos[0] = 199;
+            if (pos[0] >= WIDTH) {
+                pos[0] = WIDTH-1;
                 vel[0] *= -0.95;
             }
 
@@ -183,8 +198,8 @@ int main()
                 vel[1] *= -0.95;
             }
 
-            if (pos[1] >= 200) {
-                pos[1] = 199;
+            if (pos[1] >= WIDTH) {
+                pos[1] = WIDTH-1;
                 vel[1] *= -0.95;
             }
 

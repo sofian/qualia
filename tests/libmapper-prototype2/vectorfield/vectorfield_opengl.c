@@ -72,10 +72,6 @@ void getOpenGLFunctionPointers(void)
 }
 #endif
 
-// Expressed as float so gluPerspective division returns a float and not 0 (640/480 != 640.0/480.0).
-#define RENDER_WIDTH 640.0
-#define RENDER_HEIGHT 480.0
-
 // Hold id of the framebuffer for light POV rendering
 GLuint fboId;
 
@@ -86,11 +82,12 @@ GLhandleARB fieldShaderId;
 GLuint fieldUniform;
 
 GLuint src = 0, dest = 1;
-int update_rate = 30;
+int update_rate = 100;
 
-const int maxAgents = 20;
-float agentObs[20][4];
-int agentPos[20][2];
+float agentObs[maxAgents][4];
+int agentPos[maxAgents][2];
+
+int showField = 0;
 
 void (*vfgl_DrawCallback)() = 0;
 
@@ -211,7 +208,7 @@ void generateFBO()
 	
         // No need to force GL_DEPTH_COMPONENT24, drivers usually give you the max precision if available 
         glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16,
-                      RENDER_WIDTH, RENDER_HEIGHT, 0, GL_RGBA,
+                      WIDTH, HEIGHT, 0, GL_RGBA,
                       GL_UNSIGNED_BYTE, 0);
     }
 
@@ -250,7 +247,7 @@ void setupMatrices()
 {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-    gluOrtho2D(0, RENDER_WIDTH, 0, RENDER_HEIGHT);
+    gluOrtho2D(0, WIDTH, 0, HEIGHT);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 }
@@ -269,11 +266,11 @@ void drawFullScreenQuad()
     glTexCoord2f(0,0);
 	glVertex2f(0,0);
     glTexCoord2f(0,1);
-	glVertex2f(0, RENDER_HEIGHT);
+	glVertex2f(0, HEIGHT);
     glTexCoord2f(1,1);
-	glVertex2f(RENDER_WIDTH, RENDER_HEIGHT);
+	glVertex2f(WIDTH, HEIGHT);
     glTexCoord2f(1,0);
-	glVertex2f(RENDER_WIDTH, 0);
+	glVertex2f(WIDTH, 0);
 	glEnd();
 }
 
@@ -315,7 +312,7 @@ void renderScene(void)
     glDisable(GL_LIGHTING);
     glDisable(GL_DEPTH_TEST);
 	
-	glViewport(0,0, RENDER_WIDTH, RENDER_HEIGHT);
+	glViewport(0,0, WIDTH, HEIGHT);
 
     // Draw quad to the screen in the corner
     glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboId);
@@ -346,13 +343,17 @@ void renderScene(void)
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    if (1)
+    // Read observations from destination texture
+    glReadBuffer(GL_COLOR_ATTACHMENT0_EXT + dest);
+    updateObservations();
+	
+    // Draw quad to the screen in the corner
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+
+    glClear( GL_COLOR_BUFFER_BIT);
+
+    if (showField)
     {
-        // Draw quad to the screen in the corner
-        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-
-        glClear( GL_COLOR_BUFFER_BIT);
-
         glActiveTextureARB(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, fieldTexIds[dest]);
 
@@ -364,10 +365,24 @@ void renderScene(void)
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    // Read observations from destination texture
-    glReadBuffer(GL_COLOR_ATTACHMENT0_EXT + dest);
-    updateObservations();
-	
+    else {
+        int i;
+        for (i=0; i < maxAgents; i++)
+        {
+            if (agentPos[i][0] > -1 && agentPos[i][1] > -1) {
+                int x = agentPos[i][0];
+                int y = agentPos[i][1];
+                glColor3f(1,1,1);
+                glBegin(GL_QUADS);
+                glVertex2f(x-7, y-7);
+                glVertex2f(x+7, y-7);
+                glVertex2f(x+7, y+7);
+                glVertex2f(x-7, y+7);
+                glEnd();
+            }
+        }
+    }
+
 	glutSwapBuffers();
 
     src = 1-src;
@@ -381,6 +396,10 @@ void processNormalKeys(unsigned char key, int x, int y) {
 	
 	if (key == 27) 
 		exit(0);
+    if (key == 'f')
+        glutFullScreen();
+    if (key == ' ')
+        showField = 1-showField;
 }
 
 void onTimer(int value)
@@ -395,13 +414,10 @@ void vfgl_Init(int argc, char** argv)
     for (i=0; i < maxAgents; i++)
         agentPos[i][0] = agentPos[i][1] = -1;
 
-    agentPos[0][0] = agentPos[0][1] = RENDER_WIDTH/2;
-    agentPos[1][0] = agentPos[1][1] = RENDER_HEIGHT*3/4;
-
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA);
 	glutInitWindowPosition(100,100);
-	glutInitWindowSize(RENDER_WIDTH,RENDER_HEIGHT);
+	glutInitWindowSize(WIDTH,HEIGHT);
 	glutCreateWindow("GLSL Shadow mapping");
 
     GLenum err = glewInit();
@@ -429,6 +445,5 @@ void vfgl_Init(int argc, char** argv)
 
 void vfgl_Run()
 {
-    //glutFullScreen();
 	glutMainLoop();
 }
