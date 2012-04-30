@@ -19,7 +19,8 @@ mapper_signal sig = 0;
 
 float obs[5] = {0,0,0,0,0};
 
-#define WIDTH 480
+#define WIDTH  640
+#define HEIGHT 480
 
 int id = 0;
 
@@ -198,8 +199,8 @@ int main(int argc, char *argv[])
                 vel[1] *= -0.95;
             }
 
-            if (pos[1] >= WIDTH) {
-                pos[1] = WIDTH-1;
+            if (pos[1] >= HEIGHT) {
+                pos[1] = HEIGHT-1;
                 vel[1] *= -0.95;
             }
 
