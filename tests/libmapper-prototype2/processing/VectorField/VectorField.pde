@@ -42,6 +42,7 @@ Mapper.Device.Signal sig_act[] = new Mapper.Device.Signal[maxAgents];
 
 int[][] agentPositions = new int[maxAgents][];
 float[][] agentVelocities = new float[maxAgents][2];
+boolean[] agentCharges = new boolean[maxAgents];
 
 void setup() {
   size(200, 200, OPENGL);
@@ -73,7 +74,7 @@ void updatePositions()
     if (agentPositions[i]!=null) {
       int x = agentPositions[i][0];
       int y = agentPositions[i][1];
-      img.pixels[x + img.width*y] = color(255,255,255,255);
+      img.pixels[x + img.width*y] = ( agentCharges[i] ? color(255,255,255,255) : color(0,0,0,0) );
     }
   }
 }
@@ -96,11 +97,16 @@ class ActionListener extends InputListener
     float obs[] = observe(pos);
 
     // action can be 0, 1, 2 = gain of -1, 0, or 1
-    float gain = (constrain(v[0],0,2)-1)*2;
+    float gain = v[0]*2 - 1;//(constrain(v[0],0,2)-1)*2;
 
-    vel[0] += gain * obs[0] * obs[0] - gain * obs[2] * obs[2];
-    vel[1] += gain * obs[1] * obs[1] - gain * obs[3] * obs[3];
+    vel[0] += gain * (obs[0] * obs[0] - obs[2] * obs[2]);
+    vel[1] += gain * (obs[1] * obs[1] - obs[3] * obs[3]);
 
+    // damping
+    float damp = 0.1;
+    vel[0] -= damp * vel[0];
+    vel[1] -= damp * vel[1];
+    
     pos[0] = int(pos[0]+vel[0]);
     pos[1] = int(pos[1]+vel[1]);
 
@@ -124,6 +130,7 @@ class ActionListener extends InputListener
 
     agentVelocities[i] = vel;
     agentPositions[i] = pos;
+    agentCharges[i] = (v[0] == 1);
   }
 };
 
@@ -134,12 +141,16 @@ public void updateObservations()
     {
       int [] pos = agentPositions[i];
       if (pos != null) {
+
+        float r = 0;
         float [] o = observe(pos);
-        obs[0] = o[0];
-        obs[1] = o[1];
-        obs[2] = o[2];
-        obs[3] = o[3];
-        obs[4] = 0; // reward
+        for (int j=0; j<4; j++) {
+          obs[i] = o[i];
+          r += obs[i];
+        }
+        r /= 4;
+        //obs[4] = (i % 2 == 0 ? r : -r); // reward
+        obs[4] = r;
 
         sig_obs[i].update(obs);
       }
@@ -195,8 +206,13 @@ void draw() {
   for (i=0; i < maxAgents; i++)
   {
     pos = agentPositions[i];
-    if (pos != null)
+    if (pos != null) {
+      if (agentCharges[i])
+        fill(255);
+      else
+        fill(0);
       ellipse(pos[0], pos[1], 15, 15);
+    }
   }
   
   img = timg;
