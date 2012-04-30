@@ -29,14 +29,14 @@ void on_signal(mapper_signal msig,
 {
     int *pos = (int*)value;
     mapper_db_signal p = msig_properties(msig);
-    int agent = (int)p->user_data;
+    int agent = (int)(long)p->user_data;
     agentPos[agent][0] = pos[0];
     agentPos[agent][1] = pos[1];
 }
 
 void initMapper()
 {
-    int i;
+    long i;
     int mn = 0, mx = HEIGHT;
     float fmn = 0, fmx = 1.0;
 
@@ -45,10 +45,10 @@ void initMapper()
     for (i = 0; i < maxAgents; i++)
     {
         char str[256];
-        sprintf(str, "/node/%d/position", i+1);
+        sprintf(str, "/node/%ld/position", i+1);
         sigpos[i] = mdev_add_input(dev, str, 2, 'i', 0,
                                    &mn, &mx, on_signal, (void*)(i));
-        sprintf(str, "/node/%d/observation", i+1);
+        sprintf(str, "/node/%ld/observation", i+1);
         sigobs[i] = mdev_add_output(dev, str, 4, 'f', 0,
                                     &fmn, &fmx);
     }

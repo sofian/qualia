@@ -5,9 +5,15 @@
 #include "windows.h"
 #endif
 
+#ifdef __APPLE__
+#include <gl.h>
+#include <glut.h>
+#include <glu.h>
+#else
 #include "GL/glew.h"
 #include "GL/glut.h"
 #include "GL/glu.h"
+#endif
 
 #ifdef _WIN32
 #include "glext.h"
@@ -16,8 +22,33 @@
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "vectorfield_opengl.h"
+
+const float kernels[] = {0,0,0,0,1,
+                         0,0,1,1,1,
+                         0,0,0,1,1,
+                         0,0,1,1,1,
+                         0,0,0,0,1,
+
+                         0,0,0,0,0,
+                         0,0,0,0,0,
+                         0,1,0,1,0,
+                         0,1,1,1,0,
+                         1,1,1,1,1,
+
+                         1,0,0,0,0,
+                         1,1,1,0,0,
+                         1,1,0,0,0,
+                         1,1,1,0,0,
+                         1,0,0,0,0,
+
+                         1,1,1,1,1,
+                         0,1,1,1,0,
+                         0,1,0,1,0,
+                         0,0,0,0,0,
+                         0,0,0,0,0};
 
 #ifdef _WIN32
 // As microsoft did not maintain openGL after version 1.1, Windows platform need to go throught this crap ; macosX and Linux are fine.
@@ -80,6 +111,7 @@ GLuint fieldTexIds[2] = {0,0};
 
 GLhandleARB fieldShaderId;
 GLuint fieldUniform;
+GLuint kernelsUniform;
 
 GLuint src = 0, dest = 1;
 int update_rate = 100;
@@ -181,8 +213,21 @@ void loadFieldShader()
 	glAttachObjectARB(fieldShaderId,vertexShaderHandle);
 	glAttachObjectARB(fieldShaderId,fragmentShaderHandle);
 	glLinkProgramARB(fieldShaderId);
-	
+
 	fieldUniform = glGetUniformLocationARB(fieldShaderId, "field");
+    if (fieldUniform == -1) {
+        printf("Error getting uniform `%s'.\n", "field");
+        exit(1);
+    }
+
+	kernelsUniform = glGetUniformLocationARB(fieldShaderId, "kernels");
+    if (kernelsUniform == -1) {
+        printf("Error getting uniform `%s'.\n", "kernels");
+        exit(1);
+    }
+
+    glUseProgramObjectARB(fieldShaderId);
+    glUniform1fvARB(kernelsUniform, 100, kernels);
 }
 
 void generateFBO()
@@ -438,11 +483,13 @@ void vfgl_Init(int argc, char** argv)
 	glutInitWindowSize(WIDTH,HEIGHT);
 	glutCreateWindow("GLSL Shadow mapping");
 
+#ifdef GLEW_VERSION
     GLenum err = glewInit();
     if (GLEW_OK != err) {
         /* Problem: glewInit failed, something is seriously wrong. */
         fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
     }
+#endif
 	
 	// This call will grab openGL extension function pointers.
 	// This is not necessary for macosx and linux
