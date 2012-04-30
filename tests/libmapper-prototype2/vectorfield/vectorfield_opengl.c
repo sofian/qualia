@@ -319,17 +319,22 @@ void renderScene(void)
 
     setupMatrices();
 
-    // Draw to the source to update agent positions
-    glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT + src);
-    drawAgents();
+    int pass = 1;
 
-    if (1)
+    while (pass-- > 0)
     {
+        // Swap source and destination
+        src = 1-src;
+        dest = 1-dest;
+
+        // Draw to the source to update agent positions
+        glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT + src);
+        drawAgents();
+
+        // Draw the shader to destination texture
         glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT + dest);
 
         glClear(GL_COLOR_BUFFER_BIT);
-
-        setupMatrices();
 
         //Using the field shader
         glUseProgramObjectARB(fieldShaderId);
@@ -384,9 +389,6 @@ void renderScene(void)
     }
 
 	glutSwapBuffers();
-
-    src = 1-src;
-    dest = 1-dest;
 
     if (vfgl_DrawCallback)
         vfgl_DrawCallback();
