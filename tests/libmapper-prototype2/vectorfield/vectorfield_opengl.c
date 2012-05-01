@@ -285,6 +285,21 @@ void drawAgents()
     glEnd();
 }
 
+void drawBorder()
+{
+    glColor4f(1,1,1,1);
+    glBegin(GL_LINES);
+    glVertex2f(1, 1);
+    glVertex2f(1, HEIGHT);
+    glVertex2f(1, 1);
+    glVertex2f(WIDTH, 1);
+    glVertex2f(WIDTH, HEIGHT);
+    glVertex2f(1, HEIGHT);
+    glVertex2f(WIDTH, HEIGHT);
+    glVertex2f(WIDTH, 1);
+    glEnd();
+}
+
 void updateObservations()
 {
     float data[3*3*4];
@@ -329,6 +344,7 @@ void renderScene(void)
 
         // Draw to the source to update agent positions
         glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT + src);
+        drawBorder();
         drawAgents();
 
         // Draw the shader to destination texture

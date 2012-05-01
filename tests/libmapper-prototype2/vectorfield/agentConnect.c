@@ -170,7 +170,7 @@ int main(int argc, char *argv[])
     pos[0] = rand()%WIDTH/2+WIDTH/4;
     pos[1] = rand()%WIDTH/2+WIDTH/4;
     float vel[2] = {0, 0};
-    float gain = 1;
+    float gain = 2;
 
     while (1) {
         if (mdev_poll(dev, 10)) {
@@ -179,10 +179,10 @@ int main(int argc, char *argv[])
             pos[0] += vel[0];
             pos[1] += vel[1];
 
-            if (vel[0] >  3.0) vel[0] =  3;
-            if (vel[0] < -3.0) vel[0] = -3;
-            if (vel[1] >  3.0) vel[1] =  3;
-            if (vel[1] < -3.0) vel[1] = -3;
+            if (vel[0] >  0.1) vel[0] =  0.1;
+            if (vel[0] < -0.1) vel[0] = -0.1;
+            if (vel[1] >  0.1) vel[1] =  0.1;
+            if (vel[1] < -0.1) vel[1] = -0.1;
 
             if (pos[0] < 0) {
                 pos[0] = 0;
