@@ -1,8 +1,7 @@
 
 uniform sampler2D field;
 uniform float kernels[100];
-
-const float gain = 0.97;
+uniform float gain;
 
 void main()
 {

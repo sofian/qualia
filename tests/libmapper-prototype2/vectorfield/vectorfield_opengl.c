@@ -112,6 +112,7 @@ GLuint fieldTexIds[2] = {0,0};
 GLhandleARB fieldShaderId;
 GLuint fieldUniform;
 GLuint kernelsUniform;
+GLuint gainUniform;
 
 GLuint src = 0, dest = 1;
 int update_rate = 100;
@@ -226,8 +227,15 @@ void loadFieldShader()
         exit(1);
     }
 
+	gainUniform = glGetUniformLocationARB(fieldShaderId, "gain");
+    if (gainUniform == -1) {
+        printf("Error getting uniform `%s'.\n", "gain");
+        exit(1);
+    }
+
     glUseProgramObjectARB(fieldShaderId);
     glUniform1fvARB(kernelsUniform, 100, kernels);
+    glUniform1fARB(gainUniform, 0.97);
 }
 
 void generateFBO()
