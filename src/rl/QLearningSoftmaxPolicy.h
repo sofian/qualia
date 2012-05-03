@@ -21,7 +21,6 @@
 #define QLEARNINGSOFTMAXPOLICY_H_
 
 #include "Policy.h"
-#include "Random.h"
 #include "QLearningAgent.h"
 
 class QLearningSoftmaxPolicy : public Policy {

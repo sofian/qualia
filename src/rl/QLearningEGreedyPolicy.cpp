@@ -18,6 +18,7 @@
  */
 
 #include "QLearningEGreedyPolicy.h"
+#include "util/Random.h"
 
 QLearningEGreedyPolicy::QLearningEGreedyPolicy(real epsilon_) : epsilon(epsilon_) {}
 QLearningEGreedyPolicy::~QLearningEGreedyPolicy() {}

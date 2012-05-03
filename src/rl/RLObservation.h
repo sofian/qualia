@@ -21,7 +21,8 @@
 #ifndef RLOBSERVATION_H_
 #define RLOBSERVATION_H_
 
-#include "Observation.h"
+#include "core/Observation.h"
+
 class RLObservation : public Observation {
 public:
   real reward;

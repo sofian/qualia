@@ -20,7 +20,7 @@
 #ifndef REWARD_H_
 #define REWARD_H_
 
-#include "Environment.h"
+#include "core/Environment.h"
 
 class Reward {
 public:

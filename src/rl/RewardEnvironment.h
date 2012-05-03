@@ -20,8 +20,8 @@
 #ifndef REWARDENVIRONMENT_H_
 #define REWARDENVIRONMENT_H_
 
+#include "core/Environment.h"
 #include "Reward.h"
-#include "Environment.h"
 #include "RLObservation.h"
 
 class RewardEnvironment : public Environment {

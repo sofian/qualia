@@ -20,7 +20,7 @@
 #ifndef POLICY_H_
 #define POLICY_H_
 
-#include "Agent.h"
+#include "core/Agent.h"
 
 class Policy {
 public:
