@@ -1,13 +1,4 @@
-sources = Glob("*.cpp")
-target  = "qualia"
-env = Environment()
-lib = env.SharedLibrary(target = target, source = sources)
-
-prefix = ARGUMENTS.get('PREFIX', "/usr/local")
-installPath = prefix + "/lib"
-
-env.Install(installPath, lib)
-env.Alias("install", [installPath])
+SConscript("src/SConscript", variant_dir="build/")
 
 #execfile("./tools/scons/SConstruct.new")
 #

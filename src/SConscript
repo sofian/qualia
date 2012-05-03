@@ -1,0 +1,31 @@
+import os
+
+subdirs = ["core", "rl", "util"]
+sources = []
+for subdir in subdirs:
+    sources += Glob(subdir + "/*.cpp")
+print sources
+
+target  = "qualia"
+
+env = Environment()
+env.Append(CPPPATH=["/usr/local/include", "/usr/include", os.getcwd()])
+
+env.Object(source = sources)
+
+# Peut etre une erreur: on devrait construire des OBJETS (?)
+#lib = env.SharedLibrary(target = target, source = sources)
+
+#prefix = ARGUMENTS.get('PREFIX', "/usr/local")
+#installPath = prefix + "/lib"
+
+#env.Install(installPath, lib)
+#env.Alias("install", [installPath])
+
+#execfile("./tools/scons/SConstruct.new")
+#
+#SConscript("tests/subsconstest/SConscript")
+
+#SConscript("tests/unit/SConscript")
+#SConscript("tests/example/SConscript")
+#SConscript("tests/libmapper/SConscript")
