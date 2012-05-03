@@ -4,7 +4,6 @@ subdirs = ["core", "rl", "util"]
 sources = []
 for subdir in subdirs:
     sources += Glob(subdir + "/*.cpp")
-print sources
 
 target  = "qualia"
 
