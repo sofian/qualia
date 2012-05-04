@@ -1,18 +1,19 @@
-#include "Qualia.h"
-#include "RLQualia.h"
+#include "core/Qualia.h"
+#include "rl/RLQualia.h"
+#include "rl/QLearningAgent.h"
+#include "rl/QLearningEGreedyPolicy.h"
+
 #include "DummyAgent.h"
 #include "DummyEnvironment.h"
 #include "DummyRewardEnvironment.h"
-#include "QLearningAgent.h"
-#include "QLearningEGreedyPolicy.h"
 
-#include "NeuralNetwork.h"
+#include "rl/NeuralNetwork.h"
 
 #define N_HIDDEN 3
 #define RANDOM_SEED 4567
 
 #define STATIC_ALLOCATOR_SIZE 1000
-#include "StaticAllocator.h"
+#include "core/StaticAllocator.h"
 
 #include <stdio.h>
 
