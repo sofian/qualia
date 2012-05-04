@@ -1,25 +1,131 @@
 import os
 
+Import(["MODE"])
+
+# From http://code.activestate.com/recipes/502263/
+# By Paul Rubin
+def unique(seq, keepstr=True):
+  t = type(seq)
+  if t in (str, unicode):
+    t = (list, ''.join)[bool(keepstr)]
+  seen = []
+  return t(c for c in seq if not (c in seen or seen.append(c)))
+
+def run(cmd):
+    """Run a command and decipher the return code. Exit by default."""
+    import SCons.Script
+    print cmd
+    res = os.system(cmd)
+    # Assumes that if a process doesn't call exit, it was successful
+    if (os.WIFEXITED(res)):
+        code = os.WEXITSTATUS(res)
+        if code != 0:
+            print "Error: return code: " + str(code)
+            if SCons.Script.keep_going_on_error == 0:
+                sys.exit(code)
+
+def fnCompress(target, source, env):
+    files = filter(lambda x: str(x).startswith('build/'), source)
+    for file in files:
+        run(AVR_BIN_PREFIX+'ar rcs %s %s'%(target[0], file))
+
+## TODO: change this (make it more generic eg. settings file) ###############
+if (MODE == 'computer'):
+  INCLUDE_PATH = "/Users/tats/Documents/workspace/qualia/src/"
+else:
+  INCLUDE_PATH = "/Users/tats/Documents/workspace/qualia/src/:/Applications/Arduino.app/Contents/Resources/Java/hardware/tools/avr/avr/include/"
+
+MCU = 'atmega168'
+F_CPU = 16000000
+EXTRA_LIBS = ""
+LIBS = ""
+LIBPATH = ""
+AVR_GCC_DIR = ""
+
+if (MODE == 'avr'):
+  AVR_GCC_DIR = "/Applications/Arduino.app/Contents/Resources/Java/hardware/tools/avr/bin/"
+#############################################################################
+
+  
 subdirs = ["core", "rl", "util"]
 sources = []
 for subdir in subdirs:
     sources += Glob(subdir + "/*.cpp")
+    sources += Glob(subdir + "/*.c")
 
 target  = "qualia"
 
-env = Environment()
-env.Append(CPPPATH=["/usr/local/include", "/usr/include", os.getcwd()])
 
-env.Object(source = sources)
+TARGET = "qualia"
 
-# Peut etre une erreur: on devrait construire des OBJETS (?)
-#lib = env.SharedLibrary(target = target, source = sources)
+INCLUDE_PATH = ARGUMENTS.get('INCLUDE_PATH', INCLUDE_PATH).split(":")
+INCLUDE_PATH = unique(INCLUDE_PATH + [os.getcwd()])
 
-#prefix = ARGUMENTS.get('PREFIX', "/usr/local")
-#installPath = prefix + "/lib"
+# AVR arguments
+#MCU = getBoardConf(r'^%s\.build\.mcu=(.*)'%ARDUINO_BOARD)
+MCU = ARGUMENTS.get('MCU', MCU)
+#F_CPU = getBoardConf(r'^%s\.build\.f_cpu=(.*)'%ARDUINO_BOARD)
+F_CPU = ARGUMENTS.get('F_CPU', F_CPU)
 
-#env.Install(installPath, lib)
-#env.Alias("install", [installPath])
+# Arduino arguments
+EXTRA_LIBS = ARGUMENTS.get('EXTRA_LIBS', EXTRA_LIBS).split(':')
+
+# Shared library arguments.
+LIBS = ARGUMENTS.get('LIBS', LIBS).split(',')
+LIBPATH = ARGUMENTS.get('LIBPATH', LIBPATH).split(':')
+
+# There should be a file with the same name as the folder and with the extension .pde
+#TARGET = os.path.basename(os.path.realpath(os.curdir))
+#assert(os.path.exists(TARGET+'.pde'))
+
+AVR_GCC_DIR = ARGUMENTS.get('AVR_GCC_DIR', AVR_GCC_DIR)
+if AVR_GCC_DIR:
+  AVR_GCC_DIR += '/'
+
+AVR_BIN_PREFIX = AVR_GCC_DIR + 'avr-'
+
+# Create environment and set default configurations ###################################
+if (MODE == 'avr' or MODE == 'arduino'):
+  cFlags = ['-ffunction-sections', '-fdata-sections', '-fno-exceptions',
+      '-funsigned-char', '-funsigned-bitfields', '-fpack-struct', '-fshort-enums',
+      '-Os', '-mmcu=%s'%MCU]
+  env = Environment(CC = AVR_BIN_PREFIX+'gcc', CXX = AVR_BIN_PREFIX+'g++',
+      CPPPATH = INCLUDE_PATH, CPPDEFINES = {'F_CPU':F_CPU}, 
+      CFLAGS = cFlags+['-std=gnu99'], CCFLAGS = cFlags, TOOLS = ['gcc','g++'])
+
+  env.Append(BUILDERS={'Elf':Builder(action=AVR_BIN_PREFIX+'gcc '+
+          '-mmcu=%s -Os -Wl,--gc-sections -o $TARGET $SOURCES -lm'%MCU)})
+  env.Append(BUILDERS={'Hex':Builder(action=AVR_BIN_PREFIX+'objcopy '+
+          '-O ihex -R .eeprom $SOURCES $TARGET')})
+  env.Append(BUILDERS = {'CompressCore':Builder(action = fnCompress) })
+  
+  objs = env.Object(sources) #, LIBS=libs, LIBPATH='.')
+  objs = env.CompressCore("lib" + TARGET + ".a", objs)
+  #env.Elf(TARGET + '.elf', objs)
+  #env.Hex(TARGET + '.hex', TARGET + '.elf')
+
+  # Print Size
+  # TODO: check binary size
+  #MAX_SIZE = getBoardConf(r'^%s\.upload.maximum_size=(.*)'%ARDUINO_BOARD)
+  #print ("maximum size for hex file: %s bytes"%MAX_SIZE)
+  #env.Command(None, TARGET+'.hex', AVR_BIN_PREFIX+'size --target=ihex $SOURCE')
+#  env.Append(CPPPATH=["/usr/local/include", "/usr/include", os.getcwd()])
+
+else:
+  env = Environment()
+  env.Append(CPPPATH=["/usr/local/include", "/usr/include", os.getcwd()])
+
+
+  #objects = env.StaticObject(source = sources)
+
+  # Peut etre une erreur: on devrait construire des OBJETS (?)
+  lib = env.Library(target = target, source = sources)
+
+  prefix = ARGUMENTS.get('PREFIX', "/usr/local")
+  installPath = prefix + "/lib"
+
+  env.Install(installPath, lib)
+  env.Alias("install", [installPath])
 
 #execfile("./tools/scons/SConstruct.new")
 #
