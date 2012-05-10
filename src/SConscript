@@ -57,9 +57,6 @@ for subdir in subdirs:
 if (MODE == "computer"):
   sources = [f for f in sources if "core/avrdefs.cpp" not in str(f)]
 
-target  = "qualia"
-
-
 TARGET = "qualia"
 
 INCLUDE_PATH = ARGUMENTS.get('INCLUDE_PATH', INCLUDE_PATH).split(":")
@@ -123,7 +120,7 @@ else:
   #objects = env.StaticObject(source = sources)
 
   # Peut etre une erreur: on devrait construire des OBJETS (?)
-  lib = env.Library(target = target, source = sources)
+  lib = env.Library(target = TARGET, source = sources)
 
   prefix = ARGUMENTS.get('PREFIX', "/usr/local")
   installPath = prefix + "/lib"
