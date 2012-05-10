@@ -20,7 +20,7 @@
 #ifndef LIBMAPPERENVIRONMENT_H_
 #define LIBMAPPERENVIRONMENT_H_
 
-#include "Environment.h"
+#include "core/Environment.h"
 #include <mapper/mapper.h>
 
 class LibMapperEnvironment : public Environment {
