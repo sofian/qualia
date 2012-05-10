@@ -36,7 +36,4 @@ extern "C" {
   // Allows purely virtual functions.
   void __cxa_pure_virtual() { cli(); for (;;); }
 }
-#else
-// HACK: Prevents "/usr/bin/ranlib: file: libqualia.a(avrdefs.o) has no symbols" errors.
-char __avrdefsDummyInclude;
 #endif

@@ -53,6 +53,10 @@ for subdir in subdirs:
     sources += Glob(subdir + "/*.cpp")
     sources += Glob(subdir + "/*.c")
 
+# Remove avrdefs to avoid the "no symbol" linking error
+if (MODE == "computer"):
+  sources = [f for f in sources if "core/avrdefs.cpp" not in str(f)]
+
 target  = "qualia"
 
 
@@ -93,10 +97,10 @@ if (MODE == 'avr' or MODE == 'arduino'):
       CPPPATH = INCLUDE_PATH, CPPDEFINES = {'F_CPU':F_CPU}, 
       CFLAGS = cFlags+['-std=gnu99'], CCFLAGS = cFlags, TOOLS = ['gcc','g++'])
 
-  env.Append(BUILDERS={'Elf':Builder(action=AVR_BIN_PREFIX+'gcc '+
-          '-mmcu=%s -Os -Wl,--gc-sections -o $TARGET $SOURCES -lm'%MCU)})
-  env.Append(BUILDERS={'Hex':Builder(action=AVR_BIN_PREFIX+'objcopy '+
-          '-O ihex -R .eeprom $SOURCES $TARGET')})
+  #env.Append(BUILDERS={'Elf':Builder(action=AVR_BIN_PREFIX+'gcc '+
+  #        '-mmcu=%s -Os -Wl,--gc-sections -o $TARGET $SOURCES -lm'%MCU)})
+  #env.Append(BUILDERS={'Hex':Builder(action=AVR_BIN_PREFIX+'objcopy '+
+  #        '-O ihex -R .eeprom $SOURCES $TARGET')})
   env.Append(BUILDERS = {'CompressCore':Builder(action = fnCompress) })
   
   objs = env.Object(sources) #, LIBS=libs, LIBPATH='.')
