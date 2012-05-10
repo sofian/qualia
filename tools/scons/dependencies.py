@@ -55,9 +55,9 @@ def _recursiveGetDependencies(sources, headers, includePaths=[], sourcePaths=[],
           incFileRealpath = realpath(incFilename)
           if (incFileRealpath not in includes):
             currentDepthIncludes.add(incFileRealpath)
-        else:
-          print "ERROR: File " + filename + " included from file " \
-            + source + " not found in include paths"
+        #else:
+          #print "ERROR: File " + filename + " included from file " \
+          #  + source + " not found in include paths"
           #exit(-1)
 
   # Construct the next list of sources (.c, .cpp, .cxx) by looking at files with the same
@@ -70,9 +70,9 @@ def _recursiveGetDependencies(sources, headers, includePaths=[], sourcePaths=[],
     # print"Looking at " + filepath + "(" + directory + "," + filename + "," + basename + ")"
     for ext in ['.c', '.cpp', '.cxx']:
       file = _findFile(basename + ext, unique(sourcePaths + [directory]))
-      print"Trying to find file " + basename + ext
+      #print"Trying to find file " + basename + ext
       if file:
-        print"File found, adding it"
+        #print"File found, adding it"
         currentDepthSources.add(file)
 
   includes = includes | currentDepthIncludes
