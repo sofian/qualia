@@ -1,5 +1,5 @@
 /*
- * RLQualia.h
+ * QLearningEGreedyPolicy.h
  *
  * (c) 2011 Sofian Audry -- info(@)sofianaudry(.)com
  *
@@ -17,22 +17,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef RLQUALIA_H_
-#define RLQUALIA_H_
+#ifndef QLEARNINGEGREEDYPOLICY_H_
+#define QLEARNINGEGREEDYPOLICY_H_
 
-#include "Qualia.h"
-#include "RLObservation.h"
+#include "Policy.h"
+#include "QLearningAgent.h"
 
-class RLQualia : public Qualia {
+class QLearningEGreedyPolicy : public Policy {
 public:
-  real totalReward;
+  real epsilon;
+  QLearningEGreedyPolicy(real epsilon);
+  virtual ~QLearningEGreedyPolicy();
 
-  RLQualia(Agent* agent, Environment* env);
-
-  virtual void init();
-  virtual ObservationAction* start();
-  virtual ObservationAction* step();
+  virtual void chooseAction(Action* action, const Observation* observation);
 
 };
 
-#endif /* RLQUALIA_H_ */
+#endif /* QLEARNINGEGREEDYPOLICY_H_ */

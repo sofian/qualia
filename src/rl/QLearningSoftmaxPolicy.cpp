@@ -18,6 +18,7 @@
  */
 
 #include "QLearningSoftmaxPolicy.h"
+#include "util/Random.h"
 
 QLearningSoftmaxPolicy::QLearningSoftmaxPolicy(real temperature_, real epsilon_)
   : temperature(temperature_), epsilon(epsilon_) {}

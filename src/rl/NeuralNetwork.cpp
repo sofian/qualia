@@ -19,7 +19,7 @@
 #include "NeuralNetwork.h"
 #include <stdlib.h>
 #include <math.h>
-#include "Random.h"
+#include "util/Random.h"
 
 //#include "Print.h"
 //#include "Math.h"

@@ -20,8 +20,9 @@
  */
 
 #include "QLearningAgent.h"
+#include "util/Random.h"
+
 #include <string.h>
-#include "Random.h"
 
 #define DEBUG 0
 

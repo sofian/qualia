@@ -45,6 +45,9 @@ int[][] agentPositions = new int[maxAgents][];
 color[] colors = {color(255,0,0), color(0,255,0),
                   color(0,0,255), color(255,255,0)};
 
+float[][] agentVelocities = new float[maxAgents][2];
+boolean[] agentCharges = new boolean[maxAgents];
+
 void setup() {
   size(200, 200, OPENGL);
   frameRate(30);
@@ -86,8 +89,8 @@ void updatePositions()
     if (agentPositions[i]!=null) {
       int x = agentPositions[i][0];
       int y = agentPositions[i][1];
-      img1.pixels[x + img1.width*y] = color(255,255,255,255);
-      img2.pixels[x + img2.width*y] = color(255,255,255,255);
+      img1.pixels[x + img1.width*y] = ( agentCharges[i] ? color(255,255,255,255) : color(0,0,0,0) );
+      img2.pixels[x + img2.width*y] = ( agentCharges[i] ? color(255,255,255,255) : color(0,0,0,0) );
     }
   }
 }
@@ -111,8 +114,20 @@ public void updateObservations()
     for (int i=0; i<maxAgents; i++)
     {
       int [] pos = agentPositions[i];
-      if (pos != null)
-        sig_obs[i].update(observe(pos));
+      if (pos != null) {
+
+        float r = 0;
+        float [] o = observe(pos);
+        for (int j=0; j<4; j++) {
+          obs[i] = o[i];
+          r += obs[i];
+        }
+        r /= 4;
+        //obs[4] = (i % 2 == 0 ? r : -r); // reward
+        obs[4] = r;
+
+        sig_obs[i].update(obs);
+      }
     }
 }
 
@@ -181,7 +196,10 @@ void draw() {
   {
     pos = agentPositions[i];
     if (pos != null) {
-      fill(colors[i%4]);
+      if (agentCharges[i])
+        fill(255);
+      else
+        fill(0);
       ellipse(pos[0], pos[1], 15, 15);
     }
   }

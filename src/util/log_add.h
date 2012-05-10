@@ -1,7 +1,12 @@
 /*
- * avrdefs.cpp
+ * log_add.h
+ *
+ * This file is part of Qualia https://github.com/sofian/qualia
  *
  * (c) 2011 Sofian Audry -- info(@)sofianaudry(.)com
+ *
+ * Adapted from Torch 3.1 library
+ * Copyright (C) 2003--2004 Samy Bengio (bengio@idiap.ch)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,25 +21,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef LOG_ADD_INC
+#define LOG_ADD_INC
 
-#include "avrdefs.h"
+#include "common.h"
 
-#if defined(__AVR__) && defined(__cplusplus)
+/** Some simple functions for log operations.
 
-// Operators new / delete.
-void * operator new(size_t size) { return malloc(size); }
-void operator delete(void * ptr) { if (ptr) free(ptr); }
-void * operator new[](size_t size) { return malloc(size); }
-void operator delete[](void * ptr) { if (ptr) free(ptr); }
+    @author Samy Bengio (bengio@idiap.ch)
+*/
+//@{
+#define LOG_2_PI 1.83787706640934548355
+#define LOG_ZERO -INF
+#define LOG_ONE 0
 
-extern "C" {
-  // Allow the use of templates, virtual inheritance, etc.
-  int __cxa_guard_acquire(__guard *g) {return !*(char *)(g);};
-  void __cxa_guard_release (__guard *g) {*(char *)g = 1;};
-  void __cxa_guard_abort (__guard *) {};
+/** logAdd(log_a,log_b) = log(a+b) = log(exp(log_a)+exp(log_b))
+    but done in a smart way so that if log_a or log_b are large
+    but not their difference the computation works correctly.
+*/
+real logAdd(real log_a,real log_b);
 
-  // Allows purely virtual functions.
-  void __cxa_pure_virtual() { cli(); for (;;); }
-}
+/// logSub(log_a,log_b) = log(a-b)
+real logSub(real log_a,real log_b);
+//@}
 
 #endif

@@ -1,23 +1,6 @@
 import os
 
-# Get mode.
-AddOption('--avr',
-          dest='avr',
-          action="store_true",
-          default=False,
-          help="AVR mode");
-AddOption('--arduino',
-          dest='arduino',
-          action="store_true",
-          default=False,
-          help="Arduino mode");
-
-if GetOption('arduino'):
-  MODE = 'arduino'
-elif GetOption('avr'):
-  MODE = 'avr'
-else:
-  MODE = 'computer'
+Import(["MODE"])
 
 # From http://code.activestate.com/recipes/502263/
 # By Paul Rubin
@@ -27,6 +10,24 @@ def unique(seq, keepstr=True):
     t = (list, ''.join)[bool(keepstr)]
   seen = []
   return t(c for c in seq if not (c in seen or seen.append(c)))
+
+def run(cmd):
+    """Run a command and decipher the return code. Exit by default."""
+    import SCons.Script
+    print cmd
+    res = os.system(cmd)
+    # Assumes that if a process doesn't call exit, it was successful
+    if (os.WIFEXITED(res)):
+        code = os.WEXITSTATUS(res)
+        if code != 0:
+            print "Error: return code: " + str(code)
+            if SCons.Script.keep_going_on_error == 0:
+                sys.exit(code)
+
+def fnCompress(target, source, env):
+    files = filter(lambda x: str(x).startswith('build/'), source)
+    for file in files:
+        run(AVR_BIN_PREFIX+'ar rcs %s %s'%(target[0], file))
 
 ## TODO: change this (make it more generic eg. settings file) ###############
 if (MODE == 'computer'):
@@ -52,10 +53,11 @@ for subdir in subdirs:
     sources += Glob(subdir + "/*.cpp")
     sources += Glob(subdir + "/*.c")
 
-target  = "qualia"
+# Remove avrdefs to avoid the "no symbol" linking error
+if (MODE == "computer"):
+  sources = [f for f in sources if "core/avrdefs.cpp" not in str(f)]
 
-
-TARGET = "main_test"
+TARGET = "qualia"
 
 INCLUDE_PATH = ARGUMENTS.get('INCLUDE_PATH', INCLUDE_PATH).split(":")
 INCLUDE_PATH = unique(INCLUDE_PATH + [os.getcwd()])
@@ -73,12 +75,6 @@ EXTRA_LIBS = ARGUMENTS.get('EXTRA_LIBS', EXTRA_LIBS).split(':')
 LIBS = ARGUMENTS.get('LIBS', LIBS).split(',')
 LIBPATH = ARGUMENTS.get('LIBPATH', LIBPATH).split(':')
 
-LIBS = ["qualia"]
-LIBPATH = ["../../build/"]
-#INCLUDE_PATH += ["/Users/tats/Documents/workspace/qualia/src/"]
-
-print INCLUDE_PATH
-
 # There should be a file with the same name as the folder and with the extension .pde
 #TARGET = os.path.basename(os.path.realpath(os.curdir))
 #assert(os.path.exists(TARGET+'.pde'))
@@ -93,47 +89,49 @@ AVR_BIN_PREFIX = AVR_GCC_DIR + 'avr-'
 if (MODE == 'avr' or MODE == 'arduino'):
   cFlags = ['-ffunction-sections', '-fdata-sections', '-fno-exceptions',
       '-funsigned-char', '-funsigned-bitfields', '-fpack-struct', '-fshort-enums',
-      '-Os', '-mmcu=' + MCU]
-  
-  env = Environment(CC = AVR_BIN_PREFIX+'gcc',
-                    CXX = AVR_BIN_PREFIX+'g++',
-                    CPPPATH = INCLUDE_PATH,
-                    LIBPATH = ["../../build/"], # path to qualia static lib
-                    LIBS = ["qualia", "m"], 
-                    CPPDEFINES = {'F_CPU':F_CPU}, 
-                    CFLAGS = cFlags + ['-std=gnu99'], 
-                    CCFLAGS = cFlags, 
-                    LINKFLAGS = '-mmcu=' + MCU)
+      '-Os', '-mmcu=%s'%MCU]
+  env = Environment(CC = AVR_BIN_PREFIX+'gcc', CXX = AVR_BIN_PREFIX+'g++',
+      CPPPATH = INCLUDE_PATH, CPPDEFINES = {'F_CPU':F_CPU}, 
+      CFLAGS = cFlags+['-std=gnu99'], CCFLAGS = cFlags, TOOLS = ['gcc','g++'])
 
-#  env.Append(BUILDERS = {'Elf':Builder(action=
-#          "$CC $CFLAGS $TARGET $SOURCE -lm -lqualia")})
-  env.Append(BUILDERS={'Hex':Builder(action=AVR_BIN_PREFIX+'objcopy '+
-          '-O ihex -R .eeprom $SOURCES $TARGET')})
+  #env.Append(BUILDERS={'Elf':Builder(action=AVR_BIN_PREFIX+'gcc '+
+  #        '-mmcu=%s -Os -Wl,--gc-sections -o $TARGET $SOURCES -lm'%MCU)})
+  #env.Append(BUILDERS={'Hex':Builder(action=AVR_BIN_PREFIX+'objcopy '+
+  #        '-O ihex -R .eeprom $SOURCES $TARGET')})
+  env.Append(BUILDERS = {'CompressCore':Builder(action = fnCompress) })
   
-  env.VariantDir("build", ".", duplicate=0)
-  
-  sources = ["build/" + TARGET + ".cpp"]
-  env.Program(target = "build/" + TARGET + '.elf', source = sources, LINKFLAGS = "-Wl,--gc-sections")
-  env.Hex("build/" + TARGET + '.hex', "build/" + TARGET + '.elf')
-  
+  objs = env.Object(sources) #, LIBS=libs, LIBPATH='.')
+  objs = env.CompressCore("lib" + TARGET + ".a", objs)
+  #env.Elf(TARGET + '.elf', objs)
+  #env.Hex(TARGET + '.hex', TARGET + '.elf')
+
+  # Print Size
+  # TODO: check binary size
   #MAX_SIZE = getBoardConf(r'^%s\.upload.maximum_size=(.*)'%ARDUINO_BOARD)
   #print ("maximum size for hex file: %s bytes"%MAX_SIZE)
-  env.Command(None, "build/" + TARGET+'.hex', AVR_BIN_PREFIX+'size --target=ihex $SOURCE')
+  #env.Command(None, TARGET+'.hex', AVR_BIN_PREFIX+'size --target=ihex $SOURCE')
+#  env.Append(CPPPATH=["/usr/local/include", "/usr/include", os.getcwd()])
 
 else:
   env = Environment()
   env.Append(CPPPATH=["/usr/local/include", "/usr/include", os.getcwd()])
 
-  env.VariantDir("build", ".")
-  env.Program("build/main_test", "build/main_test.cpp", LIBS = "qualia", CPPPATH = "/Users/tats/Documents/workspace/qualia/src/", LIBPATH = "/Users/tats/Documents/workspace/qualia/build/")
-
 
   #objects = env.StaticObject(source = sources)
 
   # Peut etre une erreur: on devrait construire des OBJETS (?)
-  #lib = env.Library(target = target, source = sources)
+  lib = env.Library(target = TARGET, source = sources)
 
-  
-#env.Program("main_test", "main_test.cpp", LIBS = "qualia", CPPPATH = "/Users/tats/Documents/workspace/qualia/src/", LIBPATH = "/Users/tats/Documents/workspace/qualia/build/")
+  prefix = ARGUMENTS.get('PREFIX', "/usr/local")
+  installPath = prefix + "/lib"
 
-#execfile("../../tools/scons/SConstruct")
+  env.Install(installPath, lib)
+  env.Alias("install", [installPath])
+
+#execfile("./tools/scons/SConstruct.new")
+#
+#SConscript("tests/subsconstest/SConscript")
+
+#SConscript("tests/unit/SConscript")
+#SConscript("tests/example/SConscript")
+#SConscript("tests/libmapper/SConscript")

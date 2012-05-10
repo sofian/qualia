@@ -1,5 +1,5 @@
 /*
- * QLearningEGreedyPolicy.h
+ * Policy.h
  *
  * (c) 2011 Sofian Audry -- info(@)sofianaudry(.)com
  *
@@ -17,21 +17,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef QLEARNINGEGREEDYPOLICY_H_
-#define QLEARNINGEGREEDYPOLICY_H_
+#ifndef POLICY_H_
+#define POLICY_H_
 
-#include "Policy.h"
-#include "Random.h"
-#include "QLearningAgent.h"
+#include "core/Agent.h"
 
-class QLearningEGreedyPolicy : public Policy {
+class Policy {
 public:
-  real epsilon;
-  QLearningEGreedyPolicy(real epsilon);
-  virtual ~QLearningEGreedyPolicy();
+  Agent* agent;
+  Policy() : agent(0) {}
+  virtual ~Policy() {}
 
-  virtual void chooseAction(Action* action, const Observation* observation);
-
+  virtual void setAgent(Agent* agent_) {
+    agent = agent_;
+  }
+  virtual void chooseAction(Action* action, const Observation* observation) = 0;
 };
 
-#endif /* QLEARNINGEGREEDYPOLICY_H_ */
+#endif /* POLICY_H_ */
