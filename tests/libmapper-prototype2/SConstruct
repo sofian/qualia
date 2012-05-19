@@ -1,1 +1,1 @@
-execfile("../../tools/scons/SConstruct")
+execfile("../../tools/scons/SConstruct.qualia")

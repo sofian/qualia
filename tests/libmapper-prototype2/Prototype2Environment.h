@@ -20,8 +20,8 @@
 #ifndef PROTOTYPE2ENVIRONMENT_H_
 #define PROTOTYPE2ENVIRONMENT_H_
 
-#include "Environment.h"
-#include "RLObservation.h"
+#include "core/Environment.h"
+#include "rl/RLObservation.h"
 #include "AutoConnect.h"
 #include <mapper/mapper.h>
 

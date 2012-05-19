@@ -19,15 +19,15 @@
 
 #include <stdio.h>
 
-#include "Qualia.h"
-#include "RLQualia.h"
-#include "QLearningAgent.h"
-#include "QLearningEGreedyPolicy.h"
-#include "QLearningSoftmaxPolicy.h"
+#include "core/Qualia.h"
+#include "rl/RLQualia.h"
+#include "rl/QLearningAgent.h"
+#include "rl/QLearningEGreedyPolicy.h"
+#include "rl/QLearningSoftmaxPolicy.h"
+#include "rl/NeuralNetwork.h"
 
 #include "SimpleGlowEnvironment.h"
 
-#include "NeuralNetwork.h"
 
 #define N_HIDDEN 3
 #define RANDOM_SEED 4567
