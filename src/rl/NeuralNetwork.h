@@ -33,7 +33,7 @@
 
 //#define BIAS 1
 
-#include "common.h"
+#include "core/common.h"
 
 // TODO: IMPORTANT l'output layer ne devrait pas etre sigmoide mais lineaire...
 

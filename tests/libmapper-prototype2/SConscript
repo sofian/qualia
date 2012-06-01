@@ -18,6 +18,6 @@ if (MODE == 'avr'):
 if (MODE == 'arduino'):
   TARGET = 'SimpleFirmware'
 else:
-  TARGET = "main_test"
+  TARGET = "main"
 
 Return(CONFIG)

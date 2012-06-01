@@ -20,8 +20,8 @@
 #ifndef DUMMYREWARDENVIRONMENT_H_
 #define DUMMYREWARDENVIRONMENT_H_
 
-#include "RewardEnvironment.h"
-#include "Reward.h"
+#include "rl/RewardEnvironment.h"
+#include "rl/Reward.h"
 
 class DummyRewardEnvironment : public RewardEnvironment {
 public:

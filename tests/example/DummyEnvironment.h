@@ -21,8 +21,8 @@
 #ifndef DUMMY_ENVIRONMENT_H_
 #define DUMMY_ENVIRONMENT_H_
 
-#include "Environment.h"
-#include "RLObservation.h"
+#include "core/Environment.h"
+#include "rl/RLObservation.h"
 
 
 #define DUMMY_ENVIRONMENT_OBSERVATIONS_DIM 1

@@ -1,5 +1,5 @@
 /*
- * Policy.h
+ * RLQualia.h
  *
  * (c) 2011 Sofian Audry -- info(@)sofianaudry(.)com
  *
@@ -17,21 +17,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef POLICY_H_
-#define POLICY_H_
+#ifndef RLQUALIA_H_
+#define RLQUALIA_H_
 
-#include "Agent.h"
+#include "core/Qualia.h"
+#include "RLObservation.h"
 
-class Policy {
+class RLQualia : public Qualia {
 public:
-  Agent* agent;
-  Policy() : agent(0) {}
-  virtual ~Policy() {}
+  real totalReward;
 
-  virtual void setAgent(Agent* agent_) {
-    agent = agent_;
-  }
-  virtual void chooseAction(Action* action, const Observation* observation) = 0;
+  RLQualia(Agent* agent, Environment* env);
+
+  virtual void init();
+  virtual ObservationAction* start();
+  virtual ObservationAction* step();
+
 };
 
-#endif /* POLICY_H_ */
+#endif /* RLQUALIA_H_ */

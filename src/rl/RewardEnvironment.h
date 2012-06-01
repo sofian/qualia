@@ -1,5 +1,5 @@
 /*
- * QLearningEGreedyPolicy.cpp
+ * RewardEnvironment.h
  *
  * (c) 2011 Sofian Audry -- info(@)sofianaudry(.)com
  *
@@ -17,15 +17,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "QLearningEGreedyPolicy.h"
+#ifndef REWARDENVIRONMENT_H_
+#define REWARDENVIRONMENT_H_
 
-QLearningEGreedyPolicy::QLearningEGreedyPolicy(real epsilon_) : epsilon(epsilon_) {}
-QLearningEGreedyPolicy::~QLearningEGreedyPolicy() {}
+#include "core/Environment.h"
+#include "Reward.h"
+#include "RLObservation.h"
 
-void QLearningEGreedyPolicy::chooseAction(Action* action, const Observation* observation) {
-  QLearningAgent* qlagent = (QLearningAgent*)agent;
-  if (Random::uniform() < epsilon)
-    action->setConflated( (action_t) (random() % qlagent->nConflatedActions) ); // TODO: changer le % _nActions pour une fonction random(min, max)
-  else
-    qlagent->getMaxAction(action, observation);
-}
+class RewardEnvironment : public Environment {
+public:
+  Reward* reward;
+  RLObservation lastObservation;
+
+  RewardEnvironment(unsigned int observationDim, Reward* reward);
+  virtual ~RewardEnvironment();
+
+  virtual Observation* start();
+
+  virtual Observation* step(const Action* action);
+
+  virtual RLObservation* doStart() = 0;
+  virtual RLObservation* doAction(const Action* action) = 0;
+
+};
+
+#endif /* REWARDENVIRONMENT_H_ */

@@ -1,7 +1,7 @@
 /*
- * LibMapperEnvironment.h
+ * AutoConnect.h
  *
- * (c) 2011 Sofian Audry -- info(@)sofianaudry(.)com
+ * (c) 2012 Sofian Audry -- info(@)sofianaudry(.)com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,26 +17,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBMAPPERENVIRONMENT_H_
-#define LIBMAPPERENVIRONMENT_H_
 
-#include "core/Environment.h"
+#ifndef AUTOCONNECT_H_
+#define AUTOCONNECT_H_
+
 #include <mapper/mapper.h>
 
-class LibMapperEnvironment : public Environment {
-public:
-  mapper_device dev;
-  mapper_signal outsig;
-  Observation currentObservation;
+#if defined (__cplusplus)
+extern "C" {
+#endif
 
-  LibMapperEnvironment();
+mapper_device autoConnectDevice(mapper_device dev);
+void autoDisconnectDevice();
 
-  virtual void init();
-  virtual Observation* start();
-  virtual Observation* step(const Action* action);
+#if defined (__cplusplus)
+}
+#endif
 
-  static void updateInput(mapper_signal sig, mapper_db_signal props,
-                          mapper_timetag_t *timetag, float *value);
-};
 
-#endif /* LIBMAPPERENVIRONMENT_H_ */
+#endif /* AUTOCONNECT_H_ */

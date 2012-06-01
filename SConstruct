@@ -1,18 +1,20 @@
-sources = Glob("*.cpp")
-target  = "qualia"
-env = Environment()
-lib = env.SharedLibrary(target = target, source = sources)
+# Get mode.
+AddOption('--avr',
+          dest='avr',
+          action="store_true",
+          default=False,
+          help="AVR mode");
+AddOption('--arduino',
+          dest='arduino',
+          action="store_true",
+          default=False,
+          help="Arduino mode");
 
-prefix = ARGUMENTS.get('PREFIX', "/usr/local")
-installPath = prefix + "/lib"
+if GetOption('arduino'):
+  MODE = 'arduino'
+elif GetOption('avr'):
+  MODE = 'avr'
+else:
+  MODE = 'computer'
 
-env.Install(installPath, lib)
-env.Alias("install", [installPath])
-
-#execfile("./tools/scons/SConstruct.new")
-#
-#SConscript("tests/subsconstest/SConscript")
-
-#SConscript("tests/unit/SConscript")
-#SConscript("tests/example/SConscript")
-#SConscript("tests/libmapper/SConscript")
+SConscript("src/SConscript", variant_dir="build/", duplicate=0, exports=["MODE"])

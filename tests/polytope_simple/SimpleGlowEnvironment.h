@@ -20,8 +20,8 @@
 #ifndef SIMPLEGLOWENVIRONMENT_H_
 #define SIMPLEGLOWENVIRONMENT_H_
 
-#include "Environment.h"
-#include "RLObservation.h"
+#include "core/Environment.h"
+#include "rl/RLObservation.h"
 #include "SimpleFirmware.h"
 
 #define GLOW_ENVIRONMENT_OBSERVATIONS_DIM 1

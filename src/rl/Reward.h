@@ -1,5 +1,5 @@
 /*
- * RewardEnvironment.h
+ * Reward.h
  *
  * (c) 2011 Sofian Audry -- info(@)sofianaudry(.)com
  *
@@ -17,28 +17,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef REWARDENVIRONMENT_H_
-#define REWARDENVIRONMENT_H_
+#ifndef REWARD_H_
+#define REWARD_H_
 
-#include "Reward.h"
-#include "Environment.h"
-#include "RLObservation.h"
+#include "core/Environment.h"
 
-class RewardEnvironment : public Environment {
+class Reward {
 public:
-  Reward* reward;
-  RLObservation lastObservation;
+  Environment* environment;
+  Reward() : environment(0) {}
+  virtual ~Reward() {}
 
-  RewardEnvironment(unsigned int observationDim, Reward* reward);
-  virtual ~RewardEnvironment();
-
-  virtual Observation* start();
-
-  virtual Observation* step(const Action* action);
-
-  virtual RLObservation* doStart() = 0;
-  virtual RLObservation* doAction(const Action* action) = 0;
-
+  virtual void setEnvironment(Environment* environment_) {
+    environment = environment_;
+  }
+  virtual real reward(const Observation* before, const Action* action, const Observation* after) = 0;
 };
 
-#endif /* REWARDENVIRONMENT_H_ */
+#endif /* REWARD_H_ */
