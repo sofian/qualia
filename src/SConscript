@@ -115,7 +115,7 @@ if (MODE == 'avr' or MODE == 'arduino'):
 else:
   env = Environment()
   env.Append(CPPPATH=["/usr/local/include", "/usr/include", os.getcwd()])
-
+  #env.Append(CPPFLAGS=['-g'])
 
   #objects = env.StaticObject(source = sources)
 
