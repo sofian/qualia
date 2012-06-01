@@ -125,8 +125,11 @@ else:
   prefix = ARGUMENTS.get('PREFIX', "/usr/local")
   installPath = prefix + "/lib"
 
-  env.Install(installPath, lib)
-  env.Alias("install", [installPath])
+  il = env.Install(installPath, lib)
+  ih1 = env.Install(prefix+"/include/qualia/core", Glob('core/*.h'))
+  ih2 = env.Install(prefix+"/include/qualia/rl", Glob('rl/*.h'))
+  ih3 = env.Install(prefix+"/include/qualia/util", Glob('util/*.h'))
+  env.Alias("install", [il, ih1, ih2, ih3])
 
 #execfile("./tools/scons/SConstruct.new")
 #
