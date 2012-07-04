@@ -17,4 +17,4 @@ elif GetOption('avr'):
 else:
   MODE = 'computer'
 
-SConscript("src/SConscript", variant_dir="build/", duplicate=0, exports=["MODE"])
+SConscript("src/SConscript", variant_dir="build/" + MODE + "/", duplicate=0, exports=["MODE"])
