@@ -1,5 +1,5 @@
 /*
- * QLearningSoftmaxPolicy.h
+ * RLObservation.h
  *
  * (c) 2011 Sofian Audry -- info(@)sofianaudry(.)com
  *
@@ -17,21 +17,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef QLEARNINGSOFTMAXPOLICY_H_
-#define QLEARNINGSOFTMAXPOLICY_H_
 
-#include "Policy.h"
-#include "Random.h"
-#include "QLearningAgent.h"
+#ifndef RLOBSERVATION_H_
+#define RLOBSERVATION_H_
 
-class QLearningSoftmaxPolicy : public Policy {
+#include "core/Observation.h"
+
+class RLObservation : public Observation {
 public:
-  real temperature;
-  real epsilon;
-  QLearningSoftmaxPolicy(real temperature = 1.0, real epsilon = 0.0);
-  virtual ~QLearningSoftmaxPolicy();
-
-  virtual void chooseAction(Action* action, const Observation* observation);
+  real reward;
+  RLObservation();
+  RLObservation(unsigned int dim, const observation_t* copyFrom = 0);
+  Observation& copyFrom(const Observation* src);
 };
-
-#endif /* QLEARNINGSOFTMAXPOLICY_H_ */
+#endif /* RLOBSERVATION_H_ */

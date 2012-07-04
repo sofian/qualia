@@ -21,7 +21,7 @@
 #ifndef DUMMYAGENT_H_
 #define DUMMYAGENT_H_
 
-#include "Agent.h"
+#include "core/Agent.h"
 //#include <stdio.h>
 
 const unsigned int DUMMY_AGENT_N_ACTIONS[] = {100};
