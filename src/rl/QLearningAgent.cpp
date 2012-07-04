@@ -35,6 +35,7 @@ QLearningAgent::QLearningAgent(NeuralNetwork* func,
                                float lambda_, float gamma_, Policy* policy_, bool offPolicy_) :
   gamma(gamma_),
   lambda(lambda_),
+  isLearning(true),
   offPolicy(offPolicy_),
   policy(policy_),
   function(func),
@@ -87,61 +88,64 @@ Action* QLearningAgent::start(const Observation* observation) {
 }
 
 Action* QLearningAgent::step(const Observation* observation) {
+
   /////////////// START UPDATE
-  //ie. update(reward);
-  // // printf("DEBUG: step\n");
-  real outErr = 1;
+  if (isLearning) {
+    real outErr = 1;
 
-  // Propagate Q(s_{t-1}, a_{t-1}).
-  real Qs = Q(&lastObservation, &currentAction);
+    // Propagate Q(s_{t-1}, a_{t-1}).
+    real Qs = Q(&lastObservation, &currentAction);
 
-  // // printf("DEBUG: Qs computed: %f\n", Qs);
-  function->backpropagate(&outErr);
+    // // printf("DEBUG: Qs computed: %f\n", Qs);
+    function->backpropagate(&outErr);
 
-  // // printf("DEBUG: backprop finished\n", Qs);
-  // Get the new state.
-  //getState(_nextState);
+    // Choose next action.
+    // // printf("DEBUG: Choose action\n", Qs);
+    policy->chooseAction(&currentAction, observation);
 
-  // Choose next action.
-  // // printf("DEBUG: Choose action\n", Qs);
-  policy->chooseAction(&currentAction, observation);
+    // // printf("DEBUG: Update\n", Qs);
+    // Update.
+    real updateQ; // q-value for update
+    if (offPolicy)
+      getMaxAction(0, observation, &updateQ);
+    else
+      updateQ = Q(observation, &currentAction);
 
-  // // printf("DEBUG: Update\n", Qs);
-  // Update.
-  real updateQ; // q-value for update
-  if (offPolicy)
-    getMaxAction(0, observation, &updateQ);
-  else
-    updateQ = Q(observation, &currentAction);
+    // Compute difference between estimated Q value and actual/outputed Q value.
+    real delta = (( ((RLObservation*)observation)->reward + gamma * updateQ) - Qs);
 
-  // Compute difference between estimated Q value and actual/outputed Q value.
-  real delta = (( ((RLObservation*)observation)->reward + gamma * updateQ) - Qs);
+    // Compute mean squared error.
+    //real mse = delta * delta * 0.5;
 
-  // Compute mean squared error.
-  //real mse = delta * delta * 0.5;
-
-  // Update weights.
-  real deltaTimesLearningRate = function->learningRate * delta;
-//  Serial.print("DTL "); Serial.println(deltaTimesLearningRate);
-  // TODO: changer les dWeights() / weights() pour de simples variables
-  real* dWeights = function->dWeights;
-  real* weights  = function->weights;
-#if DEBUG
-  printf("dw: [");
-#endif
-  real lambdaTimesGamma = lambda * gamma;
-  for (int i=0; i<function->nParams; i++) {
-    e[i] = lambdaTimesGamma * e[i] + dWeights[i];
-    weights[i] += deltaTimesLearningRate * e[i];
-#if DEBUG
-    printf("%f ", dWeights[i]);
-#endif
+    // Update weights.
+    real deltaTimesLearningRate = function->learningRate * delta;
+  //  Serial.print("DTL "); Serial.println(deltaTimesLearningRate);
+    // TODO: changer les dWeights() / weights() pour de simples variables
+    real* dWeights = function->dWeights;
+    real* weights  = function->weights;
+  #if DEBUG
+    printf("dw: [");
+  #endif
+    real lambdaTimesGamma = lambda * gamma;
+    for (int i=0; i<function->nParams; i++) {
+      e[i] = lambdaTimesGamma * e[i] + dWeights[i];
+      weights[i] += deltaTimesLearningRate * e[i];
+  #if DEBUG
+      printf("%f ", dWeights[i]);
+  #endif
+    }
+  #if DEBUG
+    printf(" ]\n");
+  #endif
+    function->clearDelta();
   }
-#if DEBUG
-  printf(" ]\n");
-#endif
-  function->clearDelta();
   /////////////// END UPDATE
+
+  else {
+    // No update: just choose next action.
+    // // printf("DEBUG: Choose action\n", Qs);
+    policy->chooseAction(&currentAction, observation);
+  }
 
   // Reassign.
   // TODO: find a more elegant way to copy

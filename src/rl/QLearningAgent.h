@@ -53,6 +53,9 @@ public:
   // Source: http://www.research.ibm.com/massive/tdl.html
   float lambda;
 
+  // Toggle learning.
+  bool isLearning;
+
   // Controls wether to use the off-policy learning algorithm (Q-Learning) or the on-policy algorithm (Sarsa).
   // Default value: false ie. on-policy (Sarsa) learning
   // NOTE: Off-policy learning should be used at all time when training on a pre-generated dataset. When the agent is
