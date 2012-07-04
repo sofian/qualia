@@ -14,7 +14,6 @@ Head developer:
 Sofian Audry
 info(@)sofianaudry(.)com
 
-
 Thanks
 ------
 
@@ -44,4 +43,25 @@ Objectives
  * FSM
  * Reinforcement learning
 
+Compiling
+---------
+
+Standard build (eg. on i386 platforms):
+$ scons
+
+Build for AVR:
+$ scons --avr
+
+Build for Arduino:
+$ scons --arduino
+
+Cleaning up (example):
+$ scons --avr --clean
+
+To compile examples, go to the example folder and run scons. The qualia library needs to be compiled first.
+
+Installing
+----------
+ 
+See INSTALL file for installation procedure on standard (PC) platform.
  
