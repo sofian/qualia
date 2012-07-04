@@ -107,8 +107,8 @@ StaticAllocator myAlloc(buffer, STATIC_ALLOCATOR_SIZE);
 int main() {
   Alloc::init(&myAlloc);
   testDummy();
-//  testQLearningDummy();
-//  testQLearningDummyReward();
+  testQLearningDummy();
+  testQLearningDummyReward();
 
   if (myAlloc.nLeaks)
     printf("WARNING: Static Allocator has leaks: %d\n", myAlloc.nLeaks);
