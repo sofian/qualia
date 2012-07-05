@@ -81,25 +81,25 @@ void NeuralNetwork::update() {
 //  learningRateDiv += decreaseConstant;
 }
 
-#ifdef DEBUG
-
-void NeuralNetwork::printLayer(Layer* layer, Layer* lower) {
-  ::print("O:"); printArray(layer->output, layer->n);
-  ::print("E:"); printArray(layer->error, layer->n);
-  if (layer->weight) {
-    ::print("W:"); printArray(layer->weight[0], layer->n * (lower->n + 1));
-    ::print("dW:"); printArray(layer->dWeight[0], layer->n * (lower->n + 1));
-  }
-}
-
-void NeuralNetwork::debug() {
-  println("NEURAL-NET=======================");
-  ::print("n. params:"); println(nParams);
-  println("------OUTPUTS------"); printLayer(&outputLayer, &hiddenLayer);
-  println("------HIDDEN-------"); printLayer(&hiddenLayer, &inputLayer);
-  println("------INPUTS-------"); printLayer(&inputLayer, 0);
-}
-#endif
+//#ifdef DEBUG
+//
+//void NeuralNetwork::printLayer(Layer* layer, Layer* lower) {
+//  ::print("O:"); printArray(layer->output, layer->n);
+//  ::print("E:"); printArray(layer->error, layer->n);
+//  if (layer->weight) {
+//    ::print("W:"); printArray(layer->weight[0], layer->n * (lower->n + 1));
+//    ::print("dW:"); printArray(layer->dWeight[0], layer->n * (lower->n + 1));
+//  }
+//}
+//
+//void NeuralNetwork::debug() {
+//  println("NEURAL-NET=======================");
+//  ::print("n. params:"); println(nParams);
+//  println("------OUTPUTS------"); printLayer(&outputLayer, &hiddenLayer);
+//  println("------HIDDEN-------"); printLayer(&hiddenLayer, &inputLayer);
+//  println("------INPUTS-------"); printLayer(&inputLayer, 0);
+//}
+//#endif
 
 void NeuralNetwork::_allocateLayer(Layer& layer, int nInputs, int nOutputs, int& k) {
 //  printf("Allocating layer: %d => %d (%d)\n", nInputs, nOutputs, k);

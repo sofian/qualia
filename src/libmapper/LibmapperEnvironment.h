@@ -20,23 +20,29 @@
 #ifndef LIBMAPPERENVIRONMENT_H_
 #define LIBMAPPERENVIRONMENT_H_
 
-#include "core/Environment.h"
-#include "rl/RLObservation.h"
-#include "AutoConnect.h"
+#include "LibmapperAutoConnect.h"
+
+#include <core/Environment.h>
+#include <rl/RLObservation.h>
+#include <libmapper/LibmapperAutoConnect.h>
 #include <mapper/mapper.h>
 
-class Prototype2Environment : public Environment {
+class LibmapperEnvironment : public Environment {
 public:
   mapper_device dev;
   const char* devNamePrefix;
-  bool autoConnect;
   int devInitialPort;
   mapper_signal outsig;
+
+  bool autoConnect;
+  LibmapperAutoConnect* connector;
+
   RLObservation currentObservation;
   int observationDim, actionDim;
 
-  Prototype2Environment(int observationDim, int actionDim, const char *namePrefix, bool autoConnect = false, int initialPort = 9000);
-  virtual ~Prototype2Environment();
+  //LibmapperEnvironment(int observationDim, int actionDim);
+  LibmapperEnvironment(int observationDim, int actionDim, const char *namePrefix, bool autoConnect = false, int initialPort = 9000);
+  virtual ~LibmapperEnvironment();
 
   virtual void init();
   virtual Observation* start();

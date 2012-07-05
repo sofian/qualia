@@ -24,7 +24,7 @@
 
 #include <string.h>
 
-#define DEBUG 0
+//#define DEBUG 0
 
 #if DEBUG
 #include <stdio.h>
@@ -55,7 +55,7 @@ QLearningAgent::QLearningAgent(NeuralNetwork* func,
 //  _lastObservation.continuous = (real*) malloc( observationSize * sizeof(real) );
 //  _lastObservation.discrete = 0;
 
-  assert( function->nInput() == observationDim + actionDim );
+  assert( function->nInput() == (int) (observationDim + actionDim) );
   assert( function->nOutput() == 1 );
 
   policy->setAgent(this);
@@ -166,9 +166,9 @@ void QLearningAgent::end(const Observation* observation) {
 real QLearningAgent::Q(const Observation* observation, const Action* action) {
   // Set input.
   int k = 0;
-  for (int i = 0; i < observation->dim; i++, k++)
+  for (int i = 0; i < (int)observation->dim; i++, k++)
     nnInput[k] = observation->observations[i];
-  for (int i = 0; i < action->dim; i++, k++)
+  for (int i = 0; i < (int)action->dim; i++, k++)
     nnInput[k] = function->remapValue((real)action->actions[i], 0, action->nActions[i] - 1);//_agent->getEnvironment()->actionToReal(action);
 
   // Propagate.

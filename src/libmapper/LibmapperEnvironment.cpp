@@ -22,36 +22,63 @@
 #include <unistd.h>
 #include <stdio.h>
 
-Prototype2Environment::Prototype2Environment(int observationDim_, int actionDim_, const char *namePrefix, bool autoConnect_, int initialPort)
+//LibmapperEnvironment::LibmapperEnvironment(int observationDim_, int actionDim_)
+//  : connector("qualia", observationDim_), currentObservation(observationDim_), observationDim(observationDim_), actionDim(actionDim_) { }
+
+LibmapperEnvironment::LibmapperEnvironment(int observationDim_, int actionDim_, const char *namePrefix, bool autoConnect_, int initialPort)
   : devNamePrefix(namePrefix), devInitialPort(initialPort), autoConnect(autoConnect_), currentObservation(observationDim_), observationDim(observationDim_), actionDim(actionDim_) {
 }
 
-Prototype2Environment::~Prototype2Environment() {
-  autoDisconnectDevice();
+LibmapperEnvironment::~LibmapperEnvironment() {
+  if (connector) {
+    connector->logout();
+    free(connector);
+  }
   if (dev)
     mdev_free(dev);
 }
 
-void Prototype2Environment::init() {
-  dev = mdev_new(devNamePrefix, devInitialPort, 0);
+void LibmapperEnvironment::init() {
 
-  mdev_add_input(dev, "/observation", observationDim + 1, 'f', 0, 0, 0,
-                 (mapper_signal_handler*)updateInput, this);
+  // Init device.
+  if (autoConnect) {
+    connector = new LibmapperAutoConnect(devNamePrefix, observationDim, actionDim);
+    connector->init();
+    dev = connector->dev;
+    outsig = connector->sigAction;
+  }
+  else {
+    dev = mdev_new(devNamePrefix, devInitialPort, 0);
 
-  // TODO: Actions range (min/max) should be known in advance somehow (this is a limitation of the current implemenation)
-  outsig = mdev_add_output(dev, "/action", actionDim, 'i', 0, 0, 0);
+    // Create input / output signals.
+    mdev_add_input(dev, "observation", observationDim + 1, 'f', 0, 0, 0,
+                   (mapper_signal_handler*)updateInput, this);
 
-  if (autoConnect)
-    autoConnectDevice(dev);
+    // TODO: Actions range (min/max) should be known in advance somehow (this is a limitation of the current implemenation)
+    outsig = mdev_add_output(dev, "action", actionDim, 'i', 0, 0, 0);
+  }
+
+  assert(outsig);
 }
 
-Observation* Prototype2Environment::start() {
-  printf("Starting env\n");
+Observation* LibmapperEnvironment::start() {
+  // HACK.
+  if (connector)
+    mapper_monitor_poll(connector->mon, 0);
+
+  // Send position.
+  //msig_update(outsig, { 1 });
+
+  // Wait for response.
+  //mapper_monitor_poll(info->mon, 0);
+  printf("Polling\n");
   mdev_poll(dev, 1000);
+
+  printf("Starting env\n");
   return &currentObservation;
 }
 
-Observation* Prototype2Environment::step(const Action* action) {
+Observation* LibmapperEnvironment::step(const Action* action) {
   printf("Stepping env\n");
   printf("--> sending %d ...\n", action->actions[0]);
   msig_update(outsig, action->actions);
@@ -61,10 +88,10 @@ Observation* Prototype2Environment::step(const Action* action) {
   return &currentObservation;
 }
 
-void Prototype2Environment::updateInput(mapper_signal sig, mapper_db_signal props,
+void LibmapperEnvironment::updateInput(mapper_signal sig, mapper_db_signal props,
                                         mapper_timetag_t *timetag, float *value) {
   printf("update input called %f\n", *value);
-  RLObservation& obs = ((Prototype2Environment*)props->user_data)->currentObservation;
+  RLObservation& obs = ((LibmapperEnvironment*)props->user_data)->currentObservation;
   int k;
   for (k=0; k<obs.dim; k++)
     obs[k] = value[k];

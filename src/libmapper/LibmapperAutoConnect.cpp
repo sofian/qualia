@@ -1,141 +1,137 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <mapper/mapper.h>
-#include <AutoConnect.h>
+#include "LibmapperAutoConnect.h"
 
-struct _autoConnectState
-{
-    int seen_srcdest_link;
-    int seen_destsrc_link;
-    char *vector_device_name;
-    int connected;
-
-    mapper_device dev;
-    mapper_monitor mon;
-} autoConnectState;
-
-void make_connections()
-{
-    char signame1[1024], signame2[1024],
-        signame3[1024], signame4[1024];
-
-    struct _autoConnectState *acs = &autoConnectState;
-
-    sprintf(signame1, "%s/node/%d/cardinal",
-            acs->vector_device_name, mdev_ordinal(acs->dev));
-
-    sprintf(signame2, "%s/node/%d/force",
-            acs->vector_device_name, mdev_ordinal(acs->dev));
-
-    sprintf(signame3, "%s/observation", mdev_name(acs->dev));
-
-    sprintf(signame4, "%s/action", mdev_name(acs->dev));
-
-    mapper_monitor_connect(acs->mon, signame1, signame3, 0, 0);
-    mapper_monitor_connect(acs->mon, signame4, signame2, 0, 0);
+LibmapperAutoConnect::LibmapperAutoConnect(const char* deviceName_, int nObservations_, int nActions_) :
+  nObservations(nObservations_), nActions(nActions_) {
+  deviceName = strdup(deviceName_);
 }
 
-void link_db_callback(mapper_db_link record,
-                      mapper_db_action_t action,
-                      void *user)
-{
-    struct _autoConnectState *acs = (struct _autoConnectState*)user;
-
-    if (!acs->vector_device_name || !mdev_name(acs->dev))
-        return;
-
-    if (action == MDB_NEW || action == MDB_MODIFY) {
-        if (strcmp(record->src_name, acs->vector_device_name)==0
-            &&
-            strcmp(record->dest_name, mdev_name(acs->dev))==0)
-        {
-            acs->seen_srcdest_link = 1;
-        }
-
-        if (strcmp(record->src_name, mdev_name(acs->dev))==0
-            &&
-            strcmp(record->dest_name, acs->vector_device_name)==0)
-        {
-            acs->seen_destsrc_link = 1;
-        }
-    }
-
-    if (acs->seen_srcdest_link && acs->seen_destsrc_link)
-    {
-        acs->connected = 1;
-    }
+LibmapperAutoConnect::~LibmapperAutoConnect() {
+  logout();
 }
 
-mapper_device autoConnectDevice(mapper_device dev)
-{
-    struct _autoConnectState *acs = &autoConnectState;
-    memset(acs, 0, sizeof(struct _autoConnectState));
+void LibmapperAutoConnect::init() {
+  observations = (real*)malloc(nObservations*sizeof(real));
+  memset(observations, 0, nObservations*sizeof(real));
 
-    acs->dev = dev;
+  id = 0;
 
-    while (!mdev_ready(acs->dev)) {
-        mdev_poll(acs->dev, 1000);
-    }
+//  deviceName = strdup("/qualia");
+  admin = mapper_admin_new(0, 0, 0);
 
-    acs->mon = mapper_monitor_new(0, 0);
-    mapper_db db = mapper_monitor_get_db(acs->mon);
+  // add device
+  dev = mdev_new("agent", 9000 + id, admin);
+  while (!mdev_ready(dev)) {
+      mdev_poll(dev, 100);
+  }
+  printf("ordinal: %d\n", mdev_ordinal(dev));
+  fflush(stdout);
 
-    mapper_db_add_link_callback(db, link_db_callback, acs);
-    int i=0;
-    while (i++ < 10) {
-        mdev_poll(acs->dev, 100);
-        mapper_monitor_poll(acs->mon, 0);
-    }
+  // add monitor and monitor callbacks
+  mon = mapper_monitor_new(admin, 0);
+  db  = mapper_monitor_get_db(mon);
+  mapper_db_add_device_callback(db, LibmapperAutoConnect::dev_db_callback, this);
+  mapper_db_add_link_callback(db, LibmapperAutoConnect::link_db_callback, this);
 
-    mapper_db_device *dbdev = mapper_db_match_devices_by_name(db, "vector");
-    if (dbdev) {
-        acs->vector_device_name = strdup((*dbdev)->name);
-        mapper_monitor_link(acs->mon, (*dbdev)->name, mdev_name(acs->dev));
-        mapper_monitor_link(acs->mon, mdev_name(acs->dev), (*dbdev)->name);
-
-        mapper_monitor_request_links_by_name(acs->mon, (*dbdev)->name);
-    }
-    mapper_db_device_done(dbdev);
-
-    i=0;
-    while (i++ < 1000 && !acs->connected) {
-        mdev_poll(acs->dev, 100);
-        mapper_monitor_poll(acs->mon, 0);
-    }
-
-    if (!acs->connected) {
-        mdev_free(acs->dev);
-        mapper_monitor_free(acs->mon);
-        return 0;
-    }
-
-    make_connections();
-
-    return acs->dev;
+  // add signals
+  mdev_add_input(dev, "observation", nObservations, 'f', "norm", 0, 0, LibmapperAutoConnect::signal_handler, this);
+  sigAction = mdev_add_output(dev, "action", nActions, 'i', 0, 0, 0);
 }
 
-void autoDisconnectDevice()
+
+void LibmapperAutoConnect::logout()
 {
-    struct _autoConnectState *acs = &autoConnectState;
-    if (acs->vector_device_name) {
-        mapper_monitor_unlink(acs->mon,
-                              acs->vector_device_name,
-                              mdev_name(acs->dev));
-        free(acs->vector_device_name);
-    }
-    if (acs->mon)
-      mapper_monitor_free(acs->mon);
-    memset(acs, 0, sizeof(struct _autoConnectState));
+  if (deviceName) {
+    mapper_monitor_unlink(mon, deviceName, mdev_name(dev));
+    free(deviceName);
+  }
+
+  if (dev)
+    mdev_free(dev);
+
+  if (db) {
+    mapper_db_remove_device_callback(db, LibmapperAutoConnect::dev_db_callback, this);
+    mapper_db_remove_link_callback(db, LibmapperAutoConnect::link_db_callback, this);
+  }
+
+  if (mon)
+    mapper_monitor_free(mon);
+
+  if (admin) {
+    mapper_admin_free(admin);
+  }
+
+  if (observations)
+    free(observations);
 }
 
-//int main()
-//{
-//    mapper_device dev = autoConnect();
-//    if (!dev)
-//        return 1;
-//
-//    mdev_poll(dev, 1000);
-//    autoDisconnect();
-//    return 0;
-//}
+void LibmapperAutoConnect::createConnections() {
+  char signame1[1024], signame2[1024];
+
+  sprintf(signame1, "%s/node/%d/observation", deviceName, mdev_ordinal(dev));
+  sprintf(signame2, "%s/observation", mdev_name(dev));
+  printf("Connecting %s to %s\n", signame1, signame2);
+  mapper_monitor_connect(mon, signame1, signame2, 0, 0);
+
+  sprintf(signame1, "%s/action", mdev_name(dev));
+  sprintf(signame2, "%s/node/%d/action", deviceName, mdev_ordinal(dev));
+  mapper_monitor_connect(mon, signame1, signame2, 0, 0);
+  printf("Connecting %s to %s\n", signame1, signame2);
+}
+
+void LibmapperAutoConnect::signal_handler(mapper_signal msig,
+                                          mapper_db_signal props,
+                                          mapper_timetag_t *timetag,
+                                          void *value)
+{
+  LibmapperAutoConnect* connector = (LibmapperAutoConnect*)props->user_data;
+  memcpy(connector->observations, value, sizeof(real)*connector->nObservations);
+}
+
+void LibmapperAutoConnect::dev_db_callback(mapper_db_device record,
+                                           mapper_db_action_t action,
+                                           void *user)
+{
+  LibmapperAutoConnect* connector = (LibmapperAutoConnect*)user;
+  assert( connector );
+  printf("dev_db_callback: action %d: record=%s, device=%s\n", (int)action, record->name, connector->deviceName);
+
+  if (action == MDB_NEW) {
+    if (strcmp(record->name, connector->deviceName) == 0) {
+      printf("dev_db_callback: action %d: record=%s\n", (int)action, record->name);
+      mapper_monitor_link(connector->mon, mdev_name(connector->dev), record->name);
+      mapper_monitor_link(connector->mon, record->name, mdev_name(connector->dev));
+    }
+
+  } else if (action == MDB_REMOVE) {
+    if (strcmp(record->name, connector->deviceName) == 0) {
+      mapper_monitor_unlink(connector->mon, mdev_name(connector->dev), record->name);
+      connector->linked_influence = 0;
+    }
+  }
+}
+
+void LibmapperAutoConnect::link_db_callback(mapper_db_link record,
+                                            mapper_db_action_t action,
+                                            void *user)
+{
+  LibmapperAutoConnect* connector = (LibmapperAutoConnect*)user;
+  assert( connector );
+
+  printf("link_db_callback: action %d: src=%s, dst=%s\n", (int)action, record->src_name, record->dest_name);
+
+  if (action == MDB_NEW) {
+    if (((strcmp(record->src_name, connector->deviceName) == 0) &&
+        (strcmp(record->dest_name, mdev_name(connector->dev)) == 0)) ||
+          ((strcmp(record->dest_name, connector->deviceName) == 0) &&
+           (strcmp(record->src_name, mdev_name(connector->dev)) == 0))) {
+      connector->linked_influence++;
+      if (connector->linked_influence >= 2)
+        connector->createConnections();
+    }
+
+  } else if (action == MDB_REMOVE) {
+    if ((strcmp(record->src_name, connector->deviceName) == 0) ||
+        (strcmp(record->dest_name, connector->deviceName) == 0))
+      connector->linked_influence--;
+  }
+}

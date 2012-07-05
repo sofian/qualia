@@ -19,23 +19,8 @@ LIBS = ""
 LIBPATH = ""
 
 # Get mode.
-AddOption('--avr',
-          dest='avr',
-          action="store_true",
-          default=False,
-          help="AVR mode");
-AddOption('--arduino',
-          dest='arduino',
-          action="store_true",
-          default=False,
-          help="Arduino mode");
-
-if GetOption('arduino'):
-  MODE = 'arduino'
-elif GetOption('avr'):
-  MODE = 'avr'
-else:
-  MODE = 'computer'
+platform = ARGUMENTS.get("platform", "computer")
+mode     = ARGUMENTS.get("mode", "release")
 
 TARGET = None
 
@@ -46,11 +31,11 @@ LIBS = ""
 LIBPATH = ""
 AVR_GCC_DIR = ""
 
-if (MODE == 'avr' or MODE == 'arduino'):
+if (platform == 'avr' or platform == 'arduino'):
   AVR_GCC_DIR = "/Applications/Arduino.app/Contents/Resources/Java/hardware/tools/avr/bin/"
 
 # Import settings
-CONFIG = ['INCLUDE_PATH', 'MCU', 'F_CPU', 'EXTRA_LIBS', 'AVR_GCC_DIR', 'MODE', 'TARGET', 'LIBS', 'LIBPATH']
+CONFIG = ['INCLUDE_PATH', 'MCU', 'F_CPU', 'EXTRA_LIBS', 'AVR_GCC_DIR', 'TARGET', 'LIBS', 'LIBPATH', 'platform', 'mode']
 conf = SConscript(dirs='.', exports=CONFIG)
 for i in range(len(CONFIG)):
   vars()[CONFIG[i]] = conf[i]
@@ -74,7 +59,7 @@ EXTRA_LIBS = ARGUMENTS.get('EXTRA_LIBS', EXTRA_LIBS).split(':')
 LIBS = ARGUMENTS.get('LIBS', LIBS).split(',')
 LIBPATH = ARGUMENTS.get('LIBPATH', LIBPATH).split(':')
 
-BUILD_DIR = "build/" + MODE + "/"
+BUILD_DIR = "build/" + platform + "/"
 
 LIBS += ["qualia", "m"]
 LIBPATH += ["../../" + BUILD_DIR]
@@ -90,7 +75,7 @@ if AVR_GCC_DIR:
 AVR_BIN_PREFIX = AVR_GCC_DIR + 'avr-'
 
 # Create environment and set default configurations ###################################
-if (MODE == 'avr' or MODE == 'arduino'):
+if (platform == 'avr' or platform == 'arduino'):
   cFlags = ['-ffunction-sections', '-fdata-sections', '-fno-exceptions',
       '-funsigned-char', '-funsigned-bitfields', '-fpack-struct', '-fshort-enums',
       '-Os', '-mmcu=' + MCU]
@@ -123,8 +108,12 @@ if (MODE == 'avr' or MODE == 'arduino'):
 else:
   env = Environment()
   env.Append(CPPPATH=["/usr/local/include", "/usr/include", os.getcwd()])
+  if (mode == 'debug'):
+    env.Append(CPPFLAGS=['-Wall', '-g', '-DDEBUG=1'])
+  else:
+    env.Append(CPPFLAGS=['-O2'])
 
-  env.VariantDir(BUILD_DIR, ".")
+  env.VariantDir(BUILD_DIR, ".", duplicate=0)
   sources = Glob(BUILD_DIR + "*.cpp")
   sources += Glob(BUILD_DIR + "*.c")
   env.Program(BUILD_DIR + TARGET, sources, LIBS = LIBS, CPPPATH = INCLUDE_PATH, LIBPATH = LIBPATH)

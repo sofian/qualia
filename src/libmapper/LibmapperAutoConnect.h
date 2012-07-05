@@ -1,38 +1,52 @@
-/*
- * AutoConnect.h
- *
- * (c) 2012 Sofian Audry -- info(@)sofianaudry(.)com
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+#ifndef LIBMAPPER_AUTOCONNECT_INC
+#define LIBMAPPER_AUTOCONNECT_INC
 
-
-#ifndef AUTOCONNECT_H_
-#define AUTOCONNECT_H_
-
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <signal.h>
 #include <mapper/mapper.h>
 
-#if defined (__cplusplus)
-extern "C" {
-#endif
+#include <core/common.h>
 
-mapper_device autoConnectDevice(mapper_device dev);
-void autoDisconnectDevice();
+class LibmapperAutoConnect {
+public:
+  char *deviceName;
 
-#if defined (__cplusplus)
-}
-#endif
+  real *observations;
+  int nObservations;
+  int nActions;
 
+  int linked_influence;
+  int connected;
 
-#endif /* AUTOCONNECT_H_ */
+  mapper_admin admin;
+  mapper_device dev;
+  mapper_monitor mon;
+  mapper_db db;
+
+  mapper_signal sigAction;
+
+  int id;
+
+  LibmapperAutoConnect(const char* deviceName_, int nObservations_, int nActions_);
+  virtual ~LibmapperAutoConnect();
+
+  void init();
+  void logout();
+
+  void createConnections();
+
+  static void signal_handler(mapper_signal msig, mapper_db_signal props,
+                             mapper_timetag_t *timetag, void *value);
+
+  static void dev_db_callback(mapper_db_device record, mapper_db_action_t action,
+                              void *user);
+
+  static void link_db_callback(mapper_db_link record, mapper_db_action_t action,
+                               void *user);
+
+};
+
+#endif // LIBMAPPER_AUTOCONNECT_INC
+
