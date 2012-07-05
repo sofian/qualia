@@ -1,9 +1,5 @@
 import os
 
-Import(["MODE"])
-
-SUBDIRS = ["core", "rl", "util"]
-
 # From http://code.activestate.com/recipes/502263/
 # By Paul Rubin
 def unique(seq, keepstr=True):
@@ -31,8 +27,11 @@ def fnCompress(target, source, env):
     for file in files:
         run(AVR_BIN_PREFIX+'ar rcs %s %s'%(target[0], file))
 
+Import(["platform", "mode"])
+SUBDIRS = ["core", "rl", "util"]
+
 ## TODO: change this (make it more generic eg. settings file) ###############
-if (MODE == 'computer'):
+if (platform == 'computer'):
   INCLUDE_PATH = "/Users/tats/Documents/workspace/qualia/src/"
 else:
   INCLUDE_PATH = "/Users/tats/Documents/workspace/qualia/src/:/Applications/Arduino.app/Contents/Resources/Java/hardware/tools/avr/avr/include/"
@@ -45,8 +44,12 @@ LIBPATH = ""
 AVR_GCC_DIR = ""
 
 # default
-if (MODE == 'avr' or MODE == 'arduino'):
+if (platform == 'avr' or platform == 'arduino'):
   AVR_GCC_DIR = "/Applications/Arduino.app/Contents/Resources/Java/hardware/tools/avr/bin/"
+  
+if (platform == 'computer'):
+  LIBS += "-libmapper-0, -llo"
+  SUBDIRS += ["libmapper"]
 #############################################################################
  
 sources = []
@@ -55,7 +58,7 @@ for subdir in SUBDIRS:
     sources += Glob(subdir + "/*.c")
 
 # Remove avrdefs to avoid the "no symbol" linking error
-if (MODE == "computer"):
+if (platform == "computer"):
   sources = [f for f in sources if "core/avrdefs.cpp" not in str(f)]
 
 TARGET = "qualia"
@@ -87,7 +90,7 @@ if AVR_GCC_DIR:
 AVR_BIN_PREFIX = AVR_GCC_DIR + 'avr-'
 
 # Create environment and set default configurations ###################################
-if (MODE == 'avr' or MODE == 'arduino'):
+if (platform == 'avr' or platform == 'arduino'):
   cFlags = ['-ffunction-sections', '-fdata-sections', '-fno-exceptions',
       '-funsigned-char', '-funsigned-bitfields', '-fpack-struct', '-fshort-enums',
       '-Os', '-mmcu=%s'%MCU]
@@ -116,8 +119,11 @@ if (MODE == 'avr' or MODE == 'arduino'):
 else:
   env = Environment()
   env.Append(CPPPATH=["/usr/local/include", "/usr/include", os.getcwd()])
-  #env.Append(CPPFLAGS=['-g'])
-
+  if (mode == 'debug'):
+    env.Append(CPPFLAGS=['-Wall', '-g', '-DDEBUG=1'])
+  else:
+    env.Append(CPPFLAGS=['-O2'])
+  
   #objects = env.StaticObject(source = sources)
 
   # Peut etre une erreur: on devrait construire des OBJETS (?)
@@ -138,3 +144,4 @@ else:
 #SConscript("tests/unit/SConscript")
 #SConscript("tests/example/SConscript")
 #SConscript("tests/libmapper/SConscript")
+

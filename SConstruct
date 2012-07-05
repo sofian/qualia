@@ -1,20 +1,4 @@
-# Get mode.
-AddOption('--avr',
-          dest='avr',
-          action="store_true",
-          default=False,
-          help="AVR mode");
-AddOption('--arduino',
-          dest='arduino',
-          action="store_true",
-          default=False,
-          help="Arduino mode");
+platform = ARGUMENTS.get("platform", "computer")
+mode     = ARGUMENTS.get("mode", "release")
 
-if GetOption('arduino'):
-  MODE = 'arduino'
-elif GetOption('avr'):
-  MODE = 'avr'
-else:
-  MODE = 'computer'
-
-SConscript("src/SConscript", variant_dir="build/" + MODE + "/", duplicate=0, exports=["MODE"])
+SConscript("src/SConscript", variant_dir="build/" + platform + "/", duplicate=0, exports=["platform","mode"])
