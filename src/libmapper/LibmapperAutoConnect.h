@@ -12,6 +12,7 @@
 class LibmapperAutoConnect {
 public:
   char *deviceName;
+  int initialPort;
 
   real *observations;
   int nObservations;
@@ -27,9 +28,7 @@ public:
 
   mapper_signal sigAction;
 
-  int id;
-
-  LibmapperAutoConnect(const char* deviceName_, int nObservations_, int nActions_);
+  LibmapperAutoConnect(const char* deviceName_, int nObservations_, int nActions_, int initialPort_ = 9000);
   virtual ~LibmapperAutoConnect();
 
   void init();

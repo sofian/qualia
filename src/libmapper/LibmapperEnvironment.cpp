@@ -42,7 +42,7 @@ void LibmapperEnvironment::init() {
 
   // Init device.
   if (autoConnect) {
-    connector = new LibmapperAutoConnect(devNamePrefix, observationDim, actionDim);
+    connector = new LibmapperAutoConnect(devNamePrefix, observationDim, actionDim, devInitialPort);
     connector->init();
     dev = connector->dev;
     outsig = connector->sigAction;

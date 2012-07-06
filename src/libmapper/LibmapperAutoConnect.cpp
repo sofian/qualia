@@ -1,7 +1,7 @@
 #include "LibmapperAutoConnect.h"
 
-LibmapperAutoConnect::LibmapperAutoConnect(const char* deviceName_, int nObservations_, int nActions_) :
-  nObservations(nObservations_), nActions(nActions_) {
+LibmapperAutoConnect::LibmapperAutoConnect(const char* deviceName_, int nObservations_, int nActions_, int initialPort_) :
+  nObservations(nObservations_), nActions(nActions_), initialPort(initialPort_) {
   deviceName = strdup(deviceName_);
 }
 
@@ -13,13 +13,11 @@ void LibmapperAutoConnect::init() {
   observations = (real*)malloc(nObservations*sizeof(real));
   memset(observations, 0, nObservations*sizeof(real));
 
-  id = 0;
-
 //  deviceName = strdup("/qualia");
   admin = mapper_admin_new(0, 0, 0);
 
   // add device
-  dev = mdev_new("agent", 9000 + id, admin);
+  dev = mdev_new("agent", initialPort, admin);
   while (!mdev_ready(dev)) {
       mdev_poll(dev, 100);
   }
