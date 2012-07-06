@@ -37,7 +37,7 @@ public:
   bool autoConnect;
   LibmapperAutoConnect* connector;
 
-  RLObservation currentObservation;
+  Observation currentObservation;
   int observationDim, actionDim;
 
   //LibmapperEnvironment(int observationDim, int actionDim);

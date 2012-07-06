@@ -83,7 +83,7 @@ Observation* LibmapperEnvironment::step(const Action* action) {
   printf("--> sending %d ...\n", action->actions[0]);
   msig_update(outsig, action->actions);
   while (!mdev_poll(dev, 1) );
-  printf("--> receiving reward = %f, data = %f ...\n", currentObservation.reward, currentObservation[0]);
+//  printf("--> receiving reward = %f, data = %f ...\n", currentObservation.reward, currentObservation[0]);
   //usleep(100);
   return &currentObservation;
 }
@@ -91,9 +91,9 @@ Observation* LibmapperEnvironment::step(const Action* action) {
 void LibmapperEnvironment::updateInput(mapper_signal sig, mapper_db_signal props,
                                         mapper_timetag_t *timetag, float *value) {
   printf("update input called %f\n", *value);
-  RLObservation& obs = ((LibmapperEnvironment*)props->user_data)->currentObservation;
+  Observation& obs = ((LibmapperEnvironment*)props->user_data)->currentObservation;
   int k;
   for (k=0; k<obs.dim; k++)
     obs[k] = value[k];
-  obs.reward = value[k];
+//  obs.reward = value[k];
 }

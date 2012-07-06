@@ -66,16 +66,35 @@ void LibmapperAutoConnect::logout()
 
 void LibmapperAutoConnect::createConnections() {
   char signame1[1024], signame2[1024];
+//  mapper_monitor_poll(mon, 0);
+//  mapper_monitor_request_devices(mon);
+//  mapper_monitor_autorequest(mon, 1);
+  mapper_monitor_request_signals_by_name(mon, mdev_name(dev));
+  mapper_monitor_poll(mon, 0);
 
-  sprintf(signame1, "%s/node/%d/observation", deviceName, mdev_ordinal(dev));
-  sprintf(signame2, "%s/observation", mdev_name(dev));
-  printf("Connecting %s to %s\n", signame1, signame2);
-  mapper_monitor_connect(mon, signame1, signame2, 0, 0);
+  mapper_db_signal_t** inputs = mapper_db_get_inputs_by_device_name(db, mdev_name(dev));
+  while (inputs != 0) {
+    const char* name = (*inputs)->name;
+    printf("Input: %s / ", name);
+    sprintf(signame1, "%s/node/%d%s", deviceName, mdev_ordinal(dev), name);
+    sprintf(signame2, "%s%s", mdev_name(dev), name);
+    printf("Connecting %s to %s\n", signame1, signame2);
+    mapper_monitor_connect(mon, signame1, signame2, 0, 0);
+    inputs = mapper_db_signal_next(inputs);
+  }
+  mapper_db_signal_done(inputs);
 
-  sprintf(signame1, "%s/action", mdev_name(dev));
-  sprintf(signame2, "%s/node/%d/action", deviceName, mdev_ordinal(dev));
-  mapper_monitor_connect(mon, signame1, signame2, 0, 0);
-  printf("Connecting %s to %s\n", signame1, signame2);
+  mapper_db_signal_t** outputs = mapper_db_get_outputs_by_device_name(db, mdev_name(dev));
+  while (outputs != 0) {
+    const char* name = (*outputs)->name;
+    printf("Output: %s / ", name);
+    sprintf(signame1, "%s%s", mdev_name(dev), name);
+    sprintf(signame2, "%s/node/%d%s", deviceName, mdev_ordinal(dev), name);
+    printf("Connecting %s to %s\n", signame1, signame2);
+    mapper_monitor_connect(mon, signame1, signame2, 0, 0);
+    outputs = mapper_db_signal_next(outputs);
+  }
+  mapper_db_signal_done(outputs);
 }
 
 void LibmapperAutoConnect::signal_handler(mapper_signal msig,
