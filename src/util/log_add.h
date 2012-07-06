@@ -24,7 +24,8 @@
 #ifndef LOG_ADD_INC
 #define LOG_ADD_INC
 
-#include "common.h"
+#include <math.h>
+#include <core/common.h>
 
 /** Some simple functions for log operations.
 
