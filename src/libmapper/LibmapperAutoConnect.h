@@ -17,7 +17,7 @@ public:
   int nObservations;
   int nActions;
 
-  int linked_influence;
+  int nLinked;
   int connected;
 
   mapper_admin admin;

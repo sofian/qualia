@@ -72,6 +72,7 @@ void LibmapperAutoConnect::createConnections() {
   mapper_monitor_request_signals_by_name(mon, mdev_name(dev));
   mapper_monitor_poll(mon, 0);
 
+  // Autoconnect all inputs.
   mapper_db_signal_t** inputs = mapper_db_get_inputs_by_device_name(db, mdev_name(dev));
   while (inputs != 0) {
     const char* name = (*inputs)->name;
@@ -84,6 +85,7 @@ void LibmapperAutoConnect::createConnections() {
   }
   mapper_db_signal_done(inputs);
 
+  // Autoconnect all outputs.
   mapper_db_signal_t** outputs = mapper_db_get_outputs_by_device_name(db, mdev_name(dev));
   while (outputs != 0) {
     const char* name = (*outputs)->name;
@@ -116,7 +118,6 @@ void LibmapperAutoConnect::dev_db_callback(mapper_db_device record,
 
   if (action == MDB_NEW) {
     if (strcmp(record->name, connector->deviceName) == 0) {
-      printf("dev_db_callback: action %d: record=%s\n", (int)action, record->name);
       mapper_monitor_link(connector->mon, mdev_name(connector->dev), record->name);
       mapper_monitor_link(connector->mon, record->name, mdev_name(connector->dev));
     }
@@ -124,7 +125,7 @@ void LibmapperAutoConnect::dev_db_callback(mapper_db_device record,
   } else if (action == MDB_REMOVE) {
     if (strcmp(record->name, connector->deviceName) == 0) {
       mapper_monitor_unlink(connector->mon, mdev_name(connector->dev), record->name);
-      connector->linked_influence = 0;
+      connector->nLinked = 0;
     }
   }
 }
@@ -143,14 +144,14 @@ void LibmapperAutoConnect::link_db_callback(mapper_db_link record,
         (strcmp(record->dest_name, mdev_name(connector->dev)) == 0)) ||
           ((strcmp(record->dest_name, connector->deviceName) == 0) &&
            (strcmp(record->src_name, mdev_name(connector->dev)) == 0))) {
-      connector->linked_influence++;
-      if (connector->linked_influence >= 2)
+      connector->nLinked++;
+      if (connector->nLinked >= 2)
         connector->createConnections();
     }
 
   } else if (action == MDB_REMOVE) {
     if ((strcmp(record->src_name, connector->deviceName) == 0) ||
         (strcmp(record->dest_name, connector->deviceName) == 0))
-      connector->linked_influence--;
+      connector->nLinked--;
   }
 }
