@@ -29,10 +29,6 @@ void LibmapperAutoConnect::init() {
   db  = mapper_monitor_get_db(mon);
   mapper_db_add_device_callback(db, LibmapperAutoConnect::dev_db_callback, this);
   mapper_db_add_link_callback(db, LibmapperAutoConnect::link_db_callback, this);
-
-  // add signals
-  mdev_add_input(dev, "observation", nObservations, 'f', "norm", 0, 0, LibmapperAutoConnect::signal_handler, this);
-  sigAction = mdev_add_output(dev, "action", nActions, 'i', 0, 0, 0);
 }
 
 

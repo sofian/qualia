@@ -27,12 +27,36 @@
 #include <libmapper/LibmapperAutoConnect.h>
 #include <mapper/mapper.h>
 
+#include <map>
+#include <string>
+
 class LibmapperEnvironment : public Environment {
 public:
+  struct SignalData {
+    mapper_signal sig;
+    float* data;
+    int n;
+    bool isBlocking;
+    bool flag;
+
+    SignalData(mapper_signal sig_, int n_, bool isBlocking_, float* initialData=0) :
+      sig(sig_), n(n_), isBlocking(isBlocking_), flag(false) {
+      data = (float*)malloc(n*sizeof(float));
+      if (initialData)
+        memcpy(data, initialData, n*sizeof(float));
+    }
+
+    ~SignalData() { free(data); }
+  };
+  typedef std::map<std::string, SignalData*> SignalDataMap;
+
   mapper_device dev;
   const char* devNamePrefix;
   int devInitialPort;
   mapper_signal outsig;
+
+  SignalDataMap inputData;
+  SignalDataMap outputData;
 
   bool autoConnect;
   LibmapperAutoConnect* connector;
@@ -48,8 +72,18 @@ public:
   virtual Observation* start();
   virtual Observation* step(const Action* action);
 
-  static void updateInput(mapper_signal sig, mapper_db_signal props,
-                          mapper_timetag_t *timetag, float *value);
+  void addInput(const char* name, int length, char type, const char* unit, void* minimum, void* maximum, bool blocking=true, float* initialData=0);
+  void addOutput(const char* name, int length, char type, const char* unit, void* minimum, void* maximum, float* initialData=0);
+
+  void readInput(const char* name, float* data);
+  void readInput(const char* name, int* data);
+  void writeOutput(const char* name, const float* data);
+  void writeOutput(const char* name, const int* data);
+
+  void waitForBlockingInputs();
+  void sendAllOutputs();
+
+  static void updateInput(mapper_signal sig, mapper_db_signal props, mapper_timetag_t *timetag, void *value);
 
 
 };

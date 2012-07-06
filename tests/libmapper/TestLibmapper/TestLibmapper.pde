@@ -3,6 +3,7 @@ import Mapper.Db.*;
 
 final Device dev = new Device("test", 9000);
 Device.Signal observation;
+Device.Signal observationTerminal;
 Device.Signal action;
 
 final int DIM_OBSERVATIONS = 1;
@@ -16,16 +17,19 @@ void setup()
   frameRate( 24 );
   colorMode(RGB, 255);
   initMapper();
+
+//  observation.update( new float[] { 1 } );
 }
 
 void draw() {
   // Wait for agent to take action.
-  while (dev.poll(1) == 0);
+  dev.poll(100);
+//  while (dev.poll(1) == 0);
 
   // Background.
   background(128,128,128);
   
-  observation.update( new float[] { 1 } );
+  observation.update( new float[] { nextAction } );
 }
 
 void initMapper() {
@@ -42,6 +46,7 @@ void initMapper() {
   System.out.println("Input signal name: "+action.name());
 
   observation = dev.add_output("/node/1/observation", DIM_OBSERVATIONS, 'f', "", new Double(0.0), new Double(1.0));
+  observationTerminal = dev.add_output("/node/1/observation_terminal", 1, 'i', "", new Double(0.0), new Double(1.0));
   
   System.out.println("Output signal index: "+observation.index());
   System.out.println("Zeroeth output signal name: "+dev.get_output_by_index(0).name());
