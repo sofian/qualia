@@ -20,8 +20,8 @@
 #ifndef LIBMAPPERENVIRONMENT_H_
 #define LIBMAPPERENVIRONMENT_H_
 
+#include "MapperConnector.h"
 #include <core/Environment.h>
-#include <libmapper/MapperConnector.h>
 
 #include <mapper/mapper.h>
 

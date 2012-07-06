@@ -20,7 +20,7 @@
 #ifndef MAPPERBASICENVIRONMENT_H_
 #define MAPPERBASICENVIRONMENT_H_
 
-#include <libmapper/MapperEnvironment.h>
+#include "MapperEnvironment.h"
 #include <core/Observation.h>
 
 class MapperBasicEnvironment : public MapperEnvironment {

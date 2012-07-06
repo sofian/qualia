@@ -1,6 +1,6 @@
 #include "DummyAgent.h"
 #include <core/Qualia.h>
-#include <libmapper/MapperBasicEnvironment.h>
+#include <plugins/mapper/MapperBasicEnvironment.h>
 
 #define N_HIDDEN 3
 #define DIM_OBSERVATIONS 1

@@ -46,20 +46,6 @@ AVR_GCC_DIR = ""
 # default
 if (platform == 'avr' or platform == 'arduino'):
   AVR_GCC_DIR = "/Applications/Arduino.app/Contents/Resources/Java/hardware/tools/avr/bin/"
-  
-if (platform == 'computer'):
-  LIBS += "-libmapper-0, -llo"
-  SUBDIRS += ["libmapper"]
-#############################################################################
- 
-sources = []
-for subdir in SUBDIRS:
-    sources += Glob(subdir + "/*.cpp")
-    sources += Glob(subdir + "/*.c")
-
-# Remove avrdefs to avoid the "no symbol" linking error
-if (platform == "computer"):
-  sources = [f for f in sources if "core/avrdefs.cpp" not in str(f)]
 
 TARGET = "qualia"
 
@@ -88,6 +74,22 @@ if AVR_GCC_DIR:
   AVR_GCC_DIR += '/'
 
 AVR_BIN_PREFIX = AVR_GCC_DIR + 'avr-'
+  
+if (platform == 'computer'):
+  LIBS += ["mapper-0", "lo"]
+  SUBDIRS += ["plugins/mapper"]
+
+LIBS += ["m"]
+#############################################################################
+ 
+sources = []
+for subdir in SUBDIRS:
+  sources += Glob(subdir + "/*.cpp")
+  sources += Glob(subdir + "/*.c")
+
+# Remove avrdefs to avoid the "no symbol" linking error
+if (platform == "computer"):
+	sources = [f for f in sources if "core/avrdefs.cpp" not in str(f)]
 
 # Create environment and set default configurations ###################################
 if (platform == 'avr' or platform == 'arduino'):
@@ -119,10 +121,11 @@ if (platform == 'avr' or platform == 'arduino'):
 else:
   env = Environment()
   env.Append(CPPPATH=["/usr/local/include", "/usr/include", os.getcwd()])
+  env.Append(LIBS=LIBS)
   if (mode == 'debug'):
     env.Append(CPPFLAGS=['-Wall', '-g', '-DDEBUG=1'])
   else:
-    env.Append(CPPFLAGS=['-O2'])
+    env.Append(CPPFLAGS=['-Wall', '-O2'])
   
   #objects = env.StaticObject(source = sources)
 
