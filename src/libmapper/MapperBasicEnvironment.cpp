@@ -20,7 +20,7 @@
 #include "MapperBasicEnvironment.h"
 
 MapperBasicEnvironment::MapperBasicEnvironment(int observationDim, int actionDim_, const char* deviceName, const char* peerDeviceName, bool autoConnect, int initialPort)
-  : LibmapperEnvironment(deviceName, peerDeviceName, autoConnect, initialPort),
+  : MapperEnvironment(deviceName, peerDeviceName, autoConnect, initialPort),
     currentObservation(observationDim), actionDim(actionDim_) {
 }
 
@@ -46,5 +46,6 @@ Observation* MapperBasicEnvironment::readInputs() {
   // Read observations.
   readInput("observation", currentObservation.observations);
   readInput("observation_terminal", (int*)&currentObservation.terminal);
+  return &currentObservation;
 }
 

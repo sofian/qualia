@@ -1,23 +1,21 @@
-#include "LibmapperAutoConnect.h"
+#include "MapperConnector.h"
 
-LibmapperAutoConnect::LibmapperAutoConnect(const char* deviceName_, int nObservations_, int nActions_, int initialPort_) :
-  nObservations(nObservations_), nActions(nActions_), initialPort(initialPort_) {
+MapperConnector::MapperConnector(const char* deviceName_, const char* peerDeviceName_, bool autoConnect_, int initialPort_) :
+  autoConnect(autoConnect_), initialPort(initialPort_),
+  nLinked(0), admin(0), dev(0), mon(0), db(0) {
   deviceName = strdup(deviceName_);
+  peerDeviceName = strdup(peerDeviceName_);
 }
 
-LibmapperAutoConnect::~LibmapperAutoConnect() {
+MapperConnector::~MapperConnector() {
   logout();
 }
 
-void LibmapperAutoConnect::init() {
-  observations = (real*)malloc(nObservations*sizeof(real));
-  memset(observations, 0, nObservations*sizeof(real));
-
-//  deviceName = strdup("/qualia");
+void MapperConnector::init() {
   admin = mapper_admin_new(0, 0, 0);
 
   // add device
-  dev = mdev_new("agent", initialPort, admin);
+  dev = mdev_new(deviceName, initialPort, admin);
   while (!mdev_ready(dev)) {
       mdev_poll(dev, 100);
   }
@@ -27,24 +25,24 @@ void LibmapperAutoConnect::init() {
   // add monitor and monitor callbacks
   mon = mapper_monitor_new(admin, 0);
   db  = mapper_monitor_get_db(mon);
-  mapper_db_add_device_callback(db, LibmapperAutoConnect::dev_db_callback, this);
-  mapper_db_add_link_callback(db, LibmapperAutoConnect::link_db_callback, this);
+  mapper_db_add_device_callback(db, MapperConnector::dev_db_callback, this);
+  mapper_db_add_link_callback(db, MapperConnector::link_db_callback, this);
 }
 
 
-void LibmapperAutoConnect::logout()
+void MapperConnector::logout()
 {
-  if (deviceName) {
-    mapper_monitor_unlink(mon, deviceName, mdev_name(dev));
-    free(deviceName);
+  if (peerDeviceName) {
+    mapper_monitor_unlink(mon, peerDeviceName, mdev_name(dev));
+    free(peerDeviceName);
   }
 
   if (dev)
     mdev_free(dev);
 
   if (db) {
-    mapper_db_remove_device_callback(db, LibmapperAutoConnect::dev_db_callback, this);
-    mapper_db_remove_link_callback(db, LibmapperAutoConnect::link_db_callback, this);
+    mapper_db_remove_device_callback(db, MapperConnector::dev_db_callback, this);
+    mapper_db_remove_link_callback(db, MapperConnector::link_db_callback, this);
   }
 
   if (mon)
@@ -53,12 +51,9 @@ void LibmapperAutoConnect::logout()
   if (admin) {
     mapper_admin_free(admin);
   }
-
-  if (observations)
-    free(observations);
 }
 
-void LibmapperAutoConnect::createConnections() {
+void MapperConnector::createConnections() {
   char signame1[1024], signame2[1024];
 //  mapper_monitor_poll(mon, 0);
 //  mapper_monitor_request_devices(mon);
@@ -71,7 +66,7 @@ void LibmapperAutoConnect::createConnections() {
   while (inputs != 0) {
     const char* name = (*inputs)->name;
     printf("Input: %s / ", name);
-    sprintf(signame1, "%s/node/%d%s", deviceName, mdev_ordinal(dev), name);
+    sprintf(signame1, "%s/node/%d%s", peerDeviceName, mdev_ordinal(dev), name);
     sprintf(signame2, "%s%s", mdev_name(dev), name);
     printf("Connecting %s to %s\n", signame1, signame2);
     mapper_monitor_connect(mon, signame1, signame2, 0, 0);
@@ -85,7 +80,7 @@ void LibmapperAutoConnect::createConnections() {
     const char* name = (*outputs)->name;
     printf("Output: %s / ", name);
     sprintf(signame1, "%s%s", mdev_name(dev), name);
-    sprintf(signame2, "%s/node/%d%s", deviceName, mdev_ordinal(dev), name);
+    sprintf(signame2, "%s/node/%d%s", peerDeviceName, mdev_ordinal(dev), name);
     printf("Connecting %s to %s\n", signame1, signame2);
     mapper_monitor_connect(mon, signame1, signame2, 0, 0);
     outputs = mapper_db_signal_next(outputs);
@@ -93,50 +88,41 @@ void LibmapperAutoConnect::createConnections() {
   mapper_db_signal_done(outputs);
 }
 
-void LibmapperAutoConnect::signal_handler(mapper_signal msig,
-                                          mapper_db_signal props,
-                                          mapper_timetag_t *timetag,
-                                          void *value)
-{
-  LibmapperAutoConnect* connector = (LibmapperAutoConnect*)props->user_data;
-  memcpy(connector->observations, value, sizeof(real)*connector->nObservations);
-}
-
-void LibmapperAutoConnect::dev_db_callback(mapper_db_device record,
+void MapperConnector::dev_db_callback(mapper_db_device record,
                                            mapper_db_action_t action,
                                            void *user)
 {
-  LibmapperAutoConnect* connector = (LibmapperAutoConnect*)user;
+  MapperConnector* connector = (MapperConnector*)user;
   assert( connector );
-  printf("dev_db_callback: action %d: record=%s, device=%s\n", (int)action, record->name, connector->deviceName);
+  printf("dev_db_callback: action %d: record=%s, device=%s\n", (int)action, record->name, connector->peerDeviceName);
 
   if (action == MDB_NEW) {
-    if (strcmp(record->name, connector->deviceName) == 0) {
+    if (strcmp(record->name, connector->peerDeviceName) == 0) {
       mapper_monitor_link(connector->mon, mdev_name(connector->dev), record->name);
       mapper_monitor_link(connector->mon, record->name, mdev_name(connector->dev));
     }
 
   } else if (action == MDB_REMOVE) {
-    if (strcmp(record->name, connector->deviceName) == 0) {
+    if (strcmp(record->name, connector->peerDeviceName) == 0) {
       mapper_monitor_unlink(connector->mon, mdev_name(connector->dev), record->name);
       connector->nLinked = 0;
     }
   }
 }
 
-void LibmapperAutoConnect::link_db_callback(mapper_db_link record,
+void MapperConnector::link_db_callback(mapper_db_link record,
                                             mapper_db_action_t action,
                                             void *user)
 {
-  LibmapperAutoConnect* connector = (LibmapperAutoConnect*)user;
+  MapperConnector* connector = (MapperConnector*)user;
   assert( connector );
 
   printf("link_db_callback: action %d: src=%s, dst=%s\n", (int)action, record->src_name, record->dest_name);
 
   if (action == MDB_NEW) {
-    if (((strcmp(record->src_name, connector->deviceName) == 0) &&
+    if (((strcmp(record->src_name, connector->peerDeviceName) == 0) &&
         (strcmp(record->dest_name, mdev_name(connector->dev)) == 0)) ||
-          ((strcmp(record->dest_name, connector->deviceName) == 0) &&
+          ((strcmp(record->dest_name, connector->peerDeviceName) == 0) &&
            (strcmp(record->src_name, mdev_name(connector->dev)) == 0))) {
       connector->nLinked++;
       if (connector->nLinked >= 2)
@@ -144,8 +130,8 @@ void LibmapperAutoConnect::link_db_callback(mapper_db_link record,
     }
 
   } else if (action == MDB_REMOVE) {
-    if ((strcmp(record->src_name, connector->deviceName) == 0) ||
-        (strcmp(record->dest_name, connector->deviceName) == 0))
+    if ((strcmp(record->src_name, connector->peerDeviceName) == 0) ||
+        (strcmp(record->dest_name, connector->peerDeviceName) == 0))
       connector->nLinked--;
   }
 }

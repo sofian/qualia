@@ -1,5 +1,5 @@
 /*
- * LibmapperEnvironment.h
+ * MapperEnvironment.h
  *
  * (c) 2012 Sofian Audry -- info(@)sofianaudry(.)com
  *
@@ -20,17 +20,15 @@
 #ifndef LIBMAPPERENVIRONMENT_H_
 #define LIBMAPPERENVIRONMENT_H_
 
-#include "LibmapperAutoConnect.h"
-
 #include <core/Environment.h>
-#include <rl/RLObservation.h>
-#include <libmapper/LibmapperAutoConnect.h>
+#include <libmapper/MapperConnector.h>
+
 #include <mapper/mapper.h>
 
 #include <map>
 #include <string>
 
-class LibmapperEnvironment : public Environment {
+class MapperEnvironment : public Environment {
 public:
   struct SignalData {
     mapper_signal sig;
@@ -39,39 +37,35 @@ public:
     bool isBlocking;
     bool flag;
 
-    SignalData(mapper_signal sig_, int n_, bool isBlocking_, float* initialData=0) :
-      sig(sig_), n(n_), isBlocking(isBlocking_), flag(false) {
-      data = (float*)malloc(n*sizeof(float));
-      if (initialData)
-        memcpy(data, initialData, n*sizeof(float));
-    }
-
-    ~SignalData() { free(data); }
+    SignalData(mapper_signal sig_, int n_, bool isBlocking_, float* initialData=0);
+    ~SignalData();
   };
+
   typedef std::map<std::string, SignalData*> SignalDataMap;
 
   mapper_device dev;
-  const char* devNamePrefix;
+  const char* deviceName;
   int devInitialPort;
-  mapper_signal outsig;
 
   SignalDataMap inputData;
   SignalDataMap outputData;
 
-  bool autoConnect;
-  LibmapperAutoConnect* connector;
+  MapperConnector* connector;
 
-  Observation currentObservation;
-  int observationDim, actionDim;
+  MapperEnvironment(const char* deviceName, const char* peerDeviceName, bool autoConnect = false, int initialPort = 9000);
+  virtual ~MapperEnvironment();
 
-  //LibmapperEnvironment(int observationDim, int actionDim);
-  LibmapperEnvironment(int observationDim, int actionDim, const char *namePrefix, bool autoConnect = false, int initialPort = 9000);
-  virtual ~LibmapperEnvironment();
-
+  // Main qualia environment methods.
   virtual void init();
   virtual Observation* start();
   virtual Observation* step(const Action* action);
 
+  virtual void addSignals() = 0;
+
+  virtual void writeOutputs(const Action* action) = 0;
+  virtual Observation* readInputs() = 0;
+
+  // Helper methods.
   void addInput(const char* name, int length, char type, const char* unit, void* minimum, void* maximum, bool blocking=true, float* initialData=0);
   void addOutput(const char* name, int length, char type, const char* unit, void* minimum, void* maximum, float* initialData=0);
 
@@ -83,9 +77,8 @@ public:
   void waitForBlockingInputs();
   void sendAllOutputs();
 
+  // Internal use.
   static void updateInput(mapper_signal sig, mapper_db_signal props, mapper_timetag_t *timetag, void *value);
-
-
 };
 
 #endif /* PROTOTYPE2ENVIRONMENT_H_ */

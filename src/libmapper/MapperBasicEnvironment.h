@@ -20,10 +20,10 @@
 #ifndef MAPPERBASICENVIRONMENT_H_
 #define MAPPERBASICENVIRONMENT_H_
 
-#include <libmapper/LibmapperEnvironment.h>
+#include <libmapper/MapperEnvironment.h>
 #include <core/Observation.h>
 
-class MapperBasicEnvironment : public LibmapperEnvironment {
+class MapperBasicEnvironment : public MapperEnvironment {
 public:
   Observation currentObservation;
   int actionDim;

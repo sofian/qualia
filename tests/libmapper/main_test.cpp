@@ -13,7 +13,7 @@ const unsigned int N_ACTIONS[] = { 100 };
 
 int main() {
   DummyAgent agent(DIM_ACTIONS, N_ACTIONS);
-  MapperBasicEnvironment env(DIM_OBSERVATIONS, DIM_ACTIONS, PEER_DEVICE_NAME, true, 9000);
+  MapperBasicEnvironment env(DIM_OBSERVATIONS, DIM_ACTIONS, "agent", PEER_DEVICE_NAME, true, 9000);
   Qualia qualia(&agent, &env);
 
   qualia.init();

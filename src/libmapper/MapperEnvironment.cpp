@@ -1,5 +1,5 @@
 /*
- * LibmapperEnvironment.cpp
+ * MapperEnvironment.cpp
  *
  * (c) 2012 Sofian Audry -- info(@)sofianaudry(.)com
  *
@@ -17,19 +17,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "LibmapperEnvironment.h"
+#include "MapperEnvironment.h"
 
 #include <unistd.h>
 #include <stdio.h>
 
-//LibmapperEnvironment::LibmapperEnvironment(int observationDim_, int actionDim_)
+//MapperEnvironment::MapperEnvironment(int observationDim_, int actionDim_)
 //  : connector("qualia", observationDim_), currentObservation(observationDim_), observationDim(observationDim_), actionDim(actionDim_) { }
 
-LibmapperEnvironment::LibmapperEnvironment(int observationDim_, int actionDim_, const char *namePrefix, bool autoConnect_, int initialPort)
-  : devNamePrefix(namePrefix), devInitialPort(initialPort), autoConnect(autoConnect_), currentObservation(observationDim_), observationDim(observationDim_), actionDim(actionDim_) {
+MapperEnvironment::SignalData::SignalData(mapper_signal sig_, int n_, bool isBlocking_, float* initialData)
+  : sig(sig_), n(n_), isBlocking(isBlocking_), flag(false) {
+  data = (float*)malloc(n*sizeof(float));
+  if (initialData)
+  memcpy(data, initialData, n*sizeof(float));
+}
+MapperEnvironment::SignalData::~SignalData() {
+  free(data);
 }
 
-LibmapperEnvironment::~LibmapperEnvironment() {
+MapperEnvironment::MapperEnvironment(const char *deviceName_, const char *peerDeviceName, bool autoConnect, int initialPort)
+  : dev(0), deviceName(deviceName_), connector(0) {
+  connector = new MapperConnector(deviceName, peerDeviceName, autoConnect, initialPort);
+}
+
+MapperEnvironment::~MapperEnvironment() {
   if (connector) {
     connector->logout();
     free(connector);
@@ -37,42 +48,23 @@ LibmapperEnvironment::~LibmapperEnvironment() {
   if (dev)
     mdev_free(dev);
 
+  // Free signals data.
   for (SignalDataMap::iterator it = inputData.begin(); it != inputData.end(); ++it)
     free(it->second);
   for (SignalDataMap::iterator it = outputData.begin(); it != outputData.end(); ++it)
     free(it->second);
 }
 
-void LibmapperEnvironment::init() {
+void MapperEnvironment::init() {
 
   // Init device.
-  if (autoConnect) {
-    connector = new LibmapperAutoConnect(devNamePrefix, observationDim, actionDim, devInitialPort);
-    connector->init();
-    dev = connector->dev;
-    outsig = connector->sigAction;
+  connector->init();
+  dev = connector->dev;
 
-    // add signals
-    addInput("observation", observationDim, 'f', "norm", 0, 0);
-    float terminalFalse = 0;
-    addInput("observation_terminal", 1, 'i', "bool", 0, 0, false, &terminalFalse);
-    addOutput("action", actionDim, 'i', 0, 0, 0);
-  }
-  else {
-    dev = mdev_new(devNamePrefix, devInitialPort, 0);
-
-    // Create input / output signals.
-    mdev_add_input(dev, "observation", observationDim + 1, 'f', 0, 0, 0,
-                   (mapper_signal_handler*)updateInput, this);
-
-    // TODO: Actions range (min/max) should be known in advance somehow (this is a limitation of the current implemenation)
-    outsig = mdev_add_output(dev, "action", actionDim, 'i', 0, 0, 0);
-  }
-
-  //assert(outsig);
+  addSignals();
 }
 
-Observation* LibmapperEnvironment::start() {
+Observation* MapperEnvironment::start() {
   // HACK.
   if (connector)
     mapper_monitor_poll(connector->mon, 0);
@@ -81,66 +73,62 @@ Observation* LibmapperEnvironment::start() {
   //msig_update(outsig, { 1 });
 
   // Wait for response.
-  //mapper_monitor_poll(info->mon, 0);
   //printf("Polling\n");
-  mdev_poll(dev, 1000);
+  //mdev_poll(dev, 1000);
 
-  printf("Starting env\n");
-  return &currentObservation;
+  waitForBlockingInputs();
+  return readInputs();
 }
 
-Observation* LibmapperEnvironment::step(const Action* action) {
+Observation* MapperEnvironment::step(const Action* action) {
   printf("Stepping env\n");
 
   // Send outputs.
-  writeOutput("action", (int*) action->actions);
+  writeOutputs(action);
   sendAllOutputs();
 
   // Receive inputs.
   waitForBlockingInputs();
-  readInput("observation", currentObservation.observations);
-  readInput("observation_terminal", (int*)&currentObservation.terminal);
-
-  return &currentObservation;
+  return readInputs();
 }
 
-void LibmapperEnvironment::addInput(const char* name, int length, char type, const char* unit, void* minimum, void* maximum, bool blocking, float* initialData) {
-  mapper_signal sig = mdev_add_input(dev, name, length, type, unit, minimum, maximum, LibmapperEnvironment::updateInput, this);
+void MapperEnvironment::addInput(const char* name, int length, char type, const char* unit, void* minimum, void* maximum, bool blocking, float* initialData) {
+  mapper_signal sig = mdev_add_input(dev, name, length, type, unit, minimum, maximum, MapperEnvironment::updateInput, this);
   inputData[name] = new SignalData(sig, length, blocking, initialData);
 }
 
-void LibmapperEnvironment::addOutput(const char* name, int length, char type, const char* unit, void* minimum, void* maximum, float* initialData) {
+void MapperEnvironment::addOutput(const char* name, int length, char type, const char* unit, void* minimum, void* maximum, float* initialData) {
   mapper_signal sig = mdev_add_output(dev, name, length, type, unit, minimum, maximum);
   outputData[name] = new SignalData(sig, length, false, initialData);
 }
 
-void LibmapperEnvironment::readInput(const char* name, float* data) {
+void MapperEnvironment::readInput(const char* name, float* data) {
   SignalData* input = inputData[name];
   assert( input );
   memcpy(data, input->data, input->n*sizeof(float));
 }
 
-void LibmapperEnvironment::readInput(const char* name, int* data) {
+void MapperEnvironment::readInput(const char* name, int* data) {
   SignalData* input = inputData[name];
   assert( input );
   for (int i=0; i<input->n; i++)
     data[i] = (int)input->data[i];
 }
 
-void LibmapperEnvironment::writeOutput(const char* name, const float* data) {
+void MapperEnvironment::writeOutput(const char* name, const float* data) {
   SignalData* output = outputData[name];
   assert( output );
   memcpy(output->data, data, output->n*sizeof(float));
 }
 
-void LibmapperEnvironment::writeOutput(const char* name, const int* data) {
+void MapperEnvironment::writeOutput(const char* name, const int* data) {
   SignalData* output = outputData[name];
   assert( output );
   for (int i=0; i<output->n; i++)
     output->data[i] = (float)data[i];
 }
 
-void LibmapperEnvironment::waitForBlockingInputs() {
+void MapperEnvironment::waitForBlockingInputs() {
   for (SignalDataMap::iterator it = inputData.begin(); it != inputData.end(); ++it)
     it->second->flag = false;
 
@@ -160,7 +148,7 @@ void LibmapperEnvironment::waitForBlockingInputs() {
   while (!mdev_poll(dev, 1) );
 }
 
-void LibmapperEnvironment::sendAllOutputs() {
+void MapperEnvironment::sendAllOutputs() {
   for (SignalDataMap::iterator it = outputData.begin(); it != outputData.end(); ++it) {
     if (msig_properties(it->second->sig)->type == 'f')
       msig_update(it->second->sig, it->second->data);
@@ -175,14 +163,14 @@ void LibmapperEnvironment::sendAllOutputs() {
   }
 }
 
-void LibmapperEnvironment::updateInput(mapper_signal sig, mapper_db_signal props,
+void MapperEnvironment::updateInput(mapper_signal sig, mapper_db_signal props,
                                        mapper_timetag_t *timetag, void *value) {
   std::string name = props->name;
   if (name[0] == '/')
     name = name.substr(1); // remove "/"
   printf("Update input %s\n", name.c_str());
 
-  SignalData* signalData = ((LibmapperEnvironment*)props->user_data)->inputData[name];
+  SignalData* signalData = ((MapperEnvironment*)props->user_data)->inputData[name];
   assert(signalData);
   if (props->type == 'f')
     memcpy(signalData->data, value, signalData->n*sizeof(float));
