@@ -9,12 +9,31 @@
 
 #include <core/common.h>
 
+#include <map>
+#include <string>
+
 class MapperConnector {
 public:
+  struct SignalData {
+    mapper_signal sig;
+    float* data;
+    int n;
+    bool isBlocking;
+    bool flag;
+
+    SignalData(mapper_signal sig_, int n_, bool isBlocking_, float* initialData=0);
+    ~SignalData();
+  };
+
+  typedef std::map<std::string, SignalData*> SignalDataMap;
+
   char* deviceName;
   char* peerDeviceName;
   bool autoConnect;
   int initialPort;
+
+  SignalDataMap inputData;
+  SignalDataMap outputData;
 
   int nLinked;
 //  int connected;
@@ -24,7 +43,7 @@ public:
   mapper_monitor mon;
   mapper_db db;
 
-  MapperConnector(const char* deviceName_, const char* peerDeviceName_, bool autoConnect_ = true, int initialPort_ = 9000);
+  MapperConnector(const char* deviceName, const char* peerDeviceName, bool autoConnect = true, int initialPort = 9000);
   virtual ~MapperConnector();
 
   void init();
@@ -32,12 +51,22 @@ public:
 
   void createConnections();
 
-  static void dev_db_callback(mapper_db_device record, mapper_db_action_t action,
-                              void *user);
+  // Helper methods.
+  void addInput(const char* name, int length, char type, const char* unit, void* minimum, void* maximum, bool blocking=true, float* initialData=0);
+  void addOutput(const char* name, int length, char type, const char* unit, void* minimum, void* maximum, float* initialData=0);
 
-  static void link_db_callback(mapper_db_link record, mapper_db_action_t action,
-                               void *user);
+  void readInput(const char* name, float* data);
+  void readInput(const char* name, int* data);
+  void writeOutput(const char* name, const float* data);
+  void writeOutput(const char* name, const int* data);
 
+  void waitForBlockingInputs();
+  void sendAllOutputs();
+
+  // Internal use.
+  static void updateInput(mapper_signal sig, mapper_db_signal props, mapper_timetag_t *timetag, void *value);
+  static void devDbCallback(mapper_db_device record, mapper_db_action_t action, void *user);
+  static void linkDbCallback(mapper_db_link record, mapper_db_action_t action, void *user);
 };
 
 #endif // LIBMAPPER_CONNECTOR_INC

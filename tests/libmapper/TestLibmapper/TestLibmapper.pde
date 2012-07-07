@@ -1,13 +1,13 @@
 import Mapper.*;
 import Mapper.Db.*;
 
-final Device dev = new Device("test", 9000);
+final Device dev = new Device("polytopes", 9000);
 Device.Signal observation;
 Device.Signal observationTerminal;
 Device.Signal action;
 
-final int DIM_OBSERVATIONS = 1;
-final int DIM_ACTIONS = 1;
+final int DIM_OBSERVATIONS = 144+48;
+final int DIM_ACTIONS = 144;
 
 int nextAction = 0;
 
@@ -29,7 +29,9 @@ void draw() {
   // Background.
   background(128,128,128);
   
-  observation.update( new float[] { nextAction } );
+  float[] obs = new float[DIM_OBSERVATIONS];
+  for (int i=0; i<obs.length; i++) obs[i] = nextAction;
+  observation.update( obs );
 }
 
 void initMapper() {

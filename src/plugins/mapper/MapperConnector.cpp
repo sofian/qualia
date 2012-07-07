@@ -1,5 +1,17 @@
 #include "MapperConnector.h"
 
+MapperConnector::SignalData::SignalData(mapper_signal sig_, int n_, bool isBlocking_, float* initialData)
+  : sig(sig_), n(n_), isBlocking(isBlocking_), flag(false) {
+  data = (float*)malloc(n*sizeof(float));
+  if (initialData)
+  memcpy(data, initialData, n*sizeof(float));
+}
+
+MapperConnector::SignalData::~SignalData() {
+  // Free data.
+  free(data);
+}
+
 MapperConnector::MapperConnector(const char* deviceName_, const char* peerDeviceName_, bool autoConnect_, int initialPort_) :
   autoConnect(autoConnect_), initialPort(initialPort_),
   nLinked(0), admin(0), dev(0), mon(0), db(0) {
@@ -8,7 +20,14 @@ MapperConnector::MapperConnector(const char* deviceName_, const char* peerDevice
 }
 
 MapperConnector::~MapperConnector() {
+  // Disconnect.
   logout();
+
+  // Free signals data.
+  for (SignalDataMap::iterator it = inputData.begin(); it != inputData.end(); ++it)
+    free(it->second);
+  for (SignalDataMap::iterator it = outputData.begin(); it != outputData.end(); ++it)
+    free(it->second);
 }
 
 void MapperConnector::init() {
@@ -25,8 +44,8 @@ void MapperConnector::init() {
   // add monitor and monitor callbacks
   mon = mapper_monitor_new(admin, 0);
   db  = mapper_monitor_get_db(mon);
-  mapper_db_add_device_callback(db, MapperConnector::dev_db_callback, this);
-  mapper_db_add_link_callback(db, MapperConnector::link_db_callback, this);
+  mapper_db_add_device_callback(db, MapperConnector::devDbCallback, this);
+  mapper_db_add_link_callback(db, MapperConnector::linkDbCallback, this);
 }
 
 
@@ -41,8 +60,8 @@ void MapperConnector::logout()
     mdev_free(dev);
 
   if (db) {
-    mapper_db_remove_device_callback(db, MapperConnector::dev_db_callback, this);
-    mapper_db_remove_link_callback(db, MapperConnector::link_db_callback, this);
+    mapper_db_remove_device_callback(db, MapperConnector::devDbCallback, this);
+    mapper_db_remove_link_callback(db, MapperConnector::linkDbCallback, this);
   }
 
   if (mon)
@@ -88,7 +107,78 @@ void MapperConnector::createConnections() {
   mapper_db_signal_done(outputs);
 }
 
-void MapperConnector::dev_db_callback(mapper_db_device record,
+void MapperConnector::addInput(const char* name, int length, char type, const char* unit, void* minimum, void* maximum, bool blocking, float* initialData) {
+  mapper_signal sig = mdev_add_input(dev, name, length, type, unit, minimum, maximum, MapperConnector::updateInput, this);
+  inputData[name] = new SignalData(sig, length, blocking, initialData);
+}
+
+void MapperConnector::addOutput(const char* name, int length, char type, const char* unit, void* minimum, void* maximum, float* initialData) {
+  mapper_signal sig = mdev_add_output(dev, name, length, type, unit, minimum, maximum);
+  outputData[name] = new SignalData(sig, length, false, initialData);
+}
+
+void MapperConnector::readInput(const char* name, float* data) {
+  SignalData* input = inputData[name];
+  assert( input );
+  memcpy(data, input->data, input->n*sizeof(float));
+}
+
+void MapperConnector::readInput(const char* name, int* data) {
+  SignalData* input = inputData[name];
+  assert( input );
+  for (int i=0; i<input->n; i++)
+    data[i] = (int)input->data[i];
+}
+
+void MapperConnector::writeOutput(const char* name, const float* data) {
+  SignalData* output = outputData[name];
+  assert( output );
+  memcpy(output->data, data, output->n*sizeof(float));
+}
+
+void MapperConnector::writeOutput(const char* name, const int* data) {
+  SignalData* output = outputData[name];
+  assert( output );
+  for (int i=0; i<output->n; i++)
+    output->data[i] = (float)data[i];
+}
+
+void MapperConnector::waitForBlockingInputs() {
+  for (SignalDataMap::iterator it = inputData.begin(); it != inputData.end(); ++it)
+    it->second->flag = false;
+
+  bool keepBlocking;
+  do {
+    mdev_poll(dev, 0);
+
+    keepBlocking = false;
+    for (SignalDataMap::iterator it = inputData.begin(); it != inputData.end(); ++it)
+      if (it->second->isBlocking && !it->second->flag) {
+        keepBlocking = true;
+        break;
+      }
+
+  } while (keepBlocking);
+
+  while (!mdev_poll(dev, 1) );
+}
+
+void MapperConnector::sendAllOutputs() {
+  for (SignalDataMap::iterator it = outputData.begin(); it != outputData.end(); ++it) {
+    if (msig_properties(it->second->sig)->type == 'f')
+      msig_update(it->second->sig, it->second->data);
+    else {
+      int* intData = (int*)malloc(it->second->n*sizeof(int));
+      for (int i=0; i<it->second->n; i++)
+        intData[i] = (int)it->second->data[i];
+      msig_update(it->second->sig, intData);
+      free(intData);
+    }
+
+  }
+}
+
+void MapperConnector::devDbCallback(mapper_db_device record,
                                            mapper_db_action_t action,
                                            void *user)
 {
@@ -110,7 +200,7 @@ void MapperConnector::dev_db_callback(mapper_db_device record,
   }
 }
 
-void MapperConnector::link_db_callback(mapper_db_link record,
+void MapperConnector::linkDbCallback(mapper_db_link record,
                                             mapper_db_action_t action,
                                             void *user)
 {
@@ -135,3 +225,23 @@ void MapperConnector::link_db_callback(mapper_db_link record,
       connector->nLinked--;
   }
 }
+
+void MapperConnector::updateInput(mapper_signal sig, mapper_db_signal props,
+                                       mapper_timetag_t *timetag, void *value) {
+  std::string name = props->name;
+  if (name[0] == '/')
+    name = name.substr(1); // remove "/"
+  printf("Update input %s\n", name.c_str());
+
+  SignalData* signalData = ((MapperConnector*)props->user_data)->inputData[name];
+  assert(signalData);
+  if (props->type == 'f')
+    memcpy(signalData->data, value, signalData->n*sizeof(float));
+  else {
+    int* intValue = (int*)value;
+    for (int i=0; i<signalData->n; i++)
+      signalData->data[i] = intValue[i];
+  }
+  signalData->flag = true;
+}
+

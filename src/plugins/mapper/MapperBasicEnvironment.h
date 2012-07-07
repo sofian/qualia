@@ -28,7 +28,7 @@ public:
   Observation currentObservation;
   int actionDim;
 
-  MapperBasicEnvironment(int observationDim, int actionDim, const char* deviceName, const char* peerDeviceName, bool autoConnect = false, int initialPort = 9000);
+  MapperBasicEnvironment(int observationDim, int actionDim, MapperConnector* connector);
   virtual ~MapperBasicEnvironment();
 
   virtual void addSignals();

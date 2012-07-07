@@ -2,7 +2,6 @@
 #include <core/Qualia.h>
 #include <plugins/mapper/MapperBasicEnvironment.h>
 
-#define N_HIDDEN 3
 #define DIM_OBSERVATIONS 1
 #define DIM_ACTIONS 1
 const unsigned int N_ACTIONS[] = { 100 };

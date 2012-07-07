@@ -25,34 +25,16 @@
 
 #include <mapper/mapper.h>
 
-#include <map>
-#include <string>
-
 class MapperEnvironment : public Environment {
 public:
-  struct SignalData {
-    mapper_signal sig;
-    float* data;
-    int n;
-    bool isBlocking;
-    bool flag;
 
-    SignalData(mapper_signal sig_, int n_, bool isBlocking_, float* initialData=0);
-    ~SignalData();
-  };
-
-  typedef std::map<std::string, SignalData*> SignalDataMap;
-
-  mapper_device dev;
-  const char* deviceName;
-  int devInitialPort;
-
-  SignalDataMap inputData;
-  SignalDataMap outputData;
+//  mapper_device dev;
+//  const char* deviceName;
+//  int devInitialPort;
 
   MapperConnector* connector;
 
-  MapperEnvironment(const char* deviceName, const char* peerDeviceName, bool autoConnect = false, int initialPort = 9000);
+  MapperEnvironment(MapperConnector* connector);
   virtual ~MapperEnvironment();
 
   // Main qualia environment methods.
@@ -64,21 +46,6 @@ public:
 
   virtual void writeOutputs(const Action* action) = 0;
   virtual Observation* readInputs() = 0;
-
-  // Helper methods.
-  void addInput(const char* name, int length, char type, const char* unit, void* minimum, void* maximum, bool blocking=true, float* initialData=0);
-  void addOutput(const char* name, int length, char type, const char* unit, void* minimum, void* maximum, float* initialData=0);
-
-  void readInput(const char* name, float* data);
-  void readInput(const char* name, int* data);
-  void writeOutput(const char* name, const float* data);
-  void writeOutput(const char* name, const int* data);
-
-  void waitForBlockingInputs();
-  void sendAllOutputs();
-
-  // Internal use.
-  static void updateInput(mapper_signal sig, mapper_db_signal props, mapper_timetag_t *timetag, void *value);
 };
 
 #endif /* PROTOTYPE2ENVIRONMENT_H_ */

@@ -19,33 +19,32 @@
 
 #include "MapperBasicEnvironment.h"
 
-MapperBasicEnvironment::MapperBasicEnvironment(int observationDim, int actionDim_, const char* deviceName, const char* peerDeviceName, bool autoConnect, int initialPort)
-  : MapperEnvironment(deviceName, peerDeviceName, autoConnect, initialPort),
-    currentObservation(observationDim), actionDim(actionDim_) {
-}
+MapperBasicEnvironment::MapperBasicEnvironment(int observationDim, int actionDim_, MapperConnector* connector)
+  : MapperEnvironment(connector),
+    currentObservation(observationDim), actionDim(actionDim_) { }
 
 MapperBasicEnvironment::~MapperBasicEnvironment() {
 }
 
 void MapperBasicEnvironment::addSignals() {
   // Add inputs observation.
-  addInput("observation", currentObservation.dim, 'f', "norm", 0, 0);
+  connector->addInput("observation", currentObservation.dim, 'f', "norm", 0, 0);
   float terminalFalse = 0;
-  addInput("observation_terminal", 1, 'i', "bool", 0, 0, false, &terminalFalse);
+  connector->addInput("observation_terminal", 1, 'i', "bool", 0, 0, false, &terminalFalse);
 
   // Add output action.
-  addOutput("action", actionDim, 'i', 0, 0, 0);
+  connector->addOutput("action", actionDim, 'i', 0, 0, 0);
 }
 
 void MapperBasicEnvironment::writeOutputs(const Action* action) {
   // Write action.
-  writeOutput("action", (int*)action->actions);
+  connector->writeOutput("action", (int*)action->actions);
 }
 
 Observation* MapperBasicEnvironment::readInputs() {
   // Read observations.
-  readInput("observation", currentObservation.observations);
-  readInput("observation_terminal", (int*)&currentObservation.terminal);
+  connector->readInput("observation", currentObservation.observations);
+  connector->readInput("observation_terminal", (int*)&currentObservation.terminal);
   return &currentObservation;
 }
 
