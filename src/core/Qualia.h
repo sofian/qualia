@@ -35,8 +35,6 @@ struct ObservationAction {
   Action* action;
 };
 
-// TODO verifier les experimental methods (en bas) pcq sans elles les episodes/reward total sont pas calcules
-// TODO remplacer terminal par isTerminal (boolean)
 class Qualia {
 
 public:
@@ -49,28 +47,12 @@ public:
 
 public:
   Qualia(Agent* agent, Environment* env);
+  virtual ~Qualia();
 
   virtual void init();
   virtual ObservationAction* start();
   virtual ObservationAction* step();
-//  void cleanup();
-//  const char* RL_agent_message(const char* message);
-//  const char* RL_env_message(const char* message);
-
-//  real getotalReward();
-//  int nSteps();
-//  int nEpisodes();
-  virtual int episode(unsigned int maxSteps);
-
-  /**
-    New Experimental Methods, not part of the public API
-  **/
-//  const action_t* RL_agent_start(const observation_t* observation);
-//  const action_t* RL_agent_step(double reward, const observation_t* observation);
-//  void RL_agent_end(double reward);
-//  const observation_t* RL_env_start();
-//  const reward_observation_terminal_t* RL_env_step(const action_t* action);};
-
+  virtual bool episode(unsigned int maxSteps);
 };
 
 #endif /* QUALIA_H_ */
