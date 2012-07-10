@@ -50,14 +50,14 @@ void Action::allocate(unsigned int dim_, const unsigned int* nActions_) {
 
   // Set nConflated.
   nConflated = 1;
-  for (int i=0; i<dim; i++)
+  for (unsigned int i=0; i<dim; i++)
     nConflated *= nActions[i];
 }
 
 action_t Action::conflated() const {
   action_t action = 0;
   unsigned long mult = 1;
-  for (int i=0; i<dim; i++) {
+  for (unsigned int i=0; i<dim; i++) {
     action += mult * actions[i];
     mult *= nActions[i];
   }
@@ -65,7 +65,7 @@ action_t Action::conflated() const {
 }
 
 Action& Action::setConflated(action_t action) {
-  for (int i=0; i<dim; i++) {
+  for (unsigned int i=0; i<dim; i++) {
     actions[i] = action % nActions[i];
     action /= nActions[i];
   }
@@ -79,14 +79,14 @@ Action& Action::reset() {
 }
 
 bool Action::hasNext() {
-  for (int i=0; i<dim; i++)
+  for (unsigned int i=0; i<dim; i++)
     if (actions[i] != nActions[i]-1)
       return true;
   return false;
 }
 
 Action& Action::next() {
-  for (int i=0; i<dim; i++) {
+  for (unsigned int i=0; i<dim; i++) {
     if (actions[i] == nActions[i]-1) {
       actions[i] = 0;
     } else {
@@ -101,5 +101,6 @@ Action& Action::copyFrom(const Action* src) {
   assert( dim == src->dim );
   assert( memcmp(nActions, src->nActions, dim*sizeof(unsigned int)) == 0 );
   memcpy( actions, src->actions, dim*sizeof(action_dim_t) );
+  return *this;
 }
 
