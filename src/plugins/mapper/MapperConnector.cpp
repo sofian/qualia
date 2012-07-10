@@ -17,6 +17,7 @@ MapperConnector::MapperConnector(const char* deviceName_, const char* peerDevice
   nLinked(0), admin(0), dev(0), mon(0), db(0) {
   deviceName = strdup(deviceName_);
   peerDeviceName = strdup(peerDeviceName_);
+  init();
 }
 
 MapperConnector::~MapperConnector() {
@@ -31,21 +32,26 @@ MapperConnector::~MapperConnector() {
 }
 
 void MapperConnector::init() {
-  admin = mapper_admin_new(0, 0, 0);
+  if (!dev) {
+    admin = mapper_admin_new(0, 0, 0);
 
-  // add device
-  dev = mdev_new(deviceName, initialPort, admin);
-  while (!mdev_ready(dev)) {
-      mdev_poll(dev, 100);
+    // add device
+    dev = mdev_new(deviceName, initialPort, admin);
+    while (!mdev_ready(dev)) {
+        mdev_poll(dev, 100);
+    }
+    printf("ordinal: %d\n", mdev_ordinal(dev));
+    fflush(stdout);
+
+    // add monitor and monitor callbacks
+    mon = mapper_monitor_new(admin, 0);
+    db  = mapper_monitor_get_db(mon);
   }
-  printf("ordinal: %d\n", mdev_ordinal(dev));
-  fflush(stdout);
 
-  // add monitor and monitor callbacks
-  mon = mapper_monitor_new(admin, 0);
-  db  = mapper_monitor_get_db(mon);
-  mapper_db_add_device_callback(db, MapperConnector::devDbCallback, this);
-  mapper_db_add_link_callback(db, MapperConnector::linkDbCallback, this);
+  if (autoConnect) {
+    mapper_db_add_device_callback(db, MapperConnector::devDbCallback, this);
+    mapper_db_add_link_callback(db, MapperConnector::linkDbCallback, this);
+  }
 }
 
 
