@@ -54,10 +54,11 @@ public:
   // http://en.wikipedia.org/wiki/Q-learning#Learning_rate
   float learningRate;
 
-  //  float decreaseConstant;
-  //  float weightDecay;
+  float decreaseConstant;
+  float weightDecay;
 
   // Internal use ////////////////
+  float learningRateDiv;
 
   // Layer structure.
   struct Layer {
@@ -84,9 +85,9 @@ public:
   NeuralNetwork(int nInputs,
                 int nHidden,
                 int nOutputs,
-                float learningRate = 0.01);
-//                float decreaseConstant = 0,
-//                float weightDecay = 0);
+                float learningRate = 0.01,
+                float decreaseConstant = 0,
+                float weightDecay = 0);
   virtual ~NeuralNetwork();
 
   // Public methods.

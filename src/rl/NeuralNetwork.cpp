@@ -36,7 +36,7 @@ void NeuralNetwork::init() {
     weights[i] = Random::boundedUniform(-1, +1);
     dWeights[i] = 0;
   }
-//  learningRateDiv = 1;
+  learningRateDiv = 1;
 }
 
 void NeuralNetwork::setInput(real *input) {
@@ -72,13 +72,12 @@ void NeuralNetwork::propagate() {
 }
 
 void NeuralNetwork::update() {
-//  float lr = learningRate / learningRateDiv;
+  float lr = learningRate / learningRateDiv;
   for (int i=0; i<nParams; i++)
-    weights[i] -= learningRate * dWeights[i];
-//    weights[i] -= lr * dWeights[i] - weightDecay * weights[i];
+//    weights[i] -= learningRate * dWeights[i];
+    weights[i] -= lr * dWeights[i] - weightDecay * weights[i];
   clearDelta();
-
-//  learningRateDiv += decreaseConstant;
+  learningRateDiv += decreaseConstant;
 }
 
 //#ifdef DEBUG
@@ -191,11 +190,12 @@ void NeuralNetwork::_allocate(int nInputs, int nHidden, int nOutputs) {
 NeuralNetwork::NeuralNetwork(int nInputs,
                               int nHidden,
                               int nOutputs,
-                              float learningRate_)
-//                              float decreaseConstant_,
-//                              float weightDecay_)
- : learningRate(learningRate_)
-//, decreaseConstant(decreaseConstant_), weightDecay(weightDecay_)
+                              float learningRate_,
+                              float decreaseConstant_,
+                              float weightDecay_)
+ : learningRate(learningRate_),
+   decreaseConstant(decreaseConstant_),
+   weightDecay(weightDecay_)
 {
   _allocate(nInputs, nHidden, nOutputs);
   init();
