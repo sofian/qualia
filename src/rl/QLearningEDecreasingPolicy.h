@@ -1,7 +1,7 @@
 /*
- * Policy.h
+ * QLearningEDecreasingPolicy.h
  *
- * (c) 2011 Sofian Audry -- info(@)sofianaudry(.)com
+ * (c) 2012 Sofian Audry -- info(@)sofianaudry(.)com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,22 +17,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef POLICY_H_
-#define POLICY_H_
+#ifndef QLEARNINGEDECREASINGPOLICY_H_
+#define QLEARNINGEDECREASINGPOLICY_H_
 
-#include "core/Agent.h"
+#include "QLearningEGreedyPolicy.h"
 
-class Policy {
+class QLearningEDecreasingPolicy: public QLearningEGreedyPolicy {
 public:
-  Agent* agent;
-  Policy() : agent(0) {}
-  virtual ~Policy() {}
+  real decreaseConstant;
 
-  virtual void init() {}
-  virtual void setAgent(Agent* agent_) {
-    agent = agent_;
-  }
-  virtual void chooseAction(Action* action, const Observation* observation) = 0;
+  // Internal use.
+  int epsilonDiv;
+
+  QLearningEDecreasingPolicy(real epsilon, real decreaseConstant);
+
+  virtual void init();
+  virtual void chooseAction(Action* action, const Observation* observation);
 };
 
-#endif /* POLICY_H_ */
+#endif /* QLEARNINGEDECREASINGPOLICY_H_ */

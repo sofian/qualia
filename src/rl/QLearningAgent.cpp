@@ -72,6 +72,9 @@ void QLearningAgent::init() {
   // Initialize action-value function.
   function->init();
 
+  // Initialize policy.
+  policy->init();
+
   // Initialize eligibility traces.
   for (int i=0; i<function->nParams; i++)
     e[i]=0;
