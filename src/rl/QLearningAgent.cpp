@@ -121,7 +121,7 @@ Action* QLearningAgent::step(const Observation* observation) {
     //real mse = delta * delta * 0.5;
 
     // Update weights.
-    real deltaTimesLearningRate = function->learningRate * delta;
+    //real deltaTimesLearningRate = function->learningRate * delta;
   //  Serial.print("DTL "); Serial.println(deltaTimesLearningRate);
     // TODO: changer les dWeights() / weights() pour de simples variables
     real* dWeights = function->dWeights;
@@ -132,15 +132,17 @@ Action* QLearningAgent::step(const Observation* observation) {
     real lambdaTimesGamma = lambda * gamma;
     for (int i=0; i<function->nParams; i++) {
       e[i] = lambdaTimesGamma * e[i] + dWeights[i];
-      weights[i] += deltaTimesLearningRate * e[i];
+      dWeights[i] = - delta * e[i];
+      //weights[i] += deltaTimesLearningRate * e[i];
 //  #if DEBUG
 //      printf("%f ", dWeights[i]);
 //  #endif
     }
+    function->update(); // update using the function's own update rule
 //  #if DEBUG
 //    printf(" ]\n");
 //  #endif
-    function->clearDelta();
+    //function->clearDelta();
   }
   /////////////// END UPDATE
 
