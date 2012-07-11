@@ -25,7 +25,8 @@ QLearningEGreedyPolicy::~QLearningEGreedyPolicy() {}
 
 void QLearningEGreedyPolicy::chooseAction(Action* action, const Observation* observation) {
   QLearningAgent* qlagent = (QLearningAgent*)agent;
-  if (randomUniform() < epsilon)
+  if (epsilon >= 1 ||
+      (epsilon > 0 && randomUniform() < epsilon))
     action->setConflated( (action_t) (random(qlagent->nConflatedActions)) ); // TODO: changer le % _nActions pour une fonction random(min, max)
   else
     qlagent->getMaxAction(action, observation);
