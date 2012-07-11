@@ -123,20 +123,20 @@ Action* QLearningAgent::step(const Observation* observation) {
     // TODO: changer les dWeights() / weights() pour de simples variables
     real* dWeights = function->dWeights;
     real* weights  = function->weights;
-  #if DEBUG
-    printf("dw: [");
-  #endif
+//  #if DEBUG
+//    printf("dw: [");
+//  #endif
     real lambdaTimesGamma = lambda * gamma;
     for (int i=0; i<function->nParams; i++) {
       e[i] = lambdaTimesGamma * e[i] + dWeights[i];
       weights[i] += deltaTimesLearningRate * e[i];
-  #if DEBUG
-      printf("%f ", dWeights[i]);
-  #endif
+//  #if DEBUG
+//      printf("%f ", dWeights[i]);
+//  #endif
     }
-  #if DEBUG
-    printf(" ]\n");
-  #endif
+//  #if DEBUG
+//    printf(" ]\n");
+//  #endif
     function->clearDelta();
   }
   /////////////// END UPDATE
