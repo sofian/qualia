@@ -20,17 +20,17 @@
 #include "random_dist.h"
 
 float exponential(float lambda) {
-  return(-1. / lambda * log(1-Random::uniform()));
+  return(-1. / lambda * log(1-randomUniform()));
 }
 
 float cauchy(float median = 0, float sigma = 1) {
-  return(median + sigma * tan(M_PI*(Random::uniform()-0.5)));
+  return(median + sigma * tan(M_PI*(randomUniform()-0.5)));
 }
 
 int geometric(float p) {
-  return((int)(log(1-Random::uniform()) / log(p)) + 1);
+  return((int)(log(1-randomUniform()) / log(p)) + 1);
 }
 
 bool bernouilli(float p = 0.5) {
-  return(Random::uniform() <= p);
+  return(randomUniform() <= p);
 }
