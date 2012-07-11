@@ -1,7 +1,6 @@
 #ifndef LIBMAPPER_CONNECTOR_INC
 #define LIBMAPPER_CONNECTOR_INC
 
-#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <signal.h>

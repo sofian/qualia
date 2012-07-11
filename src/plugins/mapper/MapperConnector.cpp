@@ -40,7 +40,7 @@ void MapperConnector::init() {
     while (!mdev_ready(dev)) {
         mdev_poll(dev, 100);
     }
-    printf("ordinal: %d\n", mdev_ordinal(dev));
+    //printf("ordinal: %d\n", mdev_ordinal(dev));
     fflush(stdout);
 
     // add monitor and monitor callbacks
@@ -90,10 +90,8 @@ void MapperConnector::createConnections() {
   mapper_db_signal_t** inputs = mapper_db_get_inputs_by_device_name(db, mdev_name(dev));
   while (inputs != 0) {
     const char* name = (*inputs)->name;
-    printf("Input: %s / ", name);
     sprintf(signame1, "%s/node/%d%s", peerDeviceName, mdev_ordinal(dev), name);
     sprintf(signame2, "%s%s", mdev_name(dev), name);
-    printf("Connecting %s to %s\n", signame1, signame2);
     mapper_monitor_connect(mon, signame1, signame2, 0, 0);
     inputs = mapper_db_signal_next(inputs);
   }
@@ -103,10 +101,8 @@ void MapperConnector::createConnections() {
   mapper_db_signal_t** outputs = mapper_db_get_outputs_by_device_name(db, mdev_name(dev));
   while (outputs != 0) {
     const char* name = (*outputs)->name;
-    printf("Output: %s / ", name);
     sprintf(signame1, "%s%s", mdev_name(dev), name);
     sprintf(signame2, "%s/node/%d%s", peerDeviceName, mdev_ordinal(dev), name);
-    printf("Connecting %s to %s\n", signame1, signame2);
     mapper_monitor_connect(mon, signame1, signame2, 0, 0);
     outputs = mapper_db_signal_next(outputs);
   }
@@ -237,7 +233,6 @@ void MapperConnector::updateInput(mapper_signal sig, mapper_db_signal props,
   std::string name = props->name;
   if (name[0] == '/')
     name = name.substr(1); // remove "/"
-  printf("Update input %s\n", name.c_str());
 
   SignalData* signalData = ((MapperConnector*)props->user_data)->inputData[name];
   assert(signalData);

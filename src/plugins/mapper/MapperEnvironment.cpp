@@ -19,12 +19,6 @@
 
 #include "MapperEnvironment.h"
 
-#include <unistd.h>
-#include <stdio.h>
-
-//MapperEnvironment::MapperEnvironment(int observationDim_, int actionDim_)
-//  : connector("qualia", observationDim_), currentObservation(observationDim_), observationDim(observationDim_), actionDim(actionDim_) { }
-
 MapperEnvironment::MapperEnvironment(MapperConnector* connector_) : connector(connector_) {
   assert( connector );
 }
@@ -49,20 +43,11 @@ Observation* MapperEnvironment::start() {
   if (connector)
     mapper_monitor_poll(connector->mon, 0);
 
-  // Send position.
-  //msig_update(outsig, { 1 });
-
-  // Wait for response.
-  //printf("Polling\n");
-  //mdev_poll(dev, 1000);
-
   connector->waitForBlockingInputs();
   return readInputs();
 }
 
 Observation* MapperEnvironment::step(const Action* action) {
-  printf("Stepping env\n");
-
   // Send outputs.
   writeOutputs(action);
   connector->sendAllOutputs();
