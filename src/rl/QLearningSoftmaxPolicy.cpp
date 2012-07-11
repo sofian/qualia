@@ -44,6 +44,7 @@ void QLearningSoftmaxPolicy::chooseAction(Action* action, const Observation* obs
     real outMax = exp( qlagent->Q(observation, action) / temperature );
 //    printf("[%f ", outMax);
     real sum = 1/n;
+    double sum = 1/n;
     while (action->hasNext()) {
       action->next();
       real out = exp( qlagent->Q(observation, action) / temperature );
