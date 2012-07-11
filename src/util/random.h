@@ -32,10 +32,6 @@
 #include <limits.h>
 #include <stdlib.h>
 
-#if defined(__cplusplus)
-extern "C" {
-#endif
-
 // Arduino definitions for random integers.
 #if !defined(ARDUINO)
 // Code from Arduino WMath.cpp
@@ -54,9 +50,5 @@ float randomUniform(float h);
 
 /// Generates a uniform random number on [a,b[ (b>a).
 float randomUniform(float a, float b);
-
-#if defined(__cplusplus)
-}
-#endif
 
 #endif

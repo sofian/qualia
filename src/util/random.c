@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Random.h"
+#include "random.h"
 
 #if !defined(ARDUINO)
 // Code from Arduino WMath.cpp
@@ -64,3 +64,4 @@ float randomUniform(float h) {
 float randomUniform(float a, float b) {
   return (randomUniform() * (b - a) + a);
 }
+
