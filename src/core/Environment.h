@@ -27,6 +27,8 @@
 #define ENVIRONMENT_H_
 
 #include "common.h"
+#include "Observation.h"
+#include "Action.h"
 
 class Environment {
 
@@ -36,9 +38,6 @@ public:
   virtual void init() {}
   virtual Observation* start() = 0;
   virtual Observation* step(const Action* action) = 0;
-//  virtual void cleanup() {}
-//  const char* env_message(const char * message);
-
 };
 
 #endif /* ENVIRONMENT_H_ */

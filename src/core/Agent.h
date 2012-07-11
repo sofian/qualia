@@ -27,6 +27,8 @@
 #define AGENT_H_
 
 #include "common.h"
+#include "Action.h"
+#include "Observation.h"
 
 class Agent {
 
