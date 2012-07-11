@@ -23,6 +23,10 @@
 #ifndef COMMON_H_
 #define COMMON_H_
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 // Platform check.
 #define is_avr() defined(__AVR__)
 #define is_arduino() defined(ARDUINO)
@@ -49,6 +53,50 @@
 #define log1p(x) log(1+(x))
 #endif
 
+// Basic definitions from Arduino.h
+#if (!is_arduino())
+
+// Make sure to redefine the min/max/abs macros
+#ifdef min
+#undef min
+#endif
+
+#ifdef max
+#undef max
+#endif
+
+#ifdef abs
+#undef abs
+#endif
+
+// XXX Since
+//#ifdef round
+//#undef round
+//#endif
+
+#ifndef true
+#define true 0x1
+#endif
+
+#ifndef false
+#define false 0x0
+#endif
+
+#define PI 3.1415926535897932384626433832795
+#define HALF_PI 1.5707963267948966192313216916398
+#define TWO_PI 6.283185307179586476925286766559
+#define DEG_TO_RAD 0.017453292519943295769236907684886
+#define RAD_TO_DEG 57.295779513082320876798154814105
+
+#define min(a,b) ((a)<(b)?(a):(b))
+#define max(a,b) ((a)>(b)?(a):(b))
+#define abs(x) ((x)>=0?(x):-(x))
+#define constrain(amt,low,high) ((amt)<(low)?(low):((amt)>(high)?(high):(amt)))
+//#define round(x)     ((x)>=0?(long)((x)+0.5):(long)((x)-0.5))
+#define radians(deg) ((deg)*DEG_TO_RAD)
+#define degrees(rad) ((rad)*RAD_TO_DEG)
+#define sq(x) ((x)*(x))
+#endif
 
 // Parameters.
 //#define USE_DOUBLE
@@ -67,6 +115,10 @@ typedef float real;
 
 #if is_avr()
 #include "avrdefs.h"
+#endif
+
+#if defined(__cplusplus)
+}
 #endif
 
 #ifdef DEBUG
