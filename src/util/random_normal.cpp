@@ -19,7 +19,7 @@
 
 #include "random_normal.h"
 
-float randomNormal(float mean = 0, float stdv = 1) {
+float randomNormal(float mean, float stdv) {
   static bool normal_is_valid = false;
   static float normal_x;
   static float normal_y;

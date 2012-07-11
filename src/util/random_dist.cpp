@@ -23,7 +23,7 @@ float exponential(float lambda) {
   return(-1. / lambda * log(1-randomUniform()));
 }
 
-float cauchy(float median = 0, float sigma = 1) {
+float cauchy(float median, float sigma) {
   return(median + sigma * tan(M_PI*(randomUniform()-0.5)));
 }
 
@@ -31,6 +31,6 @@ int geometric(float p) {
   return((int)(log(1-randomUniform()) / log(p)) + 1);
 }
 
-bool bernouilli(float p = 0.5) {
+bool bernouilli(float p) {
   return(randomUniform() <= p);
 }
