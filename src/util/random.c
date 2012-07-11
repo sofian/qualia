@@ -19,7 +19,7 @@
 
 #include "Random.h"
 
-#if !is_arduino()
+#if !defined(ARDUINO)
 // Code from Arduino WMath.cpp
 void randomSeed(unsigned int seed)
 {
@@ -47,7 +47,6 @@ long random(long howsmall, long howbig)
 
 #endif
 
-/// Generates a uniform random number on [0,1[.
 float randomUniform() {
   return (float)random() / (float)
 #ifdef RANDOM_MAX
@@ -58,7 +57,10 @@ float randomUniform() {
       ;
 }
 
-/// Generates a uniform random number on [a,b[ (b>a).
+float randomUniform(float h) {
+  return (randomUniform() * h);
+}
+
 float randomUniform(float a, float b) {
   return (randomUniform() * (b - a) + a);
 }

@@ -29,8 +29,6 @@
 #ifndef RANDOM_INC
 #define RANDOM_INC
 
-#include "common.h"
-
 #include <limits.h>
 #include <stdlib.h>
 
@@ -38,15 +36,23 @@
 extern "C" {
 #endif
 
-#if !is_arduino()
+// Arduino definitions for random integers.
+#if !defined(ARDUINO)
 // Code from Arduino WMath.cpp
 void randomSeed(unsigned int seed);
 long random(long howbig);
 long random(long howsmall, long howbig);
 #endif
 
+// Floating point random numbers.
+
 /// Generates a uniform random number on [0,1[.
 float randomUniform();
+
+/// Generates a uniform random number on [0,h[.
+float randomUniform(float h);
+
+/// Generates a uniform random number on [a,b[ (b>a).
 float randomUniform(float a, float b);
 
 #if defined(__cplusplus)
