@@ -19,7 +19,7 @@
 #include "NeuralNetwork.h"
 #include <stdlib.h>
 #include <math.h>
-#include "util/Random.h"
+#include <util/random_normal.h>
 
 //#include "Print.h"
 //#include "Math.h"
@@ -33,7 +33,7 @@ NeuralNetwork::~NeuralNetwork() {
 void NeuralNetwork::init() {
   // randomize weights
   for (int i=0; i<nParams; i++) {
-    weights[i] = Random::boundedUniform(-1, +1);
+    weights[i] = randomUniform(-1, +1);
     dWeights[i] = 0;
   }
   learningRateDiv = 1;
