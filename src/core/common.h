@@ -55,7 +55,7 @@
 //#define USE_STATIC_ALLOC
 //#define STATIC_ALLOCATOR_SIZE 100
 
-#define DEBUG_LEVEL 2
+//#define DEBUG_LEVEL 2
 
 #ifdef USE_DOUBLE
 typedef double real;
@@ -69,9 +69,13 @@ typedef float real;
 #include "avrdefs.h"
 #endif
 
-#include "error.h"
+#ifdef DEBUG
+#include <core/error.h>
+#endif
+
+//#include "error.h"
 #include "Allocator.h"
-#include "Action.h"
-#include "Observation.h"
+//#include "Action.h"
+//#include "Observation.h"
 
 #endif
