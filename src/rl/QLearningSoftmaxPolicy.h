@@ -22,6 +22,7 @@
 
 #include "Policy.h"
 #include "QLearningAgent.h"
+#include <math.h>
 
 class QLearningSoftmaxPolicy : public Policy {
 public:
