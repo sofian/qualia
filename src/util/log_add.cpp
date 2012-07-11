@@ -50,8 +50,10 @@ real logAdd(real log_a, real log_b)
 
 real logSub(real log_a, real log_b)
 {
+#ifdef DEBUG
   if (log_a < log_b)
     error("LogSub: log_a (%f) should be greater than log_b (%f)", log_a, log_b);
+#endif
 
   real minusdif = log_b - log_a;
 #ifdef DEBUG
