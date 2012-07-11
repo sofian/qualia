@@ -23,6 +23,11 @@
 #ifndef COMMON_H_
 #define COMMON_H_
 
+// Platform check.
+#define is_avr() defined(__AVR__)
+#define is_arduino() defined(ARDUINO)
+#define is_computer() !defined(__AVR__)
+
 #include <assert.h>
 #include <stdlib.h>
 #include <float.h>
@@ -44,8 +49,6 @@
 #define log1p(x) log(1+(x))
 #endif
 
-#define is_avr() defined(__AVR__)
-#define is_computer() !defined(__AVR__)
 
 // Parameters.
 //#define USE_DOUBLE
