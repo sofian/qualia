@@ -27,7 +27,7 @@ public:
   real decreaseConstant;
 
   // Internal use.
-  int epsilonDiv;
+  float epsilonDiv;
 
   QLearningEDecreasingPolicy(real epsilon, real decreaseConstant);
 
