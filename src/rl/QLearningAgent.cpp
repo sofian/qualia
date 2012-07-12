@@ -121,34 +121,18 @@ Action* QLearningAgent::step(const Observation* observation) {
     //real mse = delta * delta * 0.5;
 
     // Update weights.
-    //real deltaTimesLearningRate = function->learningRate * delta;
-  //  Serial.print("DTL "); Serial.println(deltaTimesLearningRate);
-    // TODO: changer les dWeights() / weights() pour de simples variables
     real* dWeights = function->dWeights;
-    real* weights  = function->weights;
-//  #if DEBUG
-//    printf("dw: [");
-//  #endif
     real lambdaTimesGamma = lambda * gamma;
     for (int i=0; i<function->nParams; i++) {
       e[i] = lambdaTimesGamma * e[i] + dWeights[i];
       dWeights[i] = - delta * e[i];
-      //weights[i] += deltaTimesLearningRate * e[i];
-//  #if DEBUG
-//      printf("%f ", dWeights[i]);
-//  #endif
     }
     function->update(); // update using the function's own update rule
-//  #if DEBUG
-//    printf(" ]\n");
-//  #endif
-    //function->clearDelta();
   }
   /////////////// END UPDATE
 
   else {
     // No update: just choose next action.
-    // // printf("DEBUG: Choose action\n", Qs);
     policy->chooseAction(&currentAction, observation);
   }
 
@@ -156,17 +140,12 @@ Action* QLearningAgent::step(const Observation* observation) {
   // TODO: find a more elegant way to copy
   lastObservation.copyFrom(observation);
 
-  // // printf("DEBUG: Done\n", Qs);
   return &currentAction;
 }
 
 void QLearningAgent::end(const Observation* observation) {
 
 }
-
-//void QLearningAgent::cleanup() {
-//
-//}
 
 real QLearningAgent::Q(const Observation* observation, const Action* action) {
   // Set input.

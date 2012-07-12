@@ -106,7 +106,6 @@ public:
   virtual Action* start(const Observation* observation);
   virtual Action* step(const Observation* observation);
   virtual void end(const Observation* observation);
-//  virtual void cleanup();
 
   // The state-action value function (calls the approximator function).
   real Q(const Observation* observation, const Action* action);

@@ -39,10 +39,6 @@ public:
   virtual Action* start(const Observation* observation) = 0;
   virtual Action* step(const Observation* observation) = 0;
   virtual void end(const Observation* observation) {}
-//  virtual void cleanup() {}
-
-//  const char* agent_message(const char* message);
-
 };
 
 #endif
