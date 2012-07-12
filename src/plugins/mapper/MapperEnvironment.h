@@ -21,7 +21,7 @@
 #define LIBMAPPERENVIRONMENT_H_
 
 #include "MapperConnector.h"
-#include <core/Environment.h>
+#include <qualia/core/Environment.h>
 
 #include <mapper/mapper.h>
 

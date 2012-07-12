@@ -6,7 +6,7 @@
 #include <signal.h>
 #include <mapper/mapper.h>
 
-#include <core/common.h>
+#include <qualia/core/common.h>
 
 #include <map>
 #include <string>

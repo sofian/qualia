@@ -21,7 +21,7 @@
 #define MAPPERBASICENVIRONMENT_H_
 
 #include "MapperEnvironment.h"
-#include <core/Observation.h>
+#include <qualia/core/Observation.h>
 
 class MapperBasicEnvironment : public MapperEnvironment {
 public:
