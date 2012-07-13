@@ -17,6 +17,6 @@ if (platform == 'avr'):
 if (platform == 'arduino'):
   TARGET = 'MainTest'
 else:
-  TARGET = "unit_test"
+  TARGET = "main_test"
 
 Return(CONFIG)
