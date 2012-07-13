@@ -97,12 +97,12 @@ void testPolicies() {
                        1, 2, (const unsigned int[]){10, 10},
                        1.0f, 0.1f, &egreedy, false); // lambda = 1.0 => no history
 
-  randomSeed(222);
 
   printf("- Testing egreedy\n");
   egreedy.setAgent(&agent);
 
   printf("-- Testing greedy policy (epsilon = 0)\n");
+  srandom(222);
   egreedy.epsilon = 0;
   egreedy.chooseAction(&action, &observation);
   // Actions should always be the same.
@@ -114,6 +114,7 @@ void testPolicies() {
   printf("-> PASSED\n");
 
   printf("-- Testing random (epsilon = 1) (actions should be random)\n");
+  srandom(222);
   const action_dim_t pattern1[] = {
       90, 90, 20, 97, 98, 30, 63, 23, 47, 32
   };
@@ -125,12 +126,14 @@ void testPolicies() {
   printf("-> PASSED\n");
 
   printf("-- Testing e-greedy (epsilon = 0.5) (actions should be semi random)\n");
+  srandom(222);
   const action_dim_t pattern2[] = {
-      9, 9, 9, 9, 9, 9, 9, 9, 4, 9
+      90, 9, 9, 9, 63, 47, 9, 9, 9, 9
   };
   egreedy.epsilon = 0.5;
   for (int i=0; i<10; i++) {
     egreedy.chooseAction(&action, &observation);
+//    printf("%d, ", action.conflated());
     assert( action.conflated() == pattern2[i]);
   }
   printf("-> PASSED\n");
@@ -140,8 +143,9 @@ void testPolicies() {
   softmax.setAgent(&agent);
 
   printf("-- Testing \"greedy\" policy (epsilon = 0)\n");
+  srandom(222);
   const action_dim_t pattern3[] = {
-      96, 31, 41, 83, 47, 33, 45, 6, 17, 49
+      17, 66, 53, 82, 49, 61, 46, 28, 75, 56
   };
   softmax.epsilon = 0;
   softmax.chooseAction(&action, &observation);
@@ -152,8 +156,9 @@ void testPolicies() {
   printf("-> PASSED\n");
 
   printf("-- Testing random (epsilon = 1)\n");
+  srandom(222);
   const action_dim_t pattern4[] = {
-      44, 57, 87, 94, 39, 50, 17, 87, 34, 1
+      90, 90, 20, 97, 98, 30, 63, 23, 47, 32
   };
   softmax.epsilon = 1;
   for (int i=0; i<10; i++) {
@@ -163,12 +168,14 @@ void testPolicies() {
   printf("-> PASSED\n");
 
   printf("-- Testing e-greedy (epsilon = 0.5) (actions should be semi random)\n");
+  srandom(222);
   const action_dim_t pattern5[] = {
-      95, 68, 81, 29, 22, 27, 69, 23, 3, 49
+      90, 53, 49, 46, 32, 90, 94, 98, 61, 4
   };
   softmax.epsilon = 0.5;
   for (int i=0; i<10; i++) {
     softmax.chooseAction(&action, &observation);
+//    printf("%d, ", action.conflated());
     assert( action.conflated() == pattern5[i]);
   }
   printf("-> PASSED\n");
@@ -199,7 +206,8 @@ void realArrayToString(char* str, int n, real* p) {
 }
 
 void testLearning() {
-  randomSeed(222);
+  printf("== TEST LEARNING ==\n");
+  srandom(222);
   TestEnvironment env;
   NeuralNetwork net(2+2, 3, 1, 0.1f);
   QLearningEGreedyPolicy egreedy(0.5f);
@@ -213,13 +221,13 @@ void testLearning() {
 
   // Verify weights
   const char* weights1 = "0.744364, 0.002764, 0.976832, 0.922620, -0.371778, -0.170730, 0.666554, -0.042378, -0.327445, -0.088207, -0.870008, -0.643873, -0.011151, -0.509864, 0.682508, -0.935150, -0.855299, -0.330070, 0.295997, ";
-  const char* weights2 = "0.732947, -0.006681, 0.961605, 0.909702, -0.395746, -0.185287, 0.654779, -0.061927, -0.342585, -0.116279, -0.874680, -0.647676, -0.018064, -0.515188, 0.672880, -0.831696, -0.792030, -0.273357, 0.431184, ";
+  const char* weights2 = "0.720454, -0.032911, 0.924488, 0.885604, -0.462369, -0.196202, 0.629109, -0.115963, -0.376370, -0.176181, -0.877519, -0.654348, -0.032678, -0.524523, 0.656541, -0.593092, -0.641793, -0.115928, 0.761823, ";
 
   char str[1000];
   realArrayToString(str, net.nParams, net.weights);
   assert( strcmp(weights1, str) == 0);
 
-  qualia.episode(10);
+  qualia.episode(100);
 
   realArrayToString(str, net.nParams, net.weights);
   assert( strcmp(weights2, str) == 0);
