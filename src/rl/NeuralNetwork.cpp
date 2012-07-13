@@ -75,7 +75,7 @@ void NeuralNetwork::update() {
   float lr = learningRate / learningRateDiv;
   for (int i=0; i<nParams; i++)
 //    weights[i] -= learningRate * dWeights[i];
-    weights[i] -= lr * dWeights[i] - weightDecay * weights[i];
+    weights[i] -= lr * (dWeights[i] + weightDecay * weights[i]);
   clearDelta();
   learningRateDiv += decreaseConstant;
 }
