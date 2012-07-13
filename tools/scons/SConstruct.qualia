@@ -10,13 +10,6 @@ def unique(seq, keepstr=True):
   return t(c for c in seq if not (c in seen or seen.append(c)))
 
 # General arguments
-INCLUDE_PATH = ""
-MCU = 'atmega168'
-F_CPU = 16000000
-EXTRA_LIBS = ""
-AVR_GCC_DIR = ""
-LIBS = ""
-LIBPATH = ""
 
 # Get mode.
 platform = ARGUMENTS.get("platform", "computer")
@@ -24,18 +17,20 @@ mode     = ARGUMENTS.get("mode", "release")
 
 TARGET = None
 
+INCLUDE_PATH = ""
 MCU = 'atmega168'
 F_CPU = 16000000
 EXTRA_LIBS = ""
 LIBS = ""
 LIBPATH = ""
+SOURCEPATH = ""
 AVR_GCC_DIR = ""
 
 if (platform == 'avr' or platform == 'arduino'):
   AVR_GCC_DIR = "/Applications/Arduino.app/Contents/Resources/Java/hardware/tools/avr/bin/"
 
 # Import settings
-CONFIG = ['INCLUDE_PATH', 'MCU', 'F_CPU', 'EXTRA_LIBS', 'AVR_GCC_DIR', 'TARGET', 'LIBS', 'LIBPATH', 'platform', 'mode']
+CONFIG = ['INCLUDE_PATH', 'MCU', 'F_CPU', 'EXTRA_LIBS', 'AVR_GCC_DIR', 'TARGET', 'LIBS', 'LIBPATH', 'SOURCEPATH', 'platform', 'mode']
 conf = SConscript(dirs='.', exports=CONFIG)
 for i in range(len(CONFIG)):
   vars()[CONFIG[i]] = conf[i]
@@ -74,6 +69,14 @@ if AVR_GCC_DIR:
 
 AVR_BIN_PREFIX = AVR_GCC_DIR + 'avr-'
 
+SOURCEPATH = ARGUMENTS.get('SOURCEPATH', SOURCEPATH).split(':');
+
+sources = []
+for dir in SOURCEPATH:
+	sources += Glob(dir + "/*.cpp")
+	sources += Glob(dir + "/*.cxx")
+	sources += Glob(dir + "/*.c")
+	
 # Create environment and set default configurations ###################################
 if (platform == 'avr' or platform == 'arduino'):
   cFlags = ['-ffunction-sections', '-fdata-sections', '-fno-exceptions',
@@ -97,7 +100,7 @@ if (platform == 'avr' or platform == 'arduino'):
   
   env.VariantDir(BUILD_DIR, ".", duplicate=0)
   
-  sources = Glob(BUILD_DIR + "*.cpp")
+  sources += Glob(BUILD_DIR + "*.cpp")
   env.Program(target = BUILD_DIR + TARGET + '.elf', source = sources, LINKFLAGS = "-Wl,--gc-sections")
   env.Hex(BUILD_DIR + TARGET + '.hex', BUILD_DIR + TARGET + '.elf')
   
@@ -114,7 +117,7 @@ else:
     env.Append(CPPFLAGS=['-O2'])
 
   env.VariantDir(BUILD_DIR, ".", duplicate=0)
-  sources = Glob(BUILD_DIR + "*.cpp")
+  sources += Glob(BUILD_DIR + "*.cpp")
   sources += Glob(BUILD_DIR + "*.c")
   env.Program(BUILD_DIR + TARGET, sources, LIBS = LIBS, CPPPATH = INCLUDE_PATH, LIBPATH = LIBPATH)
 
