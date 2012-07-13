@@ -20,8 +20,8 @@
 #ifndef DUMMYREWARDENVIRONMENT_H_
 #define DUMMYREWARDENVIRONMENT_H_
 
-#include "rl/RewardEnvironment.h"
-#include "rl/Reward.h"
+#include <qualia/rl/RewardEnvironment.h>
+#include <qualia/rl/Reward.h>
 
 class DummyRewardEnvironment : public RewardEnvironment {
 public:

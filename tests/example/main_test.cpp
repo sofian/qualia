@@ -1,19 +1,19 @@
-#include "core/Qualia.h"
-#include "rl/RLQualia.h"
-#include "rl/QLearningAgent.h"
-#include "rl/QLearningEGreedyPolicy.h"
+#include <qualia/core/Qualia.h>
+#include <qualia/rl/RLQualia.h>
+#include <qualia/rl/QLearningAgent.h>
+#include <qualia/rl/QLearningEGreedyPolicy.h>
 
 #include "DummyAgent.h"
 #include "DummyEnvironment.h"
 #include "DummyRewardEnvironment.h"
 
-#include "rl/NeuralNetwork.h"
+#include <qualia/rl/NeuralNetwork.h>
 
 #define N_HIDDEN 3
 #define RANDOM_SEED 4567
 
 #define STATIC_ALLOCATOR_SIZE 1000
-#include "core/StaticAllocator.h"
+#include <qualia/core/StaticAllocator.h>
 
 #include <stdio.h>
 
@@ -53,9 +53,19 @@ void testQLearning(Environment& env, QLearningAgent& agent) {
 //  printf("Mean reward: %f (%f / %d)\n", (double) qualia.totalReward / qualia.nSteps, qualia.totalReward, qualia.nSteps);
 
   qualia.init();
+  agent.isLearning = false;
+  printf("First episode: no learning\n");
+  qualia.episode(1000);
+#if is_computer()
+    printf("Mean reward: %f (%f / %d)\n", (double) qualia.totalReward / qualia.nSteps, qualia.totalReward, qualia.nSteps);
+//    printf("Current agent action: [%d %d] = %d\n", agent.currentAction[0], agent.currentAction[1], agent.currentAction.conflated());
+//    printf("Current environment observation: [%f %f] => %f\n", env.currentObservation[0], env.currentObservation[1], env.currentObservation.reward);
+#endif
+
   for (int i=0; i<10; i++) {
     printf("# %d ", qualia.nEpisodes);
     qualia.episode(1000);
+    agent.isLearning = true;
 #if is_computer()
     printf("Mean reward: %f (%f / %d)\n", (double) qualia.totalReward / qualia.nSteps, qualia.totalReward, qualia.nSteps);
 //    printf("Current agent action: [%d %d] = %d\n", agent.currentAction[0], agent.currentAction[1], agent.currentAction.conflated());
@@ -76,7 +86,7 @@ void testQLearning(Environment& env, QLearningAgent& agent) {
 }
 
 void testQLearningDummy() {
-  srand(RANDOM_SEED);
+  srandom(RANDOM_SEED);
   NeuralNetwork net(DUMMY_ENVIRONMENT_OBSERVATIONS_DIM + DUMMY_AGENT_ACTIONS_DIM, N_HIDDEN, 1, 0.1f);
   QLearningEGreedyPolicy egreedy(0.1f);
   QLearningAgent agent(&net,
@@ -90,7 +100,7 @@ void testQLearningDummy() {
 }
 
 void testQLearningDummyReward() {
-  srand(RANDOM_SEED);
+  srandom(RANDOM_SEED);
   NeuralNetwork net(DUMMY_ENVIRONMENT_OBSERVATIONS_DIM + DUMMY_AGENT_ACTIONS_DIM, N_HIDDEN, 1, 0.1f);
   QLearningEGreedyPolicy egreedy(0.1f);
   QLearningAgent agent(&net,
