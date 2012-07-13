@@ -8,6 +8,7 @@
 #include "DummyRewardEnvironment.h"
 
 #include <qualia/rl/NeuralNetwork.h>
+#include <qualia/util/random.h>
 
 #define N_HIDDEN 3
 #define RANDOM_SEED 4567
@@ -86,7 +87,7 @@ void testQLearning(Environment& env, QLearningAgent& agent) {
 }
 
 void testQLearningDummy() {
-  srandom(RANDOM_SEED);
+  randomSeed(RANDOM_SEED);
   NeuralNetwork net(DUMMY_ENVIRONMENT_OBSERVATIONS_DIM + DUMMY_AGENT_ACTIONS_DIM, N_HIDDEN, 1, 0.1f);
   QLearningEGreedyPolicy egreedy(0.1f);
   QLearningAgent agent(&net,
@@ -100,7 +101,7 @@ void testQLearningDummy() {
 }
 
 void testQLearningDummyReward() {
-  srandom(RANDOM_SEED);
+  randomSeed(RANDOM_SEED);
   NeuralNetwork net(DUMMY_ENVIRONMENT_OBSERVATIONS_DIM + DUMMY_AGENT_ACTIONS_DIM, N_HIDDEN, 1, 0.1f);
   QLearningEGreedyPolicy egreedy(0.1f);
   QLearningAgent agent(&net,
