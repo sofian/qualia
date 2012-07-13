@@ -20,7 +20,7 @@
 #ifndef REWARD_H_
 #define REWARD_H_
 
-#include "core/Environment.h"
+#include <qualia/core/Environment.h>
 
 class Reward {
 public:

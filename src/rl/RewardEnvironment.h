@@ -20,7 +20,7 @@
 #ifndef REWARDENVIRONMENT_H_
 #define REWARDENVIRONMENT_H_
 
-#include "core/Environment.h"
+#include <qualia/core/Environment.h>
 #include "Reward.h"
 #include "RLObservation.h"
 

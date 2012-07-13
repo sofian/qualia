@@ -20,7 +20,7 @@
 #ifndef POLICY_H_
 #define POLICY_H_
 
-#include "core/Agent.h"
+#include <qualia/core/Agent.h>
 
 class Policy {
 public:

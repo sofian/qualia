@@ -25,7 +25,7 @@
 #ifndef QLEARNINGAGENT_H_
 #define QLEARNINGAGENT_H_
 
-#include "core/Agent.h"
+#include <qualia/core/Agent.h>
 #include "NeuralNetwork.h"
 #include "RLObservation.h"
 #include "Policy.h"

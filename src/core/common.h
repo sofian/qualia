@@ -122,7 +122,7 @@ typedef float real;
 #endif
 
 #ifdef DEBUG
-#include <core/error.h>
+#include <qualia/core/error.h>
 #endif
 
 //#include "error.h"

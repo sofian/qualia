@@ -20,7 +20,7 @@
 #ifndef RLQUALIA_H_
 #define RLQUALIA_H_
 
-#include "core/Qualia.h"
+#include <qualia/core/Qualia.h>
 #include "RLObservation.h"
 
 class RLQualia : public Qualia {
