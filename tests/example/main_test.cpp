@@ -92,7 +92,7 @@ void testQLearningDummy() {
   QLearningEGreedyPolicy egreedy(0.1f);
   QLearningAgent agent(&net,
                        DUMMY_ENVIRONMENT_OBSERVATIONS_DIM, DUMMY_AGENT_ACTIONS_DIM, DUMMY_AGENT_N_ACTIONS,
-                       1.0f, 0.1f, &egreedy, false); // lambda = 1.0 => no history
+                       0.0f, 0.01f, &egreedy, false); // lambda = 0.0  => no history, gamma = 0.01 => opportunistic agent
   DummyEnvironment env;
   testQLearning(env, agent);
 // BigDummyReward rew;
@@ -106,7 +106,7 @@ void testQLearningDummyReward() {
   QLearningEGreedyPolicy egreedy(0.1f);
   QLearningAgent agent(&net,
                        DUMMY_ENVIRONMENT_OBSERVATIONS_DIM, DUMMY_AGENT_ACTIONS_DIM, DUMMY_AGENT_N_ACTIONS,
-                       1.0f, 0.1f, &egreedy, false); // lambda = 1.0 => no history
+                       0.0f, 0.01f, &egreedy, false); // lambda = 0.0  => no history, gamma = 0.01 => opportunistic agent
   BigDummyReward rew;
   DummyRewardEnvironment env(DUMMY_ENVIRONMENT_OBSERVATIONS_DIM, &rew);
   testQLearning(env, agent);
