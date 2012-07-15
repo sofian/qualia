@@ -18,12 +18,15 @@
  */
 
 #include "MultiAgent.h"
+#include <string.h>
 
 MultiAgent::MultiAgent(int nAgents_, Agent** assign_)
   : agents(assign_), nAgents(nAgents_), ownsAgents(assign_ == 0)
 {
-  if (ownsAgents)
+  if (ownsAgents) {
     agents = (Agent**)Alloc::malloc(nAgents*sizeof(Agent*));
+    memset(agents, 0, nAgents*sizeof(Agent*)); // initialize to null
+  }
 //  actions = (Action**)Alloc::malloc(nAgents*sizeof(Action*));
 //  observations = (Observation**)Alloc::malloc(nAgents*sizeof(Observation*));
 }
@@ -36,8 +39,10 @@ MultiAgent::~MultiAgent() {
 }
 
 void MultiAgent::init() {
-  for (int i=0; i<nAgents; i++)
+  for (int i=0; i<nAgents; i++) {
+    assert( agents[i] );
     agents[i]->init();
+  }
 }
 
 Action* MultiAgent::start(const Observation* observation) {
