@@ -58,6 +58,10 @@ QLearningAgent::QLearningAgent(NeuralNetwork* func,
   assert( function->nInput() == (int) (observationDim + actionDim) );
   assert( function->nOutput() == 1 );
 
+  // NOTE: We do not support off policy learning anymore because it is
+  // known to diverge when used with linear function approximator.
+  assert( !offPolicy );
+
   policy->setAgent(this);
 }
 
