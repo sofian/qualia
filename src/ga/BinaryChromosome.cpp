@@ -21,9 +21,12 @@
 
 BinaryChromosomeInfo::BinaryChromosomeInfo(unsigned int nGenes_, const uint8_t* geneSizesInit_,
                                            Initializer initializer_, Mutator mutator_)
+  : nGenes(0), geneSizes(0), initializer(initializer_), mutator(mutator_) {
   allocate(nGenes_, geneSizesInit_);
+}
 
 unsigned int BinaryChromosomeInfo::bitSize() const {
+  unsigned int size = 0;
   for (unsigned int i=0; i<nGenes; i++)
     size += geneSizes[i];
   return size;
@@ -47,6 +50,7 @@ void BinaryChromosomeInfo::allocate(unsigned int nGenes_, const uint8_t* geneSiz
   geneSizes = (uint8_t*) Alloc::malloc(nGenes * sizeof(uint8_t));
 
   // Init.
+  if (geneSizesInit_)
     memcpy(geneSizes, geneSizes, nGenes * sizeof(uint8_t));
   else
     memset(geneSizes, 0, nGenes * sizeof(uint8_t));
@@ -79,29 +83,17 @@ void BinaryChromosome::mutate(float p) {
 //}
 //
 //float BinaryChromosome::evaluate() {
+//  return (info->evaluator)(*this);
 //}
 
 double BinaryChromosome::doubleValue(int gene) {
-  int pos = info->getStartBitPosition(gene);
-  int block = pos / 8;
-  pos      %=       8;
-  double val = 0;
-
+  int64_t val;
+  copyBits(&val, code, info->getStartBitPosition(gene), info->geneSizes[gene], sizeof(int64_t));
+  return double(val);
 }
 
 int BinaryChromosome::intValue(int gene) {
-  int begin = info->getStartBitPosition(gene);
-  int end   = begin + info->geneSizes[gene];
-  int endBlock = end / 8;
-  int pos = begin % 8;
-
-  int ret = 0;
-
-  for (int block = begin / 8; block < endBlock; block++) {
-    for ( ; pos < 8; pos++) {
-      ret = (ret << 1) | code[block] << pos;
-    }
-  }
-
-  return ret;
+  int val;
+  copyBits(&val, code, info->getStartBitPosition(gene), info->geneSizes[gene], sizeof(int));
+  return val;
 }

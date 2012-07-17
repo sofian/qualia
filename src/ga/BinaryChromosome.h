@@ -21,6 +21,7 @@
 #define BINARYCHROMOSOME_H_
 
 #include "Chromosome.h"
+#include <qualia/util/bits.h>
 
 typedef float (*Evaluator) (Chromosome &);
 typedef void  (*Initializer) (Chromosome &);
