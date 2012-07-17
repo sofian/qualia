@@ -49,6 +49,9 @@ void Action::allocate(unsigned int dim_, const unsigned int* nActionsInit_) {
     memset(nActions, 0, dim * sizeof(unsigned int));
 
   // Set nConflated.
+  // XXX: problem here: if nActions is changed later (eg. if nActionsInit is set to 0)
+  // nConflated will not be properly pre-compiled
+  // We thus need to either force the nActionsInit_ to be non-null or to find some other way
   nConflated = 1;
   for (unsigned int i=0; i<dim; i++)
     nConflated *= nActions[i];
