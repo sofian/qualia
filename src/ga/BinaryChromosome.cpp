@@ -19,9 +19,12 @@
 
 #include "BinaryChromosome.h"
 
-int BinaryChromosomeInfo::codeSize() const {
-  int size = 0;
-  for (int i=0; i<nGenes; i++)
+BinaryChromosomeInfo::BinaryChromosomeInfo(unsigned int nGenes_, const uint8_t* geneSizesInit_,
+                                           Initializer initializer_, Mutator mutator_)
+  allocate(nGenes_, geneSizesInit_);
+
+unsigned int BinaryChromosomeInfo::bitSize() const {
+  for (unsigned int i=0; i<nGenes; i++)
     size += geneSizes[i];
   return size;
 }
@@ -33,38 +36,50 @@ int BinaryChromosomeInfo::getStartBitPosition(int gene) const {
   return pos;
 }
 
-BinaryChromosome::BinaryChromosome(int nGenes_, BinaryChromosomeInfo* info_)
-  : Chromosome(nGenes), info(info_), dna(0) {
+void BinaryChromosomeInfo::allocate(unsigned int nGenes_, const uint8_t* geneSizesInit_) {
+  if (geneSizes) // already allocated
+    return; // TODO: error message
 
+  // Set dimension.
+  nGenes = nGenes_;
+
+  // Allocate.
+  geneSizes = (uint8_t*) Alloc::malloc(nGenes * sizeof(uint8_t));
+
+  // Init.
+    memcpy(geneSizes, geneSizes, nGenes * sizeof(uint8_t));
+  else
+    memset(geneSizes, 0, nGenes * sizeof(uint8_t));
+}
+
+BinaryChromosome::BinaryChromosome(BinaryChromosomeInfo* info_)
+  : Chromosome(), info(info_), code(0)
+{
+  code = (uint8_t*) Alloc::malloc(info->byteSize()*sizeof(uint8_t));
+  memset(code, 0, info->byteSize()*sizeof(uint8_t));
 }
 
 BinaryChromosome::~BinaryChromosome() {
-}
-
-BinaryChromosomeInfo::BinaryChromosomeInfo(Initializer initializer,
-    Mutator mutator, Comparator comparator, Evaluator evaluator) {
+  if (code)
+    Alloc::free(code);
 }
 
 void BinaryChromosome::init() {
-  (info->initializer)(*this);
+  if (info->initializer)
+    (info->initializer)(*this);
 }
 
 void BinaryChromosome::mutate(float p) {
-  (info->mutator)(*this, p);
+  if (info->mutator)
+    (info->mutator)(*this, p);
 }
 
-int BinaryChromosome::compare(const Chromosome& g) {
-  (info->comparator)()
-}
-
-float BinaryChromosome::evaluate() {
-  return (info->evaluator)(*this);
-}
-
-BinaryChromosomeInfo::BinaryChromosomeInfo(Initializer initializer,
-    Mutator mutator, Evaluator evaluator) {
-}
-
+//int BinaryChromosome::compare(const Chromosome& g) {
+//  return (info->comparator)(g);
+//}
+//
+//float BinaryChromosome::evaluate() {
+//}
 
 double BinaryChromosome::doubleValue(int gene) {
   int pos = info->getStartBitPosition(gene);
