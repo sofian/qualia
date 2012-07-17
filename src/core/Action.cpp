@@ -21,8 +21,8 @@
 #include <string.h>
 
 Action::Action() : actions(0), nActions(0), dim(0), nConflated(0) {}
-Action::Action(unsigned int dim_, const unsigned int* nActions_) : actions(0), nActions(0), dim(0), nConflated(0) {
-  allocate(dim_, nActions_);
+Action::Action(unsigned int dim_, const unsigned int* nActionsInit_) : actions(0), nActions(0), dim(0), nConflated(0) {
+  allocate(dim_, nActionsInit_);
 }
 
 Action::~Action() {
@@ -30,7 +30,7 @@ Action::~Action() {
   Alloc::free(nActions);
 }
 
-void Action::allocate(unsigned int dim_, const unsigned int* nActions_) {
+void Action::allocate(unsigned int dim_, const unsigned int* nActionsInit_) {
   if (actions) // already allocated
     return; // TODO: error message
 
@@ -43,8 +43,8 @@ void Action::allocate(unsigned int dim_, const unsigned int* nActions_) {
 
   // Init.
   memset(actions, 0, dim * sizeof(action_dim_t));
-  if (nActions_)
-    memcpy(nActions, nActions_, dim * sizeof(unsigned int));
+  if (nActionsInit_)
+    memcpy(nActions, nActionsInit_, dim * sizeof(unsigned int));
   else
     memset(nActions, 0, dim * sizeof(unsigned int));
 
