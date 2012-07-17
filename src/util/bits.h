@@ -1,0 +1,116 @@
+/*
+ * bits.h
+ *
+ * (c) 2012 Sofian Audry -- info(@)sofianaudry(.)com
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
+#ifndef BITS_H_
+#define BITS_H_
+
+#include <core/common.h>
+#include <strings.h>
+
+void writeBit(uint8_t* dst, int pos, uint8_t bitValue) {
+  dst += pos/8;
+  pos %=     8;
+  bitWrite(*dst, pos, bitValue);
+}
+
+uint8_t readBit(const uint8_t* src, int pos) {
+  src += pos/8;
+  pos %=     8;
+  return bitRead(*src, pos);
+}
+
+void writeBits(void* dst, const void* src, int dstPos, int srcPos, int length) {
+  while (length--) {
+    writeBit((uint8_t*)dst, dstPos++, readBit((const uint8_t*)src, srcPos++));
+  }
+}
+
+// Version that works by "blocks".
+//void copyBits(uint8_t* dst, const uint8_t* src, int pos, int length) {
+//  uint8_t shift = pos % 8;
+//  uint8_t shiftComp = 8-shift;
+//  dst += pos / 8;
+//  //src += pos / 8;
+//  while (length > 0) {
+//    *dst = *src >> shift; // 00000111
+//    if (length >=8)
+//      *dst |= *(src+1) << shiftComp; // len-=: len>=0: 8 - shift
+//    else
+//      *dst &= (0xff >> (8-length));
+//    length -=8;
+//    src++;
+//    dst++;
+//  }
+//}
+
+void copyBits(void* dst, const void* src, int pos, int length, int dstByteSize) {
+  memset(dst, 0, dstByteSize);
+  writeBits(dst, src, 0, pos, length);
+}
+
+
+///*
+//macros.h:
+//Binary constant generator macro
+//By Tom Torfs - donated to the public domain
+//*/
+//
+///* All macro's evaluate to compile-time constants */
+//
+///* *** helper macros *** */
+//
+///* turn a numeric literal into a hex constant
+//(avoids problems with leading zeroes)
+//8-bit constants max value 0x11111111, always fits in unsigned long
+//*/
+//#define HEX__(n) 0x##n##LU
+//
+///* 8-bit conversion function */
+//#define B8__(x) ((x&0x0000000FLU)?1:0) \
+//+((x&0x000000F0LU)?2:0) \
+//+((x&0x00000F00LU)?4:0) \
+//+((x&0x0000F000LU)?8:0) \
+//+((x&0x000F0000LU)?16:0) \
+//+((x&0x00F00000LU)?32:0) \
+//+((x&0x0F000000LU)?64:0) \
+//+((x&0xF0000000LU)?128:0)
+//
+///* *** user macros *** */
+//
+///* for upto 8-bit binary constants */
+//#define B8(d) ((unsigned char)B8__(HEX__(d)))
+//
+///* for upto 16-bit binary constants, MSB first */
+//#define B16(dmsb,dlsb) (((unsigned short)B8(dmsb)<< 8) \
+//+ B8(dlsb))
+//
+///* for upto 32-bit binary constants, MSB first */
+//#define B32(dmsb,db2,db3,dlsb) (((unsigned long)B8(dmsb)<<24) \
+//+ ((unsigned long)B8(db2)<<16) \
+//+ ((unsigned long)B8(db3)<<8) \
+//+ B8(dlsb))
+//
+///* Sample usage:
+//B8(01010101) = 85
+//B16(10101010,01010101) = 43605
+//B32(10000000,11111111,10101010,01010101) = 2164238933
+//*/
+
+#endif /* BITS_H_ */

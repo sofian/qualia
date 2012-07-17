@@ -36,6 +36,7 @@ extern "C" {
 #include <stdlib.h>
 #include <float.h>
 #include <limits.h>
+#include <stdint.h>
 
 // Old systems need that to define FLT_MAX and DBL_MAX
 #ifndef DBL_MAX
@@ -96,6 +97,12 @@ extern "C" {
 #define radians(deg) ((deg)*DEG_TO_RAD)
 #define degrees(rad) ((rad)*RAD_TO_DEG)
 #define sq(x) ((x)*(x))
+
+#define bitRead(value, bit) (((value) >> (bit)) & 0x01)
+#define bitSet(value, bit) ((value) |= (1UL << (bit)))
+#define bitClear(value, bit) ((value) &= ~(1UL << (bit)))
+#define bitWrite(value, bit, bitvalue) (bitvalue ? bitSet(value, bit) : bitClear(value, bit))
+
 #endif
 
 // Parameters.
@@ -115,6 +122,9 @@ typedef float real;
 
 #if is_avr()
 #include "avrdefs.h"
+#endif
+
+#if is_computer()
 #endif
 
 #if defined(__cplusplus)

@@ -33,6 +33,8 @@
 #include <qualia/rl/RLQualia.h>
 
 #include <qualia/util/random.h>
+#include <qualia/util/bits.h>
+
 
 #include <assert.h>
 #include <stdio.h>
@@ -236,9 +238,45 @@ void testLearning() {
 
 }
 
+void testBits() {
+  printf("== TEST BIT MANIPULATIONS ==\n");
+  long source;
+  long source2;
+  long dest;
+
+  for (int len=0; len<=sizeof(long); len++) {
+    for (int srcPos=0; srcPos<len; srcPos++) {
+      dest = 0xffffffff;
+
+      copyBits(&source2, &dest, srcPos, len, sizeof(long));
+      for (int i=0; i<len; i++)
+        assert( readBit((unsigned char*)&source2, i) == 1 );
+      for (int i=len; i<32; i++)
+        assert( readBit((unsigned char*)&source2, i) == 0 );
+
+      for (int dstPos=0; dstPos<len; dstPos++) {
+        source = 0;
+        dest = 0xffffffff;
+        writeBits(&source, &dest, srcPos, dstPos, len);
+
+        assert( dest == 0xffffffff );
+
+        for (int i=0; i<srcPos; i++)
+          assert( readBit((unsigned char*)&source, i) == 0 );
+        for (int i=srcPos; i<srcPos+len; i++)
+          assert( readBit((unsigned char*)&source, i) == 1 );
+        for (int i=srcPos+len; i<sizeof(long); i++)
+          assert( readBit((unsigned char*)&source, i) == 0 );
+      }
+    }
+  }
+  printf("-> PASSED\n");
+}
+
 int main() {
   testActions();
   testObservations();
   testPolicies();
   testLearning();
+  testBits();
 }
