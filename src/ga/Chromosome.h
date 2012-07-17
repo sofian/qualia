@@ -33,18 +33,16 @@ typedef void  (*AsexualCrossover) (const Chromosome&, Chromosome*);
 
 class Chromosome {
 public:
-  int nGenes; // number of genes
-
-  Chromosome(int nGenes_) : nGenes(nGenes_) {}
-  Chromosome(const GAGenome& c) { copy(c); }
+  Chromosome() {}
+  Chromosome(const Chromosome& c) { copy(c); }
   virtual ~Chromosome() {}
 
-  virtual void copy(const Chromosome& c) {}
+  virtual void copy(const Chromosome& c) { (*this) = c; }
 
   virtual void init(){}
   virtual void mutate(float p){}
-  virtual int compare(const Chromosome& g) const { return (&g==this ? 0 : 1); }
-  virtual float evaluate() { return 0; }
+//  virtual int compare(const Chromosome& g) const { return (&g==this ? 0 : 1); }
+//  virtual float evaluate() { return 0; }
 
 //  float evaluate() const { return (*evaluator)(*this); }
 ////  Evaluator evaluator() const { return eval; }
