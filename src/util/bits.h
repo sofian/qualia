@@ -24,23 +24,13 @@
 #include <core/common.h>
 #include <strings.h>
 
-void writeBit(uint8_t* dst, int pos, uint8_t bitValue) {
-  dst += pos/8;
-  pos %=     8;
-  bitWrite(*dst, pos, bitValue);
-}
+void writeBit(uint8_t* dst, int pos, uint8_t bitValue);
 
-uint8_t readBit(const uint8_t* src, int pos) {
-  src += pos/8;
-  pos %=     8;
-  return bitRead(*src, pos);
-}
+uint8_t readBit(const uint8_t* src, int pos);
 
-void writeBits(void* dst, const void* src, int dstPos, int srcPos, int length) {
-  while (length--) {
-    writeBit((uint8_t*)dst, dstPos++, readBit((const uint8_t*)src, srcPos++));
-  }
-}
+void writeBits(void* dst, const void* src, int dstPos, int srcPos, int length);
+
+void copyBits(void* dst, const void* src, int pos, int length, int dstByteSize);
 
 // Version that works by "blocks".
 //void copyBits(uint8_t* dst, const uint8_t* src, int pos, int length) {
@@ -60,10 +50,6 @@ void writeBits(void* dst, const void* src, int dstPos, int srcPos, int length) {
 //  }
 //}
 
-void copyBits(void* dst, const void* src, int pos, int length, int dstByteSize) {
-  memset(dst, 0, dstByteSize);
-  writeBits(dst, src, 0, pos, length);
-}
 
 
 ///*
