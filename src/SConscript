@@ -28,7 +28,7 @@ def fnCompress(target, source, env):
         run(AVR_BIN_PREFIX+'ar rcs %s %s'%(target[0], file))
 
 Import(["platform", "mode"])
-SUBDIRS = ["core", "rl", "util"]
+SUBDIRS = ["core", "util", "rl", "ga"]
 
 ## TODO: change this (make it more generic eg. settings file) ###############
 if (platform == 'computer'):
