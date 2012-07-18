@@ -58,9 +58,18 @@ void BinaryChromosomeInfo::allocate(unsigned int nGenes_, const uint8_t* geneSiz
     memset(geneSizes, 0, nGenes * sizeof(uint8_t));
 }
 
+bool BinaryChromosomeInfo::operator==(BinaryChromosomeInfo& info) {
+  return (this == &info ||
+           (nGenes == info.nGenes &&
+            byteSize() == info.byteSize() &&
+            memcmp(geneSizes, info.geneSizes, byteSize()) == 0));
+}
+
+
 BinaryChromosome::BinaryChromosome(BinaryChromosomeInfo* info_)
   : Chromosome(), info(info_), code(0)
 {
+  assert(info);
   code = (uint8_t*) Alloc::malloc(info->byteSize()*sizeof(uint8_t));
   memset(code, 0, info->byteSize()*sizeof(uint8_t));
 }
@@ -103,10 +112,72 @@ int BinaryChromosome::intValue(int gene) {
 }
 
 void BinaryChromosome::mutateFlip(Chromosome& chromosome, float probability) {
-  unsigned int bitSize = ((BinaryChromosome*)&chromosome)->info->bitSize();
-  uint8_t* code = ((BinaryChromosome*)&chromosome)->code;
+  BinaryChromosome* c = (BinaryChromosome*)&chromosome;
+  unsigned int bitSize = c->info->bitSize();
+  uint8_t* code = c->code;
   for (unsigned int i=0; i<bitSize; i++) {
     if (randomUniform() < probability)
       flipBit(code, i);
   }
+}
+
+void BinaryChromosome::crossoverOnePoint(const Chromosome& parent1, const Chromosome& parent2,
+                                         Chromosome* offspring1, Chromosome* offspring2) {
+  BinaryChromosome* p1 = (BinaryChromosome*)&parent1;
+  BinaryChromosome* p2 = (BinaryChromosome*)&parent2;
+  BinaryChromosome* o1 = (BinaryChromosome*)&offspring1;
+  BinaryChromosome* o2 = (BinaryChromosome*)&offspring2;
+
+  assert( (*p1->info) == (*p2->info) );
+  assert( (*p1->info) == (*o1->info) );
+  assert( (*p1->info) == (*o2->info) );
+
+  unsigned int codeSize = p1->info->bitSize();
+
+  // Choose crossover point.
+  unsigned int point = random(1, codeSize-1);
+
+  // Crossover first offspring.
+  _codeCrossoverOnePoint(o1->code, p1->code, p2->code, point, codeSize);
+
+  // Crossover second offspring (invert parent codes in call).
+  _codeCrossoverOnePoint(o1->code, p2->code, p1->code, point, codeSize);
+}
+
+void BinaryChromosome::crossoverTwoPoint(const Chromosome& parent1, const Chromosome& parent2,
+                                         Chromosome* offspring1, Chromosome* offspring2) {
+  BinaryChromosome* p1 = (BinaryChromosome*)&parent1;
+  BinaryChromosome* p2 = (BinaryChromosome*)&parent2;
+  BinaryChromosome* o1 = (BinaryChromosome*)&offspring1;
+  BinaryChromosome* o2 = (BinaryChromosome*)&offspring2;
+
+  assert( (*p1->info) == (*p2->info) );
+  assert( (*p1->info) == (*o1->info) );
+  assert( (*p1->info) == (*o2->info) );
+
+  unsigned int codeSize = p1->info->bitSize();
+
+  // Choose two crossover points.
+  unsigned int point1 = random(1,          codeSize-2);
+  unsigned int point2 = random(point1 + 1, codeSize-1);
+
+  // Crossover first offspring.
+  _codeCrossoverTwoPoint(o1->code, p1->code, p2->code, point1, point2, codeSize);
+
+  // Crossover second offspring  (invert parent codes in call).
+  _codeCrossoverTwoPoint(o2->code, p2->code, p1->code, point1, point2, codeSize);
+}
+
+void BinaryChromosome::_codeCrossoverOnePoint(uint8_t* offspringCode, const uint8_t* parentCode1, const uint8_t* parentCode2,
+                                              unsigned int point, unsigned int codeSize) {
+  writeBits(offspringCode, parentCode1, 0,     0, point);              // 111|xxxxx
+  writeBits(offspringCode, parentCode2, point, point, codeSize-point); // 111|22222
+}
+
+void BinaryChromosome::_codeCrossoverTwoPoint(uint8_t* offspringCode, const uint8_t* parentCode1, const uint8_t* parentCode2,
+                                              unsigned int point1, unsigned int point2, unsigned int codeSize) {
+
+  writeBits(offspringCode, parentCode1, 0,      0,      point1);          // 111|xx|xxx
+  writeBits(offspringCode, parentCode2, point1, point1, point2-point1);   // 111|22|xxx
+  writeBits(offspringCode, parentCode1, point2, point2, codeSize-point2); // 111|22|xxx
 }

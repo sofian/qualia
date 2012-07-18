@@ -22,11 +22,11 @@
 
 #include "Chromosome.h"
 #include <qualia/util/bits.h>
+#include <qualia/util/random.h>
 
 //void defaultMutator(Chromosome& chromosome, float);
 //void defaultInitializer(Chromosome& chromosome);
 
-#include <qualia/util/random.h>
 
 class BinaryChromosomeInfo {
 public:
@@ -46,6 +46,8 @@ public:
   int getStartBitPosition(int gene) const;
 
   void allocate(unsigned int nGenes, const uint8_t* geneSizesInit=0);
+
+  bool operator==(BinaryChromosomeInfo& info);
 };
 
 class BinaryChromosome: public Chromosome {
@@ -60,6 +62,15 @@ public:
   virtual void mutate(float p);
 
   static void mutateFlip(Chromosome& chromosome, float probability);
+  static void crossoverOnePoint(const Chromosome& parent1, const Chromosome& parent2,
+                                Chromosome* offspring1, Chromosome* offspring2);
+  static void crossoverTwoPoint(const Chromosome& parent1, const Chromosome& parent2,
+                                Chromosome* offspring2, Chromosome* offspring2);
+
+  static void _codeCrossoverOnePoint(uint8_t* offspringCode, const uint8_t* parentCode1, const uint8_t* parentCode2,
+                                     unsigned int point, unsigned int codeSize);
+  static void _codeCrossoverTwoPoint(uint8_t* offspringCode, const uint8_t* parentCode1, const uint8_t* parentCode2,
+                                     unsigned int point1, unsigned int point2, unsigned int codeSize);
 //  virtual int compare(const Chromosome& g);
 //  virtual float evaluate();
 
