@@ -25,6 +25,12 @@ void writeBit(uint8_t* dst, int pos, uint8_t bitValue) {
   bitWrite(*dst, pos, bitValue);
 }
 
+void flipBit(uint8_t* src, int pos) {
+  src += pos/8;
+  pos %=     8;
+  bitFlip(*src, pos);
+}
+
 uint8_t readBit(const uint8_t* src, int pos) {
   src += pos/8;
   pos %=     8;
