@@ -102,8 +102,10 @@ extern "C" {
 #define bitSet(value, bit) ((value) |= (1UL << (bit)))
 #define bitClear(value, bit) ((value) &= ~(1UL << (bit)))
 #define bitWrite(value, bit, bitvalue) (bitvalue ? bitSet(value, bit) : bitClear(value, bit))
-
 #endif
+
+// Added an extra bit macro.
+#define bitFlip(value, bit) ((value) ^= (1UL << (bit)))
 
 // Parameters.
 //#define USE_DOUBLE
