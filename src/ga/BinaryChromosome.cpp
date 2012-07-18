@@ -22,6 +22,8 @@
 BinaryChromosomeInfo::BinaryChromosomeInfo(unsigned int nGenes_, const uint8_t* geneSizesInit_,
                                            Initializer initializer_, Mutator mutator_)
   : nGenes(0), geneSizes(0), initializer(initializer_), mutator(mutator_) {
+  if (!mutator)
+    mutator = &BinaryChromosome::mutateFlip;
   allocate(nGenes_, geneSizesInit_);
 }
 
@@ -76,6 +78,8 @@ void BinaryChromosome::init() {
 void BinaryChromosome::mutate(float p) {
   if (info->mutator)
     (info->mutator)(*this, p);
+  else
+    mutateFlip(*this, p);
 }
 
 //int BinaryChromosome::compare(const Chromosome& g) {
@@ -96,4 +100,13 @@ int BinaryChromosome::intValue(int gene) {
   int val;
   copyBits(&val, code, info->getStartBitPosition(gene), info->geneSizes[gene], sizeof(int));
   return val;
+}
+
+void BinaryChromosome::mutateFlip(Chromosome& chromosome, float probability) {
+  unsigned int bitSize = ((BinaryChromosome*)&chromosome)->info->bitSize();
+  uint8_t* code = ((BinaryChromosome*)&chromosome)->code;
+  for (unsigned int i=0; i<bitSize; i++) {
+    if (randomUniform() < probability)
+      flipBit(code, i);
+  }
 }

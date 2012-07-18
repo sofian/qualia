@@ -26,6 +26,8 @@
 //void defaultMutator(Chromosome& chromosome, float);
 //void defaultInitializer(Chromosome& chromosome);
 
+#include <qualia/util/random.h>
+
 class BinaryChromosomeInfo {
 public:
   unsigned int nGenes;
@@ -56,6 +58,8 @@ public:
 
   virtual void init();
   virtual void mutate(float p);
+
+  static void mutateFlip(Chromosome& chromosome, float probability);
 //  virtual int compare(const Chromosome& g);
 //  virtual float evaluate();
 
