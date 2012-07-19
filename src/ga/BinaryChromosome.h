@@ -24,6 +24,7 @@
 #include <qualia/util/bits.h>
 #include <qualia/util/random.h>
 
+#include <string.h>
 //void defaultMutator(Chromosome& chromosome, float);
 //void defaultInitializer(Chromosome& chromosome);
 
@@ -46,9 +47,10 @@ public:
   int getStartBitPosition(int gene) const;
 
   void allocate(unsigned int nGenes, const uint8_t* geneSizesInit=0);
-
-  bool operator==(BinaryChromosomeInfo& info);
 };
+
+int operator==(const BinaryChromosomeInfo& a, const BinaryChromosomeInfo& b);
+int operator!=(const BinaryChromosomeInfo& a, const BinaryChromosomeInfo& b);
 
 class BinaryChromosome: public Chromosome {
 public:
@@ -58,10 +60,16 @@ public:
   BinaryChromosome(BinaryChromosomeInfo* info);
   virtual ~BinaryChromosome();
 
+  virtual void copy(const Chromosome& c);
+
   virtual void init();
   virtual void mutate(float p);
+  virtual int compare(const Chromosome& c);
+
+  static void initializeRandom(Chromosome& chromosome);
 
   static void mutateFlip(Chromosome& chromosome, float probability);
+
   static void crossoverOnePoint(const Chromosome& parent1, const Chromosome& parent2,
                                 Chromosome* offspring1, Chromosome* offspring2);
   static void crossoverTwoPoint(const Chromosome& parent1, const Chromosome& parent2,
@@ -77,5 +85,6 @@ public:
   double doubleValue(int gene);
   int    intValue(int gene);
 };
+
 
 #endif /* BINARYCHROMOSOME_H_ */

@@ -53,18 +53,21 @@ void BinaryChromosomeInfo::allocate(unsigned int nGenes_, const uint8_t* geneSiz
 
   // Init.
   if (geneSizesInit_)
-    memcpy(geneSizes, geneSizes, nGenes * sizeof(uint8_t));
+    memcpy(geneSizes, geneSizesInit_, nGenes * sizeof(uint8_t));
   else
     memset(geneSizes, 0, nGenes * sizeof(uint8_t));
 }
 
-bool BinaryChromosomeInfo::operator==(BinaryChromosomeInfo& info) {
-  return (this == &info ||
-           (nGenes == info.nGenes &&
-            byteSize() == info.byteSize() &&
-            memcmp(geneSizes, info.geneSizes, byteSize()) == 0));
+int operator==(const BinaryChromosomeInfo& a, const BinaryChromosomeInfo& b) {
+  return (&a == &b ||
+           (a.nGenes == b.nGenes &&
+            a.byteSize() == b.byteSize() &&
+            memcmp(a.geneSizes, b.geneSizes, a.byteSize()) == 0));
 }
 
+int operator!=(const BinaryChromosomeInfo& a, const BinaryChromosomeInfo& b) {
+  return !(a == b);
+}
 
 BinaryChromosome::BinaryChromosome(BinaryChromosomeInfo* info_)
   : Chromosome(), info(info_), code(0)
@@ -79,9 +82,17 @@ BinaryChromosome::~BinaryChromosome() {
     Alloc::free(code);
 }
 
+void BinaryChromosome::copy(const Chromosome& c) {
+  const BinaryChromosome* bc = (const BinaryChromosome*)&c;
+  assert( *info == *bc->info );
+  memcpy(code, bc->code, info->byteSize());
+}
+
 void BinaryChromosome::init() {
   if (info->initializer)
     (info->initializer)(*this);
+  else
+    initializeRandom(*this);
 }
 
 void BinaryChromosome::mutate(float p) {
@@ -89,6 +100,19 @@ void BinaryChromosome::mutate(float p) {
     (info->mutator)(*this, p);
   else
     mutateFlip(*this, p);
+}
+
+int BinaryChromosome::compare(const Chromosome& c) {
+  const BinaryChromosome* bc = (const BinaryChromosome*)&c;
+  if (*info != *bc->info )
+    return -1;
+  else {
+    int sumDiffBits = 0;
+    unsigned int bit = info->bitSize();
+    while (bit--)
+      sumDiffBits += (readBit(code, bit) ^ readBit(bc->code, bit));
+    return sumDiffBits;
+  }
 }
 
 //int BinaryChromosome::compare(const Chromosome& g) {
@@ -110,6 +134,22 @@ int BinaryChromosome::intValue(int gene) {
   copyBits(&val, code, info->getStartBitPosition(gene), info->geneSizes[gene], sizeof(int));
   return val;
 }
+
+void BinaryChromosome::initializeRandom(Chromosome& chromosome) {
+  BinaryChromosome* c = (BinaryChromosome*)&chromosome;
+  unsigned int bitSize  = c->info->bitSize(); // XXX not very efficient cause called twice
+  unsigned int byteSize = c->info->byteSize();
+  // Assign random bits by blocks to mimimize the calls to random().
+  for (unsigned int i=0; i<byteSize; i+=sizeof(int32_t)) {
+    int32_t rnd = random();
+    //printf("Writing min(%d-%d=%d, %ld) = %ld with rnd = %ld\n",
+    //        byteSize, i, byteSize-i, sizeof(int32_t), min(byteSize-i, sizeof(int32_t)), rnd);
+    memcpy(&c->code[i], &rnd, min(byteSize-i, sizeof(int32_t)));
+  }
+  // XXX: Fill the remaining bits with zeros for consistency (?)
+  c->code[byteSize-1] &= (0xff >> (8 - (BITARRAY_BIT_IN_BYTE(bitSize % 8))));
+}
+
 
 void BinaryChromosome::mutateFlip(Chromosome& chromosome, float probability) {
   BinaryChromosome* c = (BinaryChromosome*)&chromosome;
