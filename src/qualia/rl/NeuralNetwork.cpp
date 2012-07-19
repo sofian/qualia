@@ -17,9 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "NeuralNetwork.h"
-#include <stdlib.h>
-#include <math.h>
-#include <util/random_normal.h>
 
 //#include "Print.h"
 //#include "Math.h"

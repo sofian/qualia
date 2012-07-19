@@ -26,9 +26,13 @@
 #define QLEARNINGAGENT_H_
 
 #include <qualia/core/Agent.h>
+#include <qualia/util/random.h>
 #include "NeuralNetwork.h"
 #include "RLObservation.h"
 #include "Policy.h"
+
+#include <string.h>
+
 
 class QLearningAgent : public Agent {
 

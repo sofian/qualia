@@ -1,6 +1,8 @@
-CONFIG = ['INCLUDE_PATH', 'MCU', 'F_CPU', 'EXTRA_LIBS', 'AVR_GCC_DIR', 'TARGET', 'LIBS', 'LIBPATH', 'SOURCEPATH', 'platform', 'mode']
+CONFIG = ['INCLUDE_PATH', 'MCU', 'F_CPU', 'EXTRA_LIBS', 'AVR_GCC_DIR', 'TARGET', 'LIBS', 'LIBPATH', 'SOURCEPATH', 'QUALIA_DIR', 'platform', 'mode']
 
 Import(CONFIG)
+
+QUALIA_DIR = "../../"
 
 if (platform == 'computer'):
   INCLUDE_PATH = "/Users/tats/Documents/workspace/qualia:/usr/local/include/qualia"

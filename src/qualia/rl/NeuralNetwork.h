@@ -25,15 +25,13 @@
 #ifndef NEURAL_NETWORK_INC
 #define NEURAL_NETWORK_INC
 
-#include <stdlib.h>
-
 // TODO: simplifier le code
 
-//#define DEBUG 1
-
-//#define BIAS 1
+#include <stdlib.h>
+#include <math.h>
 
 #include <qualia/core/common.h>
+#include <qualia/util/random.h>
 
 // TODO: IMPORTANT l'output layer ne devrait pas etre sigmoide mais lineaire...
 

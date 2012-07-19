@@ -1,5 +1,5 @@
 /*
- * QLearningEGreedyPolicy.cpp
+ * QLearningEGreedyPolicy.h
  *
  * (c) 2011 Sofian Audry -- info(@)sofianaudry(.)com
  *
@@ -17,17 +17,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "QLearningEGreedyPolicy.h"
-#include "util/Random.h"
+#ifndef QLEARNINGEGREEDYPOLICY_H_
+#define QLEARNINGEGREEDYPOLICY_H_
 
-QLearningEGreedyPolicy::QLearningEGreedyPolicy(real epsilon_) : epsilon(epsilon_) {}
-QLearningEGreedyPolicy::~QLearningEGreedyPolicy() {}
+#include <qualia/util/random.h>
 
-void QLearningEGreedyPolicy::chooseAction(Action* action, const Observation* observation) {
-  QLearningAgent* qlagent = (QLearningAgent*)agent;
-  if (epsilon >= 1 ||
-      (epsilon > 0 && randomUniform() < epsilon))
-    action->setConflated( (action_t) (random(qlagent->nConflatedActions)) ); // TODO: changer le % _nActions pour une fonction random(min, max)
-  else
-    qlagent->getMaxAction(action, observation);
-}
+#include "Policy.h"
+#include "QLearningAgent.h"
+
+class QLearningEGreedyPolicy : public Policy {
+public:
+  real epsilon;
+  QLearningEGreedyPolicy(real epsilon);
+  virtual ~QLearningEGreedyPolicy();
+
+  virtual void chooseAction(Action* action, const Observation* observation);
+
+};
+
+#endif /* QLEARNINGEGREEDYPOLICY_H_ */

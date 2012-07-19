@@ -28,7 +28,7 @@ def fnCompress(target, source, env):
         run(AVR_BIN_PREFIX+'ar rcs %s %s'%(target[0], file))
 
 Import(["platform", "mode"])
-SUBDIRS = ["core", "util", "rl", "ga"]
+SUBDIRS = ["qualia/core", "qualia/util", "qualia/rl", "qualia/ga"]
 
 ## TODO: change this (make it more generic eg. settings file) ###############
 if (platform == 'computer'):
@@ -77,7 +77,7 @@ AVR_BIN_PREFIX = AVR_GCC_DIR + 'avr-'
   
 if (platform == 'computer'):
   LIBS += ["mapper-0", "lo"]
-  SUBDIRS += ["plugins/mapper"]
+  SUBDIRS += ["qualia/plugins/mapper"]
 
 LIBS += ["m"]
 #############################################################################
@@ -137,7 +137,7 @@ else:
 
   installPathList = [ env.Install(installPath, lib) ]
   for subdir in SUBDIRS:
-  	installPathList += [ env.Install(prefix+"/include/qualia/"+subdir, Glob(subdir+"/*.h")) ]
+  	installPathList += [ env.Install(prefix+"/include/"+subdir, Glob(subdir+"/*.h")) ]
   env.Alias("install", installPathList)
 
 #execfile("./tools/scons/SConstruct.new")

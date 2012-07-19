@@ -25,7 +25,7 @@
 #define LOG_ADD_INC
 
 #include <math.h>
-#include <core/common.h>
+#include <qualia/core/common.h>
 
 /** Some simple functions for log operations.
 

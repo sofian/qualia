@@ -21,7 +21,7 @@
 #ifndef BITS_H_
 #define BITS_H_
 
-#include <core/common.h>
+#include <qualia/core/common.h>
 #include <strings.h>
 
 void writeBit(uint8_t* dst, int pos, uint8_t bitValue);

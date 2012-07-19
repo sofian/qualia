@@ -25,12 +25,13 @@ LIBS = ""
 LIBPATH = ""
 SOURCEPATH = ""
 AVR_GCC_DIR = ""
+QUALIA_DIR = ""
 
 if (platform == 'avr' or platform == 'arduino'):
   AVR_GCC_DIR = "/Applications/Arduino.app/Contents/Resources/Java/hardware/tools/avr/bin/"
 
 # Import settings
-CONFIG = ['INCLUDE_PATH', 'MCU', 'F_CPU', 'EXTRA_LIBS', 'AVR_GCC_DIR', 'TARGET', 'LIBS', 'LIBPATH', 'SOURCEPATH', 'platform', 'mode']
+CONFIG = ['INCLUDE_PATH', 'MCU', 'F_CPU', 'EXTRA_LIBS', 'AVR_GCC_DIR', 'TARGET', 'LIBS', 'LIBPATH', 'SOURCEPATH', 'QUALIA_DIR', 'platform', 'mode']
 conf = SConscript(dirs='.', exports=CONFIG)
 for i in range(len(CONFIG)):
   vars()[CONFIG[i]] = conf[i]
@@ -47,6 +48,8 @@ MCU = ARGUMENTS.get('MCU', MCU)
 #F_CPU = getBoardConf(r'^%s\.build\.f_cpu=(.*)'%ARDUINO_BOARD)
 F_CPU = ARGUMENTS.get('F_CPU', F_CPU)
 
+QUALIA_DIR = ARGUMENTS.get('QUALIA_DIR', QUALIA_DIR)
+
 # Arduino arguments
 EXTRA_LIBS = ARGUMENTS.get('EXTRA_LIBS', EXTRA_LIBS).split(':')
 
@@ -57,7 +60,8 @@ LIBPATH = ARGUMENTS.get('LIBPATH', LIBPATH).split(':')
 BUILD_DIR = "build/" + platform + "/"
 
 LIBS += ["qualia", "m"]
-LIBPATH += ["../../" + BUILD_DIR]
+LIBPATH += [ QUALIA_DIR + "/" + BUILD_DIR + "/qualia"]
+INCLUDE_PATH += [ QUALIA_DIR + "/src"]
 
 # There should be a file with the same name as the folder and with the extension .pde
 #TARGET = os.path.basename(os.path.realpath(os.curdir))
@@ -119,6 +123,7 @@ else:
   env.VariantDir(BUILD_DIR, ".", duplicate=0)
   sources += Glob(BUILD_DIR + "*.cpp")
   sources += Glob(BUILD_DIR + "*.c")
+  
   env.Program(BUILD_DIR + TARGET, sources, LIBS = LIBS, CPPPATH = INCLUDE_PATH, LIBPATH = LIBPATH)
 
 

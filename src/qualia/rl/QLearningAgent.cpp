@@ -20,15 +20,6 @@
  */
 
 #include "QLearningAgent.h"
-#include "util/Random.h"
-
-#include <string.h>
-
-//#define DEBUG 0
-
-#if DEBUG
-#include <stdio.h>
-#endif
 
 QLearningAgent::QLearningAgent(NeuralNetwork* func,
                                unsigned int observationDim_, unsigned int actionDim, const unsigned int* nActions,
