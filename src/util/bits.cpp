@@ -20,20 +20,17 @@
 #include "bits.h"
 
 void writeBit(uint8_t* dst, int pos, uint8_t bitValue) {
-  dst += pos/8;
-  pos %=     8;
+  initPointerAndPositionForBitOperation(&dst, &pos);
   bitWrite(*dst, pos, bitValue);
 }
 
 void flipBit(uint8_t* src, int pos) {
-  src += pos/8;
-  pos %=     8;
+  initPointerAndPositionForBitOperation(&src, &pos);
   bitFlip(*src, pos);
 }
 
 uint8_t readBit(const uint8_t* src, int pos) {
-  src += pos/8;
-  pos %=     8;
+  initPointerAndPositionForBitOperation((uint8_t**)&src, &pos);
   return bitRead(*src, pos);
 }
 
@@ -46,4 +43,9 @@ void writeBits(void* dst, const void* src, int dstPos, int srcPos, int length) {
 void copyBits(void* dst, const void* src, int pos, int length, int dstByteSize) {
   memset(dst, 0, dstByteSize);
   writeBits(dst, src, 0, pos, length);
+}
+
+void initPointerAndPositionForBitOperation(uint8_t** array, int* pos) {
+  *array += BITARRAY_BIT_TO_BYTE(*pos); // *array += *pos / 8
+  *pos   &= 7;                          // *pos   %=        8
 }

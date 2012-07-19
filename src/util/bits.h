@@ -32,6 +32,12 @@ void writeBits(void* dst, const void* src, int dstPos, int srcPos, int length);
 
 void copyBits(void* dst, const void* src, int pos, int length, int dstByteSize);
 
+#define BITARRAY_BIT_TO_BYTE(bit) ((bit) >> 3) // = bit / 8
+#define BITARRAY_BIT_IN_BYTE(bit) ((bit) &  7) // = bit % 8
+
+// Sets array pointer and position properly to call a bit operation macro on them.
+void initPointerAndPositionForBitOperation(uint8_t** array, int* pos);
+
 // Version that works by "blocks".
 //void copyBits(uint8_t* dst, const uint8_t* src, int pos, int length) {
 //  uint8_t shift = pos % 8;
