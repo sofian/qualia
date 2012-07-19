@@ -441,7 +441,38 @@ void testBinaryChromosomes() {
   assert( parent1.compare(tmp) == DUMMY_PARAMETERS_BITSIZE );
   printf("-> PASSED\n");
 
-  // check if didnt change
+  printf("- Testing one point crossover\n");
+  for (int i=0; i<DUMMY_PARAMETERS_BITSIZE; i++) {
+    setBit(parent1.code, i);
+    clearBit(parent2.code, i);
+  }
+  printf("Parents:\n");
+  print(parent1);
+  print(parent2);
+  BinaryChromosome::crossoverOnePoint(parent1, parent2, &children1, &children2);
+  printf("Children:\n");
+  print(children1);
+  print(children2);
+  assert( children1.compare(children2) == DUMMY_PARAMETERS_BITSIZE);
+  // Repeat a few times.
+  for (int i=0; i<100; i++) {
+    BinaryChromosome::crossoverOnePoint(parent1, parent2, &children1, &children2);
+    assert( children1.compare(children2) == DUMMY_PARAMETERS_BITSIZE);
+  }
+  printf("-> PASSED\n");
+
+  printf("- Testing two point crossover\n");
+  BinaryChromosome::crossoverTwoPoint(parent1, parent2, &children1, &children2);
+  printf("Children:\n");
+  print(children1);
+  print(children2);
+  assert( children1.compare(children2) == DUMMY_PARAMETERS_BITSIZE);
+  // Repeat a few times.
+  for (int i=0; i<100; i++) {
+    BinaryChromosome::crossoverTwoPoint(parent1, parent2, &children1, &children2);
+    assert( children1.compare(children2) == DUMMY_PARAMETERS_BITSIZE);
+  }
+  printf("-> PASSED\n");
 }
 
 int main() {

@@ -165,8 +165,8 @@ void BinaryChromosome::crossoverOnePoint(const Chromosome& parent1, const Chromo
                                          Chromosome* offspring1, Chromosome* offspring2) {
   BinaryChromosome* p1 = (BinaryChromosome*)&parent1;
   BinaryChromosome* p2 = (BinaryChromosome*)&parent2;
-  BinaryChromosome* o1 = (BinaryChromosome*)&offspring1;
-  BinaryChromosome* o2 = (BinaryChromosome*)&offspring2;
+  BinaryChromosome* o1 = (BinaryChromosome*)offspring1;
+  BinaryChromosome* o2 = (BinaryChromosome*)offspring2;
 
   assert( (*p1->info) == (*p2->info) );
   assert( (*p1->info) == (*o1->info) );
@@ -181,15 +181,15 @@ void BinaryChromosome::crossoverOnePoint(const Chromosome& parent1, const Chromo
   _codeCrossoverOnePoint(o1->code, p1->code, p2->code, point, codeSize);
 
   // Crossover second offspring (invert parent codes in call).
-  _codeCrossoverOnePoint(o1->code, p2->code, p1->code, point, codeSize);
+  _codeCrossoverOnePoint(o2->code, p2->code, p1->code, point, codeSize);
 }
 
 void BinaryChromosome::crossoverTwoPoint(const Chromosome& parent1, const Chromosome& parent2,
                                          Chromosome* offspring1, Chromosome* offspring2) {
   BinaryChromosome* p1 = (BinaryChromosome*)&parent1;
   BinaryChromosome* p2 = (BinaryChromosome*)&parent2;
-  BinaryChromosome* o1 = (BinaryChromosome*)&offspring1;
-  BinaryChromosome* o2 = (BinaryChromosome*)&offspring2;
+  BinaryChromosome* o1 = (BinaryChromosome*)offspring1;
+  BinaryChromosome* o2 = (BinaryChromosome*)offspring2;
 
   assert( (*p1->info) == (*p2->info) );
   assert( (*p1->info) == (*o1->info) );
