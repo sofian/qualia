@@ -24,6 +24,16 @@ void writeBit(uint8_t* dst, int pos, uint8_t bitValue) {
   bitWrite(*dst, pos, bitValue);
 }
 
+void setBit(uint8_t* dst, int pos) {
+  initPointerAndPositionForBitOperation(&dst, &pos);
+  bitSet(*dst, pos);
+}
+
+void clearBit(uint8_t* dst, int pos) {
+  initPointerAndPositionForBitOperation(&dst, &pos);
+  bitClear(*dst, pos);
+}
+
 void flipBit(uint8_t* src, int pos) {
   initPointerAndPositionForBitOperation(&src, &pos);
   bitFlip(*src, pos);

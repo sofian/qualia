@@ -25,6 +25,8 @@
 #include <strings.h>
 
 void writeBit(uint8_t* dst, int pos, uint8_t bitValue);
+void setBit(uint8_t* dst, int pos);
+void clearBit(uint8_t* dst, int pos);
 void flipBit(uint8_t* dst, int pos);
 uint8_t readBit(const uint8_t* src, int pos);
 
