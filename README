@@ -1,7 +1,7 @@
 Description
 -----------
 Qualia is a free software library for embedded AVR agent-based systems written in simple C++.
-The software is licensed under the Gnu GPL version 3 (see LICENSE file).
+This product is distributed under the Gnu GPL version 3. Please refer to LICENSE file for details.
 
 Version
 -------
@@ -13,6 +13,18 @@ Authors
 Head developer:
 Sofian Audry
 info(@)sofianaudry(.)com
+
+Copyright
+---------
+
+Copyright (c) 2011-2012 Sofian Audry (the main author)
+This product is distributed under the Gnu GPL version 3. Please refer to LICENSE file for details.
+
+This product includes code from the following sources:
+
+GALib : library of genetic algorithm components (BSD License)
+  Copyright (c) 1995-1996 Massachusetts Institute of Technology (MIT)
+  Copyright (c) 1996-2005 Matthew Wall (the Author)
 
 Thanks
 ------
