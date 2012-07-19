@@ -41,7 +41,7 @@ public:
 
   virtual void init(){}
   virtual void mutate(float p){}
-//  virtual int compare(const Chromosome& g) const { return (&g==this ? 0 : 1); }
+  virtual int compare(const Chromosome& g) const { return (&g==this ? 0 : 1); }
 //  virtual float evaluate() { return 0; }
 
 //  float evaluate() const { return (*evaluator)(*this); }
@@ -61,5 +61,11 @@ public:
 ////  Comparator comparator(Comparator c){ return (comparator=c); }
 
 };
+
+inline int operator== (const Chromosome& a, const Chromosome& b)
+{ return (a.compare(b) == 0); }
+
+inline int operator!= (const Chromosome& a, const Chromosome& b)
+{ return (a.compare(b) != 0); }
 
 #endif /* CHROMOSOME_H_ */

@@ -1,0 +1,126 @@
+import os
+
+# Get mode.
+AddOption('--avr',
+          dest='avr',
+          action="store_true",
+          default=False,
+          help="AVR mode");
+AddOption('--arduino',
+          dest='arduino',
+          action="store_true",
+          default=False,
+          help="Arduino mode");
+
+if GetOption('arduino'):
+  MODE = 'arduino'
+elif GetOption('avr'):
+  MODE = 'avr'
+else:
+  MODE = 'computer'
+
+# From http://code.activestate.com/recipes/502263/
+# By Paul Rubin
+def unique(seq, keepstr=True):
+  t = type(seq)
+  if t in (str, unicode):
+    t = (list, ''.join)[bool(keepstr)]
+  seen = []
+  return t(c for c in seq if not (c in seen or seen.append(c)))
+
+## TODO: change this (make it more generic eg. settings file) ###############
+if (MODE == 'computer'):
+  INCLUDE_PATH = "/Users/tats/Documents/workspace/qualia/src/"
+else:
+  INCLUDE_PATH = "/Users/tats/Documents/workspace/qualia/src/:/Applications/Arduino.app/Contents/Resources/Java/hardware/tools/avr/avr/include/"
+
+MCU = 'atmega168'
+F_CPU = 16000000
+EXTRA_LIBS = ""
+LIBS = ""
+LIBPATH = ""
+AVR_GCC_DIR = ""
+
+if (MODE == 'avr'):
+  AVR_GCC_DIR = "/Applications/Arduino.app/Contents/Resources/Java/hardware/tools/avr/bin/"
+
+TARGET = "main_test"
+
+INCLUDE_PATH = ARGUMENTS.get('INCLUDE_PATH', INCLUDE_PATH).split(":")
+INCLUDE_PATH = unique(INCLUDE_PATH + [os.getcwd()])
+
+# AVR arguments
+#MCU = getBoardConf(r'^%s\.build\.mcu=(.*)'%ARDUINO_BOARD)
+MCU = ARGUMENTS.get('MCU', MCU)
+#F_CPU = getBoardConf(r'^%s\.build\.f_cpu=(.*)'%ARDUINO_BOARD)
+F_CPU = ARGUMENTS.get('F_CPU', F_CPU)
+
+# Arduino arguments
+EXTRA_LIBS = ARGUMENTS.get('EXTRA_LIBS', EXTRA_LIBS).split(':')
+
+# Shared library arguments.
+LIBS = ARGUMENTS.get('LIBS', LIBS).split(',')
+LIBPATH = ARGUMENTS.get('LIBPATH', LIBPATH).split(':')
+
+LIBS = ["qualia"]
+LIBPATH = ["../../build/"]
+#INCLUDE_PATH += ["/Users/tats/Documents/workspace/qualia/src/"]
+
+# There should be a file with the same name as the folder and with the extension .pde
+#TARGET = os.path.basename(os.path.realpath(os.curdir))
+#assert(os.path.exists(TARGET+'.pde'))
+
+AVR_GCC_DIR = ARGUMENTS.get('AVR_GCC_DIR', AVR_GCC_DIR)
+if AVR_GCC_DIR:
+  AVR_GCC_DIR += '/'
+
+AVR_BIN_PREFIX = AVR_GCC_DIR + 'avr-'
+
+# Create environment and set default configurations ###################################
+if (MODE == 'avr' or MODE == 'arduino'):
+  cFlags = ['-ffunction-sections', '-fdata-sections', '-fno-exceptions',
+      '-funsigned-char', '-funsigned-bitfields', '-fpack-struct', '-fshort-enums',
+      '-Os', '-mmcu=' + MCU]
+  
+  env = Environment(CC = AVR_BIN_PREFIX+'gcc',
+                    CXX = AVR_BIN_PREFIX+'g++',
+                    CPPPATH = INCLUDE_PATH,
+                    LIBPATH = ["../../build/"], # path to qualia static lib
+                    LIBS = ["qualia", "m"], 
+                    CPPDEFINES = {'F_CPU':F_CPU}, 
+                    CFLAGS = cFlags + ['-std=gnu99'], 
+                    CCFLAGS = cFlags, 
+                    LINKFLAGS = '-mmcu=' + MCU)
+
+#  env.Append(BUILDERS = {'Elf':Builder(action=
+#          "$CC $CFLAGS $TARGET $SOURCE -lm -lqualia")})
+  env.Append(BUILDERS={'Hex':Builder(action=AVR_BIN_PREFIX+'objcopy '+
+          '-O ihex -R .eeprom $SOURCES $TARGET')})
+  
+  env.VariantDir("build", ".", duplicate=0)
+  
+  sources = ["build/" + TARGET + ".cpp"]
+  env.Program(target = "build/" + TARGET + '.elf', source = sources, LINKFLAGS = "-Wl,--gc-sections")
+  env.Hex("build/" + TARGET + '.hex', "build/" + TARGET + '.elf')
+  
+  #MAX_SIZE = getBoardConf(r'^%s\.upload.maximum_size=(.*)'%ARDUINO_BOARD)
+  #print ("maximum size for hex file: %s bytes"%MAX_SIZE)
+  env.Command(None, "build/" + TARGET+'.hex', AVR_BIN_PREFIX+'size --target=ihex $SOURCE')
+
+else:
+  env = Environment()
+  env.Append(CPPPATH=["/usr/local/include", "/usr/include", os.getcwd()])
+
+  env.VariantDir("build", ".")
+  env.Program("build/main_test", "build/main_test.cpp", LIBS = "qualia", CPPPATH = "/Users/tats/Documents/workspace/qualia/src/", LIBPATH = "/Users/tats/Documents/workspace/qualia/build/")
+
+
+  #objects = env.StaticObject(source = sources)
+
+  # Peut etre une erreur: on devrait construire des OBJETS (?)
+  #lib = env.Library(target = target, source = sources)
+
+  
+#env.Program("main_test", "main_test.cpp", LIBS = "qualia", CPPPATH = "/Users/tats/Documents/workspace/qualia/src/", LIBPATH = "/Users/tats/Documents/workspace/qualia/build/")
+
+#execfile("../../tools/scons/SConstruct")

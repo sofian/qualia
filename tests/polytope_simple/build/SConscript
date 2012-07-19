@@ -1,0 +1,26 @@
+CONFIG = ['INCLUDE_PATH', 'MCU', 'F_CPU', 'EXTRA_LIBS', 'AVR_GCC_DIR', 'MODE', 'TARGET', 'LIBS', 'LIBPATH']
+
+Import(CONFIG)
+
+if (MODE == 'computer'):
+  INCLUDE_PATH = "/Users/tats/Documents/workspace/qualia/src:/Users/tats/Documents/workspace/emerge/emerge-local/devel/libmapper/include"
+  LIBS = "libmapper-0,liblo"
+else:
+  INCLUDE_PATH = "/Users/tats/Documents/workspace/qualia/src:/Applications/Arduino.app/Contents/Resources/Java/hardware/tools/avr/avr/include/"
+
+MCU = 'atmega168'
+F_CPU = 16000000
+EXTRA_LIBS = ""
+
+if (MODE == 'avr'):
+  AVR_GCC_DIR = "/Applications/Arduino.app/Contents/Resources/Java/hardware/tools/avr/bin/"
+
+if (MODE == 'arduino'):
+  TARGET = 'PolytopeSimpleFirmware'
+else:
+#  TARGET = "firmata_serial_simple"
+#  TARGET = "test_simple_firmware"
+  TARGET = "test_simple_firmware_shiftreg"
+#	TARGET = "test_simple_firmware_4in9"
+
+Return(CONFIG)
