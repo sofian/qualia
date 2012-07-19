@@ -102,7 +102,7 @@ void BinaryChromosome::mutate(float p) {
     mutateFlip(*this, p);
 }
 
-int BinaryChromosome::compare(const Chromosome& c) {
+int BinaryChromosome::compare(const Chromosome& c) const {
   const BinaryChromosome* bc = (const BinaryChromosome*)&c;
   if (*info != *bc->info )
     return -1;

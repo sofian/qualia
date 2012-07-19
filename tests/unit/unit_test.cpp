@@ -388,13 +388,15 @@ void testBinaryChromosomes() {
   assert( memcmp(tmp.code, parent1.code, info.byteSize()) == 0);
   printf("-> PASSED\n");
 
-  printf("- Test flip mutate (prob=0) (ie. no mutations)\n");
+  printf("- Test flip mutation\n");
+
+  printf("-- Test flip mutate (prob=0) (ie. no mutations)\n");
   parent1.mutate(0);
   print(parent1);
   assert( memcmp(tmp.code, parent1.code, info.byteSize()) == 0);
   printf("-> PASSED\n");
 
-  printf("- Test flip mutate (prob=1) (ie. everything flipped)\n");
+  printf("--- Test flip mutate (prob=1) (ie. everything flipped)\n");
   parent1.mutate(1);
   print(parent1);
   for (unsigned int i=0; i<info.byteSize(); i++) {
@@ -411,11 +413,24 @@ void testBinaryChromosomes() {
   parent1.mutate(0.5f);
   print(parent1);
 
-  printf("- Test compare\n");
+  printf("- Test compare between chromosomes\n");
 
   printf("-- Test: chromosome equals itself\n");
   assert( parent1.compare(parent1) == 0 );
   assert( parent1 == parent1 );
+  printf("-> PASSED\n");
+
+  printf("-- Test: chromosome compare with different info that ==\n");
+  BinaryChromosome parentSame(&infoSame);
+  parentSame.copy(parent1);
+  assert( parent1.compare(parentSame) == 0 );
+  assert( parent1 == parentSame );
+  printf("-> PASSED\n");
+
+  printf("-- Test: chromosome compare with different info (should return -1 / fail)\n");
+  BinaryChromosome parentWrong(&infoWrong);
+  assert( parent1.compare(parentWrong) == -1 );
+  assert( parent1 != parentWrong );
   printf("-> PASSED\n");
 
   printf("-- Test: chromosome compare with flip = n bits (all bits differ)\n");

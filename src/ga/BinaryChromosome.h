@@ -64,7 +64,7 @@ public:
 
   virtual void init();
   virtual void mutate(float p);
-  virtual int compare(const Chromosome& c);
+  virtual int compare(const Chromosome& c) const;
 
   static void initializeRandom(Chromosome& chromosome);
 
