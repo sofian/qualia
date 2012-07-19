@@ -35,6 +35,7 @@
 #include <qualia/util/random.h>
 #include <qualia/util/bits.h>
 
+#include <qualia/ga/BinaryChromosome.h>
 
 #include <assert.h>
 #include <stdio.h>
@@ -238,39 +239,194 @@ void testLearning() {
 
 }
 
+void printBits(const uint8_t* toPrint, int size) {
+  for (int i=0; i<size; i++) {
+    for (int j=0; j<8; j++)
+      printf("%d", (int)bitRead(toPrint[i], j));
+    printf("|");
+  }
+  printf("\n");
+}
+
 void testBits() {
   printf("== TEST BIT MANIPULATIONS ==\n");
   long source;
   long source2;
   long dest;
 
-  for (int len=0; len<=sizeof(long); len++) {
-    for (int srcPos=0; srcPos<len; srcPos++) {
+  for (unsigned int len=0; len<=sizeof(long); len++) {
+    for (unsigned int srcPos=0; srcPos<len; srcPos++) {
       dest = 0xffffffff;
 
       copyBits(&source2, &dest, srcPos, len, sizeof(long));
-      for (int i=0; i<len; i++)
+      for (unsigned int i=0; i<len; i++)
         assert( readBit((unsigned char*)&source2, i) == 1 );
-      for (int i=len; i<32; i++)
+      for (unsigned int i=len; i<32; i++)
         assert( readBit((unsigned char*)&source2, i) == 0 );
 
-      for (int dstPos=0; dstPos<len; dstPos++) {
+      for (unsigned int dstPos=0; dstPos<len; dstPos++) {
         source = 0;
         dest = 0xffffffff;
         writeBits(&source, &dest, srcPos, dstPos, len);
 
         assert( dest == 0xffffffff );
 
-        for (int i=0; i<srcPos; i++)
+        for (unsigned int i=0; i<srcPos; i++)
           assert( readBit((unsigned char*)&source, i) == 0 );
-        for (int i=srcPos; i<srcPos+len; i++)
+        for (unsigned int i=srcPos; i<srcPos+len; i++)
           assert( readBit((unsigned char*)&source, i) == 1 );
-        for (int i=srcPos+len; i<sizeof(long); i++)
+        for (unsigned int i=srcPos+len; i<sizeof(long); i++)
           assert( readBit((unsigned char*)&source, i) == 0 );
       }
     }
   }
+
+  for (unsigned int i=0; i<sizeof(long)*8; i++)
+    clearBit((unsigned char*)&source, i);
+  assert( source == 0 );
+  printBits((unsigned char*)&source, sizeof(long));
+
+  for (unsigned int i=0; i<sizeof(long)*8; i++)
+    setBit((unsigned char*)&source, i);
+  printBits((unsigned char*)&source, sizeof(long));
+  assert( source == (long)0xffffffffffffffffL );
+
+  for (unsigned int i=0; i<sizeof(long)*8; i++)
+     flipBit((unsigned char*)&source, i);
+  assert( source == 0 );
+
   printf("-> PASSED\n");
+}
+
+#define DUMMY_PARAMETERS_BITSIZE       61
+#define DUMMY_PARAMETERS_BYTESIZE       8
+#define DUMMY_PARAMETERS_TRAILING_BITS  3
+
+struct DummyParameters {
+  uint8_t value1bit :    1;
+  uint8_t value2bit :    2;
+  uint8_t value3bit :    3;
+  uint8_t value4bit :    4;
+  uint8_t value6bit :    6;
+  uint8_t value8bit;
+  uint16_t value10bit : 10;
+  uint32_t value22bit : 22;
+  uint8_t value5bit:     5;
+  void print() {
+    printf("1bit:  %d\n",  value1bit);
+    printf("2bit:  %d\n",  value2bit);
+    printf("3bit:  %d\n",  value3bit);
+    printf("4bit:  %d\n",  value4bit);
+    printf("6bit:  %d\n",  value6bit);
+    printf("8bit:  %d\n",  value8bit);
+    printf("10bit: %d\n",  value10bit);
+    printf("5bit: %d\n",  value5bit);
+  }
+  void copyFrom(uint8_t* code) {
+    memcpy((uint8_t*)this, code, 8);
+  }
+};
+
+void print(BinaryChromosome& c) {
+  DummyParameters params;
+  params.copyFrom(c.code);
+  params.print();
+  printBits(c.code, c.info->byteSize());
+}
+
+void testBinaryChromosomes() {
+  printf("== TEST BINARY CHROMOSOMES MANIPS ==\n");
+
+  const uint8_t geneSizes[] = { 1, 2, 3, 4, 6, 8, 10, 22, 5 };
+  const uint8_t geneSizes2[] = { 2, 2, 3, 4, 6, 8, 10, 22, 5 };
+  BinaryChromosomeInfo info(9, geneSizes);
+
+  printf("- Testing BitChromosomeInfo\n");
+
+  printf("-- Testing bitSize() / byteSize()\n");
+  printf("Info params: %d %d %d\n", info.nGenes, info.bitSize(), info.byteSize());
+  assert( info.bitSize()  == DUMMY_PARAMETERS_BITSIZE );
+  assert( info.byteSize() == DUMMY_PARAMETERS_BYTESIZE );
+  printf("-> PASSED\n");
+
+  printf("-- Testing equality operator\n");
+  BinaryChromosomeInfo infoSame(9, geneSizes);
+  BinaryChromosomeInfo infoWrong(9, geneSizes2);
+  assert( info == infoSame );
+  assert( info != infoWrong );
+  printf("-> PASSED\n");
+
+  printf("- Testing initializer\n");
+
+  BinaryChromosome parent1(&info);
+  BinaryChromosome parent2(&info);
+  BinaryChromosome children1(&info);
+  BinaryChromosome children2(&info);
+
+  BinaryChromosome tmp(&info);
+
+  printf("-- Testing fill-up with trailing zeros\n");
+  parent1.init();
+  for (int i=0; i<DUMMY_PARAMETERS_BITSIZE; i++)
+    setBit((unsigned char*)parent1.code, i);
+  for (int i=8-DUMMY_PARAMETERS_TRAILING_BITS; i<8; i++) {
+    assert( bitRead(parent1.code[DUMMY_PARAMETERS_BYTESIZE-1], i) == 0 );
+  }
+  printf("-> PASSED\n");
+
+  printf("Init parent1\n");
+  parent1.init();
+  print(parent1);
+
+  printf("Init parent2\n");
+  parent2.init();
+  print(parent2);
+
+  printf("- Test copy\n");
+  tmp.copy(parent1);
+  print(tmp);
+  assert( memcmp(tmp.code, parent1.code, info.byteSize()) == 0);
+  printf("-> PASSED\n");
+
+  printf("- Test flip mutate (prob=0) (ie. no mutations)\n");
+  parent1.mutate(0);
+  print(parent1);
+  assert( memcmp(tmp.code, parent1.code, info.byteSize()) == 0);
+  printf("-> PASSED\n");
+
+  printf("- Test flip mutate (prob=1) (ie. everything flipped)\n");
+  parent1.mutate(1);
+  print(parent1);
+  for (unsigned int i=0; i<info.byteSize(); i++) {
+    // Check that pre-mutated parent is the exact opposite of post-mutated parent (XOR)
+    if (i < info.byteSize()-1)
+      assert( (tmp.code[i] ^ parent1.code[i]) == 0xff );
+    else // cope for trailing bits)
+      assert( (tmp.code[i] ^ parent1.code[i]) == (0xff >> DUMMY_PARAMETERS_TRAILING_BITS) );
+  }
+  printf("-> PASSED\n");
+
+  printf("- Check flip mutate (prob=0.5)\n");
+  parent1.copy(tmp);
+  parent1.mutate(0.5f);
+  print(parent1);
+
+  printf("- Test compare\n");
+
+  printf("-- Test: chromosome equals itself\n");
+  assert( parent1.compare(parent1) == 0 );
+  assert( parent1 == parent1 );
+  printf("-> PASSED\n");
+
+  printf("-- Test: chromosome compare with flip = n bits (all bits differ)\n");
+  tmp.copy(parent1); // copy
+  parent1.mutate(1);
+  assert( parent1 != tmp );
+  printf("Diff %d\n", parent1.compare(tmp));
+  assert( parent1.compare(tmp) == DUMMY_PARAMETERS_BITSIZE );
+  printf("-> PASSED\n");
+
+  // check if didnt change
 }
 
 int main() {
@@ -279,4 +435,5 @@ int main() {
   testPolicies();
   testLearning();
   testBits();
+  testBinaryChromosomes();
 }
