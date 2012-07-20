@@ -135,6 +135,10 @@ uint64_t BinaryChromosome::getGeneValue(int gene) const {
   return val;
 }
 
+void BinaryChromosome::setGeneValue(int gene, uint64_t value) {
+  writeBits(code, &value, info->getStartBitPosition(gene), 0, info->geneSizes[gene]);
+}
+
 void BinaryChromosome::initializeRandom(Chromosome& chromosome) {
   BinaryChromosome* c = (BinaryChromosome*)&chromosome;
   unsigned int bitSize  = c->info->bitSize(); // XXX not very efficient cause called twice

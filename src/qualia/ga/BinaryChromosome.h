@@ -67,6 +67,8 @@ public:
   virtual int compare(const Chromosome& c) const;
 
   uint64_t getGeneValue(int gene) const;
+  void setGeneValue(int gene, uint64_t value);
+
   // Static methods.
   static void initializeRandom(Chromosome& chromosome);
 

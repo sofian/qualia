@@ -1,0 +1,1104 @@
+<HTML>
+<HEAD>
+<TITLE></TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<P>&nbsp;
+</P>
+<P>
+<B><FONT SIZE="5">Chapter 6</FONT></B></P>
+<PRE><B><FONT SIZE="4"></FONT></B>     6.1    <A HREF="#6.1">Basic Definitions</A>
+
+     6.2    <A HREF="#6.2">Functions and Terminals</A>          6.2.1     <A HREF="#6.2.1">Ephemeral Random Constants</A>
+          6.2.2     <A HREF="#6.2.2">Evaluation and Argument Functions</A>
+     6.3    <A HREF="#6.3">User Callbacks</A>          6.3.1     <A HREF="#6.3.1">Defining the Function Set(s)</A>          6.3.2     <A HREF="#6.3.2">Fitness Evaluation Function</A>
+          6.3.3     <A HREF="#6.3.3">Custom Output</A>          6.3.4     <A HREF="#6.3.4">Application Initialization</A>          6.3.5     <A HREF="#6.3.5">Output Streams</A>          6.3.6     <A HREF="#6.3.6">Checkpoint Files</A>
+
+     6.4    <A HREF="#6.4">Order of Processing</A>
+
+     6.5    <A HREF="#6.5">Kernel Considerations</A>          6.5.1     <A HREF="#6.5.1">Memory Allocation</A>
+          6.5.2     <A HREF="#6.5.2">Using Parameters</A>
+
+<HR></PRE>
+<P>
+<B><FONT SIZE="5">Implementing Problems</FONT></B></P>
+<P>
+This chapter documents how to implement a new problem in lil-gp.
+There are five files that the user must write. A set of skeleton
+user files is provided in the distribution, it is suggested that
+you copy these files and modify them to create a new problem.</P>
+<P>
+Throughout this chapter, the term &quot;function&quot; refers
+to functions in the GP sense. &quot;C function&quot; refers to
+a function in the C language</P>
+<P>
+User-written code can be divided into two categories: C functions
+implementing functions and terminals, and user callbacks. The
+user callbacks, usually placed in the <B>app.c</B> file, do application-
+specific tasks like function set initialization, calculation of
+fitness, etc. The other group of C functions, usually placed in
+<B>function.c</B>, are the code that is called by the kernel during
+tree evaluation. <BR>
+
+</P>
+<P>
+<B><FONT SIZE="4"><A NAME="6.1">6.1 Basic Definitions</A></FONT></B></P>
+<P>
+There are two defined constants that the kernel of lil-gp needs
+in <B>appdef.h</B>. They are<FONT SIZE="2">:<BR>
+</FONT>
+</P>
+<TABLE BORDER="2" ALIGN="DEFAULT" WIDTH="100%">
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%">constant</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">value</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%"><B>MAXARGS </B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">the maximum number of arguments (children)
+for any function</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="15%"><B>DATATYPE</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">the C data type returned by all functions
+and terminals</TD>
+</TR>
+</TABLE>
+<P>&nbsp;</P>
+<P>
+This is also a good place to put any application-specific <B>#defines</B>
+that you may need. It is suggested that all application defines
+be prefixed with <B>APP_ </B>so as not to conflict with any current
+or future kernel defines.</P>
+<P>
+If your problem requires a more complex data type than the ones
+available in C, you can use <B>typedef</B> to create a new type.
+For instance, the lawnmower problem uses an ordered pair of integers
+as its <B>datatype</B>. Its <B>appdef.h</B> file contains:</P>
+<PRE>
+<B>typedef struct</B>
+<B>{</B>
+<B>     short x;</B>
+<B>     short y;</B>
+<B>} vector;</B>
+<B>#define DATATYPE vector<BR>
+</B>
+</PRE>
+<P>
+<B><FONT SIZE="4"><A NAME="6.2">6.2 Functions and Terminals</A></FONT></B></P>
+<P>
+For every ordinary function and terminal in your problem, you
+write a C function to implement the action of that node. These
+C functions are placed in the file <B>function.c</B>, and prototypes
+for them should be placed in <B>function.h</B>.</P>
+<P>
+Each C function is passed two arguments, an <B>int</B> and a <B>(farg
+*)</B>. What it does with these arguments depends on whether it
+is implementing a function or a terminal, and if it is a function,
+what type of function. All these C functions should return the
+user-defined type <B>DATATYPE</B>.</P>
+<P>
+There are two types of functions, referred to in lil-gp as types
+&quot;DATA&quot; and &quot;EXPR&quot;. If the function is of type
+DATA, then when it is found in a tree, all its children will be
+evaluated and their return values passed to the user code implementing
+the function. The LISP equivalent of this is to implement the
+function with a <B>defun</B>. If the lil-gp function is of type
+EXPR, then the user code is passed pointers to its children, which
+it can then ask the kernel to evaluate if needed. It can evaluate
+each child as many times as appropriate, or not at all. The LISP
+equivalent of this type would be to implement the function with
+a <B>defmacro</B>. Use of the correct type in lil-gp is important,
+especially when the evaluation of functions and terminals have
+global side effects (for instance, where the evolved program is
+controlling a simulation).</P>
+<P>
+If the function is of type DATA, it can ignore the <B>int</B>
+passed to it. The <B>(farg *)</B> argument will be an array of
+arguments, one element for each child. The C function should reference
+the <B>d</B> field of each element to get that child's value.
+For instance, consider the two-argument addition function from
+the regression problem:</P>
+<PRE>
+<B>DATATYPE f_add ( int tree, farg *args </B>
+<B>{</B>
+<B>     return args[0].d + args[1].d;</B>
+<B>}<BR>
+</B></PRE>
+<P>
+When this function occurs in evaluating a tree, the lil-gp kernel
+will evaluate the children, store their values in the <B>args</B>
+array, and call this C function.</P>
+<P>
+Now consider another example: the <B>IF_FOOD_AHEAD</B> function
+from the artificial ant problem. It has two arguments_the first
+should be evaluated if there is food in front of the ant, the
+second otherwise. If type DATA were to be used for this function,
+then both would be evaluated and only their return values passed
+to the function (which would be doubly useless in this case, since
+all the functions and terminals in the ant problem ignore the
+return value). We want to let the function itself choose which
+child to evaluate. This function must be of type EXPR:<BR>
+
+</P>
+<PRE>
+<B>DATATYPE f_if_food_ahead ( int tree, farg *args )</B>
+<B>{</B>
+<B>     if ( ... ) /* determine if there is food ahead */</B>
+<B>          evaluate_tree ( args[0].t, tree );</B>
+<B>     else</B>
+<B>          evaluate_tree ( args[1].t, tree );</B>
+<B>}<BR>
+</B></PRE>
+<P>
+For type EXPR functions, the t field of each array element should
+be accessed-it is a pointer to the corresponding child. This pointer
+can be passed to the <B>evaluate_tree()</B> C function to actually
+do the evaluation. <B>evaluate_tree()</B> also needs to be passed
+the integer argument (called <B>tree</B> in this case).</P>
+<P>
+C functions implementing terminals should ignore both arguments
+passed to them. A simple example is the independent variable terminal
+<B>X</B> from the symbolic regression problem:<BR>
+
+</P>
+<PRE>
+<B>DATATYPE f_indepvar ( int tree, farg *args )</B>
+<B>{</B>
+<B>     return g.x;</B>
+<B>}<BR>
+</B></PRE>
+<P>
+This function just returns the value of the independent variable
+for the current fitness case, which has previously been stored
+in a global variable by the application fitness evaluation function.<FONT SIZE="2">
+<BR>
+</FONT>
+</P>
+<P>
+<B><FONT SIZE="4"><A NAME="6.2.1">6.2.1 Ephemeral Random Constants</A></FONT></B></P>
+<P>
+To create a terminal that acts as an ephemeral random constant,
+you need to write two C functions. One will generate a new constant,
+and one will print its value to a string. The first is passed
+a pointer to a <B>DATATYPE</B>; it should generate a new value
+and place it in the pointer.<BR>
+
+</P>
+<PRE>
+<B>void f_erc_generate ( DATATYPE *r )</B>
+<B>{</B>
+<B>     *r = random_double() * 10.0;</B>
+<B>}<BR></B></PRE>
+<P>
+This function generates a random real number in the interval [0;
+10) (assuming that <B>DATATYPE</B> is defined to be <B>double</B>
+or some compatible type.</P>
+<P>
+The second function is used when printing out individuals. It
+is passed a <B>DATATYPE</B> value. It should create a string representing
+that value and return it. Typically this will print the value
+into a buffer and return the buffer's address. The buffer should
+be declared static_it should not be dynamically allocated (as
+there is no code to free it). An example:<BR>
+
+</P>
+<PRE>
+<B>char *f_erc_print ( DATATYPE v )</B>
+<B>{</B>
+<B>     static char buffer[20];<BR></B>
+<B>     sprintf ( buffer, &quot;%.5f&quot;, v );</B>
+<B>     return buffer;</B>
+<B>}<BR></B></PRE>
+<P>
+assuming again that DATATYPE is double or something compatible,
+this will print the value to five decimal places.<BR>
+
+</P>
+<P>
+<B><A NAME="6.2.2">6.2.2 Evaluation and Argument Functions</A></B></P>
+<P>
+No user code needs to be written to support the ADF functions
+or corresponding argument termi- nals. Special entries are made
+in the function table for them, and the kernel handles the evaluation
+internally</P>
+<P>
+Evaluation functions with arguments have type DATA or EXPR, just
+like ordinary functions. If the type is DATA, when the evaluation
+function is hit, each child is evaluated once, and the return
+values are made available via the argument terminals in the evaluated
+tree. If the type is EXPR, then the children are evaluated only
+when the evaluation of the target tree hits the appropriate argument
+terminal (and if the same argument terminal is hit multiple times,
+the child is reevaluated each time).<BR>
+
+</P>
+<P>
+<B><FONT SIZE="4"><A NAME="6.3">6.3 User Callbacks</A></FONT></B></P>
+<P>
+Only two of the user callbacks listed here are required to do
+anything <B>(app_build_function_sets()</B> to create the function
+set(s) and<B> app_eval_fitness()</B> to evaluate individuals).
+All the others must be present, but they can be just stubs if
+you don't want to make use of them.<BR>
+
+</P>
+<P>
+<B><A NAME="6.3.1">6.3.1 Defining the Function Set(s)</A></B></P>
+<P>
+The first user callback required is <B>app_build_function_sets()</B>.
+This C function creates tables for each function set. There may
+be more than one function set when individuals are represented
+by multiple trees, since each tree can have its own function set.
+Each function set is an array of type <B>function</B>. The following
+tables show, for each type of node, what the eight fields of the
+corresponding function structure should be. Some general rules
+apply:<BR>
+
+</P>
+<UL>
+<LI>The <B>code</B>, <B>ephem_gen</B>, and <B>ephem_str</B> fields
+are C function pointers, not strings. You put the name of the
+function you
+</LI>
+<LI>are referencing here, but don't quote it. <BR>
+
+</LI>
+<LI>The <B>string</B> field is the name of the function as a string.
+It is what gets printed to represent the node when trees are printed
+to output files. Names may not contain whitespace or any of the
+characters `:', `(', `)', `[', `]'.<BR>
+
+</LI>
+<LI>The <B>index</B> field should always be zero.<BR>
+
+</LI>
+</UL>
+<P ALIGN="center">ordinary function
+</P>
+<CENTER><TABLE BORDER="2" ALIGN="center" WIDTH="100%">
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%">code </TD>
+<TD ALIGN="LEFT" VALIGN="TOP">The C function implementing the function.</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%">ephem_gen</TD>
+<TD ALIGN="LEFT" VALIGN="TOP"> NULL</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%">ephem_str</TD>
+<TD> NULL</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="15%">arity</TD>
+<TD>The arity of the function (greater than zero).</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%">string</TD>
+<TD>
+The name of the function.</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%">type</TD>
+<TD>FUNC_DATA or FUNC_EXPR, as appropriate.</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%">evaltree</TD>
+<TD>-1</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%">index</TD>
+<TD>0</TD>
+</TR>
+
+
+
+
+
+</TABLE></CENTER>
+
+
+<P ALIGN="center">
+
+ordinary terminal</P>
+<CENTER><TABLE BORDER="2" ALIGN="center" WIDTH="100%">
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="15%">code </TD>
+<TD ALIGN="LEFT" VALIGN="TOP">The C function implementing the function.</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%">ephem_gen</TD>
+<TD ALIGN="LEFT" VALIGN="TOP"> NULL</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%">ephem_str</TD>
+<TD> NULL</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%">arity</TD>
+<TD>0</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%">string</TD>
+<TD>
+The name of the terminal</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%">type</TD>
+<TD>TERM_E</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%">evaltree</TD>
+<TD>-1</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%">index</TD>
+<TD>0</TD>
+</TR>
+</TABLE></CENTER>
+<BR>
+
+
+<P ALIGN="center"><FONT SIZE="2"><BR>
+</FONT>
+</P>
+<P ALIGN="center">ephemeral random constant terminal</P>
+<CENTER><TABLE BORDER="2" ALIGN="center" WIDTH="100%">
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="15%">code </TD>
+<TD ALIGN="LEFT" VALIGN="TOP">NULL</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%">ephem_gen</TD>
+<TD ALIGN="LEFT" VALIGN="TOP"> <FONT SIZE="2">The C function to generate new random
+values.</FONT></TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%">ephem_str</TD>
+<TD> <FONT SIZE="2">The C function to print values to a string.</FONT></TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%">arity</TD>
+<TD>0</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%">string</TD>
+<TD>
+<FONT SIZE="2">The generic name of the terminal. (Printed
+trees will</FONT><FONT SIZE="2">almost always have the string representing the
+value of</FONT><FONT SIZE="2">the terminal, rather than this name.</FONT>
+
+</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%">type</TD>
+<TD>TERM_ERC</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%">evaltree</TD>
+<TD>-1</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%">index</TD>
+<TD>0</TD>
+</TR>
+</TABLE></CENTER>
+<BR>
+<P>&nbsp;</P>
+<P ALIGN="center">
+evaluation function/terminal</P>
+<CENTER><TABLE BORDER="2" ALIGN="center" WIDTH="100%">
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="15%">code </TD>
+<TD ALIGN="LEFT" VALIGN="TOP">NULL</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%">ephem_gen</TD>
+<TD ALIGN="LEFT" VALIGN="TOP"> NULL</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%">ephem_str</TD>
+<TD> NULL</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%">arity</TD>
+<TD><FONT SIZE="2">-1. (The kernel will determine the arity
+by looking</FONT><FONT SIZE="2">at the argument terminals in the target tree.)</FONT></TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%">string</TD>
+<TD>
+
+
+<FONT SIZE="2">The name of this function/terminal.</FONT></TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%">type</TD>
+<TD><FONT SIZE="2">EVAL_DATA or EVAL_EXPR, as appropriate.</FONT></TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%">evaltree</TD>
+<TD><FONT SIZE="2">The number of the tree to evaluate when
+this function is hit.</FONT></TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%">index</TD>
+<TD>0</TD>
+</TR>
+</TABLE></CENTER>
+<BR>
+
+
+<P ALIGN="center">
+argument terminal</P>
+<CENTER><TABLE BORDER="2" ALIGN="center" WIDTH="100%">
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="15%">code </TD>
+<TD ALIGN="LEFT" VALIGN="TOP">NULL</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%">ephem_gen</TD>
+<TD ALIGN="LEFT" VALIGN="TOP"> NULL</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%">ephem_str</TD>
+<TD> NULL</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%">arity</TD>
+<TD>0</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%">string</TD>
+<TD>
+
+
+<FONT SIZE="2">The name of this terminal.</FONT></TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%">type</TD>
+<TD><FONT SIZE="2">TERM_ARG</FONT></TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%">evaltree</TD>
+<TD><FONT SIZE="2">The argument number (which child of the
+corresponding</FONT><FONT SIZE="2">evaluation function this terminal represents).</FONT></TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%">index</TD>
+<TD>0</TD>
+</TR>
+</TABLE></CENTER>
+<BR>
+
+
+<P>
+The function sets for the lawnmower problem contain examples of
+all five types of node<FONT SIZE="2">:<BR>
+</FONT>
+</P>
+<PRE>
+<B>function sets[3][10] =
+</B>
+<B>     /*** RPB ***/</B>
+
+<B>{ { { f_left, NULL, NULL, 0, &quot;left&quot;, TERM_NORM, -1,0 },</B>
+<B>     { f_mow, NULL, NULL, 0, &quot;mow&quot;, TERM_NORM, -1, 0 },</B>
+<B>     { NULL, f_vecgen, f_vecstr, 0, &quot;Rvm&quot;, TERM_ERC, -1,0 },</B>
+
+<B>     { f_frog, NULL, NULL, 1, &quot;frog&quot;, FUNC_DATA, -1, 0},</B>
+<B>     { f_vma, NULL, NULL, 2, &quot;vma&quot;, FUNC_DATA, -1, 0 },</B>
+<B>     { f_prog2, NULL, NULL, 2, &quot;prog2&quot;, FUNC_DATA, -1,0 },</B>
+<B>     { NULL, NULL, NULL, -1, &quot;ADF0&quot;, EVAL_DATA, 1, 0 },</B>
+<B>     { NULL, NULL, NULL, -1, &quot;ADF1&quot;, EVAL_DATA, 2, 0 }},<BR>
+</B>
+
+<B>/*** ADF0 ***/</B>
+
+<B>{ { f_vma, NULL, NULL, 2, &quot;vma&quot;, FUNC_DATA, -1, 0},</B>
+<B>     { f_prog2, NULL, NULL, 2, &quot;prog2&quot;, FUNC_DATA, -1,0 },</B>
+<B>     { f_left, NULL, NULL, 0, &quot;left&quot;, TERM_NORM, -1, 0},</B>
+<B>     { f_mow, NULL, NULL, 0, &quot;mow&quot;, TERM_NORM, -1, 0 },</B>
+<B>     { NULL, f_vecgen, f_vecstr, 0, &quot;Rvm&quot;, TERM_ERC, -1,0 } },<BR>
+<BR>
+</B>
+<B>/*** ADF1 ***/</B>
+
+<B>{ { f_left, NULL, NULL, 0, &quot;left&quot;, TERM_NORM, -1,0 },</B>
+<B>     { f_mow, NULL, NULL, 0, &quot;mow&quot;, TERM_NORM, -1, 0 },</B>
+<B>     { NULL, f_vecgen, f_vecstr, 0, &quot;Rvm&quot;, TERM_ERC, -1,0 },</B>
+<B>     { NULL, NULL, NULL, 0, &quot;ARG0&quot;, TERM_ARG, 0, 0 },
+<BR></B>
+<B>     { f_frog, NULL, NULL, 1, &quot;frog&quot;, FUNC_DATA, -1, 0},</B>
+<B>     { f_vma, NULL, NULL, 2, &quot;vma&quot;, FUNC_DATA, -1, 0 },</B>
+<B>     { f_prog2, NULL, NULL, 2, &quot;prog2&quot;, FUNC_DATA, -1,0 },</B>
+<B>     { NULL, NULL, NULL, -1, &quot;ADF0&quot;, EVAL_DATA, 1, 0 }} };<BR>
+<BR></B></PRE>
+<P>
+This problem uses two ADFs-the zero-argument ADF0 and the one-argument
+ADF1. Both ADFs are available to the result-producing branch.
+In addition, ADF0 can be called from within ADF1</P>
+<P>
+Note that the functions and terminals can appear in the table
+in any order. Previous versions of lil-gp required all functions
+to appear first in the table, followed by the terminals, but this
+is no longer the case</P>
+<P>
+Once the function table is created, a list of function sets needs
+to be created that references it. You should create an array of
+type <B>function_set</B> with one member for each function set.
+The size field should be set to the number of functions and terminals
+in it, and the <B>cset</B> field should point to the function
+table. The lawnmower problem uses:<BR>
+
+</P>
+<PRE>
+<B>function_set *fset;</B>
+<B>. . . .</B>
+<B>fset = (function_set *)MALLOC ( 3 * sizeof ( function_set ));</B>
+<B>fset[0].size = 8;</B>
+<B>fset[0].cset = sets[0];</B>
+<B>fset[1].size = 5;</B>
+<B>fset[1].cset = sets[1];</B>
+<B>fset[2].size = 8;</B>
+<B>fset[2].cset = sets[2];<BR></B></PRE>
+<P>
+Next you must build a tree <I>map</I>, indicating which trees
+use which function sets. This is just an array of <B>ints</B>,
+where the <I>n</I>th element indicates the number of the function
+set of the <I>n</I>th tree. In the case of the lawnmower problem,
+there is just one tree per function set:</P>
+<PRE>
+<B>tree_map = (int *)MALLOC ( 3 * sizeof ( int ) );</B>
+<B>tree_map[0] = 0;</B>
+<B>tree_map[1] = 1;</B>
+<B>tree_map[2] = 2;<BR></B></PRE>
+<P>
+If two trees use the same function set, then crossover may exchange
+genetic material between these trees on different individuals.
+If this is not desired, you can make a copy of the function set,
+and have one tree use the copy. This would be accomplished with
+something like:</P>
+<PRE>
+<B>fset[2].size = 8;</B>
+<B>fset[2].cset = sets[2];</B>
+<B>fset[3].size = 8;</B>
+<B>fset[3].cset = sets[2]; /* note they refer to the same functions*/</B>
+
+<B>. . .</B>
+
+<B>tree_map[2] = 2;</B>
+<B>tree_map[3] = 3;<BR></B></PRE>
+<P>
+Now trees 2 and 3 will not crossover with each other, even though
+their function sets are identical</P>
+<P>
+One last thing to build is a list of tree names--these will be
+used to label the separate trees when individuals are printed
+out:</P>
+<PRE>
+<B>char *tree_name[3];</B>
+<B>. . .</B>
+<B>tree_name[0] = &quot;RPB&quot;;</B>
+<B>tree_name[1] = &quot;ADF0&quot;;</B>
+<B>tree_name[2] = &quot;ADF1&quot;;<BR></B></PRE>
+<P>
+Now that all the data structures are built, you must pass them
+as arguments to the kernel function <B>function_sets_init().</B>
+This function will do some validity checking and make internal
+copies of everything. After this function returns, you may destroy
+your copies. You should also save the return value of this function
+(an <B>int</B>) and return it to the kernel.</P>
+<PRE>
+<B>int ret;</B>
+<B>. . .</B>
+<B>ret = function_sets_init ( fset, 3, tree_map, tree_name, 3);<BR>
+</B>
+<B>FREE ( tree_map );</B>
+<B>FREE ( fset ) ;<BR>
+</B>
+<B>return ret;<BR></B></PRE>
+<P>
+The second argument to <B>function_sets_init()</B> is the number
+of function sets, the fifth argument is the number of trees per
+individual.<BR>
+
+</P>
+<P>
+<B><A NAME="6.3.2">6.3.2 Fitness Evaluation Function</A></B></P>
+<P>
+The user function <B>app_eval_fitness()</B> is called whenever
+an individual is to be evaluated. It is passed a pointer to an
+individual structure. It should fill in these fields:</P>
+<P>
+<B>r_fitness</B> The raw fitness.<BR>
+
+</P>
+<P>
+<B>s_fitness</B> The standardized fitness (all values nonnegative,
+a perfect individual is zero).<BR>
+
+</P>
+<P>
+<B>a_fitness</B> The adjusted fitness (lies in the interval [0;
+1], a perfect individual is one).<BR>
+
+</P>
+<P>
+<B>hits</B> The auxiliary hits measure.<BR>
+
+</P>
+<P>
+<B>evald</B> Always set this to <B>EVAL_CACHE_VALID</B> to indicate
+that the fitness fields are valid.<BR>
+
+</P>
+<P>
+The function should call <B>set_current_individual()</B> with
+the pointer passed to it before doing any evaluations. The function
+can evaluate trees of the individual by calling <B>evaluate_tree()</B>,
+passing it a pointer to the tree data <I>and</I> the tree number.
+</P>
+<P>
+Typically the function will iterate over all the fitness cases.
+The global variable g, which is a user-defined structure, is used
+to pass information between <B>app_eval_fitness()</B> and the
+functions and terminals. For example, in the symbolic regression
+problem, <B>g.x</B> is set to the <I>x </I>value for the current
+fitness case, then the tree is evaluated. When the evaluation
+reaches the independent variable terminal, the C function implementing
+it simply reads this value and returns it.</P>
+<P>
+A typical evaluation function will have this general structure:
+</P>
+<PRE>
+<B>void app_eval_fitness ( individual *ind )</B>
+<B>{</B>
+<B>     set_current_individual ( ind );</B>
+<B>     . . .</B>
+<B>     for ( &lt;loop over fitness cases&gt; )</B>
+<B>     {</B>
+<B>          &lt;set up global structure for current fitness case&gt;<BR>
+</B>
+<B>          /* here we evaluate tree 0, but you can evaluate any tree of</B>
+<B>          * the individual as many times as you like.</B>
+<B>          */</B>
+<B>          value = evaluate_tree ( ind-&gt;tr[0].data, 0 );</B>
+<B>          . . .</B>
+<B>     }<BR>
+</B>
+<B>     ind-&gt;hits = &lt;whatever&gt;;</B>
+<B>     ind-&gt;r_fitness = &lt;whatever&gt;;</B>
+<B>     ind-&gt;s_fitness = &lt;whatever&gt;;</B>
+<B>     ind-&gt;a_fitness = &lt;whatever&gt;;<BR>
+</B>
+<B>     /* indicate that the fitness fields are correct.*/</B>
+<B>     ind-&gt;evald = EVAL_CACHE_VALID;</B>
+<B>}<FONT SIZE="2"><BR></FONT></B></PRE>
+<P>
+More complex problems which require a simulation store the entire
+state of the simulation in <B>g. app_eval_fitness()</B> resets
+the simulation, before evaluating the tree. For instance, in the
+artificial ant problem the tree is evaluated repeatedly until
+the time expires or all the food has been collected</P>
+<P>
+The functions and terminals read and modify the global state information
+in order to simulate the ant's senses and movements.<BR>
+
+</P>
+<P>
+<B><A NAME="6.3.3">6.3.3 Custom Output</A></B></P>
+<P>
+After every the evaluation of each generation, lil-gp calls the
+function <B>app_end_of_evalulation()</B>. It is passed the generation
+number, a pointer to the entire population, statistics for the
+run and generation, and a flag indicating whether a new best-of-run
+individual has been found or not. It should return a 1 or 0, indicating
+whether the user termination criterion has been met and the run
+should stop</P>
+<P>
+Suppose the that the function is declared with the following argument
+names<FONT SIZE="2">:</FONT></P>
+<PRE>
+<B>int app_end_of_evaluation ( int gen, multipop *mpop, int newbest,</B>
+<B>popstats *gen_stats, popstats *run_stats )<BR>
+</B></PRE>
+<P>
+The population is passed as the pointer to a structure of type
+<B>(multipop *)</B>. Everything within this structure should be
+treated as read-only. This table gives some useful items of information
+stored in this structure:</P>
+<P>&nbsp;</P>
+<TABLE BORDER="2" ALIGN="DEFAULT" WIDTH="100%">
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>mpop-&gt;size</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">number of subpopulations</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>mpop-&gt;pop[p]-&gt;size</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">size of population p</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>mpop-&gt;pop[p]-&gt;ind[i]</B> </TD>
+<TD ALIGN="LEFT" VALIGN="TOP">the i'th individual of population
+p</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>mpop-&gt;pop[p]-&gt;ind[i].r_fitness</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">raw fitness of individual</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>mpop-&gt;pop[p]-&gt;ind[i].s_fitness</B> </TD>
+<TD ALIGN="LEFT" VALIGN="TOP">standardized fitness
+of individual</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>mpop-&gt;pop[p]-&gt;ind[i].a_fitness</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">adjusted fitness of
+individual</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>mpop-&gt;pop[p]-&gt;ind[i].hits</B> </TD>
+<TD ALIGN="LEFT" VALIGN="TOP">hits of individual</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>mpop-&gt;pop[p]-&gt;ind[i].tr[n].data</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">tree n data pointer
+</TD>
+</TR>
+</TABLE>
+<P>&nbsp;</P>
+<P>
+The tree data pointer(s) can be passed to <B>evaluate_tree()</B>
+to evaluate the tree just as in the evaluation function. To print
+the entire individual, pass its address to <B>print_individual()</B>
+or <B>pretty_print_individual().</B></P>
+<P>
+The content of the statistics structure should be discernible
+to the interested reader from the declaration in <B>types.h. gen_stats[0]</B>
+is statistics for the whole population in the current generation,
+while <B>gen_stats[<I>i</I>]</B> gives the same just for subpopulation
+<I>i</I>. The <B>run_stats</B> array is similar, but accumulates
+information over the whole run</P>
+<P>
+In many problems it is useful to access the best-of-run or best-of-generation
+individual for printing or doing extra evaluations. For instance,
+the symbolic regression problem produces an extra output file
+with the best-of-run individual evaluated at 200 points over the
+interval of interest, for easy plotting. A copy of the best-of-run
+individual is pointed to by<B> run_stats[0].best[0]-&gt;ind</B>,
+and the best-of-generation individual by <B>gen_stats[0].best[0]-&gt;ind</B>.</P>
+<P>
+In versions of lil-gp prior to 0.99b, it was an undocumented feature
+that by modifying the parameter database, the breeding parameters
+could be altered dynamically during the run. If you took advantage
+of this, you must now call <B>rebuild_breeding_table()</B> after
+modifying the parameters, and pass it the <B>multipop</B> pointer
+passed to you. If you do not, your changes to the parameter database
+will have no effect. This ability is now considered a bona fide
+feature of lil-gp, and will be supported in future releases</P>
+<P>
+Changes to the subpopulation exchange topology parameters underwent
+a similar change. If you change the parameters during the run,
+you should call <B>rebuild_exchange_topology()</B> after making
+changes in order for them to have any effect</P>
+<P>
+Some kernel operations (for instance, restarting from a checkpoint
+file) imply rebuilding the breeding and topology tables from the
+parameter database. You should only make changes to these parameters
+when you intend to immediately call the appropriate rebuilding
+functions, otherwise unpredictable things will occur.</P>
+<P>
+Another user callback <B>app_end_of_breeding()</B> is called after
+the new population is created each generation. This is passed
+the generation number and the population structure, just as in
+the end of evaluation callback, but no statistics information.
+<BR>
+
+</P>
+<P>
+<B><A NAME="6.3.4">6.3.4 Application Initialization</A></B></P>
+<P>
+There are two functions provided for application-specific initialization:
+<B>app_initialize()</B> and <B>app_uninitialize().</B> app_initialize()
+is passed an integer flag indicating whether the run is starting
+from a checkpoint or not. It should return 0 to indicate success,
+or anything to abort the run</P>
+<P>
+Initialization such as memory allocation and reading parameters
+should go in <B>app_initialize().</B> The last function is called
+at the end of the run, and may used to do things like free memory.<FONT SIZE="2">
+<BR>
+</FONT>
+</P>
+<P>
+<B><A NAME="6.3.5">6.3.5 Output Streams</A></B></P>
+<P>
+An output stream is a simple abstraction of an output file. This
+mechanism handles both the naming of the actual file and uses
+the detail level (the <B>output.detail</B> parameter) to filter
+the output. Some functions are provided for writing to output
+streams:</P>
+<P>
+<B>oputs ( int streamid, int detail, char *string )</B> Prints
+the string to the given output stream, if the value of
+detail is less than or equal to the current detail level.<BR>
+
+</P>
+<P>
+<B>oprintf ( int streamid, int detail, char *format, ... )</B>
+Processes the <B>format</B> and succeeding arguments as in
+printf(), and prints the resulting string to the stream if the
+detail is less than or equal to the current detail level. <BR>
+
+</P>
+<P>
+<B>test_detail_level ( int detail )</B> Returns true if the argument
+is less than or equal to the current detail level.<BR>
+
+</P>
+<P>
+<B>output_filehandle ( int streamid )</B> Returns the filehandle
+<B>(FILE *)</B> for the given stream. Useful for passing to<B>print_tree()</B> and the like.<BR>
+
+</P>
+<P>
+The standard output files (<B>.sys, .gen</B>, etc.) are can be
+printed to with the stream ids <B>OUT_SYS, OUT_GEN</B>, etc. For
+instance:</P>
+<PRE>
+<B>oprintf ( OUT_SYS, 30, &quot;Tree %d is:&quot;n&quot;, tree_num);</B>
+<B>if ( test_detail_level ( 30 ) )</B>
+<B>     print_tree ( tree[tree_num], output_filehandle ( OUT_SYS ));<BR></B></PRE>
+<P>
+An application can define custom output streams (for instance,
+the <B>.fn</B> output file of the regression problem). This is
+done in the application function <B>app_create_output_streams()</B>.
+This function should be used <I>only</I> to create user output
+streams. In it, you call <B>create_output_stream()</B> with five
+arguments</P>
+<P>
+<B>id</B> The id for the stream (an integer). User-defined output
+streams should have ids <B>OUT_USER</B>, 
+<B>OUT_USER+1</B>, etc. <BR>
+
+</P>
+<P>
+<B>ext</B> The extension for the filename. This string is appended
+to a basename (the parameter <B>output.basename</B>) to create the filename).<BR>
+
+</P>
+<P>
+<B>reset </B>A flag indicating whether the stream can be closed
+and reopened (using the functions <B>output_stream_close()</B> and <B>output_stream_open()</B>).
+Reopening a stream overwrites the old file (like
+the <B>.bst</B> file).<BR>
+
+</P>
+<P>
+<B>mode</B> The mode string to pass to<B> fopen()</B> when opening
+the file. Typically will be &quot;<B>w</B>&quot; or &quot;<B>wb</B>&quot;.
+<BR>
+
+</P>
+<P>
+<B>autoflush </B>Flag indicating whether the file should be flushed
+after each call to <B>oputs()</B> and <B>oprintf().<BR>
+</B>
+</P>
+<P>
+<B>app_create_output_streams()</B> is called before any parameters
+have been loaded, so you should not attempt to read the parameter
+database in this function.<BR>
+
+</P>
+<P>
+<B><A NAME="6.3.6">6.3.6 Checkpoint Files</A></B></P>
+<P>
+Two functions are provided for saving user state to checkpoint
+files, <B>app_write_checkpoint()</B> and <B>app_read_checkpoint().</B>
+Each is passed a file handle <B>(FILE *)</B> opened in text mode
+for writing or reading, respectively. Each function should leave
+the file pointer at the end of the user section.<BR>
+
+</P>
+<P>
+<B><A NAME="6.4">6.4 Order of Processing</A></B></P>
+<P>
+Here is the order things happen in during a run. <BR>
+
+</P>
+<P>
+print startup message
+</P>
+<P>initialize parameter database
+</P>
+<P>
+initialize ERCs
+</P>
+<P>
+initialize generation space
+</P>
+<P>
+<B>app_create_output_streams()</B>
+</P>
+<P>
+initialize output streams
+</P>
+<P>
+<B>pre_parameter_defaults()</B>
+</P>
+<P>
+process command-line arguments in order, possibly including loading
+of checkpoint file
+</P>
+<P>
+if not starting from checkpoint, <B>post_parameter_defaults()</B>
+</P>
+<P>
+open output files
+</P>
+<P>
+if not already done (during loading of checkpoint), <B>app_build_function_sets()</B>
+</P>
+<P>
+read tree node/depth limits from parameters
+</P>
+<P>
+if not starting from checkpoint, seed random number generator
+</P>
+<P>
+<B>app_initialize()</B>
+</P>
+<P>
+if not starting from checkpoint, create initial random population
+</P>
+<P>
+initialize subpopulation exchange topology
+</P>
+<P>
+initialize breeding table
+</P>
+<P>
+run the GP: until termination
+</P>
+<BLOCKQUOTE>
+evaluate the population, unless this is first generation after
+loading checkpoint
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+compute population statistics</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TABLE BORDER="0" ALIGN="DEFAULT" WIDTH="50%">
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%"></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="100%"> <B>app_end_of_evaluation()</B></TD>
+</TR>
+</TABLE>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+write checkpoint file, if necessary
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+if this is not the last generation</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TABLE BORDER="0" ALIGN="DEFAULT" WIDTH="50%">
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="5%"></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="100%"> do subpopulation exchange, if necessary</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="5%"></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">breed new population</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%"></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+<B>app_end_of_breeding()</B></TD>
+</TR>
+</TABLE>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TABLE BORDER="0" ALIGN="DEFAULT" WIDTH="50%">
+<TR></TR>
+</TABLE>
+</BLOCKQUOTE>
+<P>
+<B>app_uninitialize()</B>
+</P>
+<P>
+free breeding table
+</P>
+<P>
+free subpopulation exchange topology
+</P>
+<P>
+free population
+</P>
+<P>
+free parameter database
+</P>
+<P>
+free ERCs
+</P>
+<P>
+free generation spaces
+</P>
+<P>
+free function sets
+</P>
+<P>
+print system statistics
+</P>
+<P>
+close output streams<BR>
+
+</P>
+<P>
+<B><FONT SIZE="4"><A NAME="6.5">6.5 Kernel Considerations</A><BR>
+</FONT></B>
+</P>
+<P>
+<B><A NAME="6.5.1">6.5.1 Memory Allocation</A></B></P>
+<P>
+lil-gp system has a system for tracking memory usage.1 This is
+helpful in tracking down mem- ory leaks, among other things. To
+use it, just use <B>MALLOC(), REALLOC()</B>, and<B> FREE()</B>
+instead of <B>malloc(), realloc(),</B> and <B>free().</B> The
+uppercased versions should work exactly like their low- ercased
+counterparts. You may use the lowercase versions if you do not
+wish to have the memory included in the statistics, but <I>do
+not mix pointers</I> <I>returned by the two different sets of
+functions</I>. Don't <B>FREE</B> memory that you've<B> malloc</B>'ed,
+etc.<BR>
+
+</P>
+<P>
+<B><A NAME="6.5.2">6.5.2 Using Parameters</A></B></P>
+<P>
+User code may read and write the parameter database, using the
+functions<B> get_parameter()</B> and <B>add_parameter().</B> The
+implementation of the database is not terribly efficient,2 so
+you shouldn't, for instance, read a parameter inside the code
+for a function or terminal. Reading a given parameter once per
+generation should be considered a maximum. If you need the value
+more often than that, you should buffer it in a C variable</P>
+<P>
+<B>get_parameter()</B> takes the name of the parameter (the string)
+and returns a character pointer to its value, or <B>NULL</B> if
+the parameter is not present in the database. You should not modify
+the string returned; make a copy if you need to use it in a destructive
+manner. <B>add_parameter()</B> takes the parameter name, value,
+and a flag indicating whether the name or the value should be
+copied, or both. Adding a parameter that is already present overwrites
+the old value.<BR>
+
+</P>
+<P>
+<FONT SIZE="2">1 It can be disabled completely by removing or commenting
+out the line</FONT><FONT SIZE="2">&quot;#define TRACK_MEMORY&quot; from protos.h. 
+</FONT></P>
+<P>
+<FONT SIZE="2">2 Read &quot;linear search.&quot;</FONT></P>
+</BODY>
+</HTML>

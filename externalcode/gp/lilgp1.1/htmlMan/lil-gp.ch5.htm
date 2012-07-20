@@ -1,0 +1,871 @@
+<HTML>
+<HEAD>
+
+<META NAME="GENERATOR" CONTENT="Internet Assistant for Microsoft Word 2.0z">
+<TITLE>                    lil-gp  1</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+
+<P>
+<B><FONT SIZE="5">Chapter 5</FONT></B></P>
+<PRE><B><FONT SIZE="5">     </FONT></B>5.1    <A HREF="#5.1">General</A><A HREF="#5.1"><B></B></A><B></B><B><FONT SIZE="5">
+</FONT></B>
+     5.2    <A HREF="#5.2">Output</A>
+
+     5.3    <A HREF="#5.3">Size Limits</A>
+
+     5.4    <A HREF="#5.4">Initialization</A>
+
+     5.5    <A HREF="#5.5">Selection Methods</A>
+
+     5.6    <A HREF="#5.6">Breeding</A>
+
+     5.7    <A HREF="#5.7">Operators</A>
+
+     5.8    <A HREF="#5.8">Multiple Populations</A><BR>
+<HR></PRE>
+<P>
+<B><FONT SIZE="5">Parameters</FONT></B></P>
+<P>
+A large number of parameters control lil-gp.  These parameters
+are input via parameter files and command line arguments.  This
+chapter lists and describes all the available parameters.  In
+addition, user code may define application-specific parameters
+(as in the sample artificial ant problem, for instance.</P>
+<P>
+All parameter settings are saved in the checkpoint files, so if
+you are restarting an aborted run from a checkpoint you do not
+need to explicitly load all the original parameter files on the
+command line</P>
+<P>
+Default values for parameters, where appropriate, have been chosen
+to correspond with those given in Chapter 7 (&quot;Detailed Description
+of Genetic Programming&quot;) of Koza's (first) book [3]</P>
+<P>
+The following conventions apply:</P>
+<OL>
+<LI>All tree depths are measured so that a 1-node tree has depth 0.
+
+</LI>
+<LI>For binary parameters, all of the following strings (insensitive
+to case) mean &quot;on&quot;: <B>true, t</B>, <B>on</B>, <B>yes</B>,
+<B>y</B>, and <B>1</B>. The corresponding &quot;off&quot; strings
+are:<B> false</B>, <B>f</B>, <B>off</B>, <B>no</B>, <B>n</B>,
+and <B>0</B>.
+
+</LI>
+<LI>A &quot;depth ramp&quot; is used to specify the depths of a group of randomly 
+generated trees.  It is a single integer or
+two integers separated by a hyphen (ascending order, no internal
+whitespace).  If a single integer, then all trees will be generated
+with that depth.  If a range, then each tree will have a depth
+selected randomly from that range.
+</LI>
+</OL>
+
+
+<P>
+<B><A NAME="5.1">5.1 General</A></B></P>
+<P>
+These parameters govern the overall operation of the run.<BR>
+
+</P>
+<CENTER><TABLE BORDER="2" ALIGN="center" WIDTH="100%">
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP">
+<B>max_generations</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">type:  integer </TD>
+<TD ALIGN="LEFT" VALIGN="TOP">The maximum number of generations for the run.</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">default:  none</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>pop_size</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">type:  integer </TD>
+<TD ALIGN="LEFT" VALIGN="TOP">The population size.  For multipop runs, the subpopulation size.</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">default:  none</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>random_seed</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">type:  integer </TD>
+<TD ALIGN="LEFT" VALIGN="TOP">The seed for the random number generator.</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">default:  1</TD>
+</TR>
+</TABLE></CENTER>
+
+<P>&nbsp;
+   
+</P>
+<P>&nbsp;</P>
+<P><B><A NAME="5.2">5.2 Output</A><BR>
+</B>
+</P>
+<P>
+These parameters control the writing of output and checkpoint
+files.</P>
+<CENTER><TABLE BORDER="2" ALIGN="center" WIDTH="100%">
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>output.basename</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">type:  string</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">The base name for the output files.  Various three-character extensions
+are added to create the actual filenames.<BR>
+</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">default:  lilgp</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>output.detail</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">type:  integer, 0-100</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">The level of detail in output files.  100 is everything, 0 is
+practically nothing.</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">default:  50</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>output.stt_interval</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">type:  positive integer</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">How often, in generations, to write information to the <B>STT</B>
+file.</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">default: 1</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>output.bestn</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">type:  positive integer</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">How many individuals are printed to the<B> BST</B> file (i.e.,
+if set to 5 then the top 5 individuals are written to the file).</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">default: 1</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>output.digits</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">type:  integer        
+</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">The number of decimal places with which fitness values are printed
+in output files.</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">default:  4</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>checkpoint.interval</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">type:  integer </TD>
+<TD ALIGN="LEFT" VALIGN="TOP">Specifies how often (in generations) to write a checkpoint file.
+ If not set or negative, no checkpoint files are written.  If
+set to a positive number, checkpoint files are written every (that
+number) generations and after the last generation.  If set to
+zero, then only one checkpoint file is written, after the last
+generation.</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">default:  none
+</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>checkpoint.filename</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">type:  string </TD>
+<TD ALIGN="LEFT" VALIGN="TOP">A <B>printf()</B> format string with exactly one <B>%d</B> specifier,
+which is replaced with a generation number.  The resulting string
+will be used as the filename for the checkpoint file for that
+generation.</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">default:  <B>gp%06d.ckp</B></TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>checkpoint.compress</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">type:  string </TD>
+<TD ALIGN="LEFT" VALIGN="TOP">A <B>printf()</B> format string used to generate a command to
+run on each checkpoint file after it is written.  The string should
+have one <B>%s</B> specifier, which will be replaced with the
+name of the checkpoint file.  The usual <B>printf()</B> conventions
+for percent signs apply.  Typically this command is used to compress
+the checkpoint file.  If this parameter is not defined, then no
+command is executed.</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">default:  none</TD>
+</TR>
+</TABLE></CENTER>
+<P><BR>
+
+</P>
+<P>&nbsp;
+   </P>
+<P>
+<B><A NAME="5.3">5.3 Size Limits</A></B></P>
+<P>
+These parameters set limits on the number of nodes and/or the
+depth of individuals in the population, both at initialization
+and during evolution.  In problems where individuals are composed
+of multiple trees, # refers to the tree number.<BR>
+
+</P>
+<CENTER><TABLE BORDER="2" ALIGN="center" WIDTH="100%">
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>max_nodes</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">type:  integer </TD>
+<TD ALIGN="LEFT" VALIGN="TOP">Maximum total number of nodes per individual.  If not set, no
+limit is enforced.</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">default:  none</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>tree[#].max_nodes</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">type:  integer </TD>
+<TD ALIGN="LEFT" VALIGN="TOP">The maximum number of nodes in tree #.  If not set, no limit is
+enforced.</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">default:  none</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>max_depth</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">type:  integer </TD>
+<TD ALIGN="LEFT" VALIGN="TOP">Maximum depth of individual.  If not set, no limit is enforced.</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">default:  none</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>tree[#].max_depth</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">type:  integer        
+</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">The maximum depth of tree #.  If not set, no limit is enforced.
+</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">default:  none</TD>
+</TR>
+</TABLE></CENTER>
+<P>
+
+<BR>
+
+</P>
+<P>
+<B><A NAME="5.4">5.4 Initialization</A></B></P>
+<P>
+These parameters control generation of the initial random population.</P>
+
+<CENTER><TABLE BORDER="2" ALIGN="center" WIDTH="100%">
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>init.tree[#].method</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">type:  <B>half_and_half</B>, <B>grow</B>, or <B>full</B>
+     </TD>
+<TD ALIGN="LEFT" VALIGN="TOP">Method for generating tree # of each individual in the initial
+population.  If not set, then the value of <B>init.method</B>
+is used.</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">default:  none</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>init.method</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">type:  <B>half_and_half</B>, <B>grow</B>, or <B>full</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">Default method for generation of initial random population.</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">default:  <B>half_and_half</B></TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>init.tree[#].depth</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">type:  depth ramp </TD>
+<TD ALIGN="LEFT" VALIGN="TOP">A depth ramp for choosing the size of tree # during the generation
+of the initial population.  If not set, then the value of <B>init.depth</B>
+is used.</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">default:  none</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>init.depth</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">type:  string        
+</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">Default depth ramp for generation of initial random population.</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">default:  2-6</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>init.random_attempts</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">type:  positive integer </TD>
+<TD ALIGN="LEFT" VALIGN="TOP">During initial generation, trees that violate size limits or are
+duplicates are rejected.  This parameter is the maximum number
+of consecutive rejected trees the program will tolerate before
+generating an error and giving up.</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">default:  100</TD>
+</TR>
+</TABLE></CENTER>
+<P>
+<BR>
+
+</P>
+<P>
+<B><A NAME="5.5">5.5 Selection Methods</A></B></P>
+<P>
+A selection method is an algorithm for picking an individual from
+a population.  Selection methods are used in various places throughout
+the program.  This section does not list parameters <I>per se</I>,
+but rather describes valid values for parameters needing selection
+methods</P>
+<P>
+lil-gp currently has seven selection methods available.  Some
+selection methods have options, which are set by following the
+method name with a comma-separated list of &quot;option=value&quot;
+pairs, as in:<BR>
+</P>
+<PRE>
+<B>blahblah.select  =  tournament,size=7<BR></B></PRE>
+<P>
+Whitespace in the string is completely ignored.  The previous
+example
+is equivalent to all of the following:<BR>
+
+</P>
+<PRE>
+<B>blahblah.select = tournament,     size  =   7</B>
+<B>blahblah.select = tournament,     size = 7</B>
+<B>blahblah.select = tournament,     size = 7<BR></B></PRE>
+<P>
+The selection methods available are:<BR>
+</P>
+<P>
+<B>fitnes</B>s     Fitness-proportionate selection.  Individuals
+are chosen at random, with the probability for an individual proportional to its adjusted fitness.
+ No options are available.<BR>
+
+</P>
+<P>
+<B>fitness_overselect</B>    Greedy overselection.  In a population,
+the top individuals accounting for <I>cutoff</I>
+of the total adjusted fitness are placed in Group I, the rest
+of the population going into Group II. Individuals are randomly
+selected from Group I (proportional to adjusted fitness) proportion
+of the time, and from Group II (proportional to adjusted fitness)
+the rest of the time.  <I>cutoff </I>and <I>proportion </I>are
+set with options:<BR>
+
+</P>
+<BLOCKQUOTE>
+       <B> cutoff</B>   For populations less than 1000, defaults
+to 0.32.  For larger populations,
+defaults to 320/popsize (i.e., 32% for popsize of 1000, 16% for
+popsize of 2000, etc.).<BR>
+
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<B>     proportion</B>   Defaults to 0.80.<BR>
+
+</BLOCKQUOTE>
+<P>
+<B>tournament</B>    A number of individuals are chosen at random
+with uniform probability with reselection
+allowed.  The best of the chosen individuals is selected.  Has
+one option:
+</P>
+<BLOCKQUOTE>
+        <B>size</B>    The size of the tournament (how many individuals
+are randomly chosen to compete). Defaults to 2.<BR>
+
+</BLOCKQUOTE>
+<P>
+<B>inverse_fitness</B>    Individuals are randomly chosen with
+probability proportional to 1 divided by the
+adjusted fitness.<BR>
+
+</P>
+<P>
+<B>random</B>   Individuals are selected at random with uniform
+probability.<BR>
+
+</P>
+<P>
+<B>best</B>     The first time the selection is done, the best
+member of the population (as determined by adjusted
+fitness) is returned. Subsequent selections return the 2nd, 3rd,
+4th, etc.  best individuals.  Should not be used in a context
+which will need to select more individuals than are in the population.
+<BR>
+
+</P>
+<P>
+<B>worst</B>    Same as <B>best</B>, but returns individuals in
+order of increasing adjusted fitness (i.e., worst first).<BR>
+
+</P>
+<P>
+<B><A NAME="5.6">5.6 Breeding</A></B></P>
+<P>
+Breeding is the term used in lil-gp for creation of the new population
+each generation.  It is controlled through a number of &quot;phases.&quot;
+Each phase has an operator (such as crossover) and a rate specifying
+how
+often that operator occurs</P>
+<P>
+The breeding parameters described at the end of Chapter 7 in Koza's
+first book [3] (for populations less than 1000) can be emulated
+with the following breeding settings</P>
+<PRE>
+<B>breed_phases = 2</B>
+<B>breed[1].operator = crossover, select=fitness</B>
+<B>breed[1].rate = 0.9</B>
+<B>breed[2].operator = reproduction, select=fitness</B>
+<B>breed[2].rate = 0.1<BR></B></PRE>
+<P>
+The &quot;Simple LISP Code&quot; presented in the back of that
+book can be emulated with the following parameters (for populations
+of 1000 or larger, replace all occurrences of <B>fitness</B> with
+<B>fitness_overselect</B>):</P>
+<PRE>
+<B>probabilistic_operators = off</B>
+<B>breed_phases = 4</B>
+<B>  ; functionpoint crossover 70% of the time</B>
+<B>breed[1].operator = crossover, select=fitness, internal=1.0</B>
+<B>breed[1].rate = 0.7</B>
+<B>  ; anypoint crossover 20% of the time</B>
+<B>breed[2].operator = crossover, select=fitness, internal=0.0,
+external=0.0</B>
+<B>breed[2].rate = 0.2</B>
+<B>breed[3].operator = reproduction, select=fitness</B>
+<B>breed[3].rate = 0.1</B>
+<B>breed[4].operator = mutation, select=fitness, method=grow,depth=4</B>
+<B>breed[4].rate = 0.0<BR></B></PRE>
+<P>
+In the second book [4], Koza uses defaults equivalent to</P>
+<PRE>
+<B>breed_phases = 2</B>
+<B>breed[1].operator = crossover, select=(tournament, size=7)</B>
+<B>breed[1].rate = 0.9</B>
+<B>breed[2].operator = reproduction, select=(tournament, size=7)</B>
+<B>breed[2].rate = 0.1</B></PRE>
+<P>
+The specific parameters are:<BR>
+</P>
+<CENTER><TABLE BORDER="2" ALIGN="center" WIDTH="100%">
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>breed_phases</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">type:  integer </TD>
+<TD ALIGN="LEFT" VALIGN="TOP">Specifies the number of phases.</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">default:  none</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>probabilistic_operators</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">type:  binary </TD>
+<TD ALIGN="LEFT" VALIGN="TOP">When on, phases are selected by chance, with frequency proportional
+to that phase's &quot;rate&quot; parameter.  When off, the number
+of individuals produced by a given phase is exactly (well, approximately)
+proportional to that phase's rate.</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">default:  on</TD>
+</TR>
+</TABLE></CENTER>
+<P>&nbsp;
+   </P>
+<P>
+The following parameter names should all substitute a number in
+the
+range [<B>1,breed_phases</B>] for &quot;<B>#</B>&quot;.<BR>
+</P>
+<TABLE BORDER="2" ALIGN="DEFAULT" WIDTH="100%">
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>breed[#].rate</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">type:  float </TD>
+<TD ALIGN="LEFT" VALIGN="TOP">The rate for this phase.  With <B>probabilistic_operators</B>
+on, specifies the probability with which this phase is (randomly)
+chosen.  Otherwise, specifies the proportion of individuals in
+new population to be created with this phase.  Note that if the
+rates for all phases sum to something other than 1, each is divided
+by the total to normalize them.</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">default:  none</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>breed[#].operator</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">type:  operator string </TD>
+<TD ALIGN="LEFT" VALIGN="TOP">Specifies the operator for this phase, and any arguments it has.</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">default:  none</TD>
+</TR>
+</TABLE>
+<P>&nbsp;
+   
+</P>
+<P>
+The available operators are listed in the next section.<BR>
+
+</P>
+<P>
+<B><A NAME="5.7">5.7 Operators</A></B></P>
+<P>
+Operators are picked in a manner identical to that for selection
+methods: the string consists of the operator name, a comma, then
+any arguments to that operator as a comma-separated list of &quot;option=value&quot;
+pairs</P>
+<P>
+Note that the argument list for an operator may include one or
+more selection methods.  If the selection method itself has arguments,
+then the entire selection string should be enclosed in parentheses:</P>
+<PRE>
+<B>blahblah.operator = crossover, select=(tournament, size=7),
+internal=0.3</B></PRE>
+<P>
+This forces the &quot;size&quot; argument to be parsed as an option
+to the tournament selection method, not to the crossover operator.</P>
+<P>
+Three operators are currently available:<BR>
+
+</P>
+<P>
+<B>crossover</B>  Chooses two parent individuals.  Picks a tree
+on each one, subject to the restriction that the trees be over
+the same function set.  Chooses a crossover point on each tree.
+Switches the subtrees rooted at those points, placing newly created
+individuals in new population.  This operator has the following
+arguments:<BR>
+
+</P>
+<BLOCKQUOTE>
+        <B>select</B>   Specifies the selection method (and arguments)
+used to pick the first parent.  This option is required.<BR>
+
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+       <B> select2 </B>  Specifies the selection method (and arguments)
+used to pick the second parent.  If not specified, then defaults
+to be the same method as is used to pick the first parent.<BR>
+
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+        <B>keep_trying</B>   This is a binary argument.  It specifies
+what to do when the crossover operation produces a tree that violates
+the node and/or depth limits.  If on, then it keeps picking new
+crossover points on the same two parents until it produces legal
+child trees.  If off, then upon failure it just reproduces one
+of the parents into the new generation in lieu of the child individual.
+ The default is off.<BR>
+
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+        <B>internal </B>  Specifies the frequency with which internal
+points are selected as the crossover point.<BR>
+
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+        <B>external</B>   Specifies the frequency with which external
+points are selected as the crossover point.  The defaults for
+these two options are coupled.  If neither is set, then internal
+is 0.9 and external is 0.1.  If one is set but not the other,
+the unset one is taken as zero.  If both are set to zero, then
+the crossover point is selected uniformly over all points, without
+regard to their location.<BR>
+
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+        <B>tree</B>   Sets the frequency with which a particular
+tree is selected as the crossover tree.  Should be a comma separated
+list of reals enclosed in parentheses, with a length equal to
+the number of trees per individual. For instance, if individuals
+consist of three trees, this argument could be <B>tree=(0.1,0.2,0.7).
+<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+        <B>tree</B><I>n</I>  Sets the frequency with which tree
+n is selected as the crossover tree.  Multiple &quot;tree&quot;
+and &quot;tree<I>n</I>&quot; arguments are allowed and are applied
+in the order that they appear.  If no tree arguments are used,
+then each tree has the same probability of being selected.  If
+some tree arguments are used, any unspecified trees are given
+a zero probability of being chosen.<BR>
+
+</BLOCKQUOTE>
+<P>
+<B>reproduction </B>  Chooses an individual and copies it into
+the new population.  It has only one argument, which is required:
+<BR>
+
+</P>
+<BLOCKQUOTE>
+        <B>select</B>   The selection method (and arguments) used
+to pick the individual to be reproduced.<BR>
+
+</BLOCKQUOTE>
+<P>
+<B>mutation </B>  Chooses an individual, then chooses a tree within
+that individual and a mutation point on that tree.  Replaces the
+subtree at that point with a randomly generated subtree.  Places
+new individual in new population.  It has several arguments:<BR>
+
+</P>
+<BLOCKQUOTE>
+        <B>select</B>   The selection method (and arguments) used
+to pick the individual to be mutated.  This argument is required.
+<BR>
+
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+        <B>keep_trying</B>   This is a binary argument.  It specifies
+what to do when the mutation operation produces a tree that violates
+the node and/or depth limits.  If on, then it keeps picking new
+mutation points and generating replacement subtrees until it produces
+a legal child tree.  If off, then upon failure it just reproduces
+the original tree into the new generation in lieu of the mutated
+individual.  The default is off.<BR>
+
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+        <B>internal</B>   Specifies the frequency with which internal
+points are selected as the mutation point.<BR>
+
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+        <B>external</B>   Specifies the frequency with which external
+points are selected as the mutation point.  The defaults for these
+two options are coupled.  If neither is set, then internal is
+0.9 and external is 0.1.  If one is set but not the other, the
+unset one is taken as zero.  If both are set to zero, then the
+mutation point is selected uniformly over all points, without
+regard to internal or external.<BR>
+
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+        <B>tree</B>   Sets the frequency with which a particular
+tree is selected as the mutated tree.  Should be a comma separated
+list of reals enclosed in parentheses, with a length equal to
+the number of trees per individual.  For instance, if individuals
+consist of three trees, this argument could be <B>tree=(0.1,0.2,0.7).
+<BR>
+</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+        <B>tree</B><I>n</I>   Sets the frequency with which tree
+<I>n</I> is selected as the mutated tree.  Multiple &quot;tree&quot;
+and &quot;tree<I>n</I>&quot; arguments are allowed and are applied
+in the order that they appear.  If no tree arguments are used,
+then each tree has the same probability of being selected.  If
+some tree arguments are used, any unspecified trees are given
+a zero probability of being chosen.<BR>
+
+</BLOCKQUOTE>
+<P>
+        <B>method</B>   Selects the method used to generate the
+replacement subtree.  The allowed values are the same as those
+for the <B>init.method</B> parameter.  The default is <B>half_and_half.
+<BR>
+</B>
+</P>
+<P>
+        <B>depth</B>   The depth ramp used to generate the replacement
+subtree  The default is &quot;0-4&quot;.<BR>
+
+</P>
+<P>
+<B><A NAME="5.8">5.8 Multiple Populations</A></B></P>
+<P>
+lil-gp supports multiple population runs, in which subpopulations
+evolve separately, exchanging individuals (or parts of individuals)
+periodically.  Breeding parameters can be set individually for
+each subpop.  The frequency of exchange and the exchange topology
+are set via parameters</P>
+<P>
+All three of these populations must be set to use multiple populations:
+<BR>
+
+</P>
+<CENTER><TABLE BORDER="2" ALIGN="center" WIDTH="100%">
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>multiple.subpops</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">type:  integer        </TD>
+<TD ALIGN="LEFT" VALIGN="TOP">The number of subpopulations (each of pop_size individuals) for
+multipop runs.  The default of 1 specifies an ordinary, singlepop
+run.</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">default:  1
+</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>multiple.exch_gen</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">type:  integer        
+</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">How often (in generations) the subpop exchange takes place.</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">default:  none</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>multiple.exchanges</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">type: integer        </TD>
+<TD ALIGN="LEFT" VALIGN="TOP">The number of sets of exchanges done.</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">default: none
+</TD>
+</TR>
+</TABLE></CENTER>
+<P>&nbsp;
+   
+</P>
+<P>
+Any breeding parameter can be set for a specific subpop by prefixing
+the parameter name with &quot;<B>subpop[#]</B>.&quot;.  (Occurrences
+of &quot;#&quot; in this parameter names of section should be
+replaced with a subpopulation number, in the range [1; <B>multiple.subpops</B>
+].)  The unprefixed form of the parameter name acts a default.
+ For instance, when looking for the operator for the first phase
+for breeding subpop 3, lil-gp will first look for a parameter
+named <B>subpop[3].breed[1].operator</B>.  If that is not found,
+it will look for a parameter named just <B>breed[1].operator</B>.
+If that is not found, lil-gp will stop with an error message.</P>
+<P>
+Exchange of information between subpopulations can take one of
+two forms.  In the first, whole individuals are copied from one
+subpop to another, replacing some of the individuals in the destination
+subpop.  The other applies only to individuals composed of multiple
+trees.  The exchange process can create a new individual by taking
+different trees from (possibly) individuals in (possibly) different
+subpops, and using the resulting composite individual to replace
+an existing individual</P>
+<P>
+You specify a set of exchanges by first giving the following three
+parameters: (&quot;#&quot; in all these should be replaced with
+a number from 1; : : :; <B>multiple.exchanges</B> .)<BR>
+
+</P>
+<CENTER><TABLE BORDER="2" ALIGN="center" WIDTH="100%">
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>exch[#].to</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">type:  integer </TD>
+<TD ALIGN="LEFT" VALIGN="TOP">The number of the subpop to receive the individuals.</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">default:  none</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>exch[#].toselect</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">type:  selection method       
+</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">The method used to select the individuals to be replaced in the
+destination subpopulation.</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">default:  none</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>exch[#].count</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">type:  integer </TD>
+<TD ALIGN="LEFT" VALIGN="TOP">How many individuals to replace with this exchange.</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">default:  none</TD>
+</TR>
+</TABLE></CENTER>
+
+<P>
+For the simple transfer of a whole individual, you specify two
+more parameters:<BR>
+
+</P>
+<CENTER><TABLE BORDER="2" ALIGN="center" WIDTH="100%">
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>exch[#].from</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">type:  integer </TD>
+<TD ALIGN="LEFT" VALIGN="TOP">The subpop to take the individuals out of.  Individuals are always
+<I>copied</I> ; the donor subpop is left unchanged.</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">default:  none</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>exch[#].fromselect</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">type:  selection method</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">The method used to select the individuals to be copied out.</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">default:  none</TD>
+</TR>
+</TABLE></CENTER>
+<P>&nbsp;</P>
+<P>
+For example, consider a ring of three subpopulations.  Each subpopulation
+chooses its five best members and sends them to the next subpop
+in the ring.  Each takes the individuals sent to it and uses them
+to replace its five worst members.  The topology parameters for
+this would look like</P>
+<PRE>
+<B>multiple.subpops = 3</B>
+<B>multiple.exch_gen = 10    # exchange every 10 generations</B>
+<B>multiple.exchanges = 3<BR>
+</B>
+<B>exch[1].from = 1</B>
+<B>exch[1].fromselect = best</B>
+<B>exch[1].to = 2</B>
+<B>exch[1].toselect = worst</B>
+<B>exch[1].count = 5<BR>
+</B>
+<B>exch[2].from = 2</B>
+<B>exch[2].fromselect = best</B>
+<B>exch[2].to = 3</B>
+<B>exch[2].toselect = worst</B>
+<B>exch[2].count = 5<BR>
+</B>
+<B>exch[3].from = 3</B>
+<B>exch[3].fromselect = best</B>
+<B>exch[3].to = 1</B>
+<B>exch[3].toselect = worst</B>
+<B>exch[3].count = 5<BR></B></PRE>
+<P>
+To build a new individual from pieces of current ones, you need
+to
+specify a <B>from</B> and/or <B>fromselect</B> for each tree instead:
+<BR>
+
+</P>
+<CENTER><TABLE BORDER="2" ALIGN="center" WIDTH="100%">
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>exch[#].from.tree[#]</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">type:  integer </TD>
+<TD ALIGN="LEFT" VALIGN="TOP">default:  none</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>exch[#].fromselect.tree[#]</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">type: string </TD>
+<TD ALIGN="LEFT" VALIGN="TOP">default: none</TD>
+</TR>
+</TABLE></CENTER>
+<P>&nbsp;
+   
+</P>
+<P>
+There are four possibilities, for each tree:<BR>
+
+</P>
+<P>
+<B>from and fromselect are both set</B>.
+</P>
+<P>
+In this case, the selection method <B>fromselect</B> is used to
+select an individual from the subpop <B>from</B>, and the tree
+is taken from that individual.<BR>
+
+</P>
+<P>
+<B>only from is set.</B>
+</P>
+<P>
+The parameter <B>exch[#].fromselect</B> (with no tree number)
+is examined for a default.  If it is found, then it is used as
+the selection method as in the first case.  If it is not found,
+an error message results.<BR>
+
+</P>
+<P>
+<B>only fromselect is set</B>.
+</P>
+<P>
+<B>fromselect </B>should be set to the string &quot;as<I>n</I>&quot;,
+where <I>n</I> is a tree number.  This means &quot;take this tree
+from the same individual you took tree <I>n</I> from.&quot;  If
+it is set to anything else an error message results.<BR>
+
+</P>
+<P>
+<B>neither is set</B>.
+</P>
+<P>
+        The tree is taken from the individual selected to be replaced
+(i.e., that tree is just left alone).<BR>
+
+</P>
+<P>
+Consider this exotic (and probably not terribly useful) example.
+ We have three subpops and individuals composed of four trees.
+ We want to take the worst individuals in subpop 1, replace their
+tree 0 with that from an individual in subpop 2 (using the fitness
+selection method), and replace both trees 1 and 2 with those from
+a single individual in subpop 3 (using tournament selection with
+a tournament size of 7).  We want to leave tree 3 alone.  We want
+to replace 10 individuals in this manner.  The following parameters
+will set this up</P>
+<PRE>
+<B>exch[1].to = 1</B>
+<B>exch[1].toselect = worst</B>
+<B>exch[1].count = 10</B>
+<B>; replace tree 0 with one from an individual in subpop 2, fitness
+selection</B>
+<B>exch[1].from.tree[0] = 2</B>
+<B>exch[1].fromselect.tree[0] = fitness</B>
+<B>; replace tree 1 with one from an indiviudal in subpop 3, tournament
+selection</B>
+<B>exch[1].from.tree[1] = 3</B>
+<B>exch[1].fromselect.tree[1] = tournament, size=7</B>
+<B>; replace tree 2 with the one from the individual that you
+got tree 1 from</B>
+<B>exch[1].fromselect.tree[2] = as1</B>
+<B>; no parameters for tree 3 means leave it unchanged<BR></B></PRE>
+<P>
+Exchanges are done in the order that they are specified in the
+parameter file.  Individuals that are placed into a subpopulation
+(either copied whole or created from different trees) are marked
+as ineligible to be written over by another exchange during that
+generation.  They can, however, contribute part or all of themselves
+to other exchanges.<BR>
+<BR>
+
+</P>
+</BODY>
+</HTML>

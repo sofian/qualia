@@ -1,0 +1,4 @@
+SHELL = /bin/sh
+
+all:
+	${SHELL} ./bootstrap

@@ -1,0 +1,325 @@
+<HTML>
+<HEAD>
+
+<META NAME="GENERATOR" CONTENT="Internet Assistant for Microsoft Word 2.0z">
+<TITLE>                    lil-gp  1</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+
+<H1 ALIGN="center"><FONT SIZE="4"></FONT>
+                    lil-gp  1.0  User's  Manual<BR>
+
+</H1>
+<P ALIGN="center">
+      Douglas Zongker                          Dr.  Bill
+Punch
+</P>
+<P ALIGN="center">
+ Michigan State University                Michigan State
+University
+</P>
+<P ALIGN="center">
+  zongker@isl.cps.msu.edu                   punch@isl.cps.msu.edu
+<BR>
+
+</P>
+<P ALIGN="center">
+                            11 July 1995<BR>
+
+</P>
+<P>
+Copyright (c) 1995 Michigan State University.<BR>
+
+</P>
+<P>
+This program is free software; you can redistribute it and/or
+modify it under the terms of version 2 of the GNU General Public
+License as published by the Free Software Foundation.<BR>
+
+</P>
+<P>
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+General Public License for more details.<BR>
+
+</P>
+<P>
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software Foundation,
+Inc., 675 Mass Ave, Cambridge, MA 02139, USA.<BR>
+<BR>
+<BR>
+
+</P>
+<P>
+<B><FONT SIZE="5">Contents<BR>
+</FONT></B>
+</P>
+<P>
+<B><A HREF="lil-gp.ch1.htm">1    Introduction</A></B>
+</P>
+<BLOCKQUOTE>
+     <A HREF="lil-gp.ch1.htm#1.1">1.1    Features</A>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+     <A HREF="lil-gp.ch1.htm#1.2">1.2    Kernel</A>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+     <A HREF="lil-gp.ch1.htm#1.3">1.3    Specification of Problems
+</A></BLOCKQUOTE>
+<BLOCKQUOTE>
+     <A HREF="lil-gp.ch1.htm#1.4">1.4    Multiple Populations</A>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+     <A HREF="lil-gp.ch1.htm#1.5">1.5    Availability</A>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+     <A HREF="lil-gp.ch1.htm#1.6">1.6    Author</A><BR>
+
+</BLOCKQUOTE>
+<P>
+<B><A HREF="lil-gp.ch2.htm">2    Background</A></B>
+</P>
+<BLOCKQUOTE>
+     <A HREF="lil-gp.ch2.htm#2.1">2.1    Introduction</A>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+     <A HREF="lil-gp.ch2.htm#2.2">2.2    Defining an Application</A>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+            <A HREF="lil-gp.ch2.htm#2.2.1">2.2.1     Closure
+</A></BLOCKQUOTE>
+<BLOCKQUOTE>
+            <A HREF="lil-gp.ch2.htm#2.2.2">2.2.2     Examples</A>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+     <A HREF="lil-gp.ch2.htm#2.3">2.3    Size of Individuals</A>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+     <A HREF="lil-gp.ch2.htm#2.4">2.4    Fitness</A>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+     <A HREF="lil-gp.ch2.htm#2.5">2.5    Population Initialization</A>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+     <A HREF="lil-gp.ch2.htm#2.6">2.6    Selection</A>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+    <A HREF="lil-gp.ch2.htm#2.7">2.7    Operators</A></BLOCKQUOTE>
+<BLOCKQUOTE>
+<TABLE BORDER="0" ALIGN="DEFAULT" WIDTH="50%">
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="5%"></TD>
+<TD ALIGN="LEFT" VALIGN="TOP"> <A HREF="lil-gp.ch2.htm#2.7.1">2.7.1 Crossover</A></TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="5%"></TD>
+<TD ALIGN="LEFT" VALIGN="TOP"><A HREF="lil-gp.ch2.htm#2.7.2">2.7.2     Reproduction</A></TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%"></TD>
+<TD ALIGN="LEFT" VALIGN="TOP"><A HREF="lil-gp.ch2.htm#2.7.3">2.7.3     Mutation</A></TD>
+</TR>
+</TABLE>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+     <A HREF="lil-gp.ch2.htm#2.8">2.8    Automatically Defined Functions (ADFs)
+</A></BLOCKQUOTE>
+<BLOCKQUOTE>
+            <A HREF="lil-gp.ch2.htm#2.8.1">2.8.1     ADFs in lil-gp</A><BR>
+
+</BLOCKQUOTE>
+<P>
+<B><A HREF="lil-gp.ch3.htm">3    Compiling lil-gp</A></B>
+</P>
+<BLOCKQUOTE>
+     <A HREF="lil-gp.ch3.htm#3.1">3.1    Preparing the kernel
+</A></BLOCKQUOTE>
+<BLOCKQUOTE>
+     <A HREF="lil-gp.ch3.htm#3.2">3.2    Building the Sample Problems</A>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+     <A HREF="lil-gp.ch3.htm#3.3">3.3    Running the Sample Problems</A>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<TABLE BORDER="0" ALIGN="DEFAULT" WIDTH="75%">
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%"></TD>
+<TD ALIGN="LEFT" VALIGN="TOP"><A HREF="lil-gp.ch3.htm#3.3.1">3.3.1     Symbolic Regression</A></TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%"></TD>
+<TD ALIGN="LEFT" VALIGN="TOP"><A HREF="lil-gp.ch3.htm#3.3.2">3.3.2     Artificial Ant</A></TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%"></TD>
+<TD ALIGN="LEFT" VALIGN="TOP"><A HREF="lil-gp.ch3.htm#3.3.3">3.3.3     Boolean 11-Multiplexer</A></TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%"></TD>
+<TD ALIGN="LEFT" VALIGN="TOP"><A HREF="lil-gp.ch3.htm#3.3.4">3.3.4     Two-boxes</A></TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%"></TD>
+<TD ALIGN="LEFT" VALIGN="TOP"><A HREF="lil-gp.ch3.htm#3.3.5">3.3.5     Lawnmower</A></TD>
+</TR>
+</TABLE>
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+     <A HREF="lil-gp.ch3.htm#3.4">3.4    Compiling Without the Makefile</A><BR>
+
+</BLOCKQUOTE>
+<P>
+<B><A HREF="lil-gp.ch4.htm">4    Running lil-gp</A></B>
+</P>
+<BLOCKQUOTE>
+     <A HREF="lil-gp.ch4.htm#4.1">4.1    Invoking lil-gp</A>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+            <A HREF="lil-gp.ch4.htm#4.1.1">4.1.1     Parameter Files</A>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+     <A HREF="lil-gp.ch4.htm#4.2">4.2    Output Files</A><BR>
+
+</BLOCKQUOTE>
+<P>
+<B><A HREF="lil-gp.ch5.htm">5    Parameters</A></B>
+</P>
+<BLOCKQUOTE>
+     <A HREF="lil-gp.ch5.htm#5.1">5.1    General</A>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+     <A HREF="lil-gp.ch5.htm#5.2">5.2    Output</A>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+     <A HREF="lil-gp.ch5.htm#5.3">5.3    Size Limits</A>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+     <A HREF="lil-gp.ch5.htm#5.4">5.4    Initialization</A>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+     <A HREF="lil-gp.ch5.htm#5.5">5.5    Selection Methods</A>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+     <A HREF="lil-gp.ch5.htm#5.6">5.6    Breeding</A>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+     <A HREF="lil-gp.ch5.htm#5.7">5.7    Operators</A>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+     <A HREF="lil-gp.ch5.htm#5.8">5.8    Multiple Populations</A><BR>
+
+</BLOCKQUOTE>
+<P>
+<B><A HREF="lil-gp.ch6.htm">6    Implementing Problems</A></B>
+</P>
+<BLOCKQUOTE>
+     <A HREF="lil-gp.ch6.htm#6.1">6.1    Basic Definitions</A>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+     <A HREF="lil-gp.ch6.htm#6.2">6.2    Functions and Terminals</A></BLOCKQUOTE>
+<BLOCKQUOTE>
+<TABLE BORDER="0" ALIGN="DEFAULT" WIDTH="100%">
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%"></TD>
+<TD ALIGN="LEFT" VALIGN="TOP"><A HREF="#6.2.1">6.2.1     Ephemeral Random Constants</A></TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%"></TD>
+<TD ALIGN="LEFT" VALIGN="TOP"><A HREF="lil-gp.ch6.htm#6.2.2">6.2.2     Evaluation and Argument Functions</A></TD>
+</TR>
+</TABLE>
+</BLOCKQUOTE>
+
+<BLOCKQUOTE>
+     <A HREF="lil-gp.ch6.htm#6.3">6.3    User Callbacks</A></BLOCKQUOTE>
+<BLOCKQUOTE>
+<TABLE BORDER="0" ALIGN="DEFAULT" WIDTH="100%">
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%"></TD>
+<TD ALIGN="LEFT" VALIGN="TOP"><A HREF="lil-gp.ch6.htm#6.3.1">6.3.1     Defining the Function Set(s)</A></TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%"></TD>
+<TD ALIGN="LEFT" VALIGN="TOP"><A HREF="lil-gp.ch6.htm#6.3.2">6.3.2 Fitness Evaluation Function</A></TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%"></TD>
+<TD><A HREF="lil-gp.ch6.htm#6.3.3">6.3.3     Custom Output</A></TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%"></TD>
+<TD><A HREF="lil-gp.ch6.htm#6.3.4">6.3.4     Application Initialization</A></TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%"></TD>
+<TD><A HREF="lil-gp.ch6.htm#6.3.5">6.3.5     Output Streams</A>
+</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%"></TD>
+<TD><A HREF="lil-gp.ch6.htm#6.3.6">6.3.6     Checkpoint Files</A></TD>
+</TR>
+</TABLE>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+     <A HREF="lil-gp.ch6.htm#6.4">6.4    Order of Processing</A>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+     <A HREF="lil-gp.ch6.htm#6.5">6.5    Kernel Considerations</A>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+            <A HREF="lil-gp.ch6.htm#6.5.1">6.5.1     Memory Allocation</A>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+            <A HREF="lil-gp.ch6.htm#6.5.2">6.5.2     Using Parameters</A><BR>
+
+</BLOCKQUOTE>
+<P>
+<B><A HREF="lil-gp.ch7.htm">7    Extending the Kernel</A></B>
+</P>
+<BLOCKQUOTE>
+     <A HREF="lil-gp.ch7.htm#7.1">7.1    Tree Representation</A>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+     <A HREF="lil-gp.ch7.htm#7.2">7.2    Selection Methods</A>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+     <A HREF="lil-gp.ch7.htm#7.3">7.3    Operators</A>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+     <A HREF="lil-gp.ch7.htm#7.4">7.4    Miscellany</A></BLOCKQUOTE>
+<BLOCKQUOTE>
+<TABLE BORDER="0" ALIGN="DEFAULT" WIDTH="100%">
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%"></TD>
+<TD ALIGN="LEFT" VALIGN="TOP"><A HREF="lil-gp.ch7.htm#7.4.1">7.4.1     Tree Generation Spaces</A></TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%"></TD>
+<TD ALIGN="LEFT" VALIGN="TOP"><A HREF="lil-gp.ch7.htm#7.4.2">7.4.2     Saved Individuals</A></TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%"></TD>
+<TD><A HREF="lil-gp.ch7.htm#7.4.3">7.4.3     Ephemeral Random Constants</A></TD>
+</TR>
+
+
+
+</TABLE>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+            
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+            
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+            <BR>
+<BR>
+
+</BLOCKQUOTE>
+</BODY>
+</HTML>

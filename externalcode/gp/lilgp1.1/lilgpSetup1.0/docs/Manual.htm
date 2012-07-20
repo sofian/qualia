@@ -1,0 +1,570 @@
+<HTML>
+<HEAD>
+<TITLE>lilgpSetup User's Manual</TITLE>
+</HEAD>
+
+<BODY bgcolor="#dfdfdf">
+<P>
+<H1>lilgpSetup User's Manual</H1>
+<P>
+
+<h2>1.1 Introduction</H2>
+<font size=3>
+<I>LilgpSetup</I> is a companion utility for <I>lil-gp</I> that will
+help you construct the parameter files necessary to run experiments
+with <I>lil-gp</I>.  It provides a set of fill-in forms that are
+organized by the type of parameters they are responsible for.  You
+simply enter parameters in the required fields, many of which already
+contain default values that follow the recommendations found in John
+Koza's <I>Genetic Programming</I> and <I>Genetic Programming II</I>.
+Once the parameters have been entered, <I>lilgpSetup</I> will parse
+them and report any errors or warnings it has found.  After the you
+have resolved the errors, <I>lilgpSetup</I> will automatically
+generate a parameter file that is ready to be used by
+<I>lil-gp</I>.<BR>
+
+<P>
+If you are unfamiliar with genetic algorithms, genetic programming, or
+<I>lil-gp</I>, then you should begin by reading the <I>lil-gp User's
+Manual</I>.
+</font>
+<P>
+
+<h3>1.1.1 Features</h3>
+<font size=3>
+<I>lilgpSetup</I> features include:
+<UL>
+<LI>Ease of use: graphical interface allows point and click selection
+of several parameters 
+<LI>Secure: built-in error checking for every parameter allows nearly error-proof entry of parameters 
+<LI>Parameter
+file generation: automatically creates the <I>lil-gp</I> parameter file 
+<LI>Parameter file support: able to read existing parameter files
+and edit them 
+<LI>Visual sub-population editor: graphical editor
+allows point and click construction of sub-population exchanges
+<LI>Complete: supports most of the <I>lil-gp</I> parameter file
+features 
+<LI>Portable: written in Java for portability 
+<LI>Help: point
+and click access to definitions of every parameter
+</UL>
+</font>
+<P>
+
+<h3>1.1.2 Limitations</h3>
+<font size=3>
+<I>lilgpSetup</I> does not support
+the following features of <I>lil-gp</I>:
+<UL>
+<LI>no built in support for any of the parameters
+associated with problems that define individuals in the population as
+<I>sets</I> of trees, rather than as <I>single</I> trees.  However,
+these parameters can be entered in the <B>User Defined Parameters</B>
+window, but they will not be checked for errors.
+ The following table summarizes the parameters that are not supported:
+</UL>
+
+<center>
+<TABLE BORDER=1>
+<TR><TD><FONT size=3 FACE="Courier New">tree[#].max_nodes</FONT>
+</TD></TR>
+<TR><TD><FONT SIZE=3 FACE="Courier New">tree[#].max_depth</FONT>
+</TD></TR>
+<TR><TD><FONT SIZE=3 FACE="Courier New">init.tree[#].method</FONT>
+</TD></TR>
+<TR><TD><FONT SIZE=3 FACE="Courier New">init.tree[#].depth</FONT>
+</TD></TR>
+<TR><TD><FONT SIZE=3 FACE="Courier New">exch[#].from.tree[#]</FONT>
+</TD></TR>
+<TR><TD><FONT SIZE=3 FACE="Courier New">exch[#].fromselect[#]</FONT>
+</TD></TR>
+</TABLE>
+</center>
+<UL>
+<LI>No support for parameter file pre-processor directives
+<LI>Not guaranteed to read parameter files that were <I>not</I>
+created with <I>lilgpSetup</I>.  Unknown parameters are placed
+in the <B>User Defined Parameter</B> window.
+</UL>
+</font>
+<P>
+
+<h3>1.1.3 Author</h3>
+<font size=3>
+This software was written by Ryan Shoemaker under the direction
+of Dr. William Punch.  Other companion utilities for <I>lil-gp</I>
+have been developed by Ryan Shoemaker and Dave Guyette as part
+of a joint project.  <BR>
+<P>
+Comments and suggestions may be sent to:<br>
+<blockquote>
+<FONT SIZE=3 FACE="Courier New">
+<a href="mailto:shoema16@cps.msu.edu">shoema16@cps.msu.edu</a><BR>
+<a href="mailto:punch@cps.msu.edu">punch@cps.msu.edu</a>
+<P>
+Department of Computer Science<br>
+3115 Engineering Building<br>
+Michigan State University<br>
+East Lansing, MI 48824<br>
+USA<br>
+</font>
+</blockquote>
+</font>
+<P>
+
+<h2>1.2 Getting Started</h2>
+<font size=3>
+When you unpack the distribution, you should get this
+directory tree:
+<P>
+<pre>
+<FONT SIZE=3 FACE="Courier New">
+lilgpSetup/ 
+    classes/          (byte-code files)
+    docs/             (documentation files)
+        images/       (image files used in documentation)
+    javadocs/         (source-code documentation files)
+        images/       (image files used in source-code documentation)
+    src/              (source-code files)
+</FONT>
+</pre>
+<P>
+Before using <I>lilgpSetup</I>, you must have Java JDK 1.02 installed
+on your system.  To generate the <FONT FACE="Courier
+New">.class</FONT> files, change into the <FONT FACE="Courier
+New">lilgpSetup/src</FONT> directory and type:
+<P>
+<FONT SIZE=3 FACE="Courier New">javac -d ../classes *.java </FONT>
+<P>
+To run <I>lilgpSetup</I>, simply change into the <FONT FACE="Courier
+New">lilgpSetup/classes</FONT><FONT > directory and type:
+<P>
+<FONT SIZE=3 FACE="Courier New">java lilgpSetup</FONT>
+<P>
+If you are running the utilities under Windows95/NT, you will have to
+modify the paths in the above commands and also add the <FONT
+SIZE=3 FACE="Courier New">lilgpSetup/classes</FONT><FONT > directory to your
+<FONT SIZE=3 FACE="Courier New">CLASSPATH</FONT> <I>in place of</I> the dot
+directory &quot;.&quot;.<BR>
+
+<P>
+This is version 1.0 of <I>lilgpetup</I>.  Updates and information
+related to <I>lilgpSetup</I> can be found on the World Wide Web at <a
+href="http://isl.cps.msu.edu">http://isl.cps.msu.edu</a><FONT >.
+<P>
+</font>
+
+<h2>1.3 Window Descriptions</h2>
+<font size=3>
+The user interface for <I>lilgpSetup</I> is structured around the
+different parameter categories outlined in Chapter 5 of [Zon96].  Each
+parameter category has a panel dedicated to it in <I>lilgpSetup</I>
+and switching between them is accomplished by clicking on the buttons
+on the left-hand side of the main window. Each panel contains a number
+of fields and components that allow you to select values for the
+parameters that control the operation of <I>lil-gp</I>.  Several of
+these components already contain values when you run
+<I>lilgpSetup</I>.  These are the default values that the system
+assumes if you do not change them.  Each component has a label next to
+it that can be used to request immediate help for that parameter.
+Simply place the mouse over the label and hold down the <FONT
+SIZE=3 FACE="Courier New">Ctrl</FONT> button while you click on the label.
+This will open the on-line help system to a page that contains
+information about the selected parameter.<BR>
+
+<P>
+This remainder of this manual will be dedicated to providing
+screen-by-screen description of every feature available in
+<I>lilgpSetup</I>.  Each section will focus on a specific window in
+the system and the features available from it.
+<P>
+</font>
+
+<h3>1.3.1 Menu Options</h3>
+<font size=3>
+The only two menus available on the menubar are <I>File</I> and
+<I>Help</I>.  The <I>File</I> menu offers three options: <I>Open</I>,
+<I>Save As</I>, and <I>Exit</I>.  Selecting the <I>Open</I> or <I>Save
+As</I> menu items will open a file dialog and allow you to open and
+save parameter files.  Selecting the <I>Exit</I> menu item will exit
+the system after asking for confirmation.  The <I>Help</I> menu has
+two menu items: <I>Help</I> and <I>About</I>. Selecting <I>Help</I>
+will open an on-line help system that will allow you to search by
+keyword and selecting <I>About</I> will display information about the
+author and version of <I>lilgpSetup</I>.
+<P>
+</font>
+
+<h3>1.3.2 The General Parameters Window</h3>
+<font size=3>
+This window allows you to enter all of the parameters
+that control the over all operation of <I>lil-gp</I>.  As you can see
+in Figure 1, this parameter panel contains three textfields for
+entering parameter values.  The following table summarizes legal
+values for these fields:<BR>
+<p>
+<center>
+<TABLE BORDER=1>
+<TR bgcolor="#aaaaff"><TD><CENTER>Parameter Name</CENTER>
+</TD><TD><CENTER>Expected Data Type and Range</CENTER>
+</TD><TD><CENTER>Default Value</CENTER></TD></TR>
+<TR><TD><CENTER><FONT SIZE=3 FACE="Courier New">max_generations</FONT></CENTER>
+</TD><TD><CENTER>positive integer</CENTER></TD><TD><CENTER>none</CENTER>
+</TD></TR>
+<TR><TD><CENTER><FONT SIZE=3 FACE="Courier New">pop_size</FONT></CENTER>
+</TD><TD><CENTER>positive integer</CENTER></TD><TD><CENTER>none</CENTER>
+</TD></TR>
+<TR><TD><CENTER><FONT SIZE=3 FACE="Courier New">random_seed</FONT></CENTER>
+</TD><TD><CENTER>integer</CENTER></TD><TD><CENTER>1</CENTER>
+</TD></TR>
+</TABLE>
+</center>
+
+<p>
+<CENTER>
+<img src="images/general.jpg"><br><p>
+<strong>Figure 1 - General Parameters Window</strong><BR>
+</CENTER>
+<P>
+</font>
+
+<h3>1.3.3 The Output Parameters Window</h3>
+<font size=3>
+This panel allows you to enter parameters that control <I>lil-gp's</I>
+output files and checkpoint files.<BR>
+<p>
+<center>
+<TABLE BORDER=1>
+<TR bgcolor="#AAAAFF"><TD><CENTER>Parameter Name</CENTER></TD><TD><CENTER>Expected Data Type and Range</CENTER>
+</TD><TD><CENTER>Default Value</CENTER></TD></TR>
+<TR><TD><CENTER><FONT SIZE=3 FACE="Courier New">output.basename</FONT></CENTER>
+</TD><TD><CENTER>string</CENTER></TD><TD><CENTER>lilgp</CENTER>
+</TD></TR>
+<TR><TD><CENTER><FONT SIZE=3 FACE="Courier New">output.detail</FONT></CENTER>
+</TD><TD><CENTER>integer between 0 and 100</CENTER>
+</TD><TD><CENTER>50</CENTER></TD></TR>
+<TR><TD><CENTER><FONT SIZE=3 FACE="Courier New">output.stt_interval</FONT></CENTER>
+</TD><TD><CENTER>integer between 1 and max_generations</CENTER>
+</TD><TD><CENTER>1</CENTER></TD></TR>
+<TR><TD><CENTER><FONT SIZE=3 FACE="Courier New">output.bestn</FONT></CENTER>
+</TD><TD><CENTER>integer between 1 and pop_size</CENTER>
+</TD><TD><CENTER>1</CENTER></TD></TR>
+<TR><TD><CENTER><FONT SIZE=3 FACE="Courier New">output.digits</FONT></CENTER>
+</TD><TD><CENTER>positive integer</CENTER></TD><TD><CENTER>4</CENTER>
+</TD></TR>
+<TR><TD><CENTER><FONT SIZE=3 FACE="Courier New">checkpoint.interval</FONT></CENTER>
+</TD><TD><CENTER>integer between 1 and max_generations</CENTER>
+</TD><TD><CENTER>none</CENTER></TD></TR>
+<TR><TD><CENTER><FONT SIZE=3 FACE="Courier New">checkpoint.filename</FONT></CENTER>
+</TD><TD><CENTER>string</CENTER></TD><TD><CENTER>gp%06d.ckp</CENTER>
+</TD></TR>
+<TR><TD><CENTER><FONT SIZE=3 FACE="Courier New">checkpoint.compress</FONT></CENTER>
+</TD><TD><CENTER>string</CENTER></TD><TD><CENTER>none</CENTER>
+</TD></TR>
+</TABLE>
+</center>
+<P>
+<P>
+<CENTER>
+<img src="images/output.jpg"><br><p>
+<strong>Figure 2 - Output Parameters Window</strong>
+<BR>
+</CENTER>
+</font>
+<P>
+
+<h3>1.3.4 The Size Limit Parameter Window</h3>
+<font size=3>
+This panel allows you to enter the parameters that control the size of
+individual trees in the population.<BR>
+<p>
+<center>
+<TABLE BORDER=1>
+<TR bgcolor="#AAAAFF"><TD><CENTER>Parameter Name</CENTER></TD><TD><CENTER>Expected Data Type and Range</CENTER>
+</TD><TD><CENTER>Default Value</CENTER></TD></TR>
+<TR><TD><CENTER><FONT SIZE=3 FACE="Courier New">max_nodes</FONT></CENTER>
+</TD><TD><CENTER>positive integer</CENTER></TD><TD><CENTER>none</CENTER>
+</TD></TR>
+<TR><TD><CENTER><FONT SIZE=3 FACE="Courier New">max_depth</FONT></CENTER>
+</TD><TD><CENTER>positive integer</CENTER></TD><TD><CENTER>none</CENTER>
+</TD></TR>
+</TABLE>
+</center>
+
+<P>
+<P>
+<CENTER>
+<img src="images/limits.jpg"><br><p>
+<strong>Figure 3 - Size Limit Parameters Window</strong>
+</CENTER>
+<P>
+</font>
+
+<h3>1.3.5 The Tree Initialization Window</h3>
+<font size=3>
+Parameters entered in this window will control how the population of
+trees is initialized.<BR>
+<p>
+<center>
+<TABLE BORDER=1>
+<TR bgcolor="#AAAAFF"><TD><CENTER>Parameter Name</CENTER></TD><TD><CENTER>Expected Data Type and Range</CENTER>
+</TD><TD><CENTER>Default Value</CENTER></TD></TR>
+<TR><TD><CENTER><FONT SIZE=3 FACE="Courier New">init.method</FONT></CENTER>
+</TD><TD><CENTER>half_and_half, grow, or full</CENTER>
+</TD><TD><CENTER>half_and_half</CENTER></TD></TR>
+<TR><TD><CENTER><FONT SIZE=3 FACE="Courier New">init.depth</FONT></CENTER>
+</TD><TD><CENTER>string</CENTER></TD><TD><CENTER>2-6</CENTER>
+</TD></TR>
+<TR><TD><CENTER><FONT SIZE=3 FACE="Courier New">init.random_attempts</FONT></CENTER>
+</TD><TD><CENTER>positive integer</CENTER></TD><TD><CENTER>100</CENTER>
+</TD></TR>
+</TABLE>
+</center>
+
+<P>
+<P>
+<CENTER>
+<img src="images/init.jpg"><br><p>
+<strong>Figure 4 - Tree Initialization Parameter Window</strong>
+</CENTER>
+<P>
+</font>
+
+<h3>1.3.6 The Breeding Parameter Window</h3>
+<font size=3>
+This window allows you to select the number of breed phases and
+whether or not to use probabilistic operators.  After entering the
+number of breed phases, click the '<I>Go</I>' button to open the
+<B>Phase Parameters</B> window where you will select the individual
+operators and rates.  If you want to delete all of the current breed
+phase operators and rates from the database, simply press the
+'<I>Purge</I>' button.<BR>
+
+<p>
+<center>
+<TABLE BORDER=1>
+<TR bgcolor="#AAAAFF"><TD><CENTER>Parameter Name</CENTER></TD><TD><CENTER>Expected Data Type and Range</CENTER>
+</TD><TD><CENTER>Default Value</CENTER></TD></TR>
+<TR><TD><CENTER><FONT SIZE=3 FACE="Courier New">breed_phase</FONT></CENTER>
+</TD><TD><CENTER>positive integer</CENTER></TD><TD><CENTER>none</CENTER>
+</TD></TR>
+<TR><TD><CENTER><FONT SIZE=3 FACE="Courier New">probabilistic_operators</FONT></CENTER>
+</TD><TD><CENTER>on or off</CENTER></TD><TD><CENTER>on</CENTER>
+</TD></TR>
+</TABLE>
+</center>
+
+<P>
+<P>
+<CENTER>
+<img src="images/breeding.jpg"><br><p>
+<strong>Figure 5 - Breeding Parameters Window</strong>
+</CENTER>
+<P>
+</font>
+
+<h3>1.3.7 The Phase Parameters Window</h3>
+<font size=3>
+This window allows you to select the breed operators, selection
+methods, and breed rates for each phase.  The left-hand panel contains
+all of the parameter labels for the phase panels.  The phase panels
+respond to your selections by hiding and showing only those options
+appropriate for the current selection.  For example, when you select
+'crossover' in an operator field, the 'cutoff', 'proportion', 'size',
+'method', and 'depth' options are hidden since they do not apply to
+the crossover operation. When you are through selecting the options
+for each phase, click the '<I>Accept</I>' button to save your changes
+and return to the main window.  <BR>
+
+<p>
+<center>
+<TABLE BORDER=1>
+<TR bgcolor="#AAAAFF"><TD><CENTER>Parameter Name</CENTER></TD><TD><CENTER>Expected Data Type and Range</CENTER>
+</TD><TD><CENTER>Default Value</CENTER></TD></TR>
+<TR><TD><CENTER><FONT SIZE=3 FACE="Courier New">operator</FONT></CENTER>
+</TD><TD><CENTER>crossover, reproduction, or mutation</CENTER>
+</TD><TD><CENTER>crossover</CENTER></TD></TR>
+<TR><TD><CENTER><FONT SIZE=3 FACE="Courier New">selection</FONT></CENTER>
+</TD><TD><CENTER>fitness, fitness_overselect, tournament, inverse_fitness, random, best, or worst</CENTER>
+</TD><TD><CENTER>fitness</CENTER></TD></TR>
+<TR><TD><CENTER><FONT SIZE=3 FACE="Courier New">cutoff</FONT></CENTER>
+</TD><TD><CENTER>real number between 0.0 and 1.0</CENTER>
+</TD><TD>
+<CENTER>
+if <font SIZE=3 FACE="Courier New">pop_size</font> &lt;= 1000<br>
+else 320/<font SIZE=3 FACE="Courier New">pop_size</font></CENTER>
+</TD></TR>
+<TR><TD><CENTER><FONT SIZE=3 FACE="Courier New">proportion</FONT></CENTER>
+</TD><TD><CENTER>real number between 0.0 and 1.0</CENTER>
+</TD><TD><CENTER>0.80</CENTER></TD></TR>
+<TR><TD><CENTER><FONT SIZE=3 FACE="Courier New">size</FONT></CENTER>
+</TD><TD><CENTER>integer between 1 and pop_size</CENTER>
+</TD><TD><CENTER>2</CENTER></TD></TR>
+<TR><TD><CENTER><FONT SIZE=3 FACE="Courier New">keep_trying</FONT></CENTER>
+</TD><TD><CENTER>on or off</CENTER></TD><TD WIDTH=167><CENTER>on</CENTER>
+</TD></TR>
+<TR><TD><CENTER><FONT SIZE=3 FACE="Courier New">internal</FONT></CENTER>
+</TD><TD><CENTER>real number between 0.0 and 1.0</CENTER>
+</TD><TD><CENTER>0.9</CENTER></TD></TR>
+<TR><TD><CENTER><FONT SIZE=3 FACE="Courier New">external</FONT></CENTER>
+</TD><TD><CENTER>real number between 0.0 and 1.0</CENTER>
+</TD><TD><CENTER>0.1</CENTER></TD></TR>
+<TR><TD><CENTER><FONT SIZE=3 FACE="Courier New">method</FONT></CENTER>
+</TD><TD><CENTER>half_and_half, grow, full</CENTER>
+</TD><TD><CENTER>half_and_half</CENTER></TD></TR>
+<TR><TD><CENTER><FONT SIZE=3 FACE="Courier New">depth</FONT></CENTER>
+</TD><TD><CENTER>string</CENTER></TD><TD><CENTER>0-4</CENTER>
+</TD></TR>
+<TR><TD><CENTER><FONT SIZE=3 FACE="Courier New">rate</FONT></CENTER>
+</TD><TD><CENTER>real number between 0.0 and 1.0</CENTER>
+</TD><TD><CENTER>none</CENTER></TD></TR>
+</TABLE>
+</center>
+
+<P>
+<P>
+<CENTER>
+<img src="images/phases.jpg"><br><p>
+<strong>Figure 6 - Phase Parameters Window</strong>
+</CENTER>
+</font>
+
+
+<h3>1.3.8 The Sub Population Parameters Window</h3>
+<font size=3>
+This window is very similar to the <B>Breed Phase Parameters</B>
+window.  After entering the number of sub-populations and the exchange
+frequency, click on the '<I>Go</I>' button to open the exchange editor
+and exchange graph.  This window also has a '<I>Purge</I>' button on
+it to remove any exchange parameters that are currently in the
+database.<BR>
+
+<p>
+<center>
+<TABLE BORDER=1>
+<TR bgcolor="#AAAAFF"><TD><CENTER>Parameter Name</CENTER></TD><TD><CENTER>Expected Data Type and Range</CENTER>
+</TD><TD><CENTER>Default Value</CENTER></TD></TR>
+<TR><TD><CENTER><FONT SIZE=3 FACE="Courier New">multiple.subpops</FONT></CENTER>
+</TD><TD><CENTER>positive integer</CENTER></TD><TD><CENTER>1</CENTER>
+</TD></TR>
+<TR><TD><CENTER><FONT SIZE=3 FACE="Courier New">multiple.exch_gen</FONT> </FONT></CENTER>
+</TD><TD><CENTER>integer between 1 and max_generations</CENTER>
+</TD><TD><CENTER>none</CENTER></TD></TR>
+</TABLE>
+</center>
+
+<P>
+<P>
+Note, there is no field for <FONT SIZE=3 FACE="Courier New">multiple.exchanges</FONT>.
+ This parameter is automatically entered into the database by
+<I>lilgpSetup</I> when you close the sub-population editor.<BR>
+
+<P>
+<CENTER>
+<img src="images/subpops.jpg"><br><p>
+<strong>Figure 7 - Sub Population Parameters Window</strong>
+</CENTER>
+<P>
+</font>
+
+<h3>1.3.9 The Sub Population Editor Window</h3>
+<font size=3>
+This window contains all of the controls needed to create and edit
+sub-population exchanges.  Adding a new exchange requires you to set
+the five components in the top of the panel and click on the
+'<I>Add/Replace</I>' button.  After adding the new exchange, you will
+see a verbal description of it appear in the bottom summary area.  You
+should also see a graphical representation of it in the <B>Sub
+Population Graph</B> window.  There are several other options
+available to you in this window.  To delete an existing exchange,
+select it in the summary portion of the window and press the
+'<I>Delete</I>' button.  Similarly, you can edit and replace exchanges
+by clicking the appropriate buttons.
+<P>
+
+<CENTER>
+<img src="images/popeditor.jpg"><br><p>
+<strong>Figure 8 - Sub Population Editor Window</strong>
+</CENTER>
+<P>
+</font>
+
+<h3>1.3.10 The Sub Population Graph Window</h3>
+<font size=3>
+In this window, you will find a graphic representation of the
+sub-population exchanges that you have entered in the exchange editor.
+There are no controls available in this window - it is for visual
+purposes only.
+<P>
+
+<CENTER>
+<img src="images/popgraph.jpg"><br><p>
+<strong>Figure 9 - Sub Population Graph Window</strong>
+</CENTER>
+<P>
+</font>
+
+<h3>1.3.11 The User Defined Parameters Window</h3>
+<font size=3>
+Any application specific parameters may be typed in this window as
+long as they are of the form '<FONT SIZE=3 FACE="Courier New">parameter =
+value</FONT>' Even though there is no explicit support for the
+multi-tree individual parameters listed in the Limitations section,
+you may enter values for them here.  Unfortunately, the validity of
+the parameter values can not be checked.<BR>
+
+<P>
+If <I>lilgpSetup</I> fails to recognize a parameter while reading from
+a parameter file, then it will assume that the parameter is user
+defined and place it in this window.  As a consequence, if you hand
+edit a parameter file (i.e. in emacs or notepad) and make a
+typographical error, that parameter will likely appear in this window
+along with any legitimate user defined parameters.
+<P>
+
+<CENTER>
+<img src="images/user.jpg"><br><p>
+<strong>Figure 10 - User Defined Parameters Window</strong>
+</CENTER>
+<P>
+</font>
+
+<h3>1.3.12 The Compile Button and Error List</h3>
+<font size=3>
+At any time during the process of entering parameters, you may press
+the '<I>Compile</I>' button found in the lower left corner of the main
+window.  This will cause <I>lilgpSetup</I> to collect all of the
+parameters from each window and check them for errors.  When this
+process is complete, the <B>Error List</B> window will open (or be
+updated if it is already open) and display the results.  Figure 11
+shows what this window looks like when it contains errors.  In this
+case, <I>lilgpSetup</I> has found an error with the <FONT
+SIZE=3 FACE="Courier New">pop_size</FONT> parameter.  Consequently, it can
+not verify any of the variables that depend on <FONT FACE="Courier
+New">pop_size</FONT>, so a warning is issued for <FONT FACE="Courier
+New">output.bestn</FONT>. Entries beginning with '<FONT FACE="Courier
+New">&gt;</FONT>' are comments inserted by <I>lilgpSetup</I>.<BR>
+
+<P>
+<CENTER>
+<img src="images/someerrors.jpg"><br><p>
+<strong>Figure 11</A> - Error Window With Errors</strong>
+</CENTER>
+<P>
+Once you have fixed all of the errors, the <B>Error
+List</B> window should look like Figure 12, and you are ready
+to save the parameter file.  It is not necessary to manually compile
+the parameters before saving the parameter file, <I>lilgpSetup</I>
+automatically checks them for errors before allowing a save to
+occur.  As a result, there is no way of saving a set of parameters
+that contains either errors or warnings.<BR>
+
+<P>
+<CENTER>
+<img src="images/noerrors.jpg"><br><p>
+<strong>Figure 12</A> - Error Window With No Errors</strong>
+</CENTER>
+</font>
+</BODY>
+</HTML>
