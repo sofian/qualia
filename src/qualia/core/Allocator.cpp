@@ -17,7 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "Allocator.h"
-#include <stdlib.h>
 
 
 void* Allocator::malloc(size_t size) {

@@ -32,8 +32,10 @@ extern "C" {
 #define is_arduino() defined(ARDUINO)
 #define is_computer() !defined(__AVR__)
 
+// XXX: not sure we need this..
 #include <assert.h>
 #include <stdlib.h>
+
 #include <float.h>
 #include <limits.h>
 #include <stdint.h>
@@ -122,15 +124,15 @@ typedef float real;
 #define INF FLT_MAX
 #endif
 
-#if is_avr()
-#include "avrdefs.h"
-#endif
-
 #if is_computer()
 #endif
 
 #if defined(__cplusplus)
 }
+#endif
+
+#if is_avr()
+#include "avrdefs.h"
 #endif
 
 #ifdef DEBUG

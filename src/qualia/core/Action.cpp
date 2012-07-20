@@ -18,7 +18,6 @@
  */
 
 #include "Action.h"
-#include <string.h>
 
 Action::Action() : actions(0), nActions(0), dim(0), nConflated(0) {}
 Action::Action(unsigned int dim_, const unsigned int* nActionsInit_) : actions(0), nActions(0), dim(0), nConflated(0) {

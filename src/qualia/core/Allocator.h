@@ -28,7 +28,10 @@
 #ifndef ALLOCATOR_H_
 #define ALLOCATOR_H_
 
+#include "common.h"
+
 #include <stddef.h>
+#include <stdlib.h>
 
 class Allocator {
 public:

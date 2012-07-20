@@ -1,3 +1,4 @@
+#include <qualia/core/avrdefs.h>
 #include <qualia/core/Qualia.h>
 #include <qualia/rl/RLQualia.h>
 #include <qualia/rl/QLearningAgent.h>

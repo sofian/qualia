@@ -22,6 +22,9 @@
 #define ACTION_H_
 
 #include "common.h"
+#include <qualia/core/avrdefs.h>
+
+#include <string.h>
 
 typedef unsigned long action_t;
 typedef unsigned int  action_dim_t;

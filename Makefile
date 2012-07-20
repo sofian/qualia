@@ -1,7 +1,8 @@
 EXAMPLES=$(wildcard tests/*)
 MODE = debug
+PLATFORM = avr
 SCONS = /usr/local/bin/scons
-SCONS += mode=$(MODE)
+SCONS += mode=$(MODE) platform=$(PLATFORM)
 
 .PHONY: all clean install $(EXAMPLES)
 
