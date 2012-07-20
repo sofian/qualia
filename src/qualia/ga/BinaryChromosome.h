@@ -77,7 +77,7 @@ public:
   static void crossoverOnePoint(const Chromosome& parent1, const Chromosome& parent2,
                                 Chromosome* offspring1, Chromosome* offspring2);
   static void crossoverTwoPoint(const Chromosome& parent1, const Chromosome& parent2,
-                                Chromosome* offspring2, Chromosome* offspring2);
+                                Chromosome* offspring1, Chromosome* offspring2);
 
   static void _codeCrossoverOnePoint(uint8_t* offspringCode, const uint8_t* parentCode1, const uint8_t* parentCode2,
                                      unsigned int point, unsigned int codeSize);
