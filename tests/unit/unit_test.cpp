@@ -301,6 +301,7 @@ void testBits() {
 #define DUMMY_PARAMETERS_BITSIZE       61
 #define DUMMY_PARAMETERS_BYTESIZE       8
 #define DUMMY_PARAMETERS_TRAILING_BITS  3
+#define DUMMY_PARAMETERS_N_GENES        9
 
 struct DummyParameters {
   uint8_t value1bit :    1;
@@ -311,7 +312,8 @@ struct DummyParameters {
   uint8_t value8bit;
   uint16_t value10bit : 10;
   uint32_t value22bit : 22;
-  uint8_t value5bit:     5;
+  uint8_t value5bit :    5;
+
   void print() {
     printf("1bit:  %d\n",  value1bit);
     printf("2bit:  %d\n",  value2bit);
@@ -320,17 +322,29 @@ struct DummyParameters {
     printf("6bit:  %d\n",  value6bit);
     printf("8bit:  %d\n",  value8bit);
     printf("10bit: %d\n",  value10bit);
-    printf("5bit: %d\n",  value5bit);
+    printf("22bit: %d\n",  value22bit);
+    printf("5bit: %d\n",   value5bit);
   }
-  void copyFrom(uint8_t* code) {
-    memcpy((uint8_t*)this, code, 8);
+  void copyFrom(const BinaryChromosome& c) {
+    value1bit = (uint8_t)  c.getGeneValue(0);
+    value2bit = (uint8_t)  c.getGeneValue(1);
+    value3bit = (uint8_t)  c.getGeneValue(2);
+    value4bit = (uint8_t)  c.getGeneValue(3);
+    value6bit = (uint8_t)  c.getGeneValue(4);
+    value8bit = (uint8_t)  c.getGeneValue(5);
+    value10bit = (uint16_t)c.getGeneValue(6);
+    value22bit = (uint32_t)c.getGeneValue(7);
+    value5bit = (uint8_t)  c.getGeneValue(8);
+    //memcpy((uint8_t*)this, code, DUMMY_PARAMETERS_BYTESIZE+1);
   }
 };
 
-void print(BinaryChromosome& c) {
-  DummyParameters params;
-  params.copyFrom(c.code);
-  params.print();
+void print(BinaryChromosome& c, bool justBits=false) {
+  if (!justBits) {
+    DummyParameters params;
+    params.copyFrom(c);
+    params.print();
+  }
   printBits(c.code, c.info->byteSize());
 }
 
@@ -339,7 +353,7 @@ void testBinaryChromosomes() {
 
   const uint8_t geneSizes[] = { 1, 2, 3, 4, 6, 8, 10, 22, 5 };
   const uint8_t geneSizes2[] = { 2, 2, 3, 4, 6, 8, 10, 22, 5 };
-  BinaryChromosomeInfo info(9, geneSizes);
+  BinaryChromosomeInfo info(DUMMY_PARAMETERS_N_GENES, geneSizes);
 
   printf("- Testing BitChromosomeInfo\n");
 
@@ -347,6 +361,7 @@ void testBinaryChromosomes() {
   printf("Info params: %d %d %d\n", info.nGenes, info.bitSize(), info.byteSize());
   assert( info.bitSize()  == DUMMY_PARAMETERS_BITSIZE );
   assert( info.byteSize() == DUMMY_PARAMETERS_BYTESIZE );
+  assert( info.nGenes == DUMMY_PARAMETERS_N_GENES );
   printf("-> PASSED\n");
 
   printf("-- Testing equality operator\n");
@@ -441,7 +456,8 @@ void testBinaryChromosomes() {
   assert( parent1.compare(tmp) == DUMMY_PARAMETERS_BITSIZE );
   printf("-> PASSED\n");
 
-  printf("- Testing one point crossover\n");
+  printf("- Testing crossovers\n");
+  printf("-- Testing one point crossover\n");
   for (int i=0; i<DUMMY_PARAMETERS_BITSIZE; i++) {
     setBit(parent1.code, i);
     clearBit(parent2.code, i);
@@ -461,7 +477,7 @@ void testBinaryChromosomes() {
   }
   printf("-> PASSED\n");
 
-  printf("- Testing two point crossover\n");
+  printf("-- Testing two point crossover\n");
   BinaryChromosome::crossoverTwoPoint(parent1, parent2, &children1, &children2);
   printf("Children:\n");
   print(children1);
@@ -473,7 +489,53 @@ void testBinaryChromosomes() {
     assert( children1.compare(children2) == DUMMY_PARAMETERS_BITSIZE);
   }
   printf("-> PASSED\n");
+
+  printf("- Testing gene access methods\n");
+
+  printf("-- Testing getGeneValue()\n");
+
+  for (int i=0; i<DUMMY_PARAMETERS_BITSIZE; i++) {
+    setBit(parent1.code, i);   // all ones
+    clearBit(parent2.code, i); // all zeros
+  }
+  for (int i=0; i<DUMMY_PARAMETERS_N_GENES; i++) {
+    assert( parent1.getGeneValue(i) == (uint64_t) (pow(2,geneSizes[i])-1) );
+    assert( parent2.getGeneValue(i) == 0 );
+  }
+
+  for (int i=0; i<100; i++) {
+    parent1.init();
+    tmp.copy(parent1);
+    parent1.mutate(1); // flip all
+    for (int i=0; i<DUMMY_PARAMETERS_N_GENES; i++) {
+      // Check that pre-mutated gene is the exact opposite of post-mutated gene (XOR)
+      assert( (parent1.getGeneValue(i) ^ tmp.getGeneValue(i)) == (uint64_t) (0xffffffffffffffffL >> (64-geneSizes[i])) );
+    }
+  }
+  printf("-> PASSED\n");
+
+  printf("-- Testing geneSetValue()\n");
+
+  parent1.init();
+  parent2.init();
+
+  for (int i=0; i<DUMMY_PARAMETERS_N_GENES; i++) {
+    uint64_t maxGeneValue = (uint64_t) pow(2, info.geneSizes[i])-1;
+    // Don't go through all values cause it can be very long.
+    uint64_t inc          = info.geneSizes[i] > 8 ? info.geneSizes[i]*11 : 1;
+    for (uint64_t x=0; x<maxGeneValue-1; x += inc) {
+      parent1.setGeneValue(i, x);
+      assert( parent1.getGeneValue(i) == x);
+    }
+    parent1.setGeneValue(i, maxGeneValue);
+    assert( parent1.getGeneValue(i) == maxGeneValue);
+  }
+  printf("-> PASSED\n");
+
+
+
 }
+
 
 int main() {
   testActions();
