@@ -66,6 +66,8 @@ public:
   virtual void mutate(float p);
   virtual int compare(const Chromosome& c) const;
 
+  uint64_t getGeneValue(int gene) const;
+  // Static methods.
   static void initializeRandom(Chromosome& chromosome);
 
   static void mutateFlip(Chromosome& chromosome, float probability);
@@ -82,8 +84,6 @@ public:
 //  virtual int compare(const Chromosome& g);
 //  virtual float evaluate();
 
-  double doubleValue(int gene);
-  int    intValue(int gene);
 };
 
 

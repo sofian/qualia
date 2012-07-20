@@ -123,15 +123,15 @@ int BinaryChromosome::compare(const Chromosome& c) const {
 //  return (info->evaluator)(*this);
 //}
 
-double BinaryChromosome::doubleValue(int gene) {
-  int64_t val;
-  copyBits(&val, code, info->getStartBitPosition(gene), info->geneSizes[gene], sizeof(int64_t));
-  return double(val);
-}
+//double BinaryChromosome::doubleValue(int gene) const {
+//  int64_t val;
+//  copyBits(&val, code, info->getStartBitPosition(gene), info->geneSizes[gene], sizeof(int64_t));
+//  return double(val);
+//}
 
-int BinaryChromosome::intValue(int gene) {
-  int val;
-  copyBits(&val, code, info->getStartBitPosition(gene), info->geneSizes[gene], sizeof(int));
+uint64_t BinaryChromosome::getGeneValue(int gene) const {
+  uint64_t val;
+  copyBits(&val, code, info->getStartBitPosition(gene), info->geneSizes[gene], sizeof(uint64_t));
   return val;
 }
 
