@@ -119,8 +119,15 @@ if (platform == 'avr' or platform == 'arduino'):
 #  env.Append(CPPPATH=["/usr/local/include", "/usr/include", os.getcwd()])
 
 else:
+  
   env = Environment()
-  env.Append(CPPPATH=["/usr/local/include", "/usr/include", os.getcwd()])
+  
+  # NOTE: This line was useless and was causing problem: it caused implicit dependency
+  # that made scons copy the include files to /usr/local/include even without 
+  # calling scons install
+  #env.Append(CPPPATH=["/usr/local/include", "/usr/include", os.getcwd()])
+  env.Append(CPPPATH=[os.getcwd()])
+  
   env.Append(LIBS=LIBS)
   if (mode == 'debug'):
     env.Append(CPPFLAGS=['-Wall', '-g', '-DDEBUG=1'])
@@ -135,9 +142,9 @@ else:
   prefix = ARGUMENTS.get('PREFIX', "/usr/local")
   installPath = prefix + "/lib"
 
-  installPathList = [ env.Install(installPath, lib) ]
+  installPathList = env.Install(installPath, lib)
   for subdir in SUBDIRS:
-  	installPathList += [ env.Install(prefix+"/include/"+subdir, Glob(subdir+"/*.h")) ]
+  	installPathList += [ env.Install(prefix+"/include/" + subdir, Glob(subdir+"/*.h")) ]
   env.Alias("install", installPathList)
 
 #execfile("./tools/scons/SConstruct.new")
