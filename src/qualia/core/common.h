@@ -23,10 +23,6 @@
 #ifndef COMMON_H_
 #define COMMON_H_
 
-#if defined(__cplusplus)
-extern "C" {
-#endif
-
 // Platform check.
 #define is_avr() defined(__AVR__)
 #define is_arduino() defined(ARDUINO)
@@ -122,13 +118,6 @@ typedef double real;
 #else
 typedef float real;
 #define INF FLT_MAX
-#endif
-
-#if is_computer()
-#endif
-
-#if defined(__cplusplus)
-}
 #endif
 
 #if is_avr()
