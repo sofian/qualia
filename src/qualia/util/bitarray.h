@@ -24,15 +24,28 @@
 #include <qualia/core/common.h>
 #include <strings.h>
 
-void writeBit(uint8_t* dst, int pos, uint8_t bitValue);
-void setBit(uint8_t* dst, int pos);
-void clearBit(uint8_t* dst, int pos);
-void flipBit(uint8_t* dst, int pos);
-uint8_t readBit(const uint8_t* src, int pos);
+// Writes bit (0 or 1) to destination address #dst# at bit position #pos#.
+void arrayBitWrite(uint8_t* dst, int pos, uint8_t bitValue);
 
-void writeBits(void* dst, const void* src, int dstPos, int srcPos, int length);
+// Sets bit (write 1) at position #pos# of destination address #dst#.
+void arrayBitSet(uint8_t* dst, int pos);
 
-void copyBits(void* dst, const void* src, int pos, int length, int dstByteSize);
+// Clears bit (write 0) at position #pos# of destination address #dst#.
+void arrayBitClear(uint8_t* dst, int pos);
+
+// Flips bit at position #pos# of destination address #dst#.
+void arrayBitFlip(uint8_t* dst, int pos);
+
+// Reads bit at position #pos# of destination address #src#.
+uint8_t arrayBitRead(const uint8_t* src, int pos);
+
+// Writes #length# bits from source #src# to destination #dst#, starting from bit #srcPos#
+// in source to bit #dstPos# in destination.
+void arrayBlockWrite(void* dst, const void* src, int dstPos, int srcPos, int length);
+
+// Copies #length# bits from source #src# to destination #dst#, starting from bit #pos#
+// in source. Trailing bits in #dst# are set to zero (0).
+void arrayBlockCopy(void* dst, const void* src, int pos, int length, int dstByteSize);
 
 #define BITARRAY_BIT_TO_BYTE(bit) ((bit) >> 3) // = bit / 8
 #define BITARRAY_BIT_IN_BYTE(bit) ((bit) &  7) // = bit % 8

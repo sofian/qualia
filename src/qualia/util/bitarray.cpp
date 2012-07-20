@@ -17,42 +17,42 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "bits.h"
+#include "bitarray.h"
 
-void writeBit(uint8_t* dst, int pos, uint8_t bitValue) {
+void arrayBitWrite(uint8_t* dst, int pos, uint8_t bitValue) {
   initPointerAndPositionForBitOperation(&dst, &pos);
   bitWrite(*dst, pos, bitValue);
 }
 
-void setBit(uint8_t* dst, int pos) {
+void arrayBitSet(uint8_t* dst, int pos) {
   initPointerAndPositionForBitOperation(&dst, &pos);
   bitSet(*dst, pos);
 }
 
-void clearBit(uint8_t* dst, int pos) {
+void arrayBitClear(uint8_t* dst, int pos) {
   initPointerAndPositionForBitOperation(&dst, &pos);
   bitClear(*dst, pos);
 }
 
-void flipBit(uint8_t* src, int pos) {
+void arrayBitFlip(uint8_t* src, int pos) {
   initPointerAndPositionForBitOperation(&src, &pos);
   bitFlip(*src, pos);
 }
 
-uint8_t readBit(const uint8_t* src, int pos) {
+uint8_t arrayBitRead(const uint8_t* src, int pos) {
   initPointerAndPositionForBitOperation((uint8_t**)&src, &pos);
   return bitRead(*src, pos);
 }
 
-void writeBits(void* dst, const void* src, int dstPos, int srcPos, int length) {
+void arrayBlockWrite(void* dst, const void* src, int dstPos, int srcPos, int length) {
   while (length--) {
-    writeBit((uint8_t*)dst, dstPos++, readBit((const uint8_t*)src, srcPos++));
+    arrayBitWrite((uint8_t*)dst, dstPos++, arrayBitRead((const uint8_t*)src, srcPos++));
   }
 }
 
-void copyBits(void* dst, const void* src, int pos, int length, int dstByteSize) {
+void arrayBlockCopy(void* dst, const void* src, int pos, int length, int dstByteSize) {
   memset(dst, 0, dstByteSize);
-  writeBits(dst, src, 0, pos, length);
+  arrayBlockWrite(dst, src, 0, pos, length);
 }
 
 void initPointerAndPositionForBitOperation(uint8_t** array, int* pos) {

@@ -110,7 +110,7 @@ int BinaryChromosome::compare(const Chromosome& c) const {
     int sumDiffBits = 0;
     unsigned int bit = info->bitSize();
     while (bit--)
-      sumDiffBits += (readBit(code, bit) ^ readBit(bc->code, bit));
+      sumDiffBits += (arrayBitRead(code, bit) ^ arrayBitRead(bc->code, bit));
     return sumDiffBits;
   }
 }
@@ -131,12 +131,12 @@ int BinaryChromosome::compare(const Chromosome& c) const {
 
 uint64_t BinaryChromosome::getGeneValue(int gene) const {
   uint64_t val;
-  copyBits(&val, code, info->getStartBitPosition(gene), info->geneSizes[gene], sizeof(uint64_t));
+  arrayBlockCopy(&val, code, info->getStartBitPosition(gene), info->geneSizes[gene], sizeof(uint64_t));
   return val;
 }
 
 void BinaryChromosome::setGeneValue(int gene, uint64_t value) {
-  writeBits(code, &value, info->getStartBitPosition(gene), 0, info->geneSizes[gene]);
+  arrayBlockWrite(code, &value, info->getStartBitPosition(gene), 0, info->geneSizes[gene]);
 }
 
 void BinaryChromosome::initializeRandom(Chromosome& chromosome) {
@@ -161,7 +161,7 @@ void BinaryChromosome::mutateFlip(Chromosome& chromosome, float probability) {
   uint8_t* code = c->code;
   for (unsigned int i=0; i<bitSize; i++) {
     if (randomUniform() < probability)
-      flipBit(code, i);
+      arrayBitFlip(code, i);
   }
 }
 
@@ -214,14 +214,14 @@ void BinaryChromosome::crossoverTwoPoint(const Chromosome& parent1, const Chromo
 
 void BinaryChromosome::_codeCrossoverOnePoint(uint8_t* offspringCode, const uint8_t* parentCode1, const uint8_t* parentCode2,
                                               unsigned int point, unsigned int codeSize) {
-  writeBits(offspringCode, parentCode1, 0,     0, point);              // 111|xxxxx
-  writeBits(offspringCode, parentCode2, point, point, codeSize-point); // 111|22222
+  arrayBlockWrite(offspringCode, parentCode1, 0,     0, point);              // 111|xxxxx
+  arrayBlockWrite(offspringCode, parentCode2, point, point, codeSize-point); // 111|22222
 }
 
 void BinaryChromosome::_codeCrossoverTwoPoint(uint8_t* offspringCode, const uint8_t* parentCode1, const uint8_t* parentCode2,
                                               unsigned int point1, unsigned int point2, unsigned int codeSize) {
 
-  writeBits(offspringCode, parentCode1, 0,      0,      point1);          // 111|xx|xxx
-  writeBits(offspringCode, parentCode2, point1, point1, point2-point1);   // 111|22|xxx
-  writeBits(offspringCode, parentCode1, point2, point2, codeSize-point2); // 111|22|xxx
+  arrayBlockWrite(offspringCode, parentCode1, 0,      0,      point1);          // 111|xx|xxx
+  arrayBlockWrite(offspringCode, parentCode2, point1, point1, point2-point1);   // 111|22|xxx
+  arrayBlockWrite(offspringCode, parentCode1, point2, point2, codeSize-point2); // 111|22|xxx
 }

@@ -33,7 +33,7 @@
 #include <qualia/rl/RLQualia.h>
 
 #include <qualia/util/random.h>
-#include <qualia/util/bits.h>
+#include <qualia/util/bitarray.h>
 
 #include <qualia/ga/BinaryChromosome.h>
 
@@ -258,41 +258,41 @@ void testBits() {
     for (unsigned int srcPos=0; srcPos<len; srcPos++) {
       dest = 0xffffffff;
 
-      copyBits(&source2, &dest, srcPos, len, sizeof(long));
+      arrayBlockCopy(&source2, &dest, srcPos, len, sizeof(long));
       for (unsigned int i=0; i<len; i++)
-        assert( readBit((unsigned char*)&source2, i) == 1 );
+        assert( arrayBitRead((unsigned char*)&source2, i) == 1 );
       for (unsigned int i=len; i<32; i++)
-        assert( readBit((unsigned char*)&source2, i) == 0 );
+        assert( arrayBitRead((unsigned char*)&source2, i) == 0 );
 
       for (unsigned int dstPos=0; dstPos<len; dstPos++) {
         source = 0;
         dest = 0xffffffff;
-        writeBits(&source, &dest, srcPos, dstPos, len);
+        arrayBlockWrite(&source, &dest, srcPos, dstPos, len);
 
         assert( dest == 0xffffffff );
 
         for (unsigned int i=0; i<srcPos; i++)
-          assert( readBit((unsigned char*)&source, i) == 0 );
+          assert( arrayBitRead((unsigned char*)&source, i) == 0 );
         for (unsigned int i=srcPos; i<srcPos+len; i++)
-          assert( readBit((unsigned char*)&source, i) == 1 );
+          assert( arrayBitRead((unsigned char*)&source, i) == 1 );
         for (unsigned int i=srcPos+len; i<sizeof(long); i++)
-          assert( readBit((unsigned char*)&source, i) == 0 );
+          assert( arrayBitRead((unsigned char*)&source, i) == 0 );
       }
     }
   }
 
   for (unsigned int i=0; i<sizeof(long)*8; i++)
-    clearBit((unsigned char*)&source, i);
+    arrayBitClear((unsigned char*)&source, i);
   assert( source == 0 );
   printBits((unsigned char*)&source, sizeof(long));
 
   for (unsigned int i=0; i<sizeof(long)*8; i++)
-    setBit((unsigned char*)&source, i);
+    arrayBitSet((unsigned char*)&source, i);
   printBits((unsigned char*)&source, sizeof(long));
   assert( source == (long)0xffffffffffffffffL );
 
   for (unsigned int i=0; i<sizeof(long)*8; i++)
-     flipBit((unsigned char*)&source, i);
+     arrayBitFlip((unsigned char*)&source, i);
   assert( source == 0 );
 
   printf("-> PASSED\n");
@@ -383,7 +383,7 @@ void testBinaryChromosomes() {
   printf("-- Testing fill-up with trailing zeros\n");
   parent1.init();
   for (int i=0; i<DUMMY_PARAMETERS_BITSIZE; i++)
-    setBit((unsigned char*)parent1.code, i);
+    arrayBitSet((unsigned char*)parent1.code, i);
   for (int i=8-DUMMY_PARAMETERS_TRAILING_BITS; i<8; i++) {
     assert( bitRead(parent1.code[DUMMY_PARAMETERS_BYTESIZE-1], i) == 0 );
   }
@@ -459,8 +459,8 @@ void testBinaryChromosomes() {
   printf("- Testing crossovers\n");
   printf("-- Testing one point crossover\n");
   for (int i=0; i<DUMMY_PARAMETERS_BITSIZE; i++) {
-    setBit(parent1.code, i);
-    clearBit(parent2.code, i);
+    arrayBitSet(parent1.code, i);
+    arrayBitClear(parent2.code, i);
   }
   printf("Parents:\n");
   print(parent1);
@@ -495,8 +495,8 @@ void testBinaryChromosomes() {
   printf("-- Testing getGeneValue()\n");
 
   for (int i=0; i<DUMMY_PARAMETERS_BITSIZE; i++) {
-    setBit(parent1.code, i);   // all ones
-    clearBit(parent2.code, i); // all zeros
+    arrayBitSet(parent1.code, i);   // all ones
+    arrayBitClear(parent2.code, i); // all zeros
   }
   for (int i=0; i<DUMMY_PARAMETERS_N_GENES; i++) {
     assert( parent1.getGeneValue(i) == (uint64_t) (pow(2,geneSizes[i])-1) );
@@ -531,11 +531,7 @@ void testBinaryChromosomes() {
     assert( parent1.getGeneValue(i) == maxGeneValue);
   }
   printf("-> PASSED\n");
-
-
-
 }
-
 
 int main() {
   testActions();
