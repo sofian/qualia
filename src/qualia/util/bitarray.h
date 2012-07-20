@@ -22,7 +22,7 @@
 #define BITARRAY_H_
 
 #include <qualia/core/common.h>
-#include <strings.h>
+#include <string.h>
 
 // Writes bit (0 or 1) to destination address #dst# at bit position #pos#.
 void arrayBitWrite(uint8_t* dst, int pos, uint8_t bitValue);

@@ -24,8 +24,14 @@
 #ifndef LOG_ADD_INC
 #define LOG_ADD_INC
 
-#include <math.h>
 #include <qualia/core/common.h>
+
+#include <math.h>
+
+#ifndef log1p
+#warning "log1p is not defined in this environment which might result in problems on your system"
+#define log1p(x) log(1+(x))
+#endif
 
 /** Some simple functions for log operations.
 
