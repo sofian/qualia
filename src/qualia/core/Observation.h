@@ -21,6 +21,7 @@
 #define OBSERVATION_H_
 
 #include "common.h"
+#include <string.h>
 
 typedef real observation_t;
 

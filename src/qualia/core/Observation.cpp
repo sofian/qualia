@@ -19,8 +19,6 @@
 
 #include "Observation.h"
 
-#include <string.h>
-
 //#include <stdio.h>
 Observation::Observation() : observations(0), dim(0), terminal(false) {}
 Observation::Observation(unsigned int dim_, const observation_t* copyFrom_) : observations(0), dim(0), terminal(false) {

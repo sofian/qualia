@@ -24,8 +24,6 @@
  */
 
 #include "error.h"
-#include <stdio.h>
-#include <stdlib.h>
 
 // These implementations were taken from Torch 3 (http://www.torch.ch).
 
