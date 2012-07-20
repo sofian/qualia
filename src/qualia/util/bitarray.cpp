@@ -1,5 +1,5 @@
 /*
- * bits.cpp
+ * bitarray.cpp
  *
  * (c) 2012 Sofian Audry -- info(@)sofianaudry(.)com
  *

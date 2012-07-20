@@ -1,5 +1,5 @@
 /*
- * bits.h
+ * bitarray.h
  *
  * (c) 2012 Sofian Audry -- info(@)sofianaudry(.)com
  *
@@ -18,8 +18,8 @@
  */
 
 
-#ifndef BITS_H_
-#define BITS_H_
+#ifndef BITARRAY_H_
+#define BITARRAY_H_
 
 #include <qualia/core/common.h>
 #include <strings.h>
