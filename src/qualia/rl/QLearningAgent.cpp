@@ -76,7 +76,7 @@ Action* QLearningAgent::start(const Observation* observation) {
   lastObservation.copyFrom(observation);
 
   // Randomize starting action.
-  currentAction.setConflated( (action_t) (random() % nConflatedActions) );
+  currentAction.setConflated( (action_t) (random(nConflatedActions)) );
 
   return &currentAction;
 }
