@@ -35,11 +35,8 @@ QLearningAgent::QLearningAgent(NeuralNetwork* func,
   lastObservation(observationDim_),
   observationDim(observationDim_)
  {
-  // TODO : ARRAY_ALLOC
-  // TODO: allocateur
-  // TODO: destructeur (ARRAY_DEALLOC)
-  e = (real*) malloc( function->nParams * sizeof(real) );
-  nnInput   = (real*) malloc( (observationDim + actionDim) * sizeof(real) );
+  e = (real*) Alloc::malloc( function->nParams * sizeof(real) );
+  nnInput   = (real*) Alloc::malloc( (observationDim + actionDim) * sizeof(real) );
 
   nConflatedActions = currentAction.nConflated;
 //  lastObservation = (real*) malloc(observationSize * sizeof(real));
@@ -57,9 +54,8 @@ QLearningAgent::QLearningAgent(NeuralNetwork* func,
 }
 
 QLearningAgent::~QLearningAgent() {
-  // TODO: deallocator
-  free(e);
-  free(nnInput);
+  Alloc::free(e);
+  Alloc::free(nnInput);
 //  free(lastObservation);
 }
 
