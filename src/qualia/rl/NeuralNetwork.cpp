@@ -171,10 +171,10 @@ void NeuralNetwork::_backpropagateLayer(Layer& upper, Layer& lower) {
   for (int i=0; i<=lower.n; i++) {
     real out = (i < lower.n ? lower.output[i] : 1); // last element is bias
     real err = 0;
-    for (int j=0; j<upper.n; j++) {
-      int idx = j*lower.n+i;
-      err += upper.weight[idx] * upper.error[j];
-      upper.dWeight[idx] += out * upper.error[j];
+    // NOTE: Variable k is used to iterate through upper weights column i
+    for (int j=0, k=i; j<upper.n; j++, k+=lower.n) {
+      err += upper.weight[k] * upper.error[j];   // k = j*lower.n + i: corresponds to w_{ji}
+      upper.dWeight[k] += out * upper.error[j];
     }
     // delta sigmoid
     if (i < lower.n)
