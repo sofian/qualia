@@ -12,6 +12,7 @@ def unique(seq, keepstr=True):
 def run(cmd):
     """Run a command and decipher the return code. Exit by default."""
     import SCons.Script
+    print cmd
     res = os.system(cmd)
     # Assumes that if a process doesn't call exit, it was successful
     if (os.WIFEXITED(res)):
