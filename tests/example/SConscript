@@ -9,6 +9,7 @@ else:
   LIBPATH = "../../build/avr/qualia"
 
 MCU = 'atmega168'
+QUALIA_DIR = "../.."
 F_CPU = 16000000
 EXTRA_LIBS = ""
 
