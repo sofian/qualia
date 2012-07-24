@@ -20,7 +20,7 @@
 #include "StaticAllocator.h"
 
 StaticAllocator::StaticAllocator(unsigned char* _buffer, size_t size) :
-  buffer(_buffer), bufferSize(size), bufferIdx(0), nLeaks(0) { }
+  buffer(_buffer), bufferSize(size), bufferIdx(0), nLeaks(0), lastLeak(0) { }
 
 void* StaticAllocator::malloc(size_t size) {
   if (bufferIdx + size > bufferSize)
