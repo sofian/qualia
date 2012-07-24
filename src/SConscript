@@ -100,7 +100,7 @@ if (platform == 'avr' or platform == 'arduino'):
       CFLAGS = cFlags+['-std=gnu99'], CCFLAGS = cFlags, TOOLS = ['gcc','g++'])
 
   #env.Append(BUILDERS={'Elf':Builder(action=AVR_BIN_PREFIX+'gcc '+
-  #        '-mmcu=%s -Os -Wl,--gc-sections -o $TARGET $SOURCES -lm'%MCU)})
+  #        '-mmcu=%s -Os -Wl,--gc-sections,--relax -o $TARGET $SOURCES -lm'%MCU)})
   #env.Append(BUILDERS={'Hex':Builder(action=AVR_BIN_PREFIX+'objcopy '+
   #        '-O ihex -R .eeprom $SOURCES $TARGET')})
   env.Append(BUILDERS = {'CompressCore':Builder(action = fnCompress) })

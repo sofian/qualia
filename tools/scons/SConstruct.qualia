@@ -89,23 +89,30 @@ if (platform == 'avr' or platform == 'arduino'):
   
   env = Environment(CC = AVR_BIN_PREFIX+'gcc',
                     CXX = AVR_BIN_PREFIX+'g++',
+                    AS = AVR_BIN_PREFIX + 'gcc',
                     CPPPATH = INCLUDE_PATH,
                     LIBPATH = LIBPATH, # path to qualia static lib
                     LIBS = LIBS, 
                     CPPDEFINES = {'F_CPU':F_CPU}, 
                     CFLAGS = cFlags + ['-std=gnu99'], 
                     CCFLAGS = cFlags, 
-                    LINKFLAGS = '-mmcu=' + MCU)
+                    ASFLAGS = ['-assembler-with-cpp','-mmcu=%s' % MCU],
+                    LINKFLAGS = ['-mmcu=%s' % MCU ])
 
-#  env.Append(BUILDERS = {'Elf':Builder(action=
-#          "$CC $CFLAGS $TARGET $SOURCE -lm -lqualia")})
-  env.Append(BUILDERS={'Hex':Builder(action=AVR_BIN_PREFIX+'objcopy '+
-          '-O ihex -R .eeprom $SOURCES $TARGET')})
+#  env.Append(BUILDERS = {'Elf':Builder(action=AVR_BIN_PREFIX+'gcc -mmcu=%s ' % MCU +
+#                         '-Os -Wl,--gc-sections,--relax -lm -o $TARGET $SOURCES -lc')})
+  env.Append(BUILDERS = {'Hex':Builder(action=AVR_BIN_PREFIX+'objcopy '+
+                         '-O ihex -R .eeprom $SOURCES $TARGET')})
   
   env.VariantDir(BUILD_DIR, ".", duplicate=0)
   
   sources += Glob(BUILD_DIR + "*.cpp")
-  env.Program(target = BUILD_DIR + TARGET + '.elf', source = sources, LINKFLAGS = "-Wl,--gc-sections")
+  sources += Glob(BUILD_DIR + "*.cxx")
+  sources += Glob(BUILD_DIR + "*.c")
+  
+#  objs = env.Object(sources)
+#  env.Elf(BUILD_DIR + TARGET + '.elf', objs)
+  env.Program(target = BUILD_DIR + TARGET + '.elf', source = sources, LINKFLAGS = "-Wl,--gc-sections,--relax")
   env.Hex(BUILD_DIR + TARGET + '.hex', BUILD_DIR + TARGET + '.elf')
   
   #MAX_SIZE = getBoardConf(r'^%s\.upload.maximum_size=(.*)'%ARDUINO_BOARD)
