@@ -188,11 +188,3 @@ void NeuralNetwork::_deallocateLayer(Layer& layer) {
   Alloc::free(layer.error);
 }
 
-void NeuralNetwork::_deallocate() {
-  Alloc::free(weights);
-  Alloc::free(dWeights);
-  _deallocateLayer(inputLayer);
-  _deallocateLayer(hiddenLayer);
-  _deallocateLayer(outputLayer);
-}
-

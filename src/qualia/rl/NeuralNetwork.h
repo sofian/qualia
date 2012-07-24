@@ -70,18 +70,6 @@ public:
   real *weights;  // weights
   real *dWeights; // weights derivatives
 
-//  real *outputs;
-//  real *hiddens;
-//  real *inputs;
-//
-//  real *inputErrors;
-//  real *hiddenErrors;
-//  real *outputErrors;
-//
-//  int nInputs;
-//  int nHiddens;
-//  int nOutputs;
-
   int nParams;    // number of parameters
 
   // The three MLP layers (inputs -> hidden -> outputs).
@@ -135,13 +123,8 @@ public:
   void _allocateLayer(Layer& layer, int nInputs, int nOutputs, int& k);
   void _deallocateLayer(Layer& layer);
 
-//  void _propagateLayer(real* layerInputs, real* layerWeights, real* layerOutputs, int nLayerInputs, int nLayerOutputs);
-//  void _backpropagateLayer(real* layerInputs, real* layerWeights, real* layerOutputs, int nLayerInputs, int nLayerOutputs);
   void _propagateLayer(Layer& lower, Layer& upper);
   void _backpropagateLayer(Layer& upper, Layer& lower);
-  //void _updateLayer(Layer& upper, Layer& lower);
-
-//  void _allocate(int nInputs, int nHidden, int nOutputs);
   void _deallocate();
 };
 
