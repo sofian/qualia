@@ -25,10 +25,9 @@
 #ifndef NEURAL_NETWORK_INC
 #define NEURAL_NETWORK_INC
 
-// TODO: simplifier le code
-
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
 
 #include <qualia/core/common.h>
 #include <qualia/util/random.h>
@@ -63,14 +62,26 @@ public:
     int n;          // number of units in this layer
     real *output;   // output of ith unit
     real *error;    // error term of ith unit
-    real **weight;  // connection weights to ith unit
-    //float **weightSave;
-    real **dWeight; // last weight deltas for momentum
+    real *weight;  // connection weights to ith unit
+    real *dWeight; // last weight deltas for momentum
   };
 
   // Parameters.
   real *weights;  // weights
   real *dWeights; // weights derivatives
+
+//  real *outputs;
+//  real *hiddens;
+//  real *inputs;
+//
+//  real *inputErrors;
+//  real *hiddenErrors;
+//  real *outputErrors;
+//
+//  int nInputs;
+//  int nHiddens;
+//  int nOutputs;
+
   int nParams;    // number of parameters
 
   // The three MLP layers (inputs -> hidden -> outputs).
@@ -81,7 +92,7 @@ public:
 
   // Constructor/destructor.
   NeuralNetwork(int nInputs,
-                int nHidden,
+                int nHiddens,
                 int nOutputs,
                 float learningRate = 0.01,
                 float decreaseConstant = 0,
@@ -108,9 +119,8 @@ public:
 
   void update();
 
-  // Remaps a value in [-1, 1].
-  // TODO: Should be made static.
-  real remapValue(real x, real minVal, real maxVal) {
+  // Remaps a value in [minVal, maxVal].
+  static real remapValue(real x, real minVal, real maxVal) {
     return (2 * (x - minVal) / (maxVal - minVal) - 1);
   }
 
@@ -125,11 +135,13 @@ public:
   void _allocateLayer(Layer& layer, int nInputs, int nOutputs, int& k);
   void _deallocateLayer(Layer& layer);
 
+//  void _propagateLayer(real* layerInputs, real* layerWeights, real* layerOutputs, int nLayerInputs, int nLayerOutputs);
+//  void _backpropagateLayer(real* layerInputs, real* layerWeights, real* layerOutputs, int nLayerInputs, int nLayerOutputs);
   void _propagateLayer(Layer& lower, Layer& upper);
   void _backpropagateLayer(Layer& upper, Layer& lower);
-  void _updateLayer(Layer& upper, Layer& lower);
+  //void _updateLayer(Layer& upper, Layer& lower);
 
-  void _allocate(int nInputs, int nHidden, int nOutputs);
+//  void _allocate(int nInputs, int nHidden, int nOutputs);
   void _deallocate();
 };
 
