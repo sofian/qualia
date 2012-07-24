@@ -80,13 +80,16 @@ for dir in SOURCEPATH:
 	sources += Glob(dir + "/*.cpp")
 	sources += Glob(dir + "/*.cxx")
 	sources += Glob(dir + "/*.c")
-	
+
+# Remove empty items
+LIBS = filter(None, LIBS)
+LIBPATH = filter(None, LIBPATH)
+
 # Create environment and set default configurations ###################################
 if (platform == 'avr' or platform == 'arduino'):
   cFlags = ['-ffunction-sections', '-fdata-sections', '-fno-exceptions',
-      '-funsigned-char', '-funsigned-bitfields', '-fpack-struct', '-fshort-enums',
-      '-Os', '-mmcu=' + MCU]
-  
+            '-funsigned-char', '-funsigned-bitfields', '-fpack-struct', '-fshort-enums',
+            '-Os', '-mmcu=%s'%MCU]
   env = Environment(CC = AVR_BIN_PREFIX+'gcc',
                     CXX = AVR_BIN_PREFIX+'g++',
                     AS = AVR_BIN_PREFIX + 'gcc',
@@ -99,8 +102,10 @@ if (platform == 'avr' or platform == 'arduino'):
                     ASFLAGS = ['-assembler-with-cpp','-mmcu=%s' % MCU],
                     LINKFLAGS = ['-mmcu=%s' % MCU ])
 
-#  env.Append(BUILDERS = {'Elf':Builder(action=AVR_BIN_PREFIX+'gcc -mmcu=%s ' % MCU +
-#                         '-Os -Wl,--gc-sections,--relax -lm -o $TARGET $SOURCES -lc')})
+  libPathFlags = ' '.join([ "-L" + x for x in LIBPATH ])
+  libFlags    = ' '.join([ "-l" + x for x in LIBS ])
+  env.Append(BUILDERS = {'Elf':Builder(action=AVR_BIN_PREFIX+'gcc -mmcu=%s ' % MCU +
+                         '-Os -Wl,--gc-sections,--relax -o $TARGET $SOURCES ' + libPathFlags + ' ' + libFlags)})
   env.Append(BUILDERS = {'Hex':Builder(action=AVR_BIN_PREFIX+'objcopy '+
                          '-O ihex -R .eeprom $SOURCES $TARGET')})
   
@@ -110,9 +115,11 @@ if (platform == 'avr' or platform == 'arduino'):
   sources += Glob(BUILD_DIR + "*.cxx")
   sources += Glob(BUILD_DIR + "*.c")
   
-#  objs = env.Object(sources)
-#  env.Elf(BUILD_DIR + TARGET + '.elf', objs)
-  env.Program(target = BUILD_DIR + TARGET + '.elf', source = sources, LINKFLAGS = "-Wl,--gc-sections,--relax")
+  objs = env.Object(sources)
+  env.Elf(BUILD_DIR + TARGET + '.elf', objs)
+#  env.Program(target = BUILD_DIR + TARGET + '.elf', source = sources, 
+#  					  CPPFLAGS = ['-mmcu=%s' % MCU, '-Os'],
+#  						LINKFLAGS = "-Wl,--gc-sections,--relax", )
   env.Hex(BUILD_DIR + TARGET + '.hex', BUILD_DIR + TARGET + '.elf')
   
   #MAX_SIZE = getBoardConf(r'^%s\.upload.maximum_size=(.*)'%ARDUINO_BOARD)
