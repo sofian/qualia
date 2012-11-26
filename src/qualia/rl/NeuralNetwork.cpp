@@ -63,7 +63,7 @@ void NeuralNetwork::setInput(real *input) {
 }
 
 void NeuralNetwork::getOutput(real *output) const {
-  memcpy(output, outputLayer.output, inputLayer.n*sizeof(real));
+  memcpy(output, outputLayer.output, outputLayer.n*sizeof(real));
 }
 
 void NeuralNetwork::clearDelta() {
