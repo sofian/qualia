@@ -21,6 +21,7 @@
 #define BINARYCHROMOSOME_H_
 
 #include "Chromosome.h"
+#include <qualia/core/common.h>
 #include <qualia/util/bitarray.h>
 #include <qualia/util/random.h>
 
