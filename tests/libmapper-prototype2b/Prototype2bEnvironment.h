@@ -20,8 +20,8 @@
 #ifndef PROTOTYPE2BENVIRONMENT_H_
 #define PROTOTYPE2BENVIRONMENT_H_
 
-#include "Environment.h"
-#include "RLObservation.h"
+#include <qualia/core/Environment.h>
+#include <qualia/rl/RLObservation.h>
 #include <mapper/mapper.h>
 
 class Prototype2bEnvironment : public Environment {

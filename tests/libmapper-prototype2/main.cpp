@@ -19,12 +19,11 @@
 
 //#include "cpp_include.h"
 
-#include "core/Qualia.h"
-#include "rl/QLearningAgent.h"
-#include "rl/QLearningEGreedyPolicy.h"
-#include "rl/NeuralNetwork.h"
-#include "rl/RLQualia.h"
-
+#include <qualia/core/Qualia.h>
+#include <qualia/rl/QLearningAgent.h>
+#include <qualia/rl/QLearningEGreedyPolicy.h>
+#include <qualia/rl/NeuralNetwork.h>
+#include <qualia/rl/RLQualia.h>
 #include "Prototype2Environment.h"
 
 //#define STATIC_ALLOCATOR_SIZE 10000

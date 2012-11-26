@@ -19,12 +19,12 @@
 
 //#include "cpp_include.h"
 
-#include "Qualia.h"
-#include "QLearningAgent.h"
-#include "QLearningEGreedyPolicy.h"
-#include "Prototype2Environment.h"
-#include "NeuralNetwork.h"
-#include "RLQualia.h"
+#include <qualia/core/Qualia.h>
+#include <qualia/rl/QLearningAgent.h>
+#include <qualia/rl/QLearningEGreedyPolicy.h>
+#include <qualia/rl/NeuralNetwork.h>
+#include <qualia/rl/RLQualia.h>
+#include "Prototype2bEnvironment.h"
 
 //#define STATIC_ALLOCATOR_SIZE 10000
 //#include "StaticAllocator.h"
@@ -78,7 +78,7 @@ int main(int argc, char** argv) {
   NeuralNetwork net(dimObservations + DIM_ACTIONS, nHidden, 1, learningRate);
   QLearningAgent agent(&net, dimObservations, DIM_ACTIONS, N_ACTIONS,
                        lambda, gamma, &egreedy, false); // lambda = 1.0 => no history
-  Prototype2Environment env(dimObservations, DIM_ACTIONS, "prototype2", 9000);
+  Prototype2bEnvironment env(dimObservations, DIM_ACTIONS, "prototype2", 9000);
   RLQualia qualia(&agent, &env);
 
   qualia.init();

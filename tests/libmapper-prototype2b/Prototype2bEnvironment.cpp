@@ -46,7 +46,7 @@ Observation* Prototype2bEnvironment::start() {
 Observation* Prototype2bEnvironment::step(const Action* action) {
 //  printf("Stepping env\n");
 //  printf("--> sending %d ...\n", action->actions[0]);
-  msig_update(outsig, action->actions);
+  msig_update(outsig, action->actions, actionDim, MAPPER_TIMETAG_NOW);
   while (!mdev_poll(dev, 1) );
 //  printf("--> receiving reward = %f, data = %f ...\n", currentObservation.reward, currentObservation[0]);
   //usleep(100);
