@@ -53,7 +53,14 @@
 #endif
 
 // Basic definitions from Arduino.h
-#if (!is_arduino())
+#if (is_arduino())
+#if ARDUINO >= 100
+#include "Arduino.h"
+#else
+#include "WProgram.h"
+#endif
+
+#else
 
 // Make sure to redefine the min/max/abs macros
 #ifdef min
