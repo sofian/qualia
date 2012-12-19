@@ -19,8 +19,8 @@
 
 #include "OscRLEnvironment.h"
 
-OscRLEnvironment::OscRLEnvironment(int observationDim_, int actionDim_)
-  : OscEnvironment(observationDim_, actionDim_, observationDim_+1), currentObservation(observationDim_) {
+OscRLEnvironment::OscRLEnvironment(int id_, int observationDim_, int actionDim_)
+  : OscEnvironment(id_, observationDim_, actionDim_, observationDim_+1), currentObservation(observationDim_) {
 }
 
 OscRLEnvironment::~OscRLEnvironment() {

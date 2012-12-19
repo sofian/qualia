@@ -19,8 +19,8 @@
 
 #include "OscBasicEnvironment.h"
 
-OscBasicEnvironment::OscBasicEnvironment(int observationDim_, int actionDim_)
-  : OscEnvironment(observationDim_, actionDim_, observationDim_), currentObservation(observationDim_) {
+OscBasicEnvironment::OscBasicEnvironment(int id_, int observationDim_, int actionDim_)
+  : OscEnvironment(id_, observationDim_, actionDim_, observationDim_), currentObservation(observationDim_) {
 }
 
 OscBasicEnvironment::~OscBasicEnvironment() {

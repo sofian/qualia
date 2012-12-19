@@ -19,15 +19,18 @@
 
 #include "OscEnvironment.h"
 
-OscEnvironment::OscEnvironment(int observationDim_, int actionDim_, int observationBufferDim_)
-  : id(-1),
+lo_address OscEnvironment::client;
+lo_server_thread OscEnvironment::server;
+
+OscEnvironment::OscEnvironment(int id_, int observationDim_, int actionDim_, int observationBufferDim_)
+  : id(id_),
     observationDim(observationDim_), actionDim(actionDim_),
     observationBufferDim(observationBufferDim_), locked(false) {
   observationBuffer = (float*)malloc(observationBufferDim*sizeof(float));
 #ifdef USE_DOUBLE
-  repeatChar(observationTypes, 'd', observationDim);
+  repeatChar(observationTypes, 'd', observationBufferDim);
 #else
-  repeatChar(observationTypes, 'f', observationDim);
+  repeatChar(observationTypes, 'f', observationBufferDim);
 #endif
   repeatChar(actionTypes, 'i', actionDim);
 }
@@ -41,18 +44,9 @@ void OscEnvironment::initOsc(const char* host, const char* port, const char* rem
   /* start a new server on port 7770 */
   server = lo_server_thread_new(port, OscEnvironment::error);
 
-  lo_server_thread_add_method(server, "/qualia/response/create", 0, OscEnvironment::handlerCreate, 0);
-
   /* add method that will match any path and args */
   // lo_server_thread_add_method(server, "/bang", "", OscManager::bangHandler, 0);
   lo_server_thread_start(server);
-}
-
-void OscEnvironment::createEnvironmentId() {
-  static int envId;
-  envId = -1;
-  lo_send(client, "/qualia/create", 0, &envId);
-  while (envId == -1) usleep(1000);
 }
 
 char* OscEnvironment::getPath(const char* path) {
@@ -67,22 +61,19 @@ void OscEnvironment::init() {
     exit(-1);
   }
 
-  // Init.
-  if (id == -1) {
-    // Get id from OSC.
-    OscEnvironment::createEnvironmentId();
-    assert(id != -1);
+  lo_send(client, "/qualia/create", "iii", id, observationDim, actionDim);
+  usleep(100000L);
 
-    // Create methods for responses.
-    lo_server_thread_add_method(server, getPath("/qualia/response/init"), 0, OscEnvironment::handlerInit, this);
-    lo_server_thread_add_method(server, getPath("/qualia/response/start"), observationTypes, OscEnvironment::handlerStartStep, this);
-    lo_server_thread_add_method(server, getPath("/qualia/response/step"), observationTypes, OscEnvironment::handlerStartStep, this);
-  }
+  // Create methods for responses.
+  lo_server_thread_add_method(server, getPath("/qualia/response/init"), 0, OscEnvironment::handlerInit, this);
+  lo_server_thread_add_method(server, getPath("/qualia/response/start"), observationTypes, OscEnvironment::handlerStartStep, this);
+  lo_server_thread_add_method(server, getPath("/qualia/response/step"), observationTypes, OscEnvironment::handlerStartStep, this);
 
   locked = true;
   lo_send(client, getPath("/qualia/init"), 0);
+
   while (locked) usleep(1000);
-  printf("%d: init() done\n", id);
+//  printf("%d: init() done\n", id);
 }
 
 Observation* OscEnvironment::start() {
@@ -94,7 +85,7 @@ Observation* OscEnvironment::start() {
 
   // Wait for response.
   while (locked) usleep(1000);
-  printf("%d: start() done\n", id);
+  //printf("%d: start() done\n", id);
 
   // Return observation.
   return readObservation(observationBuffer);
@@ -116,7 +107,7 @@ Observation* OscEnvironment::step(const Action* action) {
 
   // Wait for response.
   while (locked) usleep(1000);
-  printf("%d: step() done\n", id);
+  //printf("%d: step() done\n", id);
 
   // Return observation.
   return readObservation(observationBuffer);
@@ -127,12 +118,12 @@ void OscEnvironment::repeatChar(char* dst, char c, int times) {
   dst[times] = '\0';
 }
 
-int OscEnvironment::handlerCreate(const char *path, const char *types, lo_arg **argv,
-                                  int argc, void *data, void *user_data) {
-  *((int*)user_data) = argv[0]->i;
-  printf("Creation accepted: id = %d\n", argv[0]->i);
-  return 0;
-}
+//int OscEnvironment::handlerCreate(const char *path, const char *types, lo_arg **argv,
+//                                  int argc, void *data, void *user_data) {
+//  *((int*)user_data) = argv[0]->i;
+//  printf("Creation accepted: id = %d\n", argv[0]->i);
+//  return 0;
+//}
 
 int OscEnvironment::handlerInit(const char *path, const char *types, lo_arg **argv,
                                 int argc, void *data, void *user_data) {

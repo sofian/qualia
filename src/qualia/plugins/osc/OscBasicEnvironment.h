@@ -26,7 +26,7 @@ class OscBasicEnvironment: public OscEnvironment {
 public:
   Observation currentObservation;
 
-  OscBasicEnvironment(int observationDim, int actionDim);
+  OscBasicEnvironment(int id, int observationDim, int actionDim);
   virtual ~OscBasicEnvironment();
 
   virtual Observation* readObservation(observation_t* buffer);

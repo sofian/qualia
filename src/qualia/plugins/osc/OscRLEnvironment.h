@@ -28,7 +28,7 @@ class OscRLEnvironment: public OscEnvironment {
 public:
   RLObservation currentObservation;
 
-  OscRLEnvironment(int observationDim, int actionDim);
+  OscRLEnvironment(int id, int observationDim, int actionDim);
   virtual ~OscRLEnvironment();
 
   virtual Observation* readObservation(observation_t* buffer);

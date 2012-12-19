@@ -45,11 +45,10 @@ public:
   char actionTypes[100];
 
 public:
-  OscEnvironment(int observationDim, int actionDim, int observationBufferDim);
+  OscEnvironment(int id, int observationDim, int actionDim, int observationBufferDim);
   virtual ~OscEnvironment();
 
   static void initOsc(const char* host, const char* port, const char* remotePort);
-  static void createEnvironmentId();
 
   char* getPath(const char* path);
 
@@ -63,8 +62,8 @@ public:
 
   static void repeatChar(char* dst, char c, int times);
 
-  static int handlerCreate(const char *path, const char *types, lo_arg **argv,
-                           int argc, void *data, void *user_data);
+//  static int handlerCreate(const char *path, const char *types, lo_arg **argv,
+//                           int argc, void *data, void *user_data);
   static int handlerInit(const char *path, const char *types, lo_arg **argv,
                          int argc, void *data, void *user_data);
   static int handlerStartStep(const char *path, const char *types, lo_arg **argv,
