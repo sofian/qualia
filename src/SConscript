@@ -42,6 +42,8 @@ EXTRA_LIBS = ""
 LIBS = ""
 LIBPATH = ""
 AVR_GCC_DIR = ""
+if (platform == 'computer'):
+	PLUGINS = "osc,mapper"
 
 # default
 if (platform == 'avr' or platform == 'arduino'):
@@ -65,6 +67,8 @@ EXTRA_LIBS = ARGUMENTS.get('EXTRA_LIBS', EXTRA_LIBS).split(':')
 LIBS = ARGUMENTS.get('LIBS', LIBS).split(',')
 LIBPATH = ARGUMENTS.get('LIBPATH', LIBPATH).split(':')
 
+PLUGINS = ARGUMENTS.get('PLUGINS', PLUGINS).split(',')
+
 # There should be a file with the same name as the folder and with the extension .pde
 #TARGET = os.path.basename(os.path.realpath(os.curdir))
 #assert(os.path.exists(TARGET+'.pde'))
@@ -74,10 +78,14 @@ if AVR_GCC_DIR:
   AVR_GCC_DIR += '/'
 
 AVR_BIN_PREFIX = AVR_GCC_DIR + 'avr-'
-  
-if (platform == 'computer'):
-  LIBS += ["mapper-0", "lo"]
-  SUBDIRS += ["qualia/plugins/mapper"]
+
+# Plugins.
+if ('osc' in PLUGINS):
+  LIBS += ["lo"]
+  SUBDIRS += ["qualia/plugins/osc"]
+if ('mapper' in PLUGINS):
+	LIBS += ["mapper-0", "lo"]
+	SUBDIRS += ["qualia/plugins/mapper"]
 
 LIBS += ["m"]
 #############################################################################
