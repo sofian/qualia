@@ -1,4 +1,4 @@
-#include <qualia/core/avrdefs.h>
+#include <qualia/core/common.h>
 #include <qualia/core/Qualia.h>
 #include <qualia/rl/RLQualia.h>
 #include <qualia/rl/QLearningAgent.h>
@@ -8,16 +8,29 @@
 #include "DummyEnvironment.h"
 #include "DummyRewardEnvironment.h"
 
-#include <qualia/rl/NeuralNetwork.h>
-#include <qualia/util/random.h>
+//#include <qualia/rl/NeuralNetwork.h>
+//#include <qualia/util/random.h>
 
 #define N_HIDDEN 3
 #define RANDOM_SEED 4567
 
-#define STATIC_ALLOCATOR_SIZE 1000
-#include <qualia/core/StaticAllocator.h>
+//#define STATIC_ALLOCATOR_SIZE 1000
+//#include <qualia/core/StaticAllocator.h>
 
+#if is_computer()
 #include <stdio.h>
+#endif
+
+void testMem() {
+  DummyAgent agent;
+  DummyEnvironment env;
+  Qualia qualia(&agent, &env);
+
+  qualia.init();
+
+  for (int i=0; i<10; i++)
+    qualia.episode(10);
+}
 
 void testDummy() {
   DummyAgent agent;
@@ -38,8 +51,8 @@ void testDummy() {
 void testQLearning(Environment& env, QLearningAgent& agent) {
   RLQualia qualia(&agent, &env);
 
-  printf("Starting...\n");
 #if is_computer()
+  printf("Starting...\n");
   printf("(this is a computer)\n");
 #endif
 
@@ -56,19 +69,19 @@ void testQLearning(Environment& env, QLearningAgent& agent) {
 
   qualia.init();
   agent.isLearning = false;
-  printf("First episode: no learning\n");
   qualia.episode(1000);
 #if is_computer()
+  printf("First episode: no learning\n");
     printf("Mean reward: %f (%f / %d)\n", (double) qualia.totalReward / qualia.nSteps, qualia.totalReward, qualia.nSteps);
 //    printf("Current agent action: [%d %d] = %d\n", agent.currentAction[0], agent.currentAction[1], agent.currentAction.conflated());
 //    printf("Current environment observation: [%f %f] => %f\n", env.currentObservation[0], env.currentObservation[1], env.currentObservation.reward);
 #endif
 
   for (int i=0; i<10; i++) {
-    printf("# %d ", qualia.nEpisodes);
     qualia.episode(1000);
     agent.isLearning = true;
 #if is_computer()
+    printf("# %d ", qualia.nEpisodes);
     printf("Mean reward: %f (%f / %d)\n", (double) qualia.totalReward / qualia.nSteps, qualia.totalReward, qualia.nSteps);
 //    printf("Current agent action: [%d %d] = %d\n", agent.currentAction[0], agent.currentAction[1], agent.currentAction.conflated());
 //    printf("Current environment observation: [%f %f] => %f\n", env.currentObservation[0], env.currentObservation[1], env.currentObservation.reward);
@@ -76,10 +89,10 @@ void testQLearning(Environment& env, QLearningAgent& agent) {
   }
 
   // Put epsilon on ice.
-  printf("Final episode (without random moves)\n");
   ((QLearningEGreedyPolicy *)agent.policy)->epsilon = 0;
   qualia.episode(1000);
 #if is_computer()
+  printf("Final episode (without random moves)\n");
   printf("Mean reward: %f (%f/%d)\n", (double) qualia.totalReward / qualia.nSteps, qualia.totalReward, qualia.nSteps);
   printf("Current agent action: [%d] = %d\n", agent.currentAction[0], agent.currentAction.conflated());
 //  printf("Current environment observation: [%f] => %f\n", env.currentObservation[0], env.currentObservation.reward);
@@ -114,16 +127,19 @@ void testQLearningDummyReward() {
 
 }
 
-unsigned char buffer[STATIC_ALLOCATOR_SIZE];
-StaticAllocator myAlloc(buffer, STATIC_ALLOCATOR_SIZE);
+//unsigned char buffer[STATIC_ALLOCATOR_SIZE];
+//StaticAllocator myAlloc(buffer, STATIC_ALLOCATOR_SIZE);
 int main() {
-  Alloc::init(&myAlloc);
-  testDummy();
+  //testMem();
+  //Alloc::init(&myAlloc);
+  //testDummy();
   testQLearningDummy();
-  testQLearningDummyReward();
+  //testQLearningDummyReward();
 
-  if (myAlloc.nLeaks)
-    printf("WARNING: Static Allocator has leaks: %d\n", myAlloc.nLeaks);
+#if is_computer()
+ // if (myAlloc.nLeaks)
+ //   printf("WARNING: Static Allocator has leaks: %d\n", myAlloc.nLeaks);
+#endif
 
   return 0;
 }
