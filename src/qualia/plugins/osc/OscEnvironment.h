@@ -36,14 +36,16 @@ public:
 
   int observationDim;
   int actionDim;
-  float* observationBuffer;
-  volatile bool locked;
+  int observationBufferDim;
 
+  // Internal use.
+  observation_t* observationBuffer;
+  volatile bool locked;
   char observationTypes[100];
   char actionTypes[100];
 
 public:
-  OscEnvironment(int observationDim, int actionDim);
+  OscEnvironment(int observationDim, int actionDim, int observationBufferDim);
   virtual ~OscEnvironment();
 
   static void initOsc(const char* host, const char* port, const char* remotePort);
@@ -57,7 +59,7 @@ public:
   virtual Observation* step(const Action* action);
 
   // Read the observation from the observationBuffer.
-  virtual Observation* readObservation(float* buffer) = 0;
+  virtual Observation* readObservation(observation_t* buffer) = 0;
 
   static void repeatChar(char* dst, char c, int times);
 

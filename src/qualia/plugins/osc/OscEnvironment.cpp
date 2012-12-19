@@ -19,10 +19,16 @@
 
 #include "OscEnvironment.h"
 
-OscEnvironment::OscEnvironment(int observationDim_, int actionDim_)
-  : id(-1), observationDim(observationDim_), actionDim(actionDim_), locked(false) {
-  observationBuffer = (float*)malloc(observationDim*sizeof(float));
+OscEnvironment::OscEnvironment(int observationDim_, int actionDim_, int observationBufferDim_)
+  : id(-1),
+    observationDim(observationDim_), actionDim(actionDim_),
+    observationBufferDim(observationBufferDim_), locked(false) {
+  observationBuffer = (float*)malloc(observationBufferDim*sizeof(float));
+#ifdef USE_DOUBLE
+  repeatChar(observationTypes, 'd', observationDim);
+#else
   repeatChar(observationTypes, 'f', observationDim);
+#endif
   repeatChar(actionTypes, 'i', actionDim);
 }
 
@@ -138,21 +144,21 @@ int OscEnvironment::handlerInit(const char *path, const char *types, lo_arg **ar
 int OscEnvironment::handlerStartStep(const char *path, const char *types, lo_arg **argv,
                                      int argc, void *data, void *user_data) {
   OscEnvironment *obj = ((OscEnvironment*)user_data);
-  assert(argc == obj->observationDim);
+  assert(argc == obj->observationBufferDim);
   for (int i=0; i<argc; i++) {
     float x;
     switch (types[i]) {
     case LO_INT32:
-      x = (float)argv[i]->i;
+      x = (observation_t)argv[i]->i;
       break;
     case LO_INT64:
-      x = (float)argv[i]->h;
+      x = (observation_t)argv[i]->h;
       break;
     case LO_FLOAT:
-      x = argv[i]->f;
+      x = (observation_t)argv[i]->f;
       break;
     case LO_DOUBLE:
-      x = (float)argv[i]->d;
+      x = (observation_t)argv[i]->d;
       break;
     default:
       printf("Error: wrong type at index %d: %c.\n", i, types[i]);
