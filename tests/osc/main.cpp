@@ -34,7 +34,7 @@
 
 
 //#define DIM_OBSERVATIONS 1
-#define DIM_OBSERVATIONS 4
+#define DIM_OBSERVATIONS 10
 #define DIM_ACTIONS 2
 
 // Parameters
