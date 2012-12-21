@@ -145,7 +145,11 @@ void BinaryChromosome::initializeRandom(Chromosome& chromosome) {
   unsigned int byteSize = c->info->byteSize();
   // Assign random bits by blocks to mimimize the calls to random().
   for (unsigned int i=0; i<byteSize; i+=sizeof(int32_t)) {
-    int32_t rnd = random();
+#ifdef _WIN32
+    int32_t rnd = rand();
+#else
+	int32_t rnd = random();
+#endif
     //printf("Writing min(%d-%d=%d, %ld) = %ld with rnd = %ld\n",
     //        byteSize, i, byteSize-i, sizeof(int32_t), min(byteSize-i, sizeof(int32_t)), rnd);
     memcpy(&c->code[i], &rnd, min(byteSize-i, sizeof(int32_t)));

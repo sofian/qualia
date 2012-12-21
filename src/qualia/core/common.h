@@ -23,6 +23,10 @@
 #ifndef COMMON_H_
 #define COMMON_H_
 
+#ifdef _WIN32
+	#define WIN32 // for liblo
+#endif
+
 // Platform check.
 #define is_avr() defined(__AVR__)
 #define is_arduino() defined(ARDUINO)

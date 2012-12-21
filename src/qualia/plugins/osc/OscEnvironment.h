@@ -23,7 +23,14 @@
 #include <qualia/core/Environment.h>
 
 #include <stdio.h>
-#include <unistd.h>
+
+#ifdef _WIN32
+  #define _WINSOCKAPI_
+  #include <windows.h>
+  #include <winbase.h>
+#else
+  #include <unistd.h>
+#endif
 
 #include <lo/lo.h>
 

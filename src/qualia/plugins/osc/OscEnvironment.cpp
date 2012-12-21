@@ -62,7 +62,11 @@ void OscEnvironment::init() {
   }
 
   lo_send(client, "/qualia/create", "iii", id, observationDim, actionDim);
+#ifdef _WIN32
+  Sleep(1000);
+#else
   usleep(100000L);
+#endif
 
   // Create methods for responses.
   lo_server_thread_add_method(server, getPath("/qualia/response/init"), 0, OscEnvironment::handlerInit, this);
@@ -72,7 +76,14 @@ void OscEnvironment::init() {
   locked = true;
   lo_send(client, getPath("/qualia/init"), 0);
 
-  while (locked) usleep(1000);
+  while (locked)
+  {
+#ifdef _WIN32
+    Sleep(1);
+#else
+    usleep(1000);
+#endif
+  }
 //  printf("%d: init() done\n", id);
 }
 
@@ -84,7 +95,14 @@ Observation* OscEnvironment::start() {
   lo_send(client, getPath("/qualia/start"), 0);
 
   // Wait for response.
-  while (locked) usleep(1000);
+  while (locked)
+  {
+#ifdef _WIN32
+    Sleep(1);
+#else
+    usleep(1000);
+#endif
+  }
   //printf("%d: start() done\n", id);
 
   // Return observation.
@@ -106,7 +124,14 @@ Observation* OscEnvironment::step(const Action* action) {
   lo_message_free(msg);
 
   // Wait for response.
-  while (locked) usleep(1000);
+  while (locked)
+  {
+#ifdef _WIN32
+    Sleep(1);
+#else
+    usleep(1000);
+#endif
+  }
   //printf("%d: step() done\n", id);
 
   // Return observation.
