@@ -30,11 +30,8 @@ def fnCompress(target, source, env):
 Import(["platform", "mode"])
 SUBDIRS = ["qualia/core", "qualia/util", "qualia/rl", "qualia/ga"]
 
-## TODO: change this (make it more generic eg. settings file) ###############
-if (platform == 'computer'):
-  INCLUDE_PATH = "/Users/tats/Documents/workspace/qualia/src/"
-else:
-  INCLUDE_PATH = "/Users/tats/Documents/workspace/qualia/src/:/Applications/Arduino.app/Contents/Resources/Java/hardware/tools/avr/avr/include/"
+env = Environment();
+arch = env['PLATFORM'];
 
 MCU = 'atmega168'
 F_CPU = 16000000
@@ -42,16 +39,18 @@ EXTRA_LIBS = ""
 LIBS = ""
 LIBPATH = ""
 AVR_GCC_DIR = ""
-if (platform == 'computer'):
-	PLUGINS = "osc,mapper"
+PLUGINS = ""
 
 # default
 if (platform == 'avr' or platform == 'arduino'):
-  AVR_GCC_DIR = "/Applications/Arduino.app/Contents/Resources/Java/hardware/tools/avr/bin/"
+	if (arch == 'darwin'):
+	  AVR_GCC_DIR = "/Applications/Arduino.app/Contents/Resources/Java/hardware/tools/avr/bin/"
+	else:
+	  AVR_GCC_DIR = ""
 
 TARGET = "qualia"
 
-INCLUDE_PATH = ARGUMENTS.get('INCLUDE_PATH', INCLUDE_PATH).split(":")
+INCLUDE_PATH = ARGUMENTS.get('INCLUDE_PATH', "").split(":")
 INCLUDE_PATH = unique(INCLUDE_PATH + [os.getcwd()])
 
 # AVR arguments
@@ -147,7 +146,11 @@ else:
   # Peut etre une erreur: on devrait construire des OBJETS (?)
   lib = env.Library(target = TARGET, source = sources)
 
-  prefix = ARGUMENTS.get('PREFIX', "/usr/local")
+  if (arch == 'linux' or arch == 'darwin'):
+    prefix = ARGUMENTS.get('PREFIX', "/usr/local")
+  else:
+    prefix = ARGUMENTS.get('PREFIX', "")
+	
   installPath = prefix + "/lib"
 
   installPathList = env.Install(installPath, lib)
