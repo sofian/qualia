@@ -49,13 +49,18 @@
 
 #define SHARED_NEURAL_NETWORK 0
 
+#define OSC_PORT "11000"
+#define OSC_REMOTE_PORT "12000"
+#define OSC_IP "127.0.0.1"
+//#define OSC_IP "192.168.123.208"
+
 const unsigned int N_ACTIONS[] = { 100, 100 };
 
 #include <stdio.h>
 #include <cstring>
 
 RLQualia* createQualia(int id, int nHidden, float learningRate, float epsilon, float lambda, float gamma, int dimObservations);
-void    releaseQualia(RLQualia* q);
+void      releaseQualia(RLQualia* q);
 
 #if SHARED_NEURAL_NETWORK
 NeuralNetwork* sharedNet = 0;
@@ -85,7 +90,7 @@ int main(int argc, char** argv) {
   printf("Lambda: %f\n", lambda);
   printf("Gamma: %f\n", gamma);
 
-  OscEnvironment::initOsc("127.0.0.1", "11000", "12000");
+  OscEnvironment::initOsc(OSC_IP, OSC_PORT, OSC_REMOTE_PORT);
   std::vector<RLQualia*> qualias(nAgents);
 
 #if SHARED_NEURAL_NETWORK
