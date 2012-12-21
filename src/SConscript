@@ -133,7 +133,7 @@ else:
   # that made scons copy the include files to /usr/local/include even without 
   # calling scons install
   #env.Append(CPPPATH=["/usr/local/include", "/usr/include", os.getcwd()])
-  env.Append(CPPPATH=[os.getcwd()])
+  env.Append(CPPPATH=INCLUDE_PATH)
   
   env.Append(LIBS=LIBS)
   if (mode == 'debug'):
