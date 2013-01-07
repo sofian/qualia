@@ -10,11 +10,20 @@
 *.so
 *.log
 a.out
+build/
+
+# Documents
+*.pdf
+*.doc
+*.docx
+*.xls
+*.ppt
 
 # Eclipse
 .project
 .cproject
 .settings
+.pydevproject
 
 # Scons
 .sconsign.dblite
@@ -24,3 +33,6 @@ a.out
 
 # OS X
 .DS_Store
+
+# Backup files
+*~
