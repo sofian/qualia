@@ -24,7 +24,9 @@
 #define COMMON_H_
 
 #ifdef _WIN32
-	#define WIN32 // for liblo
+  #ifndef WIN32
+    #define WIN32 // for liblo
+  #endif
 #endif
 
 // Platform check.
@@ -46,14 +48,15 @@
 #endif
 
 #ifdef _MSC_VER
-#ifndef for
-#define for if (0) {} else for
-#endif
-#define M_PI 3.14159265358979323846
-#define popen(x,y) _popen(x,y)
-#define pclose(x) _pclose(x)
-#define isnan(x) _isnan(x)
-#define log1p(x) log(1+(x))
+  #ifndef for
+  #define for if (0) {} else for
+  #endif
+
+  #define M_PI 3.14159265358979323846
+  #define popen(x,y) _popen(x,y)
+  #define pclose(x) _pclose(x)
+  #define isnan(x) _isnan(x)
+  #define log1p(x) log(1+(x))
 #endif
 
 // Basic definitions from Arduino.h
@@ -75,8 +78,10 @@
 #undef max
 #endif
 
-#ifdef abs
-#undef abs
+#ifndef WIN32
+  #ifdef abs
+  #undef abs
+  #endif
 #endif
 
 // XXX Since
@@ -100,7 +105,9 @@
 
 #define min(a,b) ((a)<(b)?(a):(b))
 #define max(a,b) ((a)>(b)?(a):(b))
-#define abs(x) ((x)>=0?(x):-(x))
+#ifndef WIN32
+  #define abs(x) ((x)>=0?(x):-(x))
+#endif
 #define constrain(amt,low,high) ((amt)<(low)?(low):((amt)>(high)?(high):(amt)))
 //#define round(x)     ((x)>=0?(long)((x)+0.5):(long)((x)-0.5))
 #define radians(deg) ((deg)*DEG_TO_RAD)
@@ -124,11 +131,11 @@
 //#define DEBUG_LEVEL 2
 
 #ifdef USE_DOUBLE
-typedef double real;
-#define INF DBL_MAX
+  typedef double real;
+  #define INF DBL_MAX
 #else
-typedef float real;
-#define INF FLT_MAX
+  typedef float real;
+  #define INF FLT_MAX
 #endif
 
 #if is_avr()
