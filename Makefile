@@ -1,8 +1,9 @@
 EXAMPLES=$(wildcard tests/*)
 MODE = debug
-PLATFORM = avr
-SCONS = /usr/local/bin/scons
-SCONS += mode=$(MODE) platform=$(PLATFORM)
+PLATFORM = computer
+PLUGINS = osc
+SCONS = `which scons`
+SCONS += mode=$(MODE) platform=$(PLATFORM) PLUGINS=$(PLUGINS)
 
 .PHONY: all clean install $(EXAMPLES)
 
