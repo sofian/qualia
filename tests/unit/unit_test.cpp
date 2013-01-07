@@ -105,7 +105,7 @@ void testPolicies() {
   egreedy.setAgent(&agent);
 
   printf("-- Testing greedy policy (epsilon = 0)\n");
-  srandom(222);
+  randomSeed(222);
   egreedy.epsilon = 0;
   egreedy.chooseAction(&action, &observation);
   // Actions should always be the same.
@@ -117,7 +117,7 @@ void testPolicies() {
   printf("-> PASSED\n");
 
   printf("-- Testing random (epsilon = 1) (actions should be random)\n");
-  srandom(222);
+  randomSeed(222);
   const action_dim_t pattern1[] = {
       90, 90, 20, 97, 98, 30, 63, 23, 47, 32
   };
@@ -129,7 +129,7 @@ void testPolicies() {
   printf("-> PASSED\n");
 
   printf("-- Testing e-greedy (epsilon = 0.5) (actions should be semi random)\n");
-  srandom(222);
+  randomSeed(222);
   const action_dim_t pattern2[] = {
       90, 9, 9, 9, 63, 47, 9, 9, 9, 9
   };
@@ -146,7 +146,7 @@ void testPolicies() {
   softmax.setAgent(&agent);
 
   printf("-- Testing \"greedy\" policy (epsilon = 0)\n");
-  srandom(222);
+  randomSeed(222);
   const action_dim_t pattern3[] = {
       17, 66, 53, 82, 49, 61, 46, 28, 75, 56
   };
@@ -159,7 +159,7 @@ void testPolicies() {
   printf("-> PASSED\n");
 
   printf("-- Testing random (epsilon = 1)\n");
-  srandom(222);
+  randomSeed(222);
   const action_dim_t pattern4[] = {
       90, 90, 20, 97, 98, 30, 63, 23, 47, 32
   };
@@ -171,7 +171,7 @@ void testPolicies() {
   printf("-> PASSED\n");
 
   printf("-- Testing e-greedy (epsilon = 0.5) (actions should be semi random)\n");
-  srandom(222);
+  randomSeed(222);
   const action_dim_t pattern5[] = {
       90, 53, 49, 46, 32, 90, 94, 98, 61, 4
   };
@@ -202,15 +202,19 @@ public:
   }
 };
 
-void realArrayToString(char* str, int n, real* p) {
+void realArrayToString(char* str, int n, const real* p) {
   str[0] = '\0';
   for (int i=0; i<n; i++)
     sprintf(str, "%s%f, ", str, p[i]);
 }
 
+bool approxEqual(real x1, real x2, real diffThreshold=0.000001) {
+  return (abs(x1-x2) < diffThreshold);
+}
+
 void testLearning() {
   printf("== TEST LEARNING ==\n");
-  srandom(222);
+  randomSeed(222);
   TestEnvironment env;
   NeuralNetwork net(2+2, 3, 1, 0.1f);
   QLearningEGreedyPolicy egreedy(0.5f);
@@ -218,22 +222,34 @@ void testLearning() {
                        2, 2, (const unsigned int[]){10, 10},
                        1.0f, 0.1f, &egreedy, false); // lambda = 1.0 => no history
   RLQualia qualia(&agent, &env);
-  printf("-- Testing learning loop\n");
   qualia.init();
   qualia.start();
 
   // Verify weights
-  const char* weights1 = "0.744364, 0.002764, 0.976832, 0.922620, -0.371778, -0.170730, 0.666554, -0.042378, -0.327445, -0.088207, -0.870008, -0.643873, -0.011151, -0.509864, 0.682508, -0.935150, -0.855299, -0.330070, 0.295997, ";
-  const char* weights2 = "0.720454, -0.032911, 0.924488, 0.885604, -0.462369, -0.196202, 0.629109, -0.115963, -0.376370, -0.176181, -0.877519, -0.654348, -0.032678, -0.524523, 0.656541, -0.593092, -0.641793, -0.115928, 0.761823, ";
+  const real weights1[] = { 0.744364, 0.002764, 0.976832, 0.922620, -0.371778, -0.170730, 0.666554, -0.042378, -0.327445, -0.088207, -0.870008, -0.643873, -0.011151, -0.509864, 0.682508, -0.935150, -0.855299, -0.330070, 0.295997 };
 
-  char str[1000];
-  realArrayToString(str, net.nParams, net.weights);
-  assert( strcmp(weights1, str) == 0);
+  printf("-- Testing initialization\n");
+  for (int i=0; i<net.nParams; i++) {
+    assert( approxEqual(weights1[i], net.weights[i]));
+  }
+  printf("-> PASSED\n");
+
+
+  printf("-- Testing learning loop\n");
+
+#if defined(__APPLE__)
+  #warning "This test should be checked again on OSX"
+  // Values as they were compiled on OSX.
+  const real weights2[] = { 0.720454, -0.032911, 0.924488, 0.885604, -0.462369, -0.196202, 0.629109, -0.115963, -0.376370, -0.176181, -0.877519, -0.654348, -0.032678, -0.524523, 0.656541, -0.593092, -0.641793, -0.115928, 0.761823 };
+#else // Linux
+  const real weights2[] = { 0.720373, -0.034388, 0.927694, 0.887645, -0.490463, -0.209806, 0.600540, -0.086809, -0.427292, -0.098692, -0.889029, -0.656940, -0.037353, -0.509864, 0.682508, -0.592464, -0.619206, -0.092766, 0.793570 };
+#endif
 
   qualia.episode(100);
 
-  realArrayToString(str, net.nParams, net.weights);
-  assert( strcmp(weights2, str) == 0);
+  for (int i=0; i<net.nParams; i++) {
+    assert( approxEqual(weights2[i], net.weights[i]));
+  }
 
   printf("-> PASSED\n");
 
