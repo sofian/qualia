@@ -18,13 +18,14 @@
  */
 
 #include "random_dist.h"
+#include <qualia/core/common.h>
 
 float exponential(float lambda) {
   return(-1. / lambda * log(1-randomUniform()));
 }
 
 float cauchy(float median, float sigma) {
-  return(median + sigma * tan(M_PI*(randomUniform()-0.5)));
+  return(median + sigma * tan(PI*(randomUniform()-0.5)));
 }
 
 int geometric(float p) {

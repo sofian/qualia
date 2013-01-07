@@ -18,6 +18,7 @@
  */
 
 #include "random_normal.h"
+#include <qualia/core/common.h>
 
 float randomNormal(float mean, float stdv) {
   static bool normal_is_valid = false;
@@ -33,7 +34,7 @@ float randomNormal(float mean, float stdv) {
     normal_is_valid = false;
 
   if (normal_is_valid)
-    return normal_rho * cos(2. * M_PI * normal_x) * stdv + mean;
+    return normal_rho * cos(2. * PI * normal_x) * stdv + mean;
   else
-    return normal_rho * sin(2. * M_PI * normal_x) * stdv + mean;
+    return normal_rho * sin(2. * PI * normal_x) * stdv + mean;
 }
