@@ -46,14 +46,16 @@ class XFile
     XFile();
 
     /// Read something.
+    /// Returns the number of bytes read or a value < 0 if there was an error.
     virtual int read(void *ptr, int block_size, int n_blocks) = 0;
 
     /// Write.
+    /// Returns the number of bytes written or a value < 0 if there was an error.
     virtual int write(void *ptr, int block_size, int n_blocks) = 0;
 
     /** Read and check the tag/the size. To be used with #taggedWrite()#.
         If the tag and the size readed doesn't correspond to the given
-        tag and size, an error will occur.
+        tag and size, an error will occur and the returned value will be (-1).
     */
     int taggedRead(void *ptr, int block_size, int n_blocks, const char *tag);
 
