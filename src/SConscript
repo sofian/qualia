@@ -30,6 +30,9 @@ def fnCompress(target, source, env):
 Import(["platform", "mode"])
 SUBDIRS = ["qualia/core", "qualia/util", "qualia/rl", "qualia/ga"]
 
+if (platform == 'computer'):
+	SUBDIRS += ["qualia/computer"]
+
 env = Environment();
 arch = env['PLATFORM'];
 

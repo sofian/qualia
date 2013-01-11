@@ -1,4 +1,6 @@
-// Copyright (C) 2003--2004 Ronan Collobert (collober@idiap.ch)
+// Copyright (C) 2003--2004 Johnny Mariethoz (Johnny.Mariethoz@idiap.ch)
+//                and Ronan Collobert (collober@idiap.ch)
+//                and Samy Bengio (bengio@idiap.ch)
 //                
 // This file is part of Torch 3.1.
 //
@@ -26,65 +28,55 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "XFile.h"
-#include <cstring>
+#include "string_utils.h"
+#include <cstdarg>
 
-XFile::XFile()
-{
+char *strBaseName(char *filename) {
+   char *p = strrchr(filename, '/');
+   return p ? (p+1) : filename;
 }
 
-int XFile::taggedRead(void *ptr, int block_size, int n_blocks, const char *tag)
+char *strRemoveSuffix(char *filename, char c)
 {
-  int tag_size;
-  this->read(&tag_size, sizeof(int), 1);
-  if(tag_size != (int)strlen(tag))
-  {
-    ERROR("XFile: sorry, the tag <%s> cannot be read!", tag);
-    return (-1);
+  char *copy = NULL;
+  int len = strlen(filename);
+  char *p = filename + len - 1;
+  int i=len-1;
+  while (*p != c && i-- >0) p--;
+  if (i>0) {
+    //*p = '\0';
+    copy = (char*)Alloc::malloc(sizeof(char)*(i+1));
+    strncpy(copy,filename,i);
+    copy[i] = '\0';
+  } else {
+    copy = (char*)Alloc::malloc(sizeof(char)*(len+1));
+    strcpy(copy,filename);
   }
-
-  for (int i=0; i<strlen(tag); i++)
-  {
-    char c;
-    this->read(&c, sizeof(char), 1);
-    if (c != tag[i])
-    {
-      ERROR("XFile: tag <%s> not found!", tag);
-      return (-1);
-    }
-  }
-//#if is_computer()
-//  char *tag_ = (char *)Alloc::malloc(tag_size+1);
-//  tag_[tag_size] = '\0';
-//  this->read(tag_, 1, tag_size);
-//
-//  ASSERT_ERROR_MESSAGE(strcmp(tag, tag_) == 0, "XFile: tag <%s> not found!", tag);
-//  Alloc::free(tag_);
-//#endif
-
-  int block_size_;
-  int n_blocks_;
-  this->read(&block_size_, sizeof(int), 1);
-  this->read(&n_blocks_, sizeof(int), 1);
-
-  if (block_size_ != block_size || n_blocks_ != n_blocks)
-  {
-    ERROR("XFile: tag <%s> has a corrupted size!", tag);
-    return (-1);
-  }
-
-  return this->read(ptr, block_size, n_blocks);
+  return copy;
 }
 
-int XFile::taggedWrite(void *ptr, int block_size, int n_blocks, const char *tag){
-  int tag_size = strlen(tag);
-  this->write(&tag_size, sizeof(int), 1);
-  this->write((char *)tag, 1, tag_size);
-  this->write(&block_size, sizeof(int), 1);
-  this->write(&n_blocks, sizeof(int), 1);
-  return this->write(ptr, block_size, n_blocks);
-}
-
-XFile::~XFile()
+char *strConcat(int n, ...)
 {
+  char **strs = (char **)Alloc::malloc(sizeof(char *)*n);
+
+  int taille = 0;
+  va_list args;
+  va_start(args, n);
+  for(int i = 0; i < n; i++)
+  {
+    strs[i] = va_arg(args, char *);
+    taille += strlen(strs[i]);
+  }
+  va_end(args);
+  taille++; // Pour le truc de fin
+
+  char *the_concat = (char *)Alloc::malloc(sizeof(char)*taille);
+  the_concat[0] = '\0';
+
+  for(int i = 0; i < n; i++)
+    strcat(the_concat, strs[i]);
+
+  Alloc::free(strs);
+
+  return(the_concat);
 }
