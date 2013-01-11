@@ -27,11 +27,17 @@
 #ifndef ERROR_INCLUDED
 #define ERROR_INCLUDED
 
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <qualia/core/common.h>
 
 // # Macro definitions #####################################################
+
+// Force NODEBUG when running in AVR/Arduino mode
+#if (! is_computer())
+  #ifdef DEBUG_LEVEL
+    #undef DEBUG_LEVEL
+  #endif
+  #define DEBUG_LEVEL DEBUG_LEVEL_NODEBUG
+#endif
 
 // Debug levels.
 
@@ -50,13 +56,13 @@
 
 // Default debug level.
 #ifndef DEBUG_LEVEL
-#define DEBUG_LEVEL DEBUG_LEVEL_ERROR
+  #define DEBUG_LEVEL DEBUG_LEVEL_ERROR
 #endif
 
 // Quick condition checkers.
-#define DEBUG_ERROR   DEBUG_LEVEL >= DEBUG_LEVEL_ERROR
-#define DEBUG_WARNING DEBUG_LEVEL >= DEBUG_LEVEL_WARNING
-#define DEBUG_NOTICE  DEBUG_LEVEL >= DEBUG_LEVEL_NOTICE
+#define DEBUG_ERROR   (DEBUG_LEVEL >= DEBUG_LEVEL_ERROR)
+#define DEBUG_WARNING (DEBUG_LEVEL >= DEBUG_LEVEL_WARNING)
+#define DEBUG_NOTICE  (DEBUG_LEVEL >= DEBUG_LEVEL_NOTICE)
 
 // Redefine __STRING just to make sure.
 #ifndef __STRING
@@ -96,37 +102,36 @@ void noticemsg(const char* msg, ...);
 
 //! Error messages/assertion.
 #if DEBUG_ERROR
-// XXX This was conflicting...
-//#define ERROR errormsg
-#define error errormsg
-void ASSERT_ERROR_MESSAGE(bool expr, const char* msg, ...);
-#define ASSERT_ERROR(expr) __TRIGGER_ASSERT(expr, errormsg)
+  // XXX This was conflicting...
+  #define ERROR errormsg
+  void ASSERT_ERROR_MESSAGE(bool expr, const char* msg, ...);
+  #define ASSERT_ERROR(expr) __TRIGGER_ASSERT(expr, errormsg)
 #else
-#define error dummymsg
-#define ASSERT_ERROR(expr) __DUMMY_ASSERT
-#define ASSERT_ERROR_MESSAGE assertdummymsg
+  #define error dummymsg
+  #define ASSERT_ERROR(expr) __DUMMY_ASSERT
+  #define ASSERT_ERROR_MESSAGE assertdummymsg
 #endif
 
 //! Warning messages/assertion.
 #if DEBUG_WARNING
-#define WARNING warningmsg
-void ASSERT_WARNING_MESSAGE(bool expr, const char* msg, ...);
-#define ASSERT_WARNING(expr) __TRIGGER_ASSERT(expr, warningmsg)
+  #define WARNING warningmsg
+  void ASSERT_WARNING_MESSAGE(bool expr, const char* msg, ...);
+  #define ASSERT_WARNING(expr) __TRIGGER_ASSERT(expr, warningmsg)
 #else
-#define WARNING dummymsg
-#define ASSERT_WARNING(expr) __DUMMY_ASSERT
-#define ASSERT_WARNING_MESSAGE assertdummymsg
+  #define WARNING dummymsg
+  #define ASSERT_WARNING(expr) __DUMMY_ASSERT
+  #define ASSERT_WARNING_MESSAGE assertdummymsg
 #endif
 
 //! Notice messages/assertion.
 #if DEBUG_NOTICE
-#define NOTICE noticemsg
-void ASSERT_NOTICE_MESSAGE(bool expr, const char* msg, ...);
-#define ASSERT_NOTICE(expr) __TRIGGER_ASSERT(expr, noticemsg)
+  #define NOTICE noticemsg
+  void ASSERT_NOTICE_MESSAGE(bool expr, const char* msg, ...);
+  #define ASSERT_NOTICE(expr) __TRIGGER_ASSERT(expr, noticemsg)
 #else
-#define NOTICE dummymsg
-#define ASSERT_NOTICE(expr) __DUMMY_ASSERT
-#define ASSERT_NOTICE_MESSAGE assertdummymsg
+  #define NOTICE dummymsg
+  #define ASSERT_NOTICE(expr) __DUMMY_ASSERT
+  #define ASSERT_NOTICE_MESSAGE assertdummymsg
 #endif
 
 

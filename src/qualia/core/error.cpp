@@ -25,6 +25,10 @@
 
 #include "error.h"
 
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 // These implementations were taken from Torch 3 (http://www.torch.ch).
 
 char xxpetit_message_pour_melanie[10000];
