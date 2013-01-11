@@ -38,10 +38,9 @@ real logAdd(real log_a, real log_b)
   }
 
   real minusdif = log_b - log_a;
-#ifdef DEBUG
-  if (isnan(minusdif))
-    error("LogAdd: minusdif (%f) log_b (%f) or log_a (%f) is nan",minusdif,log_b,log_a);
-#endif
+
+  ASSERT_ERROR_MESSAGE (!isnan(minusdif), "LogAdd: minusdif (%f) log_b (%f) or log_a (%f) is nan",minusdif,log_b,log_a);
+
   if (minusdif < MINUS_LOG_THRESHOLD)
     return log_a;
   else
@@ -50,16 +49,12 @@ real logAdd(real log_a, real log_b)
 
 real logSub(real log_a, real log_b)
 {
-#ifdef DEBUG
-  if (log_a < log_b)
-    error("LogSub: log_a (%f) should be greater than log_b (%f)", log_a, log_b);
-#endif
+  ASSERT_ERROR_MESSAGE (log_a >= log_b, "LogSub: log_a (%f) should be greater than log_b (%f)", log_a, log_b);
 
   real minusdif = log_b - log_a;
-#ifdef DEBUG
-  if (isnan(minusdif))
-    error("LogSub: minusdif (%f) log_b (%f) or log_a (%f) is nan",minusdif,log_b,log_a);
-#endif
+
+  ASSERT_ERROR_MESSAGE (!isnan(minusdif), "LogSub: minusdif (%f) log_b (%f) or log_a (%f) is nan",minusdif,log_b,log_a);
+
   if (log_a == log_b)
     return LOG_ZERO;
   else if (minusdif < MINUS_LOG_THRESHOLD)
