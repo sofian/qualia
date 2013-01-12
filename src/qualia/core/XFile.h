@@ -51,7 +51,7 @@ class XFile
 
     /// Write.
     /// Returns the number of bytes written or a value < 0 if there was an error.
-    virtual int write(void *ptr, int block_size, int n_blocks) = 0;
+    virtual int write(const void *ptr, int block_size, int n_blocks) = 0;
 
     /** Read and check the tag/the size. To be used with #taggedWrite()#.
         If the tag and the size readed doesn't correspond to the given
@@ -60,7 +60,7 @@ class XFile
     int taggedRead(void *ptr, int block_size, int n_blocks, const char *tag);
 
     /// Write and write the tag/the size.
-    int taggedWrite(void *ptr, int block_size, int n_blocks, const char *tag);
+    int taggedWrite(const void *ptr, int block_size, int n_blocks, const char *tag);
 
     /// Are we at the end ?
     virtual int eof() = 0;

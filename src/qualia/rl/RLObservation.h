@@ -29,5 +29,8 @@ public:
   RLObservation();
   RLObservation(unsigned int dim, const observation_t* copyFrom = 0);
   Observation& copyFrom(const Observation* src);
+
+  virtual void saveData(XFile* file) const;
+  virtual void loadData(XFile* file);
 };
 #endif /* RLOBSERVATION_H_ */

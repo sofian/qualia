@@ -20,8 +20,9 @@
 #ifndef OBSERVATION_H_
 #define OBSERVATION_H_
 
-#include "common.h"
-#include <string.h>
+#include <qualia/core/common.h>
+#include <qualia/core/XFile.h>
+#include <cstring>
 
 typedef real observation_t;
 
@@ -40,6 +41,9 @@ public:
   observation_t& operator[](int i) const { return observations[i]; }
 
   virtual Observation& copyFrom(const Observation* src);
+
+  virtual void saveData(XFile* file) const;
+  virtual void loadData(XFile* file);
 };
 
 #endif /* OBSERVATION_H_ */

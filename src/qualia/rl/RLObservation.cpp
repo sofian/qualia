@@ -31,4 +31,14 @@ Observation& RLObservation::copyFrom(const Observation* src) {
   return *this;
 }
 
+void RLObservation::saveData(XFile* file) const {
+  Observation::saveData(file);
+  file->write(&reward, sizeof(real), 1);
+}
+
+void RLObservation::loadData(XFile* file) {
+  Observation::loadData(file);
+  file->read(&reward, sizeof(real), 1);
+}
+
 

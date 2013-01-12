@@ -53,3 +53,11 @@ Observation& Observation::copyFrom(const Observation* src) {
   memcpy(observations, src->observations, dim * sizeof(observation_t));
   return *this;
 }
+
+void Observation::saveData(XFile* file) const {
+  file->write(observations, sizeof(observation_t), dim);
+}
+
+void Observation::loadData(XFile* file) {
+  file->read(observations, sizeof(observation_t), dim);
+}

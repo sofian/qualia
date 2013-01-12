@@ -43,7 +43,7 @@ int XFile::taggedRead(void *ptr, int block_size, int n_blocks, const char *tag)
     return (-1);
   }
 
-  for (int i=0; i<strlen(tag); i++)
+  for (unsigned int i=0; i<strlen(tag); i++)
   {
     char c;
     this->read(&c, sizeof(char), 1);
@@ -76,7 +76,7 @@ int XFile::taggedRead(void *ptr, int block_size, int n_blocks, const char *tag)
   return this->read(ptr, block_size, n_blocks);
 }
 
-int XFile::taggedWrite(void *ptr, int block_size, int n_blocks, const char *tag){
+int XFile::taggedWrite(const void *ptr, int block_size, int n_blocks, const char *tag){
   int tag_size = strlen(tag);
   this->write(&tag_size, sizeof(int), 1);
   this->write((char *)tag, 1, tag_size);

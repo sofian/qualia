@@ -106,3 +106,11 @@ Action& Action::copyFrom(const Action* src) {
   return *this;
 }
 
+void Action::saveData(XFile* file) const {
+  file->write(actions, sizeof(action_t), dim);
+}
+
+void Action::loadData(XFile* file) {
+  file->read(actions, sizeof(action_t), dim);
+}
+

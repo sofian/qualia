@@ -21,10 +21,10 @@
 #ifndef ACTION_H_
 #define ACTION_H_
 
-#include "common.h"
-#include <qualia/core/avrdefs.h>
+#include <qualia/core/common.h>
+#include <qualia/core/XFile.h>
 
-#include <string.h>
+#include <cstring>
 
 typedef unsigned long action_t;
 typedef unsigned int  action_dim_t;
@@ -52,6 +52,12 @@ public:
   virtual Action& next();
 
   virtual Action& copyFrom(const Action* src);
+
+  // TODO: remove dim / nAtions / etc from class and put it in some sort of TemplateAction class
+  // otherwise the save/load are not really what they look like. This is why I named them saveData/loadData
+  // instead of just save/load.
+  virtual void saveData(XFile* file) const;
+  virtual void loadData(XFile* file);
 };
 
 #endif /* ACTION_H_ */
