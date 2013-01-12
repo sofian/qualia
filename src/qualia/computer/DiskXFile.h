@@ -89,7 +89,7 @@ class DiskXFile : public XFile
     //-----
     
     virtual int read(void *ptr, int block_size, int n_blocks);
-    virtual int write(void *ptr, int block_size, int n_blocks);
+    virtual int write(const void *ptr, int block_size, int n_blocks);
     virtual int eof();
     virtual int flush();
     virtual int seek(long offset, int whence);
