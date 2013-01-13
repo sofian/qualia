@@ -22,7 +22,7 @@
 #include <qualia/core/Qualia.h>
 #include <qualia/rl/QLearningAgent.h>
 #include <qualia/rl/QLearningEGreedyPolicy.h>
-#include <qualia/rl/NeuralNetwork.h>
+#include <qualia/learning/NeuralNetwork.h>
 #include <qualia/rl/RLQualia.h>
 #include "Prototype2bEnvironment.h"
 
