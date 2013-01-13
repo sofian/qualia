@@ -135,4 +135,3 @@ Action* QLearningAgent::step(const Observation* observation) {
 void QLearningAgent::end(const Observation* observation) {
 
 }
-
