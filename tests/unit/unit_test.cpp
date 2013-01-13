@@ -22,10 +22,12 @@
 #include <qualia/core/Action.h>
 #include <qualia/core/Observation.h>
 
-#include <qualia/rl/RLObservation.h>
+#include <qualia/learning/NeuralNetwork.h>
 
+#include <qualia/rl/RLObservation.h>
 #include <qualia/rl/Policy.h>
 #include <qualia/rl/QLearningAgent.h>
+#include <qualia/rl/QFunction.h>
 #include <qualia/rl/QLearningEGreedyPolicy.h>
 #include <qualia/rl/QLearningSoftmaxPolicy.h>
 #include <qualia/rl/RewardEnvironment.h>
@@ -94,9 +96,10 @@ void testPolicies() {
   Action action(2, (const unsigned int[]){10, 10});
   RLObservation observation(1);
   NeuralNetwork net(3, 3, 1, 0.1f);
+  QFunction q(&net);
   QLearningEGreedyPolicy egreedy(0.1f);
   QLearningSoftmaxPolicy softmax;
-  QLearningAgent agent(&net,
+  QLearningAgent agent(&q,
                        1, 2, (const unsigned int[]){10, 10},
                        1.0f, 0.1f, &egreedy, false); // lambda = 1.0 => no history
 
@@ -217,8 +220,9 @@ void testLearning() {
   randomSeed(222);
   TestEnvironment env;
   NeuralNetwork net(2+2, 3, 1, 0.1f);
+  QFunction q(&net);
   QLearningEGreedyPolicy egreedy(0.5f);
-  QLearningAgent agent(&net,
+  QLearningAgent agent(&q,
                        2, 2, (const unsigned int[]){10, 10},
                        1.0f, 0.1f, &egreedy, false); // lambda = 1.0 => no history
   RLQualia qualia(&agent, &env);
@@ -229,7 +233,10 @@ void testLearning() {
   const real weights1[] = { 0.744364, 0.002764, 0.976832, 0.922620, -0.371778, -0.170730, 0.666554, -0.042378, -0.327445, -0.088207, -0.870008, -0.643873, -0.011151, -0.509864, 0.682508, -0.935150, -0.855299, -0.330070, 0.295997 };
 
   printf("-- Testing initialization\n");
-  for (int i=0; i<net.nParams; i++) {
+  char str[1000];
+  realArrayToString(str, net.nParams(), net.weights);
+  printf("bef: %s\n", str);
+  for (int i=0; i<net.nParams(); i++) {
     assert( approxEqual(weights1[i], net.weights[i]));
   }
   printf("-> PASSED\n");
@@ -247,7 +254,11 @@ void testLearning() {
 
   qualia.episode(100);
 
-  for (int i=0; i<net.nParams; i++) {
+//  char str[1000];
+  realArrayToString(str, net.nParams(), net.weights);
+  printf("aft: %s\n", str);
+
+  for (int i=0; i<net._nParams; i++) {
     assert( approxEqual(weights2[i], net.weights[i]));
   }
 
