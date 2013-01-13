@@ -62,6 +62,15 @@ void testActions() {
     assert( test.conflated() == i );
   }
   printf("-> PASSED\n");
+
+  printf("- Testing copyFrom\n");
+  Action testCopy(3, nActions);
+  test.reset();
+  for (action_t i=0; test.hasNext(); test.next(), i++) {
+    testCopy.copyFrom(&test);
+    assert( test.conflated() == testCopy.conflated() );
+  }
+  printf("-> PASSED\n");
 }
 
 const observation_t observation[]  = {1.0f, 2.0f, 3.0f};
@@ -234,15 +243,15 @@ void testLearning() {
   }
   printf("-> PASSED\n");
 
-
-  printf("-- Testing learning loop\n");
+  printf("-- Testing learning loop without randomness\n");
+//  egreedy.epsilon = 0;
 
 #if defined(__APPLE__)
   #warning "This test should be checked again on OSX"
   // Values as they were compiled on OSX.
   const real weights2[] = { 0.720454, -0.032911, 0.924488, 0.885604, -0.462369, -0.196202, 0.629109, -0.115963, -0.376370, -0.176181, -0.877519, -0.654348, -0.032678, -0.524523, 0.656541, -0.593092, -0.641793, -0.115928, 0.761823 };
 #else // Linux
-  const real weights2[] = { 0.720373, -0.034388, 0.927694, 0.887645, -0.490463, -0.209806, 0.600540, -0.086809, -0.427292, -0.098692, -0.889029, -0.656940, -0.037353, -0.509864, 0.682508, -0.592464, -0.619206, -0.092766, 0.793570 };
+  const real weights2[] = { 0.730767, -0.027942, 0.933630, 0.887747, -0.471309, -0.199611, 0.606584, -0.087900, -0.409693, -0.095963, -0.887553, -0.658069, -0.034537, -0.509864, 0.682508, -0.647444, -0.663119, -0.122385, 0.710081, };
 #endif
 
   qualia.episode(100);

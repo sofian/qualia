@@ -161,8 +161,8 @@ void QLearningAgent::getMaxAction(Action* dst, const Observation* observation, r
   bufferAction.reset();
   //action_t actionMax = dst->conflated();
   real outMax = Q(observation, &bufferAction);
-  // // printf("DEBUG: outMax = %f\n", outMax);
-
+  if (dst)
+    dst->copyFrom(&bufferAction);
   while (bufferAction.hasNext()) {
     bufferAction.next();
     real out = Q(observation, &bufferAction);
