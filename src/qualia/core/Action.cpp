@@ -33,6 +33,9 @@ void Action::allocate(unsigned int dim_, const unsigned int* nActionsInit_) {
   if (actions) // already allocated
     return; // TODO: error message
 
+  ASSERT_ERROR(nActionsInit_);
+  ASSERT_ERROR(dim_ > 0);
+
   // Set dimension.
   dim = dim_;
 
@@ -42,10 +45,10 @@ void Action::allocate(unsigned int dim_, const unsigned int* nActionsInit_) {
 
   // Init.
   memset(actions, 0, dim * sizeof(action_dim_t));
-  if (nActionsInit_)
-    memcpy(nActions, nActionsInit_, dim * sizeof(unsigned int));
-  else
-    memset(nActions, 0, dim * sizeof(unsigned int));
+  //if (nActionsInit_)
+  memcpy(nActions, nActionsInit_, dim * sizeof(unsigned int));
+  //else
+  //memset(nActions, 0, dim * sizeof(unsigned int));
 
   // Set nConflated.
   // XXX: problem here: if nActions is changed later (eg. if nActionsInit is set to 0)

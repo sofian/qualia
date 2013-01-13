@@ -37,10 +37,10 @@ public:
   unsigned long nConflated;
 
   Action();
-  Action(unsigned int dim, const unsigned int* nActionsInit=0);
+  Action(unsigned int dim, const unsigned int* nActionsInit);
   virtual ~Action();
 
-  void allocate(unsigned int dim, const unsigned int* nActionsInit=0);
+  void allocate(unsigned int dim, const unsigned int* nActionsInit);
 
   action_dim_t& operator[](int i) const { return actions[i]; }
 
