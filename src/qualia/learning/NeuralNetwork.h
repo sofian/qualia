@@ -86,14 +86,14 @@ public:
 
   // Public methods.
 
-  void init();
+  virtual void init();
 
-  int nInput() const { return inputLayer.n; }
-  int nHidden() const { return hiddenLayer.n; }
-  int nOutput() const { return outputLayer.n; }
-  int nParams() const { return _nParams; }
+  virtual int nInput() const { return inputLayer.n; }
+  virtual int nHidden() const { return hiddenLayer.n; }
+  virtual int nOutput() const { return outputLayer.n; }
+  virtual int nParams() const { return _nParams; }
 
-  virtual void setInput(real *input);
+  virtual void setInput(const real *input);
 
   virtual void getOutput(real *output) const;
 
@@ -101,12 +101,7 @@ public:
 
   virtual void propagate();
 
-  void update();
-
-  // Remaps a value in [minVal, maxVal].
-  static real remapValue(real x, real minVal, real maxVal) {
-    return (2 * (x - minVal) / (maxVal - minVal) - 1);
-  }
+  virtual void update();
 
 #ifdef DEBUG
 

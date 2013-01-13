@@ -22,23 +22,27 @@
 #define GRADIENTFUNCTION_H_
 
 #include <qualia/core/common.h>
+#include <qualia/learning/Function.h>
+
 #include <cstring>
 
-class GradientFunction {
+class GradientFunction : public Function {
 public:
   // Parameters.
   real *weights;  // weights
   real *dWeights; // weights derivatives
 
   // Constructor/destructor.
-  GradientFunction(){}
+  GradientFunction() : weights(0), dWeights(0) {}
   virtual ~GradientFunction() {}
 
-  virtual int nParams() const = 0;
   virtual void clearDelta() {
     memset(dWeights, 0, nParams()*sizeof(real));
   }
+
+  virtual int nParams() const = 0;
   virtual void backpropagate(real* outputError) = 0;
+  virtual void update() = 0;
 };
 
 #endif /* GRADIENTFUNCTION_H_ */

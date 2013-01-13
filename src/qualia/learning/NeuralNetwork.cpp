@@ -58,7 +58,7 @@ void NeuralNetwork::init() {
   learningRateDiv = 1;
 }
 
-void NeuralNetwork::setInput(real *input) {
+void NeuralNetwork::setInput(const real *input) {
   memcpy(inputLayer.output, input, inputLayer.n*sizeof(real));
 }
 

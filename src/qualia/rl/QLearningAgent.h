@@ -27,7 +27,8 @@
 
 #include <qualia/core/Agent.h>
 #include <qualia/util/random.h>
-#include "NeuralNetwork.h"
+#include <qualia/rl/QFunction.h>
+
 #include "RLObservation.h"
 #include "Policy.h"
 
@@ -75,7 +76,7 @@ public:
   // The state-action value approximator function.
   // NOTE: The current implementation only allows a feedforward neural network with one hidden layer as
   // a function approximator.
-  NeuralNetwork* function;
+  QFunction* qFunction;
 
   // Internal use ////////////////
 
@@ -93,14 +94,10 @@ public:
   unsigned int observationDim;     // == lastObservation.dim
   unsigned long nConflatedActions; // == currentAction.nConflated
 
-  // Buffer for the neural network inputs.
-  // TODO: possibly change (a bit inefficient memory).
-  real *nnInput;
-
   // Interface ///////////////////
 
   // Constructor/destructor.
-  QLearningAgent(NeuralNetwork* func,
+  QLearningAgent(QFunction* qFunction,
                  unsigned int observationDim, unsigned int actionDim, const unsigned int* nActions,
                  float lambda, float gamma, Policy* policy, bool offPolicy = false);
   virtual ~QLearningAgent();
@@ -110,13 +107,6 @@ public:
   virtual Action* start(const Observation* observation);
   virtual Action* step(const Observation* observation);
   virtual void end(const Observation* observation);
-
-  // The state-action value function (calls the approximator function).
-  real Q(const Observation* observation, const Action* action);
-
-  // Computes maxQ = max_a Q(observation, a) and dst = argmax_a Q(observation, a).
-  // NOTE: dst is optional (won't be recorded if set to NULL)
-  void getMaxAction(Action* dst, const Observation* observation, real *maxQ = 0);
 
 };
 

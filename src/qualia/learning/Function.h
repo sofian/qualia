@@ -31,10 +31,13 @@ public:
   // Public methods.
   virtual void init() {}
 
-  virtual void setInput(real* input) = 0;
+  virtual int nInput() const = 0;
+  virtual int nOutput() const = 0;
+
+  virtual void setInput(const real* input) = 0;
   virtual void getOutput(real* output) const = 0;
 
-  virtual void propagate();
+  virtual void propagate() = 0;
 };
 
 #endif /* FUNCTION_H_ */
