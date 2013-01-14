@@ -3,21 +3,17 @@ CONFIG = ['INCLUDE_PATH', 'MCU', 'F_CPU', 'EXTRA_LIBS', 'AVR_GCC_DIR', 'TARGET',
 Import(CONFIG)
 
 QUALIA_DIR = "../../"
+QUALIA_BUILD_DIR = QUALIA_DIR + "/build/" + platform
 
-if (platform == 'computer'):
-  INCLUDE_PATH = "/Users/tats/Documents/workspace/qualia:/usr/local/include/qualia"
-  LIBS="-lqualia"
-else:
-  INCLUDE_PATH = "/Users/tats/Documents/workspace/qualia:/Applications/Arduino.app/Contents/Resources/Java/hardware/tools/avr/avr/include/"
+INCLUDE_PATH = QUALIA_BUILD_DIR
+LIBPATH      = QUALIA_BUILD_DIR
 
 MCU = 'atmega168'
 F_CPU = 16000000
 EXTRA_LIBS = ""
 
-if (platform == 'avr'):
-  AVR_GCC_DIR = "/Applications/Arduino.app/Contents/Resources/Java/hardware/tools/avr/bin/"
-
 if (platform == 'arduino'):
+  raise RuntimeError("Arduino mode not supported for this program")
   TARGET = 'MainTest'
 else:
   TARGET = "unit_test"
