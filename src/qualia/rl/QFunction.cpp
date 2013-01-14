@@ -38,7 +38,7 @@ real QFunction::getValue(const Observation* observation, const Action* action) {
 
   // Actions are remapped to [0,1].
   for (int i = 0; i < (int)action->dim; i++, k++)
-    input[k] = mapFloat((float)action->actions[i], 0, action->nActions[i] - 1, 0.0f, 1.0f);
+    input[k] = mapReal((real)action->actions[i], 0, action->nActions[i] - 1, -1.0f, 1.0f);
 
   // Propagate.
   real output;
@@ -52,25 +52,19 @@ void QFunction::getMaxAction(Action* dst, const Observation* observation, real *
   ASSERT_ERROR(dst);
 
   dst->reset();
-
   action_t actionMax = dst->conflated();
-  real outMax = getValue(observation, dst);
+  real outMax        = getValue(observation, dst);
 
-//  printf("COCO: %d %d %d\n", dst->dim, dst->nActions[0], dst->nActions[1]);
-//  action_t actionMax = bufferAction->conflated();
   while (dst->hasNext()) {
     dst->next();
-//    printf("%d %d %d\n", bufferAction.actions[0], bufferAction.actions[1], bufferAction.conflated());
     real out = getValue(observation, dst);
     if (out > outMax) {
-      outMax = out;
       actionMax = dst->conflated();
-//      dst->copyFrom(&bufferAction);
-//      actionMax = dst->conflated();
+      outMax    = out;
     }
   }
+  dst->setConflated(actionMax);
+
   if (maxQ) // optional
     *maxQ = outMax;
-
-  dst->setConflated(actionMax);
 }

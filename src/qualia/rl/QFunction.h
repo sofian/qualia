@@ -53,7 +53,7 @@ public:
   // Returns Q(s,a) ie. the state-action value function (calls the approximator function).
   real getValue(const Observation* observation, const Action* action);
 
-  // Computes maxQ = max_a Q(observation, a) and dst = argmax_a Q(observation, a).
+  // Computes dst = argmax_a Q(observation, a) and (option) maxQ = max_a Q(observation, a).
   void getMaxAction(Action* dst, const Observation* observation, real *maxQ = 0);
 };
 
