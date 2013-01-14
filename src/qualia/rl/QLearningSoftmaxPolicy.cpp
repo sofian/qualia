@@ -32,7 +32,7 @@ void QLearningSoftmaxPolicy::chooseAction(Action* action, const Observation* obs
 
   if (epsilon >= 1 ||
       (epsilon > 0 && randomUniform() < epsilon))
-    action->setConflated( (action_t) random(qlagent->nConflatedActions) ); // TODO: changer le % _nActions pour une fonction random(min, max)
+    action->setConflated( action->random() ); // TODO: changer le % _nActions pour une fonction random(min, max)
   else {
     // First pass: compute (1/n) * sum_a exp[ Q(s,a) / T ] / exp[ Q_max(s,a) / T ]
     // Dividing each element by the max is designed to avoid overflows
@@ -55,8 +55,7 @@ void QLearningSoftmaxPolicy::chooseAction(Action* action, const Observation* obs
     real rnd = randomUniform(sum);
     action->reset();
     while (action->hasNext()) {
-      real out = exp( q->getValue(observation, action) / temperature ) / outMax / n;
-      rnd -= out;
+      rnd -= exp( q->getValue(observation, action) / temperature ) / outMax / n;
       if (rnd <= 0) // Action picked!
         break;
       action->next();

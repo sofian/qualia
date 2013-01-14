@@ -37,7 +37,6 @@ QLearningAgent::QLearningAgent(QFunction* qFunction_,
  {
   e = (real*) Alloc::malloc( qFunction->nParams() * sizeof(real) );
 
-  nConflatedActions = currentAction.nConflated;
 //  lastObservation = (real*) malloc(observationSize * sizeof(real));
 //  _lastObservation.continuous = (real*) malloc( observationSize * sizeof(real) );
 //  _lastObservation.discrete = 0;
@@ -74,7 +73,7 @@ Action* QLearningAgent::start(const Observation* observation) {
   lastObservation.copyFrom(observation);
 
   // Randomize starting action.
-  currentAction.setConflated( (action_t) (random(nConflatedActions)) );
+  currentAction.setConflated( currentAction.random() );
 
   return &currentAction;
 }

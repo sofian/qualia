@@ -92,7 +92,6 @@ public:
 
   // Shortcut values.
   unsigned int observationDim;     // == lastObservation.dim
-  unsigned long nConflatedActions; // == currentAction.nConflated
 
   // Interface ///////////////////
 

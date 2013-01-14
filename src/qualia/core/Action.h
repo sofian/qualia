@@ -21,8 +21,8 @@
 #ifndef ACTION_H_
 #define ACTION_H_
 
-#include "common.h"
-#include <qualia/core/avrdefs.h>
+#include <qualia/core/common.h>
+#include <qualia/util/random.h>
 
 #include <string.h>
 
@@ -52,6 +52,9 @@ public:
   virtual Action& next();
 
   virtual Action& copyFrom(const Action* src);
+
+  // Returns a random action.
+  action_t random() const { return (action_t) ::random(nConflated); }
 };
 
 #endif /* ACTION_H_ */
