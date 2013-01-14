@@ -142,11 +142,7 @@
 #include "avrdefs.h"
 #endif
 
-#ifdef DEBUG
-#include <qualia/core/error.h>
-#endif
-
-//#include "error.h"
+#include "error.h"
 #include "Allocator.h"
 //#include "Action.h"
 //#include "Observation.h"
