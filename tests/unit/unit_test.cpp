@@ -109,8 +109,9 @@ void testPolicies() {
   QLearningEGreedyPolicy egreedy(0.1f);
   QLearningSoftmaxPolicy softmax;
   QLearningAgent agent(&q,
+                       &egreedy,
                        1, 2, (const unsigned int[]){10, 10},
-                       1.0f, 0.1f, &egreedy, false); // lambda = 1.0 => no history
+                       1.0f, 0.1f, false); // lambda = 1.0 => no history
 
 
   printf("- Testing egreedy\n");
@@ -232,8 +233,9 @@ void testLearning() {
   QFunction q(&net);
   QLearningEGreedyPolicy egreedy(0.5f);
   QLearningAgent agent(&q,
+                       &egreedy,
                        2, 2, (const unsigned int[]){10, 10},
-                       1.0f, 0.1f, &egreedy, false); // lambda = 1.0 => no history
+                       1.0f, 0.1f, false); // lambda = 1.0 => no history
   RLQualia qualia(&agent, &env);
   qualia.init();
   qualia.start();

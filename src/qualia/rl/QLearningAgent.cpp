@@ -22,50 +22,30 @@
 #include "QLearningAgent.h"
 
 QLearningAgent::QLearningAgent(QFunction* qFunction_,
-                               unsigned int observationDim_, unsigned int actionDim, const unsigned int* nActions,
-                               float lambda_, float gamma_, Policy* policy_, bool offPolicy_) :
-  gamma(gamma_),
-  lambda(lambda_),
-  isLearning(true),
-  offPolicy(offPolicy_),
-  policy(policy_),
+                               Policy* policy_,
+                               unsigned int observationDim, unsigned int actionDim, const unsigned int* nActions,
+                               float lambda, float gamma, bool offPolicy) :
+
+                               isLearning(true),
+                               policy(policy_),
   qFunction(qFunction_),
+  trainer(qFunction_, observationDim, actionDim, nActions, lambda, gamma, offPolicy),
+  lastAction(actionDim, nActions),
   currentAction(actionDim, nActions),
-  bufferAction(actionDim, nActions),
-  lastObservation(observationDim_),
-  observationDim(observationDim_)
+  lastObservation(observationDim)
  {
-  e = (real*) Alloc::malloc( qFunction->nParams() * sizeof(real) );
-
-//  lastObservation = (real*) malloc(observationSize * sizeof(real));
-//  _lastObservation.continuous = (real*) malloc( observationSize * sizeof(real) );
-//  _lastObservation.discrete = 0;
-
-  assert( qFunction->nInput() == (int) (observationDim + actionDim) );
-  assert( qFunction->nOutput() == 1 );
-
-  // NOTE: We do not support off policy learning anymore because it is
-  // known to diverge when used with linear function approximator.
-  assert( !offPolicy );
-
   policy->setAgent(this);
 }
 
 QLearningAgent::~QLearningAgent() {
-  Alloc::free(e);
-//  free(lastObservation);
 }
 
 void QLearningAgent::init() {
-  // Initialize action-value function.
-  qFunction->init();
-
   // Initialize policy.
   policy->init();
 
-  // Initialize eligibility traces.
-  for (int i=0; i<qFunction->nParams(); i++)
-    e[i]=0;
+  // Initialize trainer.
+  trainer.init();
 }
 
 Action* QLearningAgent::start(const Observation* observation) {
@@ -80,48 +60,11 @@ Action* QLearningAgent::start(const Observation* observation) {
 
 Action* QLearningAgent::step(const Observation* observation) {
 
-  /////////////// START UPDATE
+  lastAction.copyFrom(&currentAction);
+  policy->chooseAction(&currentAction, observation);
+
   if (isLearning) {
-    real outErr = 1;
-
-    // Propagate Q(s_{t-1}, a_{t-1}).
-    real Qs = qFunction->getValue(&lastObservation, &currentAction);
-
-    // // printf("DEBUG: Qs computed: %f\n", Qs);
-    qFunction->backpropagate(&outErr);
-
-    // Choose next action.
-    // // printf("DEBUG: Choose action\n", Qs);
-    policy->chooseAction(&currentAction, observation);
-
-    // // printf("DEBUG: Update\n", Qs);
-    // Update.
-    real updateQ; // q-value for update
-    if (offPolicy)
-      qFunction->getMaxAction(&bufferAction, observation, &updateQ);
-    else
-      updateQ = qFunction->getValue(observation, &currentAction);
-
-    // Compute difference between estimated Q value and actual/outputed Q value.
-    real delta = (( ((RLObservation*)observation)->reward + gamma * updateQ) - Qs);
-
-    // Compute mean squared error.
-    //real mse = delta * delta * 0.5;
-
-    // Update weights.
-    real* dWeights = qFunction->dWeights;
-    real lambdaTimesGamma = lambda * gamma;
-    for (int i=0; i<qFunction->nParams(); i++) {
-      e[i] = lambdaTimesGamma * e[i] + dWeights[i];
-      dWeights[i] = - delta * e[i];
-    }
-    qFunction->update(); // update using the function's own update rule
-  }
-  /////////////// END UPDATE
-
-  else {
-    // No update: just choose next action.
-    policy->chooseAction(&currentAction, observation);
+    trainer.update(&lastObservation, &lastAction, (const RLObservation*)observation, &currentAction);
   }
 
   // Reassign.
