@@ -273,6 +273,25 @@ void testLearning() {
 
   printf("-> PASSED\n");
 
+  printf("-- Testing learning loop with 50%% randomness\n");
+  egreedy.epsilon = 0.5;
+
+#if defined(__APPLE__)
+  #warning "This test should be checked again on OSX"
+  // Values as they were compiled on OSX.
+  const real weights3[] = { 0.720454, -0.032911, 0.924488, 0.885604, -0.462369, -0.196202, 0.629109, -0.115963, -0.376370, -0.176181, -0.877519, -0.654348, -0.032678, -0.524523, 0.656541, -0.593092, -0.641793, -0.115928, 0.761823 };
+#else // Linux
+  const real weights3[] = { 0.727745, -0.030757, 0.928110, 0.888238, -0.478589, -0.202642, 0.596979, -0.089092, -0.413533, -0.096804, -0.891827, -0.659414, -0.035676, -0.509864, 0.682508, -0.631539, -0.654899, -0.119618, 0.725278, };
+#endif
+
+  qualia.episode(100);
+
+  for (int i=0; i<net.nParams; i++) {
+    assert( approxEqual(weights3[i], net.weights[i]));
+  }
+
+  printf("-> PASSED\n");
+
 }
 
 void printBits(const uint8_t* toPrint, int size) {
