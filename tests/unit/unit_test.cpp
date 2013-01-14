@@ -286,7 +286,7 @@ void testLearning() {
 
   qualia.episode(100);
 
-  for (int i=0; i<net.nParams; i++) {
+  for (int i=0; i<net._nParams; i++) {
     assert( approxEqual(weights3[i], net.weights[i]));
   }
 
