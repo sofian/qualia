@@ -58,7 +58,7 @@ void Prototype2bEnvironment::updateInput(mapper_signal sig, mapper_db_signal pro
 //  printf("update input called %f\n", *value);
   RLObservation& obs = ((Prototype2bEnvironment*)props->user_data)->currentObservation;
   int k;
-  for (k=0; k<obs.dim; k++)
+  for (k=0; k<obs.dim(); k++)
     obs[k] = value[k];
   obs.reward = value[k];
 }

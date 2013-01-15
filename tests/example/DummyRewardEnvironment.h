@@ -31,7 +31,7 @@ public:
     RewardEnvironment(observationDim, reward), currentObservation(observationDim) {}
 
   virtual void init() {
-    for (int i=0; i<currentObservation.dim; i++)
+    for (int i=0; i<currentObservation.dim(); i++)
       currentObservation[i] = 0;
   }
 
