@@ -28,10 +28,10 @@ NeuralNetwork::NeuralNetwork(int nInputs_,
    decreaseConstant(decreaseConstant_),
    weightDecay(weightDecay_)
 {
-  nParams = nHiddens_ * (nInputs_ + 1) + nOutputs_ * (nHiddens_ + 1);
+  _nParams = nHiddens_ * (nInputs_ + 1) + nOutputs_ * (nHiddens_ + 1);
 
-  weights  = (real*) Alloc::malloc( nParams * sizeof(real) );
-  dWeights = (real*) Alloc::malloc( nParams * sizeof(real) );
+  weights  = (real*) Alloc::malloc( _nParams * sizeof(real) );
+  dWeights = (real*) Alloc::malloc( _nParams * sizeof(real) );
 
   int k=0;
   _allocateLayer(inputLayer, 0, nInputs_, k);
@@ -51,23 +51,19 @@ NeuralNetwork::~NeuralNetwork() {
 
 void NeuralNetwork::init() {
   // randomize weights
-  for (int i=0; i<nParams; i++) {
+  for (int i=0; i<_nParams; i++) {
     weights[i] = randomUniform(-1, +1);
     dWeights[i] = 0;
   }
   learningRateDiv = 1;
 }
 
-void NeuralNetwork::setInput(real *input) {
+void NeuralNetwork::setInput(const real *input) {
   memcpy(inputLayer.output, input, inputLayer.n*sizeof(real));
 }
 
 void NeuralNetwork::getOutput(real *output) const {
   memcpy(output, outputLayer.output, outputLayer.n*sizeof(real));
-}
-
-void NeuralNetwork::clearDelta() {
-  memset(dWeights, 0, nParams*sizeof(real));
 }
 
 void NeuralNetwork::backpropagate(real *outputError) {
@@ -93,7 +89,7 @@ void NeuralNetwork::propagate() {
 
 void NeuralNetwork::update() {
   float lr = learningRate / learningRateDiv;
-  for (int i=0; i<nParams; i++)
+  for (int i=0; i<_nParams; i++)
 //    weights[i] -= learningRate * dWeights[i];
     weights[i] -= lr * (dWeights[i] + weightDecay * weights[i]);
   clearDelta();

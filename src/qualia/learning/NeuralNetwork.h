@@ -29,12 +29,13 @@
 #include <math.h>
 #include <string.h>
 
+#include <qualia/learning/GradientFunction.h>
 #include <qualia/core/common.h>
 #include <qualia/util/random.h>
 
 // TODO: IMPORTANT l'output layer ne devrait pas etre sigmoide mais lineaire...
 
-class NeuralNetwork {
+class NeuralNetwork : public GradientFunction {
 
 public:
   // Configurable parameters /////
@@ -62,15 +63,11 @@ public:
     int n;          // number of units in this layer
     real *output;   // output of ith unit
     real *error;    // error term of ith unit
-    real *weight;  // connection weights to ith unit
-    real *dWeight; // last weight deltas for momentum
+    real *weight;   // connection weights to ith unit
+    real *dWeight;  // weight derivatives
   };
 
-  // Parameters.
-  real *weights;  // weights
-  real *dWeights; // weights derivatives
-
-  int nParams;    // number of parameters
+  int _nParams;    // number of parameters
 
   // The three MLP layers (inputs -> hidden -> outputs).
   Layer inputLayer, hiddenLayer, outputLayer;
@@ -89,28 +86,22 @@ public:
 
   // Public methods.
 
-  void init();
+  virtual void init();
 
-  int nInput() const { return inputLayer.n; }
-  int nHidden() const { return hiddenLayer.n; }
-  int nOutput() const { return outputLayer.n; }
+  virtual int nInput() const { return inputLayer.n; }
+  virtual int nHidden() const { return hiddenLayer.n; }
+  virtual int nOutput() const { return outputLayer.n; }
+  virtual int nParams() const { return _nParams; }
 
-  void setInput(real *input);
+  virtual void setInput(const real *input);
 
-  void getOutput(real *output) const;
+  virtual void getOutput(real *output) const;
 
-  void clearDelta();
+  virtual void backpropagate(real *outputError);
 
-  void backpropagate(real *outputError);
+  virtual void propagate();
 
-  void propagate();
-
-  void update();
-
-  // Remaps a value in [minVal, maxVal].
-  static real remapValue(real x, real minVal, real maxVal) {
-    return (2 * (x - minVal) / (maxVal - minVal) - 1);
-  }
+  virtual void update();
 
 #ifdef DEBUG
 

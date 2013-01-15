@@ -22,10 +22,12 @@
 #include <qualia/core/Action.h>
 #include <qualia/core/Observation.h>
 
-#include <qualia/rl/RLObservation.h>
+#include <qualia/learning/NeuralNetwork.h>
 
+#include <qualia/rl/RLObservation.h>
 #include <qualia/rl/Policy.h>
 #include <qualia/rl/QLearningAgent.h>
+#include <qualia/rl/QFunction.h>
 #include <qualia/rl/QLearningEGreedyPolicy.h>
 #include <qualia/rl/QLearningSoftmaxPolicy.h>
 #include <qualia/rl/RewardEnvironment.h>
@@ -62,6 +64,15 @@ void testActions() {
     assert( test.conflated() == i );
   }
   printf("-> PASSED\n");
+
+  printf("- Testing copyFrom\n");
+  Action testCopy(3, nActions);
+  test.reset();
+  for (action_t i=0; test.hasNext(); test.next(), i++) {
+    testCopy.copyFrom(&test);
+    assert( test.conflated() == testCopy.conflated() );
+  }
+  printf("-> PASSED\n");
 }
 
 const observation_t observation[]  = {1.0f, 2.0f, 3.0f};
@@ -94,11 +105,13 @@ void testPolicies() {
   Action action(2, (const unsigned int[]){10, 10});
   RLObservation observation(1);
   NeuralNetwork net(3, 3, 1, 0.1f);
+  QFunction q(&net);
   QLearningEGreedyPolicy egreedy(0.1f);
   QLearningSoftmaxPolicy softmax;
-  QLearningAgent agent(&net,
+  QLearningAgent agent(&q,
+                       &egreedy,
                        1, 2, (const unsigned int[]){10, 10},
-                       1.0f, 0.1f, &egreedy, false); // lambda = 1.0 => no history
+                       1.0f, 0.1f, false); // lambda = 1.0 => no history
 
 
   printf("- Testing egreedy\n");
@@ -217,10 +230,12 @@ void testLearning() {
   randomSeed(222);
   TestEnvironment env;
   NeuralNetwork net(2+2, 3, 1, 0.1f);
+  QFunction q(&net);
   QLearningEGreedyPolicy egreedy(0.5f);
-  QLearningAgent agent(&net,
+  QLearningAgent agent(&q,
+                       &egreedy,
                        2, 2, (const unsigned int[]){10, 10},
-                       1.0f, 0.1f, &egreedy, false); // lambda = 1.0 => no history
+                       1.0f, 0.1f, false); // lambda = 1.0 => no history
   RLQualia qualia(&agent, &env);
   qualia.init();
   qualia.start();
@@ -229,26 +244,52 @@ void testLearning() {
   const real weights1[] = { 0.744364, 0.002764, 0.976832, 0.922620, -0.371778, -0.170730, 0.666554, -0.042378, -0.327445, -0.088207, -0.870008, -0.643873, -0.011151, -0.509864, 0.682508, -0.935150, -0.855299, -0.330070, 0.295997 };
 
   printf("-- Testing initialization\n");
-  for (int i=0; i<net.nParams; i++) {
+  for (int i=0; i<net.nParams(); i++) {
     assert( approxEqual(weights1[i], net.weights[i]));
   }
   printf("-> PASSED\n");
 
-
-  printf("-- Testing learning loop\n");
+  printf("-- Testing learning loop without randomness\n");
+  egreedy.epsilon = 0;
 
 #if defined(__APPLE__)
   #warning "This test should be checked again on OSX"
   // Values as they were compiled on OSX.
   const real weights2[] = { 0.720454, -0.032911, 0.924488, 0.885604, -0.462369, -0.196202, 0.629109, -0.115963, -0.376370, -0.176181, -0.877519, -0.654348, -0.032678, -0.524523, 0.656541, -0.593092, -0.641793, -0.115928, 0.761823 };
 #else // Linux
-  const real weights2[] = { 0.720373, -0.034388, 0.927694, 0.887645, -0.490463, -0.209806, 0.600540, -0.086809, -0.427292, -0.098692, -0.889029, -0.656940, -0.037353, -0.509864, 0.682508, -0.592464, -0.619206, -0.092766, 0.793570 };
+  const real weights2[] = { 0.745014, 0.005325, 0.965466, 0.914415, -0.366836, -0.166225, 0.647836, -0.054525, -0.316290, -0.086538, -0.876724, -0.648336, -0.007566, -0.509864, 0.682508, -0.928581, -0.888553, -0.366196, 0.245565, };
 #endif
 
   qualia.episode(100);
 
-  for (int i=0; i<net.nParams; i++) {
+  char str[1000];
+  realArrayToString(str, net.nParams(), net.weights);
+  printf("aft: %s\n", str);
+
+  realArrayToString(str, net.nParams(), weights2);
+  printf("exp: %s\n", str);
+
+  for (int i=0; i<net._nParams; i++) {
     assert( approxEqual(weights2[i], net.weights[i]));
+  }
+
+  printf("-> PASSED\n");
+
+  printf("-- Testing learning loop with 50%% randomness\n");
+  egreedy.epsilon = 0.5;
+
+#if defined(__APPLE__)
+  #warning "This test should be checked again on OSX"
+  // Values as they were compiled on OSX.
+  const real weights3[] = { 0.720454, -0.032911, 0.924488, 0.885604, -0.462369, -0.196202, 0.629109, -0.115963, -0.376370, -0.176181, -0.877519, -0.654348, -0.032678, -0.524523, 0.656541, -0.593092, -0.641793, -0.115928, 0.761823 };
+#else // Linux
+  const real weights3[] = { 0.727745, -0.030757, 0.928110, 0.888238, -0.478589, -0.202642, 0.596979, -0.089092, -0.413533, -0.096804, -0.891827, -0.659414, -0.035676, -0.509864, 0.682508, -0.631539, -0.654899, -0.119618, 0.725278, };
+#endif
+
+  qualia.episode(100);
+
+  for (int i=0; i<net._nParams; i++) {
+    assert( approxEqual(weights3[i], net.weights[i]));
   }
 
   printf("-> PASSED\n");

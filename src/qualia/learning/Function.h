@@ -1,7 +1,7 @@
 /*
- * QLearningEGreedyPolicy.cpp
+ * Function.h
  *
- * (c) 2011 Sofian Audry -- info(@)sofianaudry(.)com
+ * (c) 2013 Sofian Audry -- info(@)sofianaudry(.)com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,16 +17,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "QLearningEGreedyPolicy.h"
 
-QLearningEGreedyPolicy::QLearningEGreedyPolicy(real epsilon_) : epsilon(epsilon_) {}
-QLearningEGreedyPolicy::~QLearningEGreedyPolicy() {}
+#ifndef FUNCTION_H_
+#define FUNCTION_H_
 
-void QLearningEGreedyPolicy::chooseAction(Action* action, const Observation* observation) {
-  QLearningAgent* qlagent = (QLearningAgent*)agent;
-  if (epsilon >= 1 ||
-      (epsilon > 0 && randomUniform() < epsilon))
-    action->setConflated( action->random() ); // TODO: changer le % _nActions pour une fonction random(min, max)
-  else
-    qlagent->qFunction->getMaxAction(action, observation);
-}
+class Function {
+
+public:
+  // Constructor/destructor.
+  Function(){}
+  virtual ~Function() {}
+
+  // Public methods.
+  virtual void init() {}
+
+  virtual int nInput() const = 0;
+  virtual int nOutput() const = 0;
+
+  virtual void setInput(const real* input) = 0;
+  virtual void getOutput(real* output) const = 0;
+
+  virtual void propagate() = 0;
+};
+
+#endif /* FUNCTION_H_ */

@@ -35,7 +35,7 @@
 #define is_computer() !defined(__AVR__)
 
 // XXX: not sure we need this..
-#include <assert.h>
+//#include <assert.h>
 #include <stdlib.h>
 
 #include <float.h>

@@ -23,6 +23,7 @@
 
 #include <qualia/core/common.h>
 #include <qualia/core/XFile.h>
+#include <qualia/util/random.h>
 
 #include <cstring>
 
@@ -37,10 +38,10 @@ public:
   unsigned long nConflated;
 
   Action();
-  Action(unsigned int dim, const unsigned int* nActionsInit=0);
+  Action(unsigned int dim, const unsigned int* nActionsInit);
   virtual ~Action();
 
-  void allocate(unsigned int dim, const unsigned int* nActionsInit=0);
+  void allocate(unsigned int dim, const unsigned int* nActionsInit);
 
   action_dim_t& operator[](int i) const { return actions[i]; }
 
@@ -58,6 +59,9 @@ public:
   // instead of just save/load.
   virtual void saveData(XFile* file) const;
   virtual void loadData(XFile* file);
+
+  // Returns a random action.
+  action_t random() const { return (action_t) ::random(nConflated); }
 };
 
 #endif /* ACTION_H_ */

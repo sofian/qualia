@@ -24,7 +24,7 @@
 #include "rl/QLearningAgent.h"
 #include "rl/QLearningEGreedyPolicy.h"
 #include "rl/QLearningSoftmaxPolicy.h"
-#include "rl/NeuralNetwork.h"
+#include "learning/NeuralNetwork.h"
 
 #include "SimpleGlowEnvironment.h"
 

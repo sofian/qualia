@@ -22,9 +22,9 @@
 #include <vector>
 
 #include <qualia/core/Qualia.h>
+#include <qualia/learning/NeuralNetwork.h>
 #include <qualia/rl/QLearningAgent.h>
 #include <qualia/rl/QLearningEGreedyPolicy.h>
-#include <qualia/rl/NeuralNetwork.h>
 #include <qualia/rl/RLQualia.h>
 
 #include <qualia/plugins/osc/OscRLEnvironment.h>
@@ -166,7 +166,7 @@ RLQualia* createQualia(int id, int nHidden, float learningRate, float epsilon, f
 void releaseQualia(RLQualia* q) {
   if (q) {
 #if !SHARED_NEURAL_NETWORK
-    delete ((QLearningAgent*)q->agent)->function;
+    delete ((QLearningAgent*)q->agent)->qFunction;
 #endif
     delete ((QLearningAgent*)q->agent)->policy;
     delete q->agent;

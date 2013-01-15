@@ -1,7 +1,7 @@
 /*
- * QLearningEGreedyPolicy.cpp
+ * Trainer.h
  *
- * (c) 2011 Sofian Audry -- info(@)sofianaudry(.)com
+ * (c) 2013 Sofian Audry -- info(@)sofianaudry(.)com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,16 +17,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "QLearningEGreedyPolicy.h"
+#ifndef TRAINER_H_
+#define TRAINER_H_
 
-QLearningEGreedyPolicy::QLearningEGreedyPolicy(real epsilon_) : epsilon(epsilon_) {}
-QLearningEGreedyPolicy::~QLearningEGreedyPolicy() {}
+#include <qualia/learning/DataSet.h>
+#include <qualia/learning/Function.h>
 
-void QLearningEGreedyPolicy::chooseAction(Action* action, const Observation* observation) {
-  QLearningAgent* qlagent = (QLearningAgent*)agent;
-  if (epsilon >= 1 ||
-      (epsilon > 0 && randomUniform() < epsilon))
-    action->setConflated( action->random() ); // TODO: changer le % _nActions pour une fonction random(min, max)
-  else
-    qlagent->qFunction->getMaxAction(action, observation);
-}
+class Trainer {
+public:
+  Function* function;
+
+  Trainer(Function* function);
+  virtual ~Trainer();
+
+  virtual void init();
+
+//  virtual void trainEpisode(DataSet* data);
+  virtual void trainExample(real* example) = 0;
+//  virtual void train(DataSet* data) = 0;
+};
+
+#endif /* TRAINER_H_ */

@@ -1,7 +1,7 @@
 /*
- * QLearningEGreedyPolicy.cpp
+ * map.h
  *
- * (c) 2011 Sofian Audry -- info(@)sofianaudry(.)com
+ * (c) 2013 Sofian Audry -- info(@)sofianaudry(.)com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,16 +17,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "QLearningEGreedyPolicy.h"
 
-QLearningEGreedyPolicy::QLearningEGreedyPolicy(real epsilon_) : epsilon(epsilon_) {}
-QLearningEGreedyPolicy::~QLearningEGreedyPolicy() {}
+#ifndef MAP_H_
+#define MAP_H_
 
-void QLearningEGreedyPolicy::chooseAction(Action* action, const Observation* observation) {
-  QLearningAgent* qlagent = (QLearningAgent*)agent;
-  if (epsilon >= 1 ||
-      (epsilon > 0 && randomUniform() < epsilon))
-    action->setConflated( action->random() ); // TODO: changer le % _nActions pour une fonction random(min, max)
-  else
-    qlagent->qFunction->getMaxAction(action, observation);
-}
+#include <qualia/core/common.h>
+
+// More stuff.
+// Remaps a value in [minVal, maxVal].
+#if ( ! is_arduino() )
+long map(long x, long in_min, long in_max, long out_min, long out_max);
+#endif
+
+real mapReal(real x, real in_min, real in_max, real out_min, real out_max);
+
+#endif /* MAP_H_ */
