@@ -31,6 +31,12 @@
 
 #include <qualia/core/common.h>
 
+#ifndef SEEK_SET // from stdio.h
+#define SEEK_SET 0x0
+#define SEEK_CUR 0x1
+#define SEEK_END 0x2
+#endif
+
 /** XFile. A File which could be anything.
     The syntax (and results) for method is very similar
     to C FILE. (Except for the FILE pointer which is not
