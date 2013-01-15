@@ -21,18 +21,18 @@
 #define DATASET_H_
 
 #include <qualia/core/common.h>
+
 class DataSet {
 public:
+  int nExamples;
   int nInputs;
   int nTargets;
   real* example; // current example
 
-  DataSet(int nInputs, int nTargets);
+  DataSet(int nExamples, int nInputs, int nTargets);
   virtual ~DataSet();
 
-  virtual void reset() = 0;
-  virtual bool hasNextExample() const = 0;
-  virtual void nextExample() = 0;
+  virtual void setExample(int t) = 0;
 };
 
 #endif /* DATASET_H_ */

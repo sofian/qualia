@@ -19,8 +19,8 @@
 
 #include "DataSet.h"
 
-DataSet::DataSet(int nInputs_, int nTargets_)
-  : nInputs(nInputs_), nTargets(nTargets_), example(0) {
+DataSet::DataSet(int nExamples_, int nInputs_, int nTargets_)
+  : nExamples(nExamples_), nInputs(nInputs_), nTargets(nTargets_), example(0) {
 }
 
 DataSet::~DataSet() {
