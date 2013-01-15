@@ -37,8 +37,8 @@ real QFunction::getValue(const Observation* observation, const Action* action) {
     input[k] = observation->observations[i];
 
   // Actions are remapped to [0,1].
-  for (int i = 0; i < (int)action->dim; i++, k++)
-    input[k] = mapReal((real)action->actions[i], 0, action->nActions[i] - 1, -1.0f, 1.0f);
+  for (int i = 0; i < (int)action->dim(); i++, k++)
+    input[k] = mapReal((real)action->actions[i], 0, action->nActions(i) - 1, -1.0f, 1.0f);
 
   // Propagate.
   real output;

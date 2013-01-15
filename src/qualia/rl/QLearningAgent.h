@@ -73,7 +73,8 @@ public:
   // Constructor/destructor.
   QLearningAgent(QFunction* qFunction,
                  Policy* policy,
-                 unsigned int observationDim, unsigned int actionDim, const unsigned int* nActions,
+                 unsigned int observationDim,
+                 ActionProperties* actionProperties,
                  float lambda, float gamma, bool offPolicy = false);
   virtual ~QLearningAgent();
 

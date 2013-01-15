@@ -30,18 +30,33 @@
 typedef unsigned long action_t;
 typedef unsigned int  action_dim_t;
 
+class ActionProperties {
+public:
+  // Readonly.
+  unsigned int _dim;
+  unsigned int* _nActions;
+  unsigned long _nConflated;
+
+  ActionProperties(unsigned int dim, const unsigned int* nActions);
+  virtual ~ActionProperties();
+
+  unsigned int dim() const { return _dim; }
+  unsigned long nConflated() const { return _nConflated; }
+  unsigned int nActions(int i) const { return _nActions[i]; }
+
+  int compareTo(const ActionProperties& p) const;
+
+  // Returns a random action.
+  action_t random() const { return (action_t) ::random(nConflated()); }
+};
+
 class Action {
 public:
+  ActionProperties* properties;
   action_dim_t* actions;
-  unsigned int* nActions;
-  unsigned int dim;
-  unsigned long nConflated;
 
-  Action();
-  Action(unsigned int dim, const unsigned int* nActionsInit);
+  Action(ActionProperties* properties=0);
   virtual ~Action();
-
-  void allocate(unsigned int dim, const unsigned int* nActionsInit);
 
   action_dim_t& operator[](int i) const { return actions[i]; }
 
@@ -52,16 +67,17 @@ public:
   virtual bool hasNext();
   virtual Action& next();
 
-  virtual Action& copyFrom(const Action* src);
+  virtual Action& copyFrom(const Action& src);
+
+  unsigned int dim() const { return properties->dim(); }
+  unsigned long nConflated() const { return properties->nConflated(); }
+  unsigned int nActions(int i) const { return properties->nActions(i); }
 
   // TODO: remove dim / nAtions / etc from class and put it in some sort of TemplateAction class
   // otherwise the save/load are not really what they look like. This is why I named them saveData/loadData
   // instead of just save/load.
   virtual void saveData(XFile* file) const;
   virtual void loadData(XFile* file);
-
-  // Returns a random action.
-  action_t random() const { return (action_t) ::random(nConflated); }
 };
 
 #endif /* ACTION_H_ */

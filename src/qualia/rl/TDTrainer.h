@@ -65,7 +65,7 @@ public:
   unsigned int actionDim;
 
   TDTrainer(QFunction* qFunction,
-            unsigned int observationDim, unsigned int actionDim, const unsigned int* nActions,
+            unsigned int observationDim, ActionProperties* actionProperties,
             float lambda, float gamma, bool offPolicy=false);
   virtual ~TDTrainer();
 

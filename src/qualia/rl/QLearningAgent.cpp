@@ -23,15 +23,16 @@
 
 QLearningAgent::QLearningAgent(QFunction* qFunction_,
                                Policy* policy_,
-                               unsigned int observationDim, unsigned int actionDim, const unsigned int* nActions,
+                               unsigned int observationDim,
+                               ActionProperties* actionProperties,
                                float lambda, float gamma, bool offPolicy) :
 
                                isLearning(true),
                                policy(policy_),
   qFunction(qFunction_),
-  trainer(qFunction_, observationDim, actionDim, nActions, lambda, gamma, offPolicy),
-  lastAction(actionDim, nActions),
-  currentAction(actionDim, nActions),
+  trainer(qFunction_, observationDim, actionProperties, lambda, gamma, offPolicy),
+  lastAction(actionProperties),
+  currentAction(actionProperties),
   lastObservation(observationDim)
  {
   policy->setAgent(this);
@@ -53,14 +54,14 @@ Action* QLearningAgent::start(const Observation* observation) {
   lastObservation.copyFrom(observation);
 
   // Randomize starting action.
-  currentAction.setConflated( currentAction.random() );
+  currentAction.setConflated( currentAction.properties->random() );
 
   return &currentAction;
 }
 
 Action* QLearningAgent::step(const Observation* observation) {
 
-  lastAction.copyFrom(&currentAction);
+  lastAction.copyFrom(currentAction);
   policy->chooseAction(&currentAction, observation);
 
   if (isLearning) {

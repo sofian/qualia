@@ -19,15 +19,15 @@
 
 #include "TDTrainer.h"
 
-TDTrainer::TDTrainer(QFunction* qFunction_, unsigned int observationDim_,
-                     unsigned int actionDim_, const unsigned int* nActions, float lambda_, float gamma_, bool offPolicy_)
+TDTrainer::TDTrainer(QFunction* qFunction_, unsigned int observationDim_, ActionProperties* actionProperties,
+                     float lambda_, float gamma_, bool offPolicy_)
   : Trainer(qFunction_),
     gamma(gamma_),
     lambda(lambda_),
     offPolicy(offPolicy_),
-    bufferAction(actionDim_, nActions),
+    bufferAction(actionProperties),
     observationDim(observationDim_),
-    actionDim(actionDim_)
+    actionDim(actionProperties->dim())
 {
   ASSERT_WARNING(0 <= lambda && lambda <= 1);
   ASSERT_WARNING(0 <= gamma && gamma <= 1);

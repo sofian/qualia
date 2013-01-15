@@ -115,7 +115,7 @@ Observation* OscEnvironment::step(const Action* action) {
 
   // Send message.
   lo_message msg = lo_message_new();
-  for (unsigned int i=0; i<action->dim; i++)
+  for (unsigned int i=0; i<action->dim(); i++)
     if (sizeof(action_t) <= 32)
       lo_message_add_int32(msg, action->actions[i]);
     else
@@ -160,7 +160,7 @@ int OscEnvironment::handlerInit(const char *path, const char *types, lo_arg **ar
 int OscEnvironment::handlerStartStep(const char *path, const char *types, lo_arg **argv,
                                      int argc, void *data, void *user_data) {
   OscEnvironment *obj = ((OscEnvironment*)user_data);
-  assert(argc == obj->observationBufferDim);
+  ASSERT_ERROR( argc == obj->observationBufferDim );
   for (int i=0; i<argc; i++) {
     float x;
     switch (types[i]) {
