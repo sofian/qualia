@@ -36,3 +36,6 @@ build/
 
 # Backup files
 *~
+
+# Other
+externalcode
