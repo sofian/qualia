@@ -19,8 +19,17 @@
 
 #include "DataSet.h"
 
-DataSet::DataSet(int nExamples_, int nInputs_, int nTargets_)
-  : nExamples(nExamples_), nInputs(nInputs_), nTargets(nTargets_), example(0) {
+DataSet::DataSet()
+  : nExamples(0), dim(0), example(0) {
+}
+
+DataSet::DataSet(int nExamples_, int dim_) {
+  init(nExamples_, dim_);
+}
+
+void DataSet::init(int nExamples_, int dim_) {
+  nExamples = nExamples_;
+  dim       = dim_;
 }
 
 DataSet::~DataSet() {

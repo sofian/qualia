@@ -25,12 +25,14 @@
 class DataSet {
 public:
   int nExamples;
-  int nInputs;
-  int nTargets;
+  int dim;
   real* example; // current example
 
-  DataSet(int nExamples, int nInputs, int nTargets);
+  DataSet();
+  DataSet(int nExamples, int dim);
   virtual ~DataSet();
+
+  virtual void init(int nExamples, int dim);
 
   virtual void setExample(int t) = 0;
 };
