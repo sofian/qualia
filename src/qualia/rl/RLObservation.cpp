@@ -19,15 +19,12 @@
 
 #include "RLObservation.h"
 
-RLObservation::RLObservation() :
-  Observation(), reward(0) {}
+RLObservation::RLObservation(unsigned int dim)
+  : Observation(dim), reward(0) { }
 
-RLObservation::RLObservation(unsigned int dim_, const observation_t* copyFrom_) :
-  Observation(dim_, copyFrom_), reward(0) { }
-
-Observation& RLObservation::copyFrom(const Observation* src) {
+Observation& RLObservation::copyFrom(const Observation& src) {
   Observation::copyFrom(src);
-  reward = ((RLObservation*)src)->reward;
+  reward = ((RLObservation*)&src)->reward;
   return *this;
 }
 

@@ -26,9 +26,9 @@
 class RLObservation : public Observation {
 public:
   real reward;
-  RLObservation();
-  RLObservation(unsigned int dim, const observation_t* copyFrom = 0);
-  Observation& copyFrom(const Observation* src);
+
+  RLObservation(unsigned int dim);
+  Observation& copyFrom(const Observation& src);
 
   virtual void saveData(XFile* file) const;
   virtual void loadData(XFile* file);

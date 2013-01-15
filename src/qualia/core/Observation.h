@@ -28,19 +28,19 @@ typedef real observation_t;
 
 class Observation {
 public:
+  unsigned int _dim;
+
   observation_t* observations;
-  unsigned int dim;
   bool terminal;
 
-  Observation();
-  Observation(unsigned int dim, const observation_t* copyFrom = 0);
+  Observation(unsigned int dim);
   virtual ~Observation();
-
-  void allocate(unsigned int dim, const observation_t* copyFrom = 0);
 
   observation_t& operator[](int i) const { return observations[i]; }
 
-  virtual Observation& copyFrom(const Observation* src);
+  virtual Observation& copyFrom(const Observation& src);
+
+  unsigned int dim() const { return _dim; }
 
   virtual void saveData(XFile* file) const;
   virtual void loadData(XFile* file);

@@ -28,7 +28,7 @@ MapperBasicEnvironment::~MapperBasicEnvironment() {
 
 void MapperBasicEnvironment::addSignals() {
   // Add inputs observation.
-  connector->addInput("observation", currentObservation.dim, 'f', "norm", 0, 0);
+  connector->addInput("observation", currentObservation.dim(), 'f', "norm", 0, 0);
   float terminalFalse = 0;
   connector->addInput("observation_terminal", 1, 'i', "bool", 0, 0, false, &terminalFalse);
 

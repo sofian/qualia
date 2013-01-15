@@ -31,7 +31,7 @@ RewardEnvironment::~RewardEnvironment() { }
 Observation* RewardEnvironment::start()
 {
    RLObservation* currentObservation = doStart();
-   lastObservation.copyFrom(currentObservation);
+   lastObservation.copyFrom(*currentObservation);
    return currentObservation;
  }
 

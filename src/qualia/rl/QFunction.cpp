@@ -33,7 +33,7 @@ real QFunction::getValue(const Observation* observation, const Action* action) {
 
   // Set input.
   int k = 0;
-  for (int i = 0; i < (int)observation->dim; i++, k++)
+  for (int i = 0; i < (int)observation->dim(); i++, k++)
     input[k] = observation->observations[i];
 
   // Actions are remapped to [0,1].

@@ -82,8 +82,12 @@ const observation_t observation2[] = {2.0f, 3.0f, 4.0f};
 void testObservations() {
   printf("== TEST OBSERVATIONS ==\n");
   printf("- Testing construction\n");
-  RLObservation obs(3, observation);
-  RLObservation obs2(3, observation2);
+  RLObservation obs(3);
+  RLObservation obs2(3);
+  for (int i=0; i<3; i++) {
+    obs[i] = observation[i];
+    obs2[i] = observation2[i];
+  }
   printf("-> PASSED\n");
 
   printf("- Testing [] operator\n");
@@ -94,7 +98,7 @@ void testObservations() {
   printf("-> PASSED\n");
 
   printf("- Testing copyFrom\n");
-  obs.copyFrom(&obs2);
+  obs.copyFrom(obs2);
   for (int i=0; i<3; i++)
     assert( obs[i] == observation2[i] );
   printf("-> PASSED\n");

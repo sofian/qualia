@@ -20,44 +20,29 @@
 #include "Observation.h"
 
 //#include <stdio.h>
-Observation::Observation() : observations(0), dim(0), terminal(false) {}
-Observation::Observation(unsigned int dim_, const observation_t* copyFrom_) : observations(0), dim(0), terminal(false) {
-  allocate(dim_, copyFrom_);
+Observation::Observation(unsigned int dim) : _dim(dim), terminal(false) {
+  // Allocate.
+  observations =  (observation_t*) Alloc::malloc(_dim * sizeof(observation_t));
+
+  // Init.
+  memset(observations, 0, _dim * sizeof(observation_t));
 }
 
 Observation::~Observation() {
   Alloc::free(observations);
 }
 
-void Observation::allocate(unsigned int dim_, const observation_t* copyFrom_) {
-  if (observations) // already allocated
-    return; // TODO: error message
-
-  // Set dimension.
-  dim = dim_;
-
-  // Allocate.
-  observations =  (observation_t*) Alloc::malloc(dim * sizeof(observation_t));
-
-  //  printf("%d\n", copyFrom_);
-  // Init.
-  if (copyFrom_)
-    memcpy(observations, copyFrom_, dim * sizeof(observation_t));
-  else
-    memset(observations, 0, dim * sizeof(observation_t));
-}
-
-Observation& Observation::copyFrom(const Observation* src) {
-  ASSERT_ERROR( dim == src->dim );
-  terminal = src->terminal;
-  memcpy(observations, src->observations, dim * sizeof(observation_t));
+Observation& Observation::copyFrom(const Observation& src) {
+  ASSERT_ERROR( _dim == src._dim );
+  terminal = src.terminal;
+  memcpy(observations, src.observations, _dim * sizeof(observation_t));
   return *this;
 }
 
 void Observation::saveData(XFile* file) const {
-  file->write(observations, sizeof(observation_t), dim);
+  file->write(observations, sizeof(observation_t), _dim);
 }
 
 void Observation::loadData(XFile* file) {
-  file->read(observations, sizeof(observation_t), dim);
+  file->read(observations, sizeof(observation_t), _dim);
 }
