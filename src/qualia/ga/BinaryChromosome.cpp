@@ -72,7 +72,7 @@ int operator!=(const BinaryChromosomeInfo& a, const BinaryChromosomeInfo& b) {
 BinaryChromosome::BinaryChromosome(BinaryChromosomeInfo* info_)
   : Chromosome(), info(info_), code(0)
 {
-  assert(info);
+  ASSERT_ERROR(info);
   code = (uint8_t*) Alloc::malloc(info->byteSize()*sizeof(uint8_t));
   memset(code, 0, info->byteSize()*sizeof(uint8_t));
 }
@@ -84,7 +84,7 @@ BinaryChromosome::~BinaryChromosome() {
 
 void BinaryChromosome::copy(const Chromosome& c) {
   const BinaryChromosome* bc = (const BinaryChromosome*)&c;
-  assert( *info == *bc->info );
+  ASSERT_ERROR( *info == *bc->info );
   memcpy(code, bc->code, info->byteSize());
 }
 
@@ -176,9 +176,9 @@ void BinaryChromosome::crossoverOnePoint(const Chromosome& parent1, const Chromo
   BinaryChromosome* o1 = (BinaryChromosome*)offspring1;
   BinaryChromosome* o2 = (BinaryChromosome*)offspring2;
 
-  assert( (*p1->info) == (*p2->info) );
-  assert( (*p1->info) == (*o1->info) );
-  assert( (*p1->info) == (*o2->info) );
+  ASSERT_ERROR( (*p1->info) == (*p2->info) );
+  ASSERT_ERROR( (*p1->info) == (*o1->info) );
+  ASSERT_ERROR( (*p1->info) == (*o2->info) );
 
   unsigned int codeSize = p1->info->bitSize();
 
@@ -199,9 +199,9 @@ void BinaryChromosome::crossoverTwoPoint(const Chromosome& parent1, const Chromo
   BinaryChromosome* o1 = (BinaryChromosome*)offspring1;
   BinaryChromosome* o2 = (BinaryChromosome*)offspring2;
 
-  assert( (*p1->info) == (*p2->info) );
-  assert( (*p1->info) == (*o1->info) );
-  assert( (*p1->info) == (*o2->info) );
+  ASSERT_ERROR( (*p1->info) == (*p2->info) );
+  ASSERT_ERROR( (*p1->info) == (*o1->info) );
+  ASSERT_ERROR( (*p1->info) == (*o2->info) );
 
   unsigned int codeSize = p1->info->bitSize();
 

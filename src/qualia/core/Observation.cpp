@@ -48,7 +48,7 @@ void Observation::allocate(unsigned int dim_, const observation_t* copyFrom_) {
 }
 
 Observation& Observation::copyFrom(const Observation* src) {
-  assert( dim == src->dim );
+  ASSERT_ERROR( dim == src->dim );
   terminal = src->terminal;
   memcpy(observations, src->observations, dim * sizeof(observation_t));
   return *this;

@@ -103,8 +103,8 @@ Action& Action::next() {
 }
 
 Action& Action::copyFrom(const Action* src) {
-  assert( dim == src->dim );
-  assert( memcmp(nActions, src->nActions, dim*sizeof(unsigned int)) == 0 );
+  ASSERT_ERROR( dim == src->dim );
+  ASSERT_ERROR( memcmp(nActions, src->nActions, dim*sizeof(unsigned int)) == 0 );
   memcpy( actions, src->actions, dim*sizeof(action_dim_t) );
   return *this;
 }

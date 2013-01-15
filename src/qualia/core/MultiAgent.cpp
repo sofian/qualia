@@ -40,7 +40,7 @@ MultiAgent::~MultiAgent() {
 
 void MultiAgent::init() {
   for (int i=0; i<nAgents; i++) {
-    assert( agents[i] );
+    ASSERT_ERROR( agents[i] );
     agents[i]->init();
   }
 }
