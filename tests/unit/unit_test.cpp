@@ -46,10 +46,11 @@
 const unsigned int nActions[] = {3, 2, 2};
 void testActions() {
   printf("== TEST ACTIONS ==\n");
-  Action test(3, nActions);
+  ActionProperties props(3, nActions);
+  Action test(&props);
   printf("- Testing conflated\n");
-  assert( test.nConflated == 3*2*2 );
-  for (action_t i=0; i<test.nConflated; i++) {
+  assert( test.nConflated() == 3*2*2 );
+  for (action_t i=0; i<test.nConflated(); i++) {
     action_t conf = test.setConflated(i).conflated();
 //    printf("action=%d confl=%d val = (%d %d %d)\n", i, conf, test[0], test[1], test[2] );
     assert( conf == i );
@@ -60,16 +61,16 @@ void testActions() {
   test.reset();
   for (action_t i=0; test.hasNext(); test.next(), i++) {
 //    printf("action=%d confl=%d val = (%d %d %d)\n", i, test.conflated(), test[0], test[1], test[2] );
-    assert( i < test.nConflated );
+    assert( i < test.nConflated() );
     assert( test.conflated() == i );
   }
   printf("-> PASSED\n");
 
   printf("- Testing copyFrom\n");
-  Action testCopy(3, nActions);
+  Action testCopy(&props);
   test.reset();
   for (action_t i=0; test.hasNext(); test.next(), i++) {
-    testCopy.copyFrom(&test);
+    testCopy.copyFrom(test);
     assert( test.conflated() == testCopy.conflated() );
   }
   printf("-> PASSED\n");
@@ -102,7 +103,8 @@ void testObservations() {
 
 void testPolicies() {
   printf("== TEST POLICIES ==\n");
-  Action action(2, (const unsigned int[]){10, 10});
+  ActionProperties props(2, (const unsigned int[]){10, 10});
+  Action action(&props);
   RLObservation observation(1);
   NeuralNetwork net(3, 3, 1, 0.1f);
   QFunction q(&net);
@@ -110,7 +112,8 @@ void testPolicies() {
   QLearningSoftmaxPolicy softmax;
   QLearningAgent agent(&q,
                        &egreedy,
-                       1, 2, (const unsigned int[]){10, 10},
+                       1,
+                       &props,
                        1.0f, 0.1f, false); // lambda = 1.0 => no history
 
 
@@ -228,13 +231,15 @@ bool approxEqual(real x1, real x2, real diffThreshold=0.000001) {
 void testLearning() {
   printf("== TEST LEARNING ==\n");
   randomSeed(222);
+  ActionProperties props(2, (const unsigned int[]){10, 10});
   TestEnvironment env;
   NeuralNetwork net(2+2, 3, 1, 0.1f);
   QFunction q(&net);
   QLearningEGreedyPolicy egreedy(0.5f);
   QLearningAgent agent(&q,
                        &egreedy,
-                       2, 2, (const unsigned int[]){10, 10},
+                       2,
+                       &props,
                        1.0f, 0.1f, false); // lambda = 1.0 => no history
   RLQualia qualia(&agent, &env);
   qualia.init();
