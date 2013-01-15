@@ -88,6 +88,7 @@ class DiskXFile : public XFile
 
     //-----
     
+    // XFile interface.
     virtual int read(void *ptr, int block_size, int n_blocks);
     virtual int write(const void *ptr, int block_size, int n_blocks);
     virtual int eof();
@@ -96,6 +97,8 @@ class DiskXFile : public XFile
     virtual long tell();
     virtual void rewind();
     virtual int printf(const char *format, ...);
+
+    // DiskXFile interface.
     virtual int scanf(const char *format, void *ptr) ;
     virtual char *gets(char *dest, int size_);
 
