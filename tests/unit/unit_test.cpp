@@ -39,6 +39,9 @@
 
 #include <qualia/ga/BinaryChromosome.h>
 
+#include <qualia/computer/DiskXFile.h>
+#include <qualia/computer/DiskXFileDataSet.h>
+
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
@@ -294,6 +297,73 @@ void testLearning() {
     assert( approxEqual(weights3[i], net.weights[i]));
   }
 
+  printf("-> PASSED\n");
+
+}
+
+#ifdef USE_DOUBLE
+#define REAL_FORMAT "%lf"
+#else
+#define REAL_FORMAT "%f"
+#endif
+
+void testData() {
+  printf("== TEST DATA ==\n");
+  randomSeed(222);
+
+  printf("-- Testing DiskXFile\n");
+
+  DiskXFile file("testfile.txt", "w+");
+  const char* TEST_STRING = "HELLOWORLD!";
+  file.printf(TEST_STRING);
+  file.rewind();
+  char verify[1000];
+  file.scanf("%s", verify);
+  ASSERT_ERROR( strcmp(verify, TEST_STRING) == 0 );
+
+  file.rewind();
+  int nExamples = 100;
+  int dim       = 10;
+  file.printf("%d %d\n", nExamples, dim);
+  float k=0;
+  for (int t=0; t<nExamples; t++) {
+    for (int i=0; i<dim; i++) {
+      file.printf(REAL_FORMAT, k++);
+      file.printf(" ");
+    }
+    file.printf("\n");
+  }
+
+  file.rewind();
+  int test;
+  file.scanf("%d", &test);
+  assert( test == nExamples );
+  file.scanf("%d", &test);
+  ASSERT_ERROR( test == dim );
+
+  k=0;
+  for (int t=0; t<nExamples; t++) {
+    for (int i=0; i<dim; i++) {
+      float tmp;
+      file.scanf(REAL_FORMAT, &tmp);
+      ASSERT_ERROR( tmp == k );
+      k++;
+    }
+  }
+  printf("-> PASSED\n");
+
+  printf("-- Testing DiskXFileDataSet\n");
+  DiskXFileDataSet dataset(&file, true);
+  dataset.init();
+
+  k=0;
+  for (int t=0; t<nExamples; t++) {
+    dataset.setExample(t);
+    for (int i=0; i<dim; i++) {
+      ASSERT_ERROR_MESSAGE( dataset.example[i] == k, "Wrong value at example %d (%f != %f)", t, dataset.example[i], k);
+      k++;
+    }
+  }
   printf("-> PASSED\n");
 
 }
@@ -597,6 +667,7 @@ int main() {
   testObservations();
   testPolicies();
   testLearning();
+  testData();
   testBits();
   testBinaryChromosomes();
 }
