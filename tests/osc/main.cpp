@@ -21,10 +21,12 @@
 
 #include <vector>
 
+#include <qualia/computer/CmdLine.h>
+
 #include <qualia/core/Qualia.h>
 #include <qualia/learning/NeuralNetwork.h>
 #include <qualia/rl/QLearningAgent.h>
-#include <qualia/rl/QLearningEGreedyPolicy.h>
+#include <qualia/rl/QLearningEDecreasingPolicy.h>
 #include <qualia/rl/RLQualia.h>
 
 #include <qualia/plugins/osc/OscRLEnvironment.h>
@@ -32,34 +34,36 @@
 //#define STATIC_ALLOCATOR_SIZE 10000
 //#include "StaticAllocator.h"
 
-
-//#define DIM_OBSERVATIONS 1
-#define DIM_OBSERVATIONS 10
-#define DIM_ACTIONS 2
-
-// Parameters
-
-#define N_HIDDEN 5
-#define LEARNING_RATE 0.1f
-
-#define EPSILON 0.1f
-
-#define LAMBDA 0.3f
-#define GAMMA 0.99f
-
-#define SHARED_NEURAL_NETWORK 0
-
-#define OSC_PORT "11000"
-#define OSC_REMOTE_PORT "12000"
-#define OSC_IP "127.0.0.1"
+////#define DIM_OBSERVATIONS 1
+//#define DIM_OBSERVATIONS 10
+//#define DIM_ACTIONS 2
+//
+//// Parameters
+//
+//#define N_HIDDEN 5
+//#define LEARNING_RATE 0.1f
+//
+//#define EPSILON 0.1f
+//
+//#define LAMBDA 0.3f
+//#define GAMMA 0.99f
+//
+//#define SHARED_NEURAL_NETWORK 0
+//
+//#define OSC_PORT "11000"
+//#define OSC_REMOTE_PORT "12000"
+//#define OSC_IP "127.0.0.1"
 //#define OSC_IP "192.168.123.208"
 
 const unsigned int N_ACTIONS[] = { 100, 100 };
 
-#include <stdio.h>
+#include <cstdio>
 #include <cstring>
 
-RLQualia* createQualia(int id, int nHidden, float learningRate, float epsilon, float lambda, float gamma, int dimObservations);
+RLQualia* createQualia(int id, int nHidden,
+                       float learningRate, float learningRateDecay, float weightDecay,
+                       float epsilon, float epsilonDecay, float lambda, float gamma,
+                       int dimObservations, ActionProperties* actionProperties);
 void      releaseQualia(RLQualia* q);
 
 #if SHARED_NEURAL_NETWORK
@@ -69,36 +73,97 @@ NeuralNetwork* sharedNet = 0;
 //unsigned char buffer[STATIC_ALLOCATOR_SIZE];
 //StaticAllocator myAlloc(buffer, STATIC_ALLOCATOR_SIZE);
 int main(int argc, char** argv) {
-  if (argc >= 9 || (argc > 1 && strcmp(argv[1], "-h") == 0)) {
-    printf("Usage: %s [n_agents=1] [n_hidden=%d] [learning_rate=%f] [epsilon=%f] [lambda=%f] [gamma=%f] [dim_observations=%d] [autoconnect=0]\n",
-            argv[0], N_HIDDEN, LEARNING_RATE, EPSILON, LAMBDA, GAMMA, DIM_OBSERVATIONS);
-    exit(-1);
+//  if (argc >= 9 || (argc > 1 && strcmp(argv[1], "-h") == 0)) {
+//    printf("Usage: %s [n_agents=1] [n_hidden=%d] [learning_rate=%f] [epsilon=%f] [lambda=%f] [gamma=%f] [dim_observations=%d] [autoconnect=0]\n",
+//            argv[0], N_HIDDEN, LEARNING_RATE, EPSILON, LAMBDA, GAMMA, DIM_OBSERVATIONS);
+//    exit(-1);
+//  }
+
+  int nAgents;
+  int nHidden;
+  float learningRate;
+  float learningRateDecay;
+  float weightDecay;
+  float epsilon;
+  float epsilonDecay;
+  float lambda;
+  float gamma;
+  int dimObservations;
+  int dimActions;
+  char* stringNActions;
+
+  char* oscPort;
+  char* oscRemotePort;
+  char* oscIP;
+
+  //=================== The command-line ==========================
+
+  // Construct the command line
+  CmdLine cmd;
+
+  // Put the help line at the beginning
+  cmd.info("Open Sound Control Q-Learning Agent");
+
+  // Train mode
+  cmd.addText("\nArguments:");
+  cmd.addICmdArg("n_agents", &nAgents, "the number of agents to launch", true);
+  cmd.addICmdArg("dim_observations", &dimObservations, "observation dimension (without the reward)", true);
+  cmd.addICmdArg("dim_actions", &dimActions, "action dimension", true);
+  cmd.addSCmdArg("n_actions", &stringNActions, "number of actions as comma-separated values", true);
+
+  cmd.addText("\nOSC Options:");
+  cmd.addSCmdOption("-ip", &oscIP, "127.0.0.1", "the osc IP address", false);
+  cmd.addSCmdOption("-port", &oscPort, "11000", "the osc local port", false);
+  cmd.addSCmdOption("-rport", &oscRemotePort, "12000", "the osc remote local port", false);
+
+  cmd.addText("\nModel Options:");
+  cmd.addICmdOption("-nhu", &nHidden, 5, "number of hidden units", true);
+
+  cmd.addText("\nLearning Options:");
+//  cmd.addICmdOption("-iter", &max_iter, 25, "max number of iterations");
+  cmd.addRCmdOption("-lr", &learningRate, 0.01, "learning rate", true);
+  cmd.addRCmdOption("-lrd", &learningRateDecay, 0.001, "learning rate decay", true);
+  cmd.addRCmdOption("-wd", &weightDecay, 0, "weight decay", true);
+
+  cmd.addText("\nPolicy Options:");
+  cmd.addRCmdOption("-e", &epsilon, 0.1, "epsilon value", true);
+  cmd.addRCmdOption("-ed", &epsilonDecay, 0, "epsilon decay", true);
+
+//  cmd.addText("\nMisc Options:");
+//  cmd.addICmdOption("-seed", &the_seed, -1, "the random seed");
+//  cmd.addICmdOption("-load", &max_load, -1, "max number of examples to load for train");
+//  cmd.addICmdOption("-load_valid", &max_load_valid, -1, "max number of examples to load for valid");
+//  cmd.addSCmdOption("-valid", &valid_file, "", "validation file, if you want it");
+//  cmd.addSCmdOption("-dir", &dir_name, ".", "directory to save measures");
+//  cmd.addSCmdOption("-save", &model_file, "", "the model file");
+//  cmd.addBCmdOption("-bin", &binary_mode, false, "binary mode for files");
+
+  // Read the command line
+  int mode = cmd.read(argc, argv);
+
+  // Parse n actions.
+  unsigned int nActions[100];
+  char tmp[1000];
+  strcpy(tmp, stringNActions);
+  int k=0;
+  for (int i=0; i<dimActions-1; i++) {
+    ASSERT_ERROR_MESSAGE( sscanf(tmp, "%d,%s", &nActions[k++], tmp) > 0, "Malformed argument <n_actions>: %s", stringNActions);
   }
+  ASSERT_ERROR_MESSAGE( sscanf(tmp, "%d", &nActions[k++]), "Malformed argument <n_actions>: %s", stringNActions);
 
-  int arg = 0;
-  int nAgents         = (++arg < argc ? atoi(argv[arg]) : 1);
-  int nHidden         = (++arg < argc ? atoi(argv[arg]) : N_HIDDEN);
-  float learningRate  = (++arg < argc ? atof(argv[arg]) : LEARNING_RATE);
-  float epsilon       = (++arg < argc ? atof(argv[arg]) : EPSILON);
-  float lambda        = (++arg < argc ? atof(argv[arg]) : LAMBDA);
-  float gamma         = (++arg < argc ? atof(argv[arg]) : GAMMA);
-  int dimObservations = (++arg < argc ? atoi(argv[arg]) : DIM_OBSERVATIONS);
-
-  printf("N hidden: %d\n", nHidden);
-  printf("Learning rate: %f\n", learningRate);
-  printf("Epsilon: %f\n", epsilon);
-  printf("Lambda: %f\n", lambda);
-  printf("Gamma: %f\n", gamma);
-
-  OscEnvironment::initOsc(OSC_IP, OSC_PORT, OSC_REMOTE_PORT);
+  OscEnvironment::initOsc(oscIP, oscPort, oscRemotePort);
   std::vector<RLQualia*> qualias(nAgents);
 
 #if SHARED_NEURAL_NETWORK
   sharedNet = new NeuralNetwork(dimObservations + DIM_ACTIONS, nHidden, 1, learningRate);
 #endif
 
+  ActionProperties actionProperties(dimActions, nActions);
   for (int id=0; id<nAgents; id++) {
-    qualias[id] = createQualia(id, nHidden, learningRate, epsilon, lambda, gamma, dimObservations);
+    qualias[id] = createQualia(id, nHidden,
+                               learningRate, learningRateDecay, weightDecay,
+                               epsilon, epsilonDecay, lambda, gamma,
+                               dimObservations, &actionProperties);
   }
 
   printf("--- Initialising ---\n");
@@ -145,27 +210,34 @@ int main(int argc, char** argv) {
   return 0;
 }
 
-RLQualia* createQualia(int id, int nHidden, float learningRate, float epsilon, float lambda, float gamma, int dimObservations) {
+RLQualia* createQualia(int id, int nHidden,
+                       float learningRate, float learningRateDecay, float weightDecay,
+                       float epsilon, float epsilonDecay,
+                       float lambda, float gamma,
+                       int dimObservations, ActionProperties* actionProperties) {
 #if SHARED_NEURAL_NETWORK
   NeuralNetwork* net = sharedNet;
   bool offPolicy = false;
+  ERROR("SHARED NEURAL NET NOT IMPLEMENTED (NEED TO FIX WITH QFUNCTION)");
 #else
-  NeuralNetwork* net = new NeuralNetwork(dimObservations + DIM_ACTIONS, nHidden, 1, learningRate);
+  NeuralNetwork* net = new NeuralNetwork(dimObservations + actionProperties->dim(), nHidden, 1, learningRate);
+  QFunction* qFunc = new QFunction(net);
   bool offPolicy = false;
 #endif
   return new RLQualia(
-      new QLearningAgent(net,
-                         dimObservations, DIM_ACTIONS, N_ACTIONS,
+      new QLearningAgent(qFunc,
+                         new QLearningEDecreasingPolicy(epsilon, epsilonDecay),
+                         dimObservations, actionProperties,
                          lambda, gamma,
-                         new QLearningEGreedyPolicy(epsilon),
                          offPolicy),
-      new OscRLEnvironment(id, dimObservations, DIM_ACTIONS)
+      new OscRLEnvironment(id, dimObservations, actionProperties->dim())
   );
 }
 
 void releaseQualia(RLQualia* q) {
   if (q) {
 #if !SHARED_NEURAL_NETWORK
+    delete ((QLearningAgent*)q->agent)->qFunction->function;
     delete ((QLearningAgent*)q->agent)->qFunction;
 #endif
     delete ((QLearningAgent*)q->agent)->policy;
