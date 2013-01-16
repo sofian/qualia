@@ -62,6 +62,8 @@ int main(int argc, char** argv) {
   char* oscRemotePort;
   char* oscIP;
 
+  bool exportData;
+
   //=================== The command-line ==========================
 
   // Construct the command line
@@ -96,6 +98,7 @@ int main(int argc, char** argv) {
   cmd.addRCmdOption("-ed", &epsilonDecay, 0, "epsilon decay", true);
 
   cmd.addText("\nMisc Options:");
+  cmd.addBCmdOption("-export-data", &exportData, false, "export the data to files", false );
 //  cmd.addICmdOption("-seed", &the_seed, -1, "the random seed");
 //  cmd.addICmdOption("-load", &max_load, -1, "max number of examples to load for train");
 //  cmd.addICmdOption("-load_valid", &max_load_valid, -1, "max number of examples to load for valid");
@@ -136,21 +139,60 @@ int main(int argc, char** argv) {
   }
 
   printf("--- Initialising ---\n");
-  for (std::vector<RLQualia*>::iterator it = qualias.begin(); it != qualias.end(); ++it)
+  std::vector<DiskXFile*> files;
+  int i=0;
+  for (std::vector<RLQualia*>::iterator it = qualias.begin(); it != qualias.end(); ++it) {
+    if (exportData) {
+      char fileName[1000];
+      sprintf(fileName, "export-%d.raw", i);
+      DiskXFile* f = new(Alloc::instance()) DiskXFile(fileName, "w+");
+      files.push_back(f);
+
+      // Header.
+      f->printf("%d %d", dimObservations, dimActions);
+      for (int j=0; j<dimActions; j++)
+        f->printf(" %d", nActions[j]);
+      f->printf("\n");
+      i++;
+    }
     (*it)->init();
+  }
 
   printf("--- Starting ---\n");
-  for (std::vector<RLQualia*>::iterator it = qualias.begin(); it != qualias.end(); ++it)
-    (*it)->start();
+  i=0;
+  for (std::vector<RLQualia*>::iterator it = qualias.begin(); it != qualias.end(); ++it) {
+    ObservationAction* oa = (*it)->start();
+
+    if (exportData) {
+      DiskXFile* f = files[i];
+      for (int j=0; j<dimObservations; j++)
+        f->printf("%f ", oa->observation->observations[j]);
+      for (int j=0; j<dimActions; j++)
+        f->printf("%d ", oa->action->actions[j]);
+      f->printf("\n");
+      i++;
+    }
+  }
 
   for (;;) {
     unsigned long nSteps = 0;
     float totalReward = 0;
     for (int i=0; i<30; i++) {
 //      printf("t=%lu\n", nSteps);
+      int i=0;
       for (std::vector<RLQualia*>::iterator it = qualias.begin(); it != qualias.end(); ++it) {
-        (*it)->step();
+        ObservationAction* oa = (*it)->step();
         totalReward += ((OscRLEnvironment*)(*it)->environment)->currentObservation.reward / nAgents;
+
+        if (exportData) {
+          DiskXFile* f = files[i];
+          for (int j=0; j<dimObservations; j++)
+            f->printf("%f ", oa->observation->observations[j]);
+          for (int j=0; j<dimActions; j++)
+            f->printf("%d ", oa->action->actions[j]);
+          f->printf("\n");
+          i++;
+        }
       }
       nSteps++;
     }
@@ -172,6 +214,9 @@ int main(int argc, char** argv) {
   printf("--- Cleaning up ---\n");
   for (std::vector<RLQualia*>::iterator it = qualias.begin(); it != qualias.end(); ++it)
     releaseQualia(*it);
+
+  for (std::vector<DiskXFile*>::iterator it = files.begin(); it != files.end(); ++it)
+    delete (*it);
 
 #if SHARED_NEURAL_NETWORK
   delete sharedNet;
