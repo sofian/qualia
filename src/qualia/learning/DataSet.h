@@ -32,8 +32,8 @@ public:
   DataSet(int nExamples, int dim);
   virtual ~DataSet();
 
-  virtual void init(int nExamples, int dim);
-
+  virtual void init() {}
+  virtual void reset() {}
   virtual void setExample(int t) = 0;
 };
 

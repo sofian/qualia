@@ -43,6 +43,19 @@ void XFileDataSet::init() {
   currentExampleIndex = -1;
 }
 
+void XFileDataSet::reset() {
+  ASSERT_ERROR( example );
+
+  file->rewind();
+  int x;
+  file->read(&x, sizeof(int), 1);
+  ASSERT_WARNING( x == nExamples );
+  file->read(&x,       sizeof(int), 1);
+  ASSERT_WARNING( x == dim );
+
+  currentExampleIndex = -1;
+}
+
 void XFileDataSet::setExample(int t) {
   ASSERT_ERROR( example );
   ASSERT_ERROR( 0 <= t && t < nExamples);

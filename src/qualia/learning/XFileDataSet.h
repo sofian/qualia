@@ -32,6 +32,7 @@ public:
   virtual ~XFileDataSet();
 
   virtual void init();
+  virtual void reset();
   virtual void setExample(int t);
 };
 

@@ -23,14 +23,7 @@ DataSet::DataSet()
   : nExamples(0), dim(0), example(0) {
 }
 
-DataSet::DataSet(int nExamples_, int dim_) {
-  init(nExamples_, dim_);
-}
-
-void DataSet::init(int nExamples_, int dim_) {
-  nExamples = nExamples_;
-  dim       = dim_;
-}
+DataSet::DataSet(int nExamples_, int dim_) {}
 
 DataSet::~DataSet() {
 }
