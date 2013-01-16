@@ -31,32 +31,6 @@
 
 #include <qualia/plugins/osc/OscRLEnvironment.h>
 
-//#define STATIC_ALLOCATOR_SIZE 10000
-//#include "StaticAllocator.h"
-
-////#define DIM_OBSERVATIONS 1
-//#define DIM_OBSERVATIONS 10
-//#define DIM_ACTIONS 2
-//
-//// Parameters
-//
-//#define N_HIDDEN 5
-//#define LEARNING_RATE 0.1f
-//
-//#define EPSILON 0.1f
-//
-//#define LAMBDA 0.3f
-//#define GAMMA 0.99f
-//
-//#define SHARED_NEURAL_NETWORK 0
-//
-//#define OSC_PORT "11000"
-//#define OSC_REMOTE_PORT "12000"
-//#define OSC_IP "127.0.0.1"
-//#define OSC_IP "192.168.123.208"
-
-const unsigned int N_ACTIONS[] = { 100, 100 };
-
 #include <cstdio>
 #include <cstring>
 
@@ -70,15 +44,7 @@ void      releaseQualia(RLQualia* q);
 NeuralNetwork* sharedNet = 0;
 #endif
 
-//unsigned char buffer[STATIC_ALLOCATOR_SIZE];
-//StaticAllocator myAlloc(buffer, STATIC_ALLOCATOR_SIZE);
 int main(int argc, char** argv) {
-//  if (argc >= 9 || (argc > 1 && strcmp(argv[1], "-h") == 0)) {
-//    printf("Usage: %s [n_agents=1] [n_hidden=%d] [learning_rate=%f] [epsilon=%f] [lambda=%f] [gamma=%f] [dim_observations=%d] [autoconnect=0]\n",
-//            argv[0], N_HIDDEN, LEARNING_RATE, EPSILON, LAMBDA, GAMMA, DIM_OBSERVATIONS);
-//    exit(-1);
-//  }
-
   int nAgents;
   int nHidden;
   float learningRate;
@@ -129,7 +95,7 @@ int main(int argc, char** argv) {
   cmd.addRCmdOption("-e", &epsilon, 0.1, "epsilon value", true);
   cmd.addRCmdOption("-ed", &epsilonDecay, 0, "epsilon decay", true);
 
-//  cmd.addText("\nMisc Options:");
+  cmd.addText("\nMisc Options:");
 //  cmd.addICmdOption("-seed", &the_seed, -1, "the random seed");
 //  cmd.addICmdOption("-load", &max_load, -1, "max number of examples to load for train");
 //  cmd.addICmdOption("-load_valid", &max_load_valid, -1, "max number of examples to load for valid");
@@ -142,14 +108,17 @@ int main(int argc, char** argv) {
   int mode = cmd.read(argc, argv);
 
   // Parse n actions.
+  printf("Parsing actions: ");
   unsigned int nActions[100];
   char tmp[1000];
   strcpy(tmp, stringNActions);
   int k=0;
-  for (int i=0; i<dimActions-1; i++) {
-    ASSERT_ERROR_MESSAGE( sscanf(tmp, "%d,%s", &nActions[k++], tmp) > 0, "Malformed argument <n_actions>: %s", stringNActions);
+  for (int i=0; i<dimActions-1; i++, k++) {
+    ASSERT_ERROR_MESSAGE( sscanf(tmp, "%d,%s", &nActions[k], tmp) > 0, "Malformed argument <n_actions>: %s", stringNActions);
+    printf("%d ", nActions[k]);
   }
-  ASSERT_ERROR_MESSAGE( sscanf(tmp, "%d", &nActions[k++]), "Malformed argument <n_actions>: %s", stringNActions);
+  ASSERT_ERROR_MESSAGE( sscanf(tmp, "%d", &nActions[k]), "Malformed argument <n_actions>: %s", stringNActions);
+  printf("%d \n", nActions[k]);
 
   OscEnvironment::initOsc(oscIP, oscPort, oscRemotePort);
   std::vector<RLQualia*> qualias(nAgents);
