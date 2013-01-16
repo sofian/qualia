@@ -58,9 +58,12 @@ void Alloc::init(Allocator* alloc) {
   inst = alloc;
 }
 
-void* operator new(size_t size, Allocator& alloc)
+void* operator new(size_t size, Allocator* alloc)
 {
-  return alloc.malloc(size);
+  if (!alloc)
+    return ::malloc(size);
+  else
+    return alloc->malloc(size);
 }
 
 //void operator delete(void* ptr)
