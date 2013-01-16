@@ -42,7 +42,7 @@ void* Alloc::malloc(size_t size) {
 
 void* Alloc::realloc(void* ptr, size_t size) {
   if (!inst)
-    return ::malloc(size);
+    return ::realloc(ptr, size);
   else
     return inst->realloc(ptr, size);
 }
