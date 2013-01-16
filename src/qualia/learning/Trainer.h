@@ -26,15 +26,18 @@
 class Trainer {
 public:
   Function* function;
+  int nEpisodes;
 
   Trainer(Function* function);
   virtual ~Trainer();
 
   virtual void init();
 
-//  virtual void trainEpisode(DataSet* data);
+  virtual void train(DataSet* data, int maxEpisodes=0);
+  virtual void trainEpisode(DataSet* data);
   virtual void trainExample(real* example) = 0;
-//  virtual void train(DataSet* data) = 0;
+
+  virtual bool stop() { return false; }
 };
 
 #endif /* TRAINER_H_ */
