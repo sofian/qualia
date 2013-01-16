@@ -30,6 +30,11 @@ void* StaticAllocator::malloc(size_t size) {
   return (void*)tmp;
 }
 
+void* StaticAllocator::realloc(void* ptr, size_t size) {
+  free(ptr);
+  return malloc(size);
+}
+
 void StaticAllocator::free(void* ptr) {
   nLeaks++;
   lastLeak = (unsigned char*) ptr;

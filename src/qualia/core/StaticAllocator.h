@@ -62,6 +62,9 @@ public:
 protected:
   virtual void* malloc(size_t size);
 
+  // You should not use that method for static allocators.
+  virtual void* realloc(void* ptr, size_t size);
+
   // WARNING: Calling StaticAllocator::free() does NOT free the pointer at all. See note above.
   virtual void free(void* ptr);
 
