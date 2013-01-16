@@ -52,8 +52,8 @@ void* operator new(size_t size, Allocator& alloc)
   return alloc.malloc(size);
 }
 
-void operator delete(void* ptr, Allocator& alloc)
-{
-  alloc.free(ptr);
-}
+//void operator delete(void* ptr)
+//{
+//  Alloc::free(ptr);
+//}
 
