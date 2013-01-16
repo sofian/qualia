@@ -48,7 +48,7 @@ public:
   static void* malloc(size_t size);
   static void free(void* ptr);
   static void init(Allocator* alloc);
-  static Allocator* instance() { return inst; }
+  static Allocator& instance() { return *inst; }
 };
 
 void* operator new(size_t size, Allocator& alloc);
