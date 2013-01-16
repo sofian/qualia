@@ -271,13 +271,6 @@ void testLearning() {
 
   qualia.episode(100);
 
-  char str[1000];
-  realArrayToString(str, net.nParams(), net.weights);
-  printf("aft: %s\n", str);
-
-  realArrayToString(str, net.nParams(), weights2);
-  printf("exp: %s\n", str);
-
   for (int i=0; i<net._nParams; i++) {
     assert( approxEqual(weights2[i], net.weights[i]));
   }
