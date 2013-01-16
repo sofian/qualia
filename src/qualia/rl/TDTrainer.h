@@ -72,7 +72,6 @@ public:
   virtual void init();
 
   virtual void trainExample(real* example);
-//  virtual void train(DataSet* data);
   virtual void update(const RLObservation* lastObservation, const Action* lastAction,
                       const RLObservation* observation,     const Action* action);
 };
