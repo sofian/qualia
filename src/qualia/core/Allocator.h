@@ -38,6 +38,7 @@ public:
   virtual ~Allocator() {}
 
   virtual void* malloc(size_t size);
+  virtual void* realloc(void* ptr, size_t size);
   virtual void free(void* ptr);
 };
 
@@ -46,6 +47,7 @@ class Alloc {
 
 public:
   static void* malloc(size_t size);
+  static void* realloc(void* ptr, size_t size);
   static void free(void* ptr);
   static void init(Allocator* alloc);
   static Allocator& instance() { return *inst; }

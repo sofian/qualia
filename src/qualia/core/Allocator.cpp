@@ -23,6 +23,10 @@ void* Allocator::malloc(size_t size) {
   return ::malloc(size);
 }
 
+void* Allocator::realloc(void* ptr, size_t size) {
+  return ::realloc(ptr, size);
+}
+
 void Allocator::free(void* ptr) {
   if (ptr) ::free(ptr);
 }
@@ -34,6 +38,13 @@ void* Alloc::malloc(size_t size) {
     return ::malloc(size);
   else
     return inst->malloc(size);
+}
+
+void* Alloc::realloc(void* ptr, size_t size) {
+  if (!inst)
+    return ::malloc(size);
+  else
+    return inst->realloc(ptr, size);
 }
 
 void Alloc::free(void* ptr) {
