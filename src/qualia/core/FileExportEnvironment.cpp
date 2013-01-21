@@ -19,8 +19,9 @@
 
 #include "FileExportEnvironment.h"
 
-FileExportEnvironment::FileExportEnvironment(Environment* env_, XFile* file_)
-  : Environment(), env(env_), file(file_) {
+FileExportEnvironment::FileExportEnvironment(Environment* env_, XFile* file_,
+                                             unsigned int observationDim_, unsigned int actionDim_)
+  : Environment(), env(env_), file(file_), observationDim(observationDim_), actionDim(actionDim_) {
   ASSERT_ERROR(env);
   ASSERT_ERROR(file);
 }
@@ -30,6 +31,8 @@ FileExportEnvironment::~FileExportEnvironment() {
 
 void FileExportEnvironment::init() {
   file->rewind();
+  file->write(&observationDim, sizeof(unsigned int), 1);
+  file->write(&actionDim,      sizeof(unsigned int), 1);
 }
 
 Observation* FileExportEnvironment::start() {

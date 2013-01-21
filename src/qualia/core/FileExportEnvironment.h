@@ -27,8 +27,11 @@ class FileExportEnvironment: public Environment {
 public:
   Environment* env;
   XFile* file;
+  unsigned int observationDim;
+  unsigned int actionDim;
 
-  FileExportEnvironment(Environment* env, XFile* file);
+  FileExportEnvironment(Environment* env, XFile* file,
+                        unsigned int observationDim, unsigned int actionDim);
   virtual ~FileExportEnvironment();
 
   virtual void init();
