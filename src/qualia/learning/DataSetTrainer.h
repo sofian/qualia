@@ -1,5 +1,5 @@
 /*
- * Trainer.h
+ * DataSetTrainer.h
  *
  * (c) 2013 Sofian Audry -- info(@)sofianaudry(.)com
  *
@@ -17,20 +17,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TRAINER_H_
-#define TRAINER_H_
+#ifndef DATASETTRAINER_H_
+#define DATASETTRAINER_H_
 
-#include <qualia/learning/Function.h>
+#include <qualia/learning/Trainer.h>
+#include <qualia/learning/DataSet.h>
 
-class Trainer {
+class DataSetTrainer : public Trainer {
 public:
-  Function* function;
   int nEpisodes;
 
-  Trainer(Function* function);
-  virtual ~Trainer();
+  DataSetTrainer(Function* function);
+  virtual ~DataSetTrainer();
 
   virtual void init();
+
+  virtual void train(DataSet* data, int maxEpisodes=0);
+  virtual void trainEpisode(DataSet* data);
+  virtual void trainExample(real* example) = 0;
+
+  virtual bool stop() { return false; }
 };
 
-#endif /* TRAINER_H_ */
+#endif /* DataSetTrainer_H_ */

@@ -29,22 +29,3 @@ void Trainer::init() {
   function->init();
 }
 
-void Trainer::train(DataSet* data, int maxEpisodes) {
-  nEpisodes = 0;
-  while (!stop() &&
-         (maxEpisodes > 0 && nEpisodes < maxEpisodes)) {
-    trainEpisode(data);
-  }
-}
-
-void Trainer::trainEpisode(DataSet* data) {
-  if (data->nExamples >= 0) {
-    data->reset();
-    for (int t=0; t<data->nExamples; t++) {
-      data->setExample(t);
-      trainExample(data->example);
-    }
-  }
-  nEpisodes++;
-}
-
