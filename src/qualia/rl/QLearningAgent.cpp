@@ -51,17 +51,16 @@ void QLearningAgent::init() {
 
 Action* QLearningAgent::start(const Observation* observation) {
 
-  lastObservation.copyFrom(*observation);
+  policy->chooseAction(&currentAction, observation);
 
-  // Randomize starting action.
-  currentAction.setConflated( currentAction.properties->random() );
+  lastObservation.copyFrom(*observation);
+  lastAction.copyFrom(currentAction);
 
   return &currentAction;
 }
 
 Action* QLearningAgent::step(const Observation* observation) {
 
-  lastAction.copyFrom(currentAction);
   policy->chooseAction(&currentAction, observation);
 
   if (isLearning) {
@@ -69,8 +68,8 @@ Action* QLearningAgent::step(const Observation* observation) {
   }
 
   // Reassign.
-  // TODO: find a more elegant way to copy
   lastObservation.copyFrom(*observation);
+  lastAction.copyFrom(currentAction);
 
   return &currentAction;
 }
