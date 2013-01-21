@@ -66,7 +66,7 @@ public:
   // Parameters.
 
   // Shortcut values.
-  unsigned int observationDim;     // == lastObservation.dim
+  unsigned int observationDim;     // == lastObservation.dim()
 
   // Interface ///////////////////
 
