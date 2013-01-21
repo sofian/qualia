@@ -77,7 +77,7 @@ void TDTrainer::step(const RLObservation* lastObservation, const Action* lastAct
     updateQ = qFunction->getValue(observation, action);
 
   // Compute difference between estimated Q value and actual/outputed Q value.
-  real delta = (( ((RLObservation*)observation)->reward + gamma * updateQ) - Qs);
+  real delta = observation->reward + gamma * updateQ - Qs;
 
   // Update weights.
   real* dWeights = qFunction->dWeights;
