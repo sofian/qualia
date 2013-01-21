@@ -21,6 +21,8 @@
 #ifndef FUNCTION_H_
 #define FUNCTION_H_
 
+#include <qualia/core/common.h>
+
 class Function {
 
 public:
