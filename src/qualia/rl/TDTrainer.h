@@ -26,7 +26,7 @@
 #include <qualia/rl/QFunction.h>
 #include <qualia/rl/RLObservation.h>
 
-class TDTrainer: public Trainer {
+class TDTrainer : public Trainer {
 public:
   real* eTraces; // elligibility traces
 
@@ -70,7 +70,6 @@ public:
 
   virtual void init();
 
-  virtual void trainExample(real* example);
   virtual void step(const RLObservation* lastObservation, const Action* lastAction,
                     const RLObservation* observation,     const Action* action);
 };

@@ -27,7 +27,11 @@ TDTrainer::TDTrainer(QFunction* qFunction_, unsigned int observationDim_, Action
     offPolicy(offPolicy_),
     bufferAction(actionProperties),
     observationDim(observationDim_),
-    actionDim(actionProperties->dim())
+    actionDim(actionProperties->dim())/*,
+    exampleLastObservation(observationDim),
+    exampleObservation(observationDim),
+    exampleLastAction(actionProperties),
+    exampleAction(actionProperties)*/
 {
   ASSERT_WARNING(0 <= lambda && lambda <= 1);
   ASSERT_WARNING(0 <= gamma && gamma <= 1);
@@ -52,10 +56,6 @@ void TDTrainer::init() {
   // Initialize elligibility traces.
   for (int i=0; i<qFunction->nParams(); i++)
     eTraces[i]=0;
-}
-
-void TDTrainer::trainExample(real* example) {
-  ERROR("Not implemented yet.");
 }
 
 void TDTrainer::step(const RLObservation* lastObservation, const Action* lastAction,
