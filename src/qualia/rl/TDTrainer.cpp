@@ -34,8 +34,7 @@ TDTrainer::TDTrainer(QFunction* qFunction_, unsigned int observationDim_, Action
   ASSERT_ERROR( qFunction_->nInput() == (int) (observationDim + actionDim) );
   ASSERT_ERROR( qFunction_->nOutput() == 1 );
 
-  qFunction = qFunction_; // ie. qFunction = (QFunction*)function;
-  eTraces = (real*)Alloc::malloc(qFunction->nParams() * sizeof(real));
+  eTraces = (real*)Alloc::malloc( ((QFunction*)function)->nParams() * sizeof(real));
 
   ASSERT_WARNING_MESSAGE( !offPolicy , "Off policy learning is known to diverge when used with linear function approximators.");
 }
@@ -45,8 +44,10 @@ TDTrainer::~TDTrainer() {
 }
 
 void TDTrainer::init() {
+  QFunction* qFunction = (QFunction*) function;
+
   // Initialize action-value function.
-  function->init();
+  qFunction->init();
 
   // Initialize elligibility traces.
   for (int i=0; i<qFunction->nParams(); i++)
@@ -58,7 +59,9 @@ void TDTrainer::trainExample(real* example) {
 }
 
 void TDTrainer::step(const RLObservation* lastObservation, const Action* lastAction,
-                       const RLObservation* observation,     const Action* action) {
+                     const RLObservation* observation,     const Action* action) {
+  QFunction* qFunction = (QFunction*) function;
+
   real outErr = 1;
 
   // Propagate Q(s_{t-1}, a_{t-1}).

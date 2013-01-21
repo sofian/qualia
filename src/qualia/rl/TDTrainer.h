@@ -28,7 +28,6 @@
 
 class TDTrainer: public Trainer {
 public:
-  QFunction* qFunction;
   real* eTraces; // elligibility traces
 
   // Configurable parameters /////
@@ -73,7 +72,7 @@ public:
 
   virtual void trainExample(real* example);
   virtual void step(const RLObservation* lastObservation, const Action* lastAction,
-                      const RLObservation* observation,     const Action* action);
+                    const RLObservation* observation,     const Action* action);
 };
 
 #endif /* TDTRAINER_H_ */
