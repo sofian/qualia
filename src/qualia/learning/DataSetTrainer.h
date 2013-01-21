@@ -34,9 +34,10 @@ public:
 
   virtual void train(DataSet* data, int maxEpisodes=0);
   virtual void trainEpisode(DataSet* data);
-  virtual void trainExample(real* example) = 0;
 
   virtual bool stop() { return false; }
+
+  virtual void _doTrainEpisode(DataSet* data) = 0;
 };
 
 #endif /* DataSetTrainer_H_ */

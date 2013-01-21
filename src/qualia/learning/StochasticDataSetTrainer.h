@@ -1,5 +1,5 @@
 /*
- * DataSetTrainer.cpp
+ * StochasticDataSetTrainer.h
  *
  * (c) 2013 Sofian Audry -- info(@)sofianaudry(.)com
  *
@@ -17,33 +17,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef STOCHASTICDATASETTRAINER_H_
+#define STOCHASTICDATASETTRAINER_H_
+
 #include "DataSetTrainer.h"
 
-DataSetTrainer::DataSetTrainer(Function* function_) : Trainer(function_), nEpisodes(0) {
-}
+// Dataset trainer that trains on one example at a time.
+class StochasticDataSetTrainer: public DataSetTrainer {
+public:
+  StochasticDataSetTrainer(Function* function);
+  virtual ~StochasticDataSetTrainer();
 
-DataSetTrainer::~DataSetTrainer() {
-}
+  virtual void trainExample(real* example) = 0;
 
-void DataSetTrainer::init() {
-  function->init();
-  nEpisodes = 0;
-}
+  virtual void _doTrainEpisode(DataSet* data);
+};
 
-void DataSetTrainer::train(DataSet* data, int maxEpisodes) {
-  init();
-  while (!stop() &&
-         (maxEpisodes > 0 && nEpisodes < maxEpisodes)) {
-    trainEpisode(data);
-  }
-}
-
-void DataSetTrainer::trainEpisode(DataSet* data) {
-  ASSERT_WARNING(data->nExamples >= 0);
-
-  data->reset();
-  _doTrainEpisode(data);
-  nEpisodes++;
-}
-
-
+#endif /* STOCHASTICDATASETTRAINER_H_ */
