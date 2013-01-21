@@ -57,8 +57,8 @@ void TDTrainer::trainExample(real* example) {
   ERROR("Not implemented yet.");
 }
 
-void TDTrainer::update(const RLObservation* lastObservation, const Action* lastAction,
-                       const RLObservation* observation, const Action* action) {
+void TDTrainer::step(const RLObservation* lastObservation, const Action* lastAction,
+                       const RLObservation* observation,     const Action* action) {
   real outErr = 1;
 
   // Propagate Q(s_{t-1}, a_{t-1}).

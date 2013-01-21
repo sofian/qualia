@@ -65,7 +65,7 @@ Action* QLearningAgent::step(const Observation* observation) {
   policy->chooseAction(&currentAction, observation);
 
   if (isLearning) {
-    trainer.update(&lastObservation, &lastAction, (const RLObservation*)observation, &currentAction);
+    trainer.step(&lastObservation, &lastAction, (const RLObservation*)observation, &currentAction);
   }
 
   // Reassign.
