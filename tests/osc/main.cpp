@@ -19,6 +19,12 @@
 
 //#include "cpp_include.h"
 
+#include <qualia/core/common.h>
+
+#if ! is_computer()
+#error "This program only works on computer platforms. Please recompile using platform=computer option."
+#endif
+
 #include <vector>
 
 #include <qualia/computer/CmdLine.h>
@@ -69,6 +75,7 @@ int main(int argc, char** argv) {
   char* oscIP;
 
   bool exportData;
+  int outputEvery;
 
   //=================== The command-line ==========================
 
@@ -109,6 +116,7 @@ int main(int argc, char** argv) {
 
   cmd.addText("\nMisc Options:");
   cmd.addBCmdOption("-export-data", &exportData, false, "export the data to files", false );
+  cmd.addICmdOption("-every", &outputEvery, 100, "output mean reward every X steps", false );
 //  cmd.addICmdOption("-seed", &the_seed, -1, "the random seed");
 //  cmd.addICmdOption("-load", &max_load, -1, "max number of examples to load for train");
 //  cmd.addICmdOption("-load_valid", &max_load_valid, -1, "max number of examples to load for valid");
@@ -118,7 +126,8 @@ int main(int argc, char** argv) {
 //  cmd.addBCmdOption("-bin", &binary_mode, false, "binary mode for files");
 
   // Read the command line
-  int mode = cmd.read(argc, argv);
+  //int mode = cmd.read(argc, argv);
+  cmd.read(argc, argv);
 
   // Parse n actions.
   printf("Parsing actions: ");
@@ -188,8 +197,7 @@ int main(int argc, char** argv) {
   while (!stopTraining) {
     unsigned long nSteps = 0;
     float totalReward = 0;
-    for (int i=0; i<30; i++) {
-//      printf("t=%lu\n", nSteps);
+    for (int i=0; i<outputEvery; i++) {
       int i=0;
       for (std::vector<RLQualia*>::iterator it = qualias.begin(); it != qualias.end(); ++it) {
         ObservationAction* oa = (*it)->step();
@@ -207,7 +215,6 @@ int main(int argc, char** argv) {
       }
       nSteps++;
     }
-#if is_computer()
     printf("Mean reward: %f\n", (double) totalReward / nSteps);
 //    printf("Current agent action: [%d %d] = %d\n", agent.currentAction[0], agent.currentAction[1], agent.currentAction.conflated());
 //    printf("Current environment observation: [%f %f] => %f\n", env.currentObservation[0], env.currentObservation[1], env.currentObservation.reward);
@@ -216,7 +223,6 @@ int main(int argc, char** argv) {
 //    for (int i=0; i<DIM_OBSERVATIONS; i++)
 //      printf("%f ", (double)env.currentObservation[i]);
 //    printf("\n");
-#endif
   }
 
 //  if (myAlloc.nLeaks)
@@ -246,7 +252,7 @@ RLQualia* createQualia(int id, int nHidden,
   ERROR("SHARED NEURAL NET NOT IMPLEMENTED (NEED TO FIX WITH QFUNCTION)");
 #else
   NeuralNetwork* net = new NeuralNetwork(dimObservations + actionProperties->dim(), nHidden, 1, learningRate);
-  QFunction* qFunc = new QFunction(net);
+  QFunction* qFunc = new QFunction(net, dimObservations, actionProperties);
   bool offPolicy = false;
 #endif
   return new RLQualia(
