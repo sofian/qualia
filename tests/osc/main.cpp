@@ -99,6 +99,10 @@ int main(int argc, char** argv) {
   cmd.addRCmdOption("-lrd", &learningRateDecay, 0.001, "learning rate decay", true);
   cmd.addRCmdOption("-wd", &weightDecay, 0, "weight decay", true);
 
+  cmd.addText("\nReinforcement learning options:");
+  cmd.addRCmdOption("-gamma", &gamma, 0.999, "the gamma value", true);
+  cmd.addRCmdOption("-lambda", &lambda, 0.1, "the lambda value of the TD-lambda algorithm", true);
+
   cmd.addText("\nPolicy Options:");
   cmd.addRCmdOption("-e", &epsilon, 0.1, "epsilon value", true);
   cmd.addRCmdOption("-ed", &epsilonDecay, 0, "epsilon decay", true);
