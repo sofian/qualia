@@ -34,6 +34,7 @@
 #define is_arduino() defined(ARDUINO)
 #define is_computer() !defined(__AVR__)
 
+
 // XXX: not sure we need this..
 //#include <assert.h>
 #include <stdlib.h>
@@ -44,12 +45,12 @@
 
 // Old systems need that to define FLT_MAX and DBL_MAX
 #ifndef DBL_MAX
-#include <values.h>
+  #include <values.h>
 #endif
 
 #ifdef _MSC_VER
   #ifndef for
-  #define for if (0) {} else for
+    #define for if (0) {} else for
   #endif
 
   #define M_PI 3.14159265358979323846
@@ -61,63 +62,65 @@
 
 // Basic definitions from Arduino.h
 #if (is_arduino())
-#if ARDUINO >= 100
-#include "Arduino.h"
-#else
-#include "WProgram.h"
-#endif
-
-#else
-
-// Make sure to redefine the min/max/abs macros
-#ifdef min
-#undef min
-#endif
-
-#ifdef max
-#undef max
-#endif
-
-#ifndef WIN32
-  #ifdef abs
-  #undef abs
+  #if ARDUINO >= 100
+    #include "Arduino.h"
+  #else
+    #include "WProgram.h"
   #endif
-#endif
 
-// XXX Since
-//#ifdef round
-//#undef round
-//#endif
+#else
 
-#ifndef true
-#define true 0x1
-#endif
+  // Make sure to redefine the min/max/abs macros
+  #ifdef min
+    #undef min
+  #endif
 
-#ifndef false
-#define false 0x0
-#endif
+  #ifdef max
+    #undef max
+  #endif
 
-#define PI 3.1415926535897932384626433832795
-#define HALF_PI 1.5707963267948966192313216916398
-#define TWO_PI 6.283185307179586476925286766559
-#define DEG_TO_RAD 0.017453292519943295769236907684886
-#define RAD_TO_DEG 57.295779513082320876798154814105
+  #ifndef WIN32
+    #ifdef abs
+    #undef abs
+    #endif
+  #endif
 
-#define min(a,b) ((a)<(b)?(a):(b))
-#define max(a,b) ((a)>(b)?(a):(b))
-#ifndef WIN32
-  #define abs(x) ((x)>=0?(x):-(x))
-#endif
-#define constrain(amt,low,high) ((amt)<(low)?(low):((amt)>(high)?(high):(amt)))
-//#define round(x)     ((x)>=0?(long)((x)+0.5):(long)((x)-0.5))
-#define radians(deg) ((deg)*DEG_TO_RAD)
-#define degrees(rad) ((rad)*RAD_TO_DEG)
-#define sq(x) ((x)*(x))
+  // XXX Since
+  //#ifdef round
+  //#undef round
+  //#endif
 
-#define bitRead(value, bit) (((value) >> (bit)) & 0x01)
-#define bitSet(value, bit) ((value) |= (1UL << (bit)))
-#define bitClear(value, bit) ((value) &= ~(1UL << (bit)))
-#define bitWrite(value, bit, bitvalue) (bitvalue ? bitSet(value, bit) : bitClear(value, bit))
+  #ifndef true
+    #define true 0x1
+  #endif
+
+  #ifndef false
+    #define false 0x0
+  #endif
+
+  #define PI 3.1415926535897932384626433832795
+  #define HALF_PI 1.5707963267948966192313216916398
+  #define TWO_PI 6.283185307179586476925286766559
+  #define DEG_TO_RAD 0.017453292519943295769236907684886
+  #define RAD_TO_DEG 57.295779513082320876798154814105
+
+  #define min(a,b) ((a)<(b)?(a):(b))
+  #define max(a,b) ((a)>(b)?(a):(b))
+  #ifndef WIN32
+    #define abs(x) ((x)>=0?(x):-(x))
+  #endif
+
+  #define constrain(amt,low,high) ((amt)<(low)?(low):((amt)>(high)?(high):(amt)))
+  //#define round(x)     ((x)>=0?(long)((x)+0.5):(long)((x)-0.5))
+  #define radians(deg) ((deg)*DEG_TO_RAD)
+  #define degrees(rad) ((rad)*RAD_TO_DEG)
+  #define sq(x) ((x)*(x))
+
+  #define bitRead(value, bit) (((value) >> (bit)) & 0x01)
+  #define bitSet(value, bit) ((value) |= (1UL << (bit)))
+  #define bitClear(value, bit) ((value) &= ~(1UL << (bit)))
+  #define bitWrite(value, bit, bitvalue) (bitvalue ? bitSet(value, bit) : bitClear(value, bit))
+
 #endif
 
 // Added an extra bit macro.
