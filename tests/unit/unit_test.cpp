@@ -114,7 +114,7 @@ void testPolicies() {
   Action action(&props);
   RLObservation observation(1);
   NeuralNetwork net(3, 3, 1, 0.1f);
-  QFunction q(&net);
+  QFunction q(&net, 1, &props);
   QLearningEGreedyPolicy egreedy(0.1f);
   QLearningSoftmaxPolicy softmax;
   QLearningAgent agent(&q,
@@ -241,7 +241,7 @@ void testLearning() {
   ActionProperties props(2, (const unsigned int[]){10, 10});
   TestEnvironment env;
   NeuralNetwork net(2+2, 3, 1, 0.1f);
-  QFunction q(&net);
+  QFunction q(&net, 2, &props);
   QLearningEGreedyPolicy egreedy(0.5f);
   QLearningAgent agent(&q,
                        &egreedy,
@@ -269,7 +269,7 @@ void testLearning() {
   // Values as they were compiled on OSX.
   const real weights2[] = { 0.720454, -0.032911, 0.924488, 0.885604, -0.462369, -0.196202, 0.629109, -0.115963, -0.376370, -0.176181, -0.877519, -0.654348, -0.032678, -0.524523, 0.656541, -0.593092, -0.641793, -0.115928, 0.761823 };
 #else // Linux
-  const real weights2[] = { 0.745014, 0.005325, 0.965466, 0.914415, -0.366836, -0.166225, 0.647836, -0.054525, -0.316290, -0.086538, -0.876724, -0.648336, -0.007566, -0.509864, 0.682508, -0.928581, -0.888553, -0.366196, 0.245565, };
+  const real weights2[] = { 0.744364, 0.004321, 0.968882, 0.918303, -0.363828, -0.167727, 0.651167, -0.050757, -0.312058, -0.087158, -0.875340, -0.646770, -0.005819, -0.509864, 0.682508, -0.944954, -0.895760, -0.380126, 0.224388 };
 #endif
 
   qualia.episode(100);
@@ -288,7 +288,7 @@ void testLearning() {
   // Values as they were compiled on OSX.
   const real weights3[] = { 0.720454, -0.032911, 0.924488, 0.885604, -0.462369, -0.196202, 0.629109, -0.115963, -0.376370, -0.176181, -0.877519, -0.654348, -0.032678, -0.524523, 0.656541, -0.593092, -0.641793, -0.115928, 0.761823 };
 #else // Linux
-  const real weights3[] = { 0.727745, -0.030757, 0.928110, 0.888238, -0.478589, -0.202642, 0.596979, -0.089092, -0.413533, -0.096804, -0.891827, -0.659414, -0.035676, -0.509864, 0.682508, -0.631539, -0.654899, -0.119618, 0.725278, };
+  const real weights3[] = { 0.728281, -0.031507, 0.934786, 0.890957, -0.472604, -0.203539, 0.604837, -0.086146, -0.406650, -0.098449, -0.890225, -0.658924, -0.035352, -0.509864, 0.682508, -0.663268, -0.671780, -0.143882, 0.683062 };
 #endif
 
   qualia.episode(100);
