@@ -1,0 +1,88 @@
+/*
+ * TupleDataSet.cpp
+ *
+ * (c) 2013 Sofian Audry -- info(@)sofianaudry(.)com
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include "TupleDataSet.h"
+
+TupleDataSet::TupleDataSet(XFile* file_, unsigned int observationDim_, ActionProperties* actionProperties_)
+  : file(file_),
+    lastObservation(observationDim_),
+    lastAction(actionProperties_),
+    observation(observationDim_) {
+  ASSERT_ERROR( file );
+}
+
+TupleDataSet::~TupleDataSet() {
+}
+
+void TupleDataSet::init() {
+  // First pass: count examples.
+  nExamples = 0;
+
+  unsigned int dim;
+  file->rewind();
+
+  file->read(&dim, sizeof(unsigned int), 1);
+  ASSERT_ERROR( dim == observation.dim() );
+  file->read(&dim, sizeof(unsigned int), 1);
+  ASSERT_ERROR( dim == lastAction.dim() );
+
+  observation.loadData(file);
+  while (!file->eof()) {
+    lastAction.loadData(file);
+    observation.loadData(file);
+    nExamples++;
+  }
+
+  // Go back to start.
+  reset();
+}
+
+void TupleDataSet::reset() {
+  unsigned int dim;
+  file->rewind();
+  file->read(&dim, sizeof(unsigned int), 1);
+  file->read(&dim, sizeof(unsigned int), 1);
+
+  lastObservation.loadData(file);
+
+  currentExampleIndex = -1;
+}
+
+void TupleDataSet::setExample(int t) {
+  if (t != currentExampleIndex+1)
+    ERROR("Seeking not allowed.");
+
+  lastAction.loadData(file);
+  observation.loadData(file);
+
+  // Fill up example with the (s, a, r, s') tuple.
+  int k=0;
+  for (unsigned int i=0; i<lastObservation.dim(); i++)
+    example[k++] = lastObservation[i];
+  for (unsigned int i=0; i<lastAction.dim(); i++)
+    example[k++] = lastAction[i];
+  example[k++] = observation.reward;
+  for (unsigned int i=0; i<observation.dim(); i++)
+    example[k++] = observation[i];
+
+  lastObservation.copyFrom(observation);
+
+  currentExampleIndex = t;
+}
+
