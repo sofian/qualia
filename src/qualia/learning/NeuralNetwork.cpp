@@ -58,12 +58,20 @@ void NeuralNetwork::init() {
   learningRateDiv = 1;
 }
 
-void NeuralNetwork::setInput(const real *input) {
-  memcpy(inputLayer.output, input, inputLayer.n*sizeof(real));
+void NeuralNetwork::setInput(int i, real x) {
+  inputLayer.output[i] = x;
 }
 
-void NeuralNetwork::getOutput(real *output) const {
-  memcpy(output, outputLayer.output, outputLayer.n*sizeof(real));
+void NeuralNetwork::setInputs(const real *inputs) {
+  memcpy(inputLayer.output, inputs, inputLayer.n*sizeof(real));
+}
+
+real NeuralNetwork::getOutput(int i) const {
+  return outputLayer.output[i];
+}
+
+void NeuralNetwork::getOutputs(real *outputs) const {
+  memcpy(outputs, outputLayer.output, outputLayer.n*sizeof(real));
 }
 
 void NeuralNetwork::backpropagate(real *outputError) {
