@@ -24,16 +24,21 @@
 
 class DataSet {
 public:
-  int nExamples;
-  int dim;
+  int nExamples; // number of examples in the dataset
+  int dim;       // dimension of the example
   real* example; // current example
 
   DataSet();
   DataSet(int nExamples, int dim);
   virtual ~DataSet();
 
+  // To be called before training.
   virtual void init() {}
+
+  // To be called before every episode.
   virtual void reset() {}
+
+  // Sets this->example to given index t.
   virtual void setExample(int t) = 0;
 };
 
