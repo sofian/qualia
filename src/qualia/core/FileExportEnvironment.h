@@ -23,6 +23,13 @@
 #include <qualia/core/Environment.h>
 #include <qualia/core/XFile.h>
 
+// Generates a file of data in the Qualia RAW format:
+// <observation_dim><action_dim><o0><a0><01><a1>...<a{N-1}><oN>
+//
+// observation_dim : dimension of observations
+// action_dim      : dimension of actions
+// o0 .. oN        : observations (each one can be read by calling Observation::readData() or appropriate subclass)
+// a0 .. a{N-1}    : actions (each one can be read by calling Action::readData() or appropriate subclass)
 class FileExportEnvironment: public Environment {
 public:
   Environment* env;
