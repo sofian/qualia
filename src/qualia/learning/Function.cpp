@@ -1,5 +1,5 @@
 /*
- * Function.h
+ * Function.cpp
  *
  * (c) 2013 Sofian Audry -- info(@)sofianaudry(.)com
  *
@@ -17,33 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "Function.h"
 
-#ifndef FUNCTION_H_
-#define FUNCTION_H_
+void Function::setInputs(const real* input) {
+  for (int i=0; i<nInputs(); i++)
+    setInput(i, input[i]);
+}
 
-#include <qualia/core/common.h>
-
-class Function {
-
-public:
-  // Constructor/destructor.
-  Function() {}
-  virtual ~Function() {}
-
-  // Public methods.
-  virtual void init() {}
-
-  virtual int nInputs() const = 0;
-  virtual int nOutputs() const = 0;
-
-  virtual void setInputs(const real* input);
-  virtual void getOutputs(real* output) const;
-
-  virtual void setInput(int i, real x) = 0;
-  virtual float getOutput(int i) const = 0;
-
-  // Propagate to outputs.
-  virtual void propagate() = 0;
-};
-
-#endif /* FUNCTION_H_ */
+void Function::getOutputs(real* output) const {
+  for (int i=0; i<nOutputs(); i++)
+    output[i] = getOutput(i);
+}

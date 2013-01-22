@@ -88,14 +88,16 @@ public:
 
   virtual void init();
 
-  virtual int nInput() const { return inputLayer.n; }
+  virtual int nInputs() const { return inputLayer.n; }
   virtual int nHidden() const { return hiddenLayer.n; }
-  virtual int nOutput() const { return outputLayer.n; }
+  virtual int nOutputs() const { return outputLayer.n; }
   virtual int nParams() const { return _nParams; }
 
-  virtual void setInput(const real *input);
+  virtual void setInput(int i, real x);
+  virtual void setInputs(const real *inputs);
 
-  virtual void getOutput(real *output) const;
+  virtual real getOutput(int i) const;
+  virtual void getOutputs(real *outputs) const;
 
   virtual void backpropagate(real *outputError);
 

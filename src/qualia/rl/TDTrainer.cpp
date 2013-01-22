@@ -35,8 +35,8 @@ TDTrainer::TDTrainer(QFunction* qFunction_, unsigned int observationDim_, Action
 {
   ASSERT_WARNING(0 <= lambda && lambda <= 1);
   ASSERT_WARNING(0 <= gamma && gamma <= 1);
-  ASSERT_ERROR( qFunction_->nInput() == (int) (observationDim + actionDim) );
-  ASSERT_ERROR( qFunction_->nOutput() == 1 );
+  ASSERT_ERROR( qFunction_->nInputs() == (int) (observationDim + actionDim) );
+  ASSERT_ERROR( qFunction_->nOutputs() == 1 );
 
   eTraces = (real*)Alloc::malloc( ((QFunction*)function)->nParams() * sizeof(real));
 

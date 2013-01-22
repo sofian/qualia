@@ -19,8 +19,13 @@
 
 #include "QFunction.h"
 
-QFunction::QFunction(GradientFunction* function_) : function(function_) {
-  input = (real*) Alloc::malloc( function->nInput() * sizeof(real) );
+QFunction::QFunction(GradientFunction* function_, unsigned int observationDim_, ActionProperties* actionProperties_)
+  : function(function_),
+    observationDim(observationDim_),
+    actionProperties(actionProperties_) {
+  ASSERT_ERROR(observationDim + actionProperties->dim() == function->nInputs());
+  ASSERT_ERROR(function->nOutputs() == 1);
+  input = (real*) Alloc::malloc( function->nInputs() * sizeof(real) );
   weights = function->weights;
   dWeights = function->dWeights;
 }
@@ -30,6 +35,8 @@ QFunction::~QFunction() {
 }
 
 real QFunction::getValue(const Observation* observation, const Action* action) {
+  ASSERT_ERROR( observation->dim() == observationDim );
+  ASSERT_ERROR( action->dim() == actionProperties->dim() );
 
   // Set input.
   int k = 0;
@@ -42,9 +49,9 @@ real QFunction::getValue(const Observation* observation, const Action* action) {
 
   // Propagate.
   real output;
-  function->setInput(input);
+  function->setInputs(input);
   function->propagate();
-  function->getOutput(&output);
+  function->getOutputs(&output);
   return output;
 }
 

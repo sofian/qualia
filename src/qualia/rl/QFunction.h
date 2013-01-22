@@ -35,16 +35,19 @@ public:
   // TODO: possibly change (a bit inefficient memory).
   real *input;
 
-  QFunction(GradientFunction* function);
+  unsigned int observationDim;
+  ActionProperties* actionProperties;
+
+  QFunction(GradientFunction* function, unsigned int observationDim, ActionProperties* actionProperties);
   virtual ~QFunction();
 
   virtual void init() { function->init(); }
-  virtual int nInput() const { return function->nInput(); }
-  virtual int nOutput() const { return function->nOutput(); }
+  virtual int nInputs() const { return function->nInputs(); }
+  virtual int nOutputs() const { return function->nOutputs(); }
   virtual int nParams() const { return function->nParams(); }
 
-  virtual void setInput(const real* input) { function->setInput(input); }
-  virtual void getOutput(real* output) const { function->getOutput(output); }
+  virtual void setInput(int i, real x) { function->setInput(i, x); }
+  virtual real getOutput(int i) const { return function->getOutput(i); }
 
   virtual void propagate() { function->propagate(); }
   virtual void backpropagate(real* outputError) { function->backpropagate(outputError); }
