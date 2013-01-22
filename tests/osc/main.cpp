@@ -33,6 +33,7 @@
 
 #include <cstdio>
 #include <cstring>
+#include <csignal>
 
 RLQualia* createQualia(int id, int nHidden,
                        float learningRate, float learningRateDecay, float weightDecay,
@@ -40,11 +41,16 @@ RLQualia* createQualia(int id, int nHidden,
                        int dimObservations, ActionProperties* actionProperties);
 void      releaseQualia(RLQualia* q);
 
+void      stop(int);
+
 #if SHARED_NEURAL_NETWORK
 NeuralNetwork* sharedNet = 0;
 #endif
 
+bool stopTraining = false;
+
 int main(int argc, char** argv) {
+  signal(SIGTERM, stop);
   int nAgents;
   int nHidden;
   float learningRate;
@@ -174,7 +180,8 @@ int main(int argc, char** argv) {
     }
   }
 
-  for (;;) {
+  stopTraining = false;
+  while (!stopTraining) {
     unsigned long nSteps = 0;
     float totalReward = 0;
     for (int i=0; i<30; i++) {
@@ -259,5 +266,9 @@ void releaseQualia(RLQualia* q) {
     delete q->environment;
     delete q;
   }
+}
+
+void stop(int) {
+  stopTraining = true;
 }
 
