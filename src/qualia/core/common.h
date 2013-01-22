@@ -34,14 +34,11 @@
 #define is_arduino() defined(ARDUINO)
 #define is_computer() !defined(__AVR__)
 
-
-// XXX: not sure we need this..
-//#include <assert.h>
 #include <stdlib.h>
-
-#include <float.h>
-#include <limits.h>
+//#include <float.h>
+//#include <limits.h>
 #include <stdint.h>
+#include <math.h>
 
 // Old systems need that to define FLT_MAX and DBL_MAX
 #ifndef DBL_MAX
@@ -71,13 +68,13 @@
 #else
 
   // Make sure to redefine the min/max/abs macros
-  #ifdef min
-    #undef min
-  #endif
-
-  #ifdef max
-    #undef max
-  #endif
+//  #ifdef min
+//    #undef min
+//  #endif
+//
+//  #ifdef max
+//    #undef max
+//  #endif
 
   #ifndef WIN32
     #ifdef abs
@@ -104,8 +101,16 @@
   #define DEG_TO_RAD 0.017453292519943295769236907684886
   #define RAD_TO_DEG 57.295779513082320876798154814105
 
-  #define min(a,b) ((a)<(b)?(a):(b))
-  #define max(a,b) ((a)>(b)?(a):(b))
+  #ifdef __GNUC__
+    // min/max are undefined in bits/c++config.h so we define them as templates
+    // note that this might yield different results than what you will get on Arduino (which uses macros)
+    template<typename T> T min(T a, T b) { return a < b ? a : b; }
+    template<typename T> T max(T a, T b) { return a > b ? a : b; }
+  #else
+    #define min(a,b) ((a)<(b)?(a):(b))
+    #define max(a,b) ((a)>(b)?(a):(b))
+  #endif
+
   #ifndef WIN32
     #define abs(x) ((x)>=0?(x):-(x))
   #endif

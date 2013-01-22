@@ -152,7 +152,7 @@ void BinaryChromosome::initializeRandom(Chromosome& chromosome) {
 #endif
     //printf("Writing min(%d-%d=%d, %ld) = %ld with rnd = %ld\n",
     //        byteSize, i, byteSize-i, sizeof(int32_t), min(byteSize-i, sizeof(int32_t)), rnd);
-    memcpy(&c->code[i], &rnd, min(byteSize-i, sizeof(int32_t)));
+    memcpy(&c->code[i], &rnd, min(byteSize-i, (unsigned int)sizeof(int32_t)));
   }
   // XXX: Fill the remaining bits with zeros for consistency (?)
   c->code[byteSize-1] &= (0xff >> (8 - (BITARRAY_BIT_IN_BYTE(bitSize % 8))));
