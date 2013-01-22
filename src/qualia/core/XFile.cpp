@@ -88,3 +88,11 @@ int XFile::taggedWrite(const void *ptr, int block_size, int n_blocks, const char
 XFile::~XFile()
 {
 }
+
+long XFile::size() {
+  long pos = tell();   // remember position
+  seek(0L, SEEK_END);  // go to the end
+  long sz = tell();    // get end position (ie. size)
+  seek(pos, SEEK_SET); // Go back to position.
+  return sz;
+}

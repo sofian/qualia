@@ -92,6 +92,7 @@ class XFile
     /// Get one line (read at most #size_# characters).
     virtual char *gets(char *dest, int size_) = 0;
 
+    virtual long size();
 
     //-----
 
