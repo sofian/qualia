@@ -140,9 +140,9 @@ else:
   
   env.Append(LIBS=LIBS)
   if (mode == 'debug'):
-    env.Append(CPPFLAGS=['-Wall', '-g', '-DDEBUG=1'])
+    env.Append(CPPFLAGS=['-Wall', '-g', '-DDEBUG=1', '-DDEBUG_LEVEL=3'])
   else:
-    env.Append(CPPFLAGS=['-Wall', '-O2'])
+    env.Append(CPPFLAGS=['-Wall', '-O2', '-DDEBUG_LEVEL=1'])
   
   #objects = env.StaticObject(source = sources)
 
