@@ -116,7 +116,7 @@ Observation* OscEnvironment::step(const Action* action) {
   // Send message.
   lo_message msg = lo_message_new();
   for (unsigned int i=0; i<action->dim(); i++)
-    if (sizeof(action_t) <= 4)
+    if (sizeof(action_dim_t) <= 4)
       lo_message_add_int32(msg, action->actions[i]);
     else
       lo_message_add_int64(msg, action->actions[i]);
