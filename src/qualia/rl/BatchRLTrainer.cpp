@@ -64,15 +64,16 @@ void BatchRLTrainer::_doTrainEpisode(DataSet* data) {
 
     // Compute error derivative (= Q - target)
     real error = qFunction->getValue(&tuples->lastObservation, &tuples->lastAction) - targets[t];
+    real dError = 2. * error;
 
     // Back propagate the error.
-    qFunction->backpropagate(&error);
+    qFunction->backpropagate(&dError);
 
     // Update using the function's own update rule.
     qFunction->update();
 
     // Compute MSE.
-    mse += 0.5*error*error;
+    mse += error*error;
   }
   mse /= n;
   NOTICE("MSE: %f", mse);
