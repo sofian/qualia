@@ -48,6 +48,7 @@ bool stopTraining = true; // uninitialized
 
 int main(int argc, char** argv) {
   signal(SIGINT, stop);
+  signal(SIGTERM, stop);
 
   int nHidden;
   float learningRate;
@@ -61,8 +62,8 @@ int main(int argc, char** argv) {
   int dimActions;
   char* stringNActions;
 
-  char* oscPort;
-  char* oscRemotePort;
+  int oscPort;
+  int oscRemotePort;
   char* oscIP;
   int agentId;
 
@@ -83,15 +84,15 @@ int main(int argc, char** argv) {
 
   // Train mode
   cmd.addText("\nArguments:");
+  cmd.addICmdArg("agent_id", &agentId, "the id of the agent", true);
   cmd.addICmdArg("dim_observations", &dimObservations, "observation dimension (without the reward)", true);
   cmd.addICmdArg("dim_actions", &dimActions, "action dimension", true);
   cmd.addSCmdArg("n_actions", &stringNActions, "number of actions as comma-separated values", true);
 
   cmd.addText("\nOSC Options:");
   cmd.addSCmdOption("-ip", &oscIP, "127.0.0.1", "the osc IP address", false);
-  cmd.addSCmdOption("-port", &oscPort, "11000", "the osc local port", false);
-  cmd.addSCmdOption("-rport", &oscRemotePort, "12000", "the osc remote local port", false);
-  cmd.addICmdOption("-id", &agentId, 0, "the id of the agent", true);
+  cmd.addICmdOption("-port", &oscPort, 11000, "the osc local STARTING port (actual port will be port + agent_id)", false);
+  cmd.addICmdOption("-rport", &oscRemotePort, 12000, "the osc remote local port", false);
 
   cmd.addText("\nModel Options:");
   cmd.addICmdOption("-nhu", &nHidden, 5, "number of hidden units", true);
@@ -140,7 +141,12 @@ int main(int argc, char** argv) {
   ASSERT_ERROR_MESSAGE( sscanf(tmp, "%d", &nActions[k]), "Malformed argument <n_actions>: %s", stringNActions);
   printf("%d \n", nActions[k]);
 
-  OscEnvironment::initOsc(oscIP, oscPort, oscRemotePort);
+  oscPort += agentId;
+  char oscPortStr[100];
+  char oscRemotePortStr[100];
+  sprintf(oscPortStr, "%d", oscPort);
+  sprintf(oscRemotePortStr, "%d", oscRemotePort);
+  OscEnvironment::initOsc(oscIP, oscPortStr, oscRemotePortStr);
 
   if (!isLearning)
     printf("Learning switched off\n");
