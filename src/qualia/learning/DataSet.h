@@ -28,11 +28,10 @@ public:
   int dim;       // dimension of the example
   real* example; // current example
 
-  DataSet();
-  DataSet(int nExamples, int dim);
+  DataSet(int nExamples=0, int dim=0);
   virtual ~DataSet();
 
-  // To be called before training.
+  // To be called before training. Should allocate example, among other things.
   virtual void init() {}
 
   // To be called before every episode.
