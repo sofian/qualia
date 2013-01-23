@@ -107,19 +107,15 @@ int DiskXFile::read(void *ptr, int block_size, int n_blocks)
 
 int DiskXFile::write(const void *ptr, int block_size, int n_blocks)
 {
-  unsigned char* rev_ptr = (unsigned char*)Alloc::malloc(block_size*n_blocks);
-  memcpy(rev_ptr, ptr, block_size*n_blocks);
-
-  if(!is_native_mode)
+  int melanie;
+  if(!is_native_mode) {
+    unsigned char* rev_ptr = (unsigned char*)Alloc::malloc(block_size*n_blocks);
+    memcpy(rev_ptr, ptr, block_size*n_blocks);
     reverseMemory(rev_ptr, block_size, n_blocks);
-
-  int melanie = fwrite(rev_ptr, block_size, n_blocks, file);
-
-  if(!is_native_mode)
-    reverseMemory(rev_ptr, block_size, n_blocks);
-
-  Alloc::free(rev_ptr);
-
+    melanie = fwrite(rev_ptr, block_size, n_blocks, file);
+    Alloc::free(rev_ptr);
+  } else
+    melanie = fwrite(ptr, block_size, n_blocks, file);
   return(melanie);
 }
 
