@@ -52,11 +52,11 @@ class XFile
     XFile();
 
     /// Read something.
-    /// Returns the number of bytes read or a value < 0 if there was an error.
+    /// Returns the number of blocks read or a value < 0 if there was an error.
     virtual int read(void *ptr, int block_size, int n_blocks) = 0;
 
     /// Write.
-    /// Returns the number of bytes written or a value < 0 if there was an error.
+    /// Returns the number of blocks written or a value < 0 if there was an error.
     virtual int write(const void *ptr, int block_size, int n_blocks) = 0;
 
     /** Read and check the tag/the size. To be used with #taggedWrite()#.
