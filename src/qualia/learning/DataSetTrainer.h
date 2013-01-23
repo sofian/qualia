@@ -20,6 +20,8 @@
 #ifndef DATASETTRAINER_H_
 #define DATASETTRAINER_H_
 
+#include <qualia/core/common.h>
+
 #include <qualia/learning/Trainer.h>
 #include <qualia/learning/DataSet.h>
 
