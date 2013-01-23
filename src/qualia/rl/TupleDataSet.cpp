@@ -85,9 +85,12 @@ void TupleDataSet::setExample(int t) {
   int k=0;
   for (unsigned int i=0; i<lastObservation.dim(); i++)
     example[k++] = lastObservation[i];
+
   for (unsigned int i=0; i<lastAction.dim(); i++)
     example[k++] = lastAction[i];
+
   example[k++] = observation.reward;
+
   for (unsigned int i=0; i<observation.dim(); i++)
     example[k++] = observation[i];
 
