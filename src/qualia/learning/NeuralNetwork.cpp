@@ -23,7 +23,8 @@ NeuralNetwork::NeuralNetwork(int nInputs_,
                               int nOutputs_,
                               float learningRate_,
                               float decreaseConstant_,
-                              float weightDecay_)
+                              float weightDecay_,
+                              bool linearOutput_)
  : learningRate(learningRate_),
    decreaseConstant(decreaseConstant_),
    weightDecay(weightDecay_)
@@ -36,8 +37,7 @@ NeuralNetwork::NeuralNetwork(int nInputs_,
   int k=0;
   _allocateLayer(inputLayer, 0, nInputs_, k);
   _allocateLayer(hiddenLayer, nInputs_, nHiddens_, k);
-  _allocateLayer(outputLayer, nHiddens_, nOutputs_, k);
-
+  _allocateLayer(outputLayer, nHiddens_, nOutputs_, k, linearOutput_);
   init();
 }
 
@@ -77,10 +77,14 @@ void NeuralNetwork::getOutputs(real *outputs) const {
 void NeuralNetwork::backpropagate(real *outputError) {
   // Initialize output error.
   for (int i=0; i<outputLayer.n; i++) {
-    real out = outputLayer.output[i];
-    // TODO: changer (pas de sigmoid en output)
-    outputLayer.error[i] = out * (1 - out) * outputError[i];
+    if (!outputLayer.linear) {
+      real out = outputLayer.output[i];
+      outputLayer.error[i] *= out * (1 - out);
+    }
+    outputLayer.error[i] = outputError[i];
   }
+
+  // Backpropagate inferior layers.
   _backpropagateLayer(outputLayer, hiddenLayer);
   _backpropagateLayer(hiddenLayer, inputLayer);
 }
@@ -124,7 +128,7 @@ void NeuralNetwork::update() {
 //}
 //#endif
 
-void NeuralNetwork::_allocateLayer(Layer& layer, int nInputs, int nOutputs, int& k) {
+void NeuralNetwork::_allocateLayer(Layer& layer, int nInputs, int nOutputs, int& k, bool isLinear) {
   layer.n = nOutputs;
   // TODO: output not needed for inputLayer
   layer.output   = (real*) Alloc::malloc( nOutputs * sizeof(real) );
@@ -138,6 +142,7 @@ void NeuralNetwork::_allocateLayer(Layer& layer, int nInputs, int nOutputs, int&
     layer.weight  = 0; // NULL
     layer.dWeight = 0; // NULL
   }
+  layer.linear = isLinear;
 }
 
 void NeuralNetwork::_propagateLayer(Layer& lower, Layer& upper) {
@@ -166,8 +171,9 @@ void NeuralNetwork::_propagateLayer(Layer& lower, Layer& upper) {
     ////    }
     ////#endif
 
-    // TODO: devrait etre fait juste aux hidden pas aux outputs
-    upper.output[i] = 1.0f / (1.0f + exp(-sum));
+    upper.output[i] = ( upper.linear ?
+                          sum :
+                          1.0f / (1.0f + exp(-sum)) );
   }
 }
 
@@ -181,8 +187,11 @@ void NeuralNetwork::_backpropagateLayer(Layer& upper, Layer& lower) {
       upper.dWeight[k] += out * upper.error[j];
     }
     // delta sigmoid
-    if (i < lower.n)
-      lower.error[i] = out * (1 - out) * err;
+    if (i < lower.n) {
+      if (! lower.linear) // non-linear: multiply error by delta-sigmoid
+        err *= out * (1 - out);
+      lower.error[i] = err;
+    }
   }
 
 }

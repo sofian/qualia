@@ -113,7 +113,7 @@ void testPolicies() {
   ActionProperties props(2, (const unsigned int[]){10, 10});
   Action action(&props);
   RLObservation observation(1);
-  NeuralNetwork net(3, 3, 1, 0.1f);
+  NeuralNetwork net(3, 3, 1, 0.1f, 0, 0, false);
   QFunction q(&net, 1, &props);
   QLearningEGreedyPolicy egreedy(0.1f);
   QLearningSoftmaxPolicy softmax;
@@ -240,7 +240,7 @@ void testLearning() {
   randomSeed(222);
   ActionProperties props(2, (const unsigned int[]){10, 10});
   TestEnvironment env;
-  NeuralNetwork net(2+2, 3, 1, 0.1f);
+  NeuralNetwork net(2+2, 3, 1, 0.1f, 0, 0, false);
   QFunction q(&net, 2, &props);
   QLearningEGreedyPolicy egreedy(0.5f);
   QLearningAgent agent(&q,

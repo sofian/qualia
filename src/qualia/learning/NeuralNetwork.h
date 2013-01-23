@@ -65,6 +65,7 @@ public:
     real *error;    // error term of ith unit
     real *weight;   // connection weights to ith unit
     real *dWeight;  // weight derivatives
+    bool linear;    // whether the output of the layer is linear (otherwise it's sigmoid)
   };
 
   int _nParams;    // number of parameters
@@ -81,7 +82,8 @@ public:
                 int nOutputs,
                 float learningRate = 0.01,
                 float decreaseConstant = 0,
-                float weightDecay = 0);
+                float weightDecay = 0,
+                bool linearOutput = true);
   virtual ~NeuralNetwork();
 
   // Public methods.
@@ -116,7 +118,7 @@ public:
 #endif
 
   // Internal ("private") methods.
-  void _allocateLayer(Layer& layer, int nInputs, int nOutputs, int& k);
+  void _allocateLayer(Layer& layer, int nInputs, int nOutputs, int& k, bool isLinear=false);
   void _deallocateLayer(Layer& layer);
 
   void _propagateLayer(Layer& lower, Layer& upper);
