@@ -40,9 +40,17 @@ Observation& Observation::copyFrom(const Observation& src) {
 }
 
 void Observation::saveData(XFile* file) const {
-  file->write(observations, sizeof(observation_t), _dim);
+#if DEBUG_LEVEL_WARNING
+  ASSERT_WARNING(file->write(observations, sizeof(observation_t), dim()) == (int) dim());
+#else
+  file->write(observations, sizeof(observation_t), dim());
+#endif
 }
 
 void Observation::loadData(XFile* file) {
-  file->read(observations, sizeof(observation_t), _dim);
+#if DEBUG_LEVEL_WARNING
+  ASSERT_WARNING(file->read(observations, sizeof(observation_t), dim()) == (int) dim());
+#else
+  file->read(observations, sizeof(observation_t), dim());
+#endif
 }

@@ -114,11 +114,20 @@ Action& Action::copyFrom(const Action& src) {
 }
 
 void Action::saveData(XFile* file) const {
-  file->write(actions, sizeof(action_t), dim());
+#if DEBUG_LEVEL_WARNING
+  ASSERT_WARNING( file->write(actions, sizeof(action_dim_t), dim()) == (int) dim() );
+#else
+  file->write(actions, sizeof(action_dim_t), dim());
+#endif
 }
 
+#include <stdio.h>
 void Action::loadData(XFile* file) {
-  file->read(actions, sizeof(action_t), dim());
+#if DEBUG_LEVEL_WARNING
+  ASSERT_WARNING( file->read(actions, sizeof(action_dim_t), dim()) == (int) dim() );
+#else
+  file->read(actions, sizeof(action_dim_t), dim());
+#endif
 }
 
 
