@@ -49,7 +49,6 @@ bool stopTraining = true; // uninitialized
 int main(int argc, char** argv) {
   signal(SIGINT, stop);
 
-  int nAgents;
   int nHidden;
   float learningRate;
   float learningRateDecay;
@@ -65,6 +64,7 @@ int main(int argc, char** argv) {
   char* oscPort;
   char* oscRemotePort;
   char* oscIP;
+  int agentId;
 
   bool exportData;
   int outputEvery;
@@ -83,7 +83,6 @@ int main(int argc, char** argv) {
 
   // Train mode
   cmd.addText("\nArguments:");
-  cmd.addICmdArg("n_agents", &nAgents, "the number of agents to launch", true);
   cmd.addICmdArg("dim_observations", &dimObservations, "observation dimension (without the reward)", true);
   cmd.addICmdArg("dim_actions", &dimActions, "action dimension", true);
   cmd.addSCmdArg("n_actions", &stringNActions, "number of actions as comma-separated values", true);
@@ -92,6 +91,7 @@ int main(int argc, char** argv) {
   cmd.addSCmdOption("-ip", &oscIP, "127.0.0.1", "the osc IP address", false);
   cmd.addSCmdOption("-port", &oscPort, "11000", "the osc local port", false);
   cmd.addSCmdOption("-rport", &oscRemotePort, "12000", "the osc remote local port", false);
+  cmd.addICmdOption("-id", &agentId, 0, "the id of the agent", true);
 
   cmd.addText("\nModel Options:");
   cmd.addICmdOption("-nhu", &nHidden, 5, "number of hidden units", true);
@@ -141,50 +141,45 @@ int main(int argc, char** argv) {
   printf("%d \n", nActions[k]);
 
   OscEnvironment::initOsc(oscIP, oscPort, oscRemotePort);
-  std::vector<RLQualia*> qualias(nAgents);
 
   if (!isLearning)
     printf("Learning switched off\n");
 
-  printf("--- Creating agents ---\n");
+  printf("--- Creating agent ---\n");
   ActionProperties actionProperties(dimActions, nActions);
-  for (int id=0; id<nAgents; id++) {
-    NeuralNetwork* net = new NeuralNetwork(dimObservations + actionProperties.dim(), nHidden, 1, learningRate);
-    QFunction* qFunc = new QFunction(net, dimObservations, &actionProperties);
-    QLearningAgent* agent = new QLearningAgent(qFunc,
-                              new QLearningEDecreasingPolicy(epsilon, epsilonDecay),
-                              dimObservations, &actionProperties,
-                              lambda, gamma);
-    agent->isLearning = isLearning;
-    Environment* env;
-    Environment* oscEnv = new OscRLEnvironment(id, dimObservations, actionProperties.dim());
-    if (exportData) {
-      char fileName[1000];
-      sprintf(fileName, "export-%d.raw", id);
-      DiskXFile* f = new(Alloc::instance()) DiskXFile(fileName, "w+");
-      env = new FileExportEnvironment(oscEnv, f, dimObservations, actionProperties.dim());
-    } else
-      env = oscEnv;
-    qualias[id] = new RLQualia(agent, env);
-  }
+  NeuralNetwork* net = new NeuralNetwork(dimObservations + actionProperties.dim(), nHidden, 1, learningRate);
+  QFunction* qFunc = new QFunction(net, dimObservations, &actionProperties);
+  Policy* policy = new QLearningEDecreasingPolicy(epsilon, epsilonDecay);
+  QLearningAgent* agent = new QLearningAgent(
+                                qFunc,
+                                new QLearningEDecreasingPolicy(epsilon, epsilonDecay),
+                                dimObservations, &actionProperties,
+                                lambda, gamma);
+  agent->isLearning = isLearning;
+
+  Environment* env;
+  Environment* oscEnv = new OscRLEnvironment(agentId, dimObservations, actionProperties.dim());
+  if (exportData) {
+    char fileName[1000];
+    sprintf(fileName, "export-%d.raw", agentId);
+    DiskXFile* f = new(Alloc::instance()) DiskXFile(fileName, "w+");
+    env = new FileExportEnvironment(oscEnv, f, dimObservations, actionProperties.dim());
+  } else
+    env = oscEnv;
+
+  Qualia* qualia = new RLQualia(agent, env);
 
   printf("--- Initialising ---\n");
-  for (std::vector<RLQualia*>::iterator it = qualias.begin(); it != qualias.end(); ++it) {
-    (*it)->init();
-  }
+  qualia->init();
 
   // Check if load needed.
   if (strcmp(loadModelFileName, "") != 0) {
-    for (std::vector<RLQualia*>::iterator it = qualias.begin(); it != qualias.end(); ++it) {
-      DiskXFile loadFile(loadModelFileName, "r");
-      ((QLearningAgent*)(*it)->agent)->qFunction->load(&loadFile);
-    }
+    DiskXFile loadFile(loadModelFileName, "r");
+    agent->qFunction->load(&loadFile);
   }
 
   printf("--- Starting ---\n");
-  for (std::vector<RLQualia*>::iterator it = qualias.begin(); it != qualias.end(); ++it) {
-    (*it)->start();
-  }
+  qualia->start();
 
   stopTraining = false;
   printf("--- Looping ---\n");
@@ -192,48 +187,27 @@ int main(int argc, char** argv) {
     unsigned long nSteps = 0;
     float totalReward = 0;
     for (int i=0; i<outputEvery; i++) {
-      int i=0;
-      for (std::vector<RLQualia*>::iterator it = qualias.begin(); it != qualias.end(); ++it) {
-        ObservationAction* oa = (*it)->step();
-        totalReward += ((RLObservation*)oa)->reward / nAgents;
-      }
+      ObservationAction* oa = qualia->step();
+      //totalReward += ((RLObservation*)oa->observation)->reward;
       nSteps++;
     }
     printf("Mean reward: %f\n", (double) totalReward / nSteps);
-//    printf("Current agent action: [%d %d] = %d\n", agent.currentAction[0], agent.currentAction[1], agent.currentAction.conflated());
-//    printf("Current environment observation: [%f %f] => %f\n", env.currentObservation[0], env.currentObservation[1], env.currentObservation.reward);
-//    printf("Current agent action: %d\n", (int) agent.currentAction.conflated());
-//    printf("Current environment observation: ");
-//    for (int i=0; i<DIM_OBSERVATIONS; i++)
-//      printf("%f ", (double)env.currentObservation[i]);
-//    printf("\n");
   }
-
-//  if (myAlloc.nLeaks)
-//    printf("WARNING: Static Allocator has leaks: %d\n", myAlloc.nLeaks);
 
   // Check if load needed.
   if (strcmp(saveModelFileName, "") != 0) {
     printf("--- Saving (NOT IMPLEMENTED FOR NOW) ---\n");
-//    for (std::vector<RLQualia*>::iterator it = qualias.begin(); it != qualias.end(); ++it) {
-//      DiskXFile loadFile(loadModelFileName, "r");
-//      ((QLearningAgent*)(*it)->agent)->function->load(&loadFile);
-//    }
   }
 
   printf("--- Cleaning up ---\n");
-  for (std::vector<RLQualia*>::iterator it = qualias.begin(); it != qualias.end(); ++it) {
-    if (*it) {
-      delete ((QLearningAgent*)(*it)->agent)->qFunction->function;
-      delete ((QLearningAgent*)(*it)->agent)->qFunction;
-      delete ((QLearningAgent*)(*it)->agent)->policy;
-      delete (*it)->agent;
-      if (exportData)
-        delete ((FileExportEnvironment*)(*it)->environment)->env;
-      delete (*it)->environment;
-      delete (*it);
-    }
-  }
+  delete qFunc;
+  delete policy;
+  delete net;
+  delete agent;
+  delete oscEnv;
+  if (exportData)
+    delete env;
+  delete qualia;
 
   return 0;
 }
