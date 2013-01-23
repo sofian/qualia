@@ -26,9 +26,10 @@
 #ifndef AGENT_H_
 #define AGENT_H_
 
-#include "common.h"
-#include "Action.h"
-#include "Observation.h"
+#include <qualia/core/common.h>
+#include <qualia/core/Action.h>
+#include <qualia/core/Observation.h>
+#include <qualia/core/XFile.h>
 
 class Agent {
 
@@ -39,6 +40,9 @@ public:
   virtual Action* start(const Observation* observation) = 0;
   virtual Action* step(const Observation* observation) = 0;
   virtual void end(const Observation* observation) {}
+
+  virtual void save(XFile* file) {}
+  virtual void load(XFile* file) {}
 };
 
 #endif
