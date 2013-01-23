@@ -30,6 +30,7 @@ FileExportEnvironment::~FileExportEnvironment() {
 }
 
 void FileExportEnvironment::init() {
+  env->init();
   file->rewind();
   file->write(&observationDim, sizeof(unsigned int), 1);
   file->write(&actionDim,      sizeof(unsigned int), 1);
