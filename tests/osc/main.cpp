@@ -28,6 +28,7 @@
 #include <vector>
 
 #include <qualia/computer/CmdLine.h>
+#include <qualia/core/FileExportEnvironment.h>
 
 #include <qualia/core/Qualia.h>
 #include <qualia/learning/NeuralNetwork.h>
@@ -41,22 +42,13 @@
 #include <cstring>
 #include <csignal>
 
-RLQualia* createQualia(int id, int nHidden,
-                       float learningRate, float learningRateDecay, float weightDecay,
-                       float epsilon, float epsilonDecay, float lambda, float gamma,
-                       int dimObservations, ActionProperties* actionProperties);
-void      releaseQualia(RLQualia* q);
-
 void      stop(int);
 
-#if SHARED_NEURAL_NETWORK
-NeuralNetwork* sharedNet = 0;
-#endif
-
-bool stopTraining = false;
+bool stopTraining = true; // uninitialized
 
 int main(int argc, char** argv) {
-  signal(SIGTERM, stop);
+  signal(SIGINT, stop);
+
   int nAgents;
   int nHidden;
   float learningRate;
@@ -76,6 +68,10 @@ int main(int argc, char** argv) {
 
   bool exportData;
   int outputEvery;
+
+  char* saveModelFileName;
+  char* loadModelFileName;
+  bool isLearning;
 
   //=================== The command-line ==========================
 
@@ -116,13 +112,15 @@ int main(int argc, char** argv) {
 
   cmd.addText("\nMisc Options:");
   cmd.addBCmdOption("-export-data", &exportData, false, "export the data to files", false );
+  cmd.addBCmdOption("-no-learning", &isLearning, true, "don't learn (just apply policy)", false );
   cmd.addICmdOption("-every", &outputEvery, 100, "output mean reward every X steps", false );
 //  cmd.addICmdOption("-seed", &the_seed, -1, "the random seed");
 //  cmd.addICmdOption("-load", &max_load, -1, "max number of examples to load for train");
 //  cmd.addICmdOption("-load_valid", &max_load_valid, -1, "max number of examples to load for valid");
 //  cmd.addSCmdOption("-valid", &valid_file, "", "validation file, if you want it");
 //  cmd.addSCmdOption("-dir", &dir_name, ".", "directory to save measures");
-//  cmd.addSCmdOption("-save", &model_file, "", "the model file");
+  cmd.addSCmdOption("-load", &loadModelFileName, "", "the model file to load from");
+  cmd.addSCmdOption("-save", &saveModelFileName, "", "the model file to save to");
 //  cmd.addBCmdOption("-bin", &binary_mode, false, "binary mode for files");
 
   // Read the command line
@@ -145,55 +143,51 @@ int main(int argc, char** argv) {
   OscEnvironment::initOsc(oscIP, oscPort, oscRemotePort);
   std::vector<RLQualia*> qualias(nAgents);
 
-#if SHARED_NEURAL_NETWORK
-  sharedNet = new NeuralNetwork(dimObservations + DIM_ACTIONS, nHidden, 1, learningRate);
-#endif
+  if (!isLearning)
+    printf("Learning switched off\n");
 
+  printf("--- Creating agents ---\n");
   ActionProperties actionProperties(dimActions, nActions);
   for (int id=0; id<nAgents; id++) {
-    qualias[id] = createQualia(id, nHidden,
-                               learningRate, learningRateDecay, weightDecay,
-                               epsilon, epsilonDecay, lambda, gamma,
-                               dimObservations, &actionProperties);
+    NeuralNetwork* net = new NeuralNetwork(dimObservations + actionProperties.dim(), nHidden, 1, learningRate);
+    QFunction* qFunc = new QFunction(net, dimObservations, &actionProperties);
+    QLearningAgent* agent = new QLearningAgent(qFunc,
+                              new QLearningEDecreasingPolicy(epsilon, epsilonDecay),
+                              dimObservations, &actionProperties,
+                              lambda, gamma);
+    agent->isLearning = isLearning;
+    Environment* env;
+    Environment* oscEnv = new OscRLEnvironment(id, dimObservations, actionProperties.dim());
+    if (exportData) {
+      char fileName[1000];
+      sprintf(fileName, "export-%d.raw", id);
+      DiskXFile* f = new(Alloc::instance()) DiskXFile(fileName, "w+");
+      env = new FileExportEnvironment(oscEnv, f, dimObservations, actionProperties.dim());
+    } else
+      env = oscEnv;
+    qualias[id] = new RLQualia(agent, env);
   }
 
   printf("--- Initialising ---\n");
-  std::vector<DiskXFile*> files;
-  int i=0;
   for (std::vector<RLQualia*>::iterator it = qualias.begin(); it != qualias.end(); ++it) {
-    if (exportData) {
-      char fileName[1000];
-      sprintf(fileName, "export-%d.raw", i);
-      DiskXFile* f = new(Alloc::instance()) DiskXFile(fileName, "w+");
-      files.push_back(f);
-
-      // Header.
-      f->printf("%d %d", dimObservations, dimActions);
-      for (int j=0; j<dimActions; j++)
-        f->printf(" %d", nActions[j]);
-      f->printf("\n");
-      i++;
-    }
     (*it)->init();
   }
 
-  printf("--- Starting ---\n");
-  i=0;
-  for (std::vector<RLQualia*>::iterator it = qualias.begin(); it != qualias.end(); ++it) {
-    ObservationAction* oa = (*it)->start();
-
-    if (exportData) {
-      DiskXFile* f = files[i];
-      for (int j=0; j<dimObservations; j++)
-        f->printf("%f ", oa->observation->observations[j]);
-      for (int j=0; j<dimActions; j++)
-        f->printf("%d ", oa->action->actions[j]);
-      f->printf("\n");
-      i++;
+  // Check if load needed.
+  if (strcmp(loadModelFileName, "") != 0) {
+    for (std::vector<RLQualia*>::iterator it = qualias.begin(); it != qualias.end(); ++it) {
+      DiskXFile loadFile(loadModelFileName, "r");
+      ((QLearningAgent*)(*it)->agent)->qFunction->load(&loadFile);
     }
   }
 
+  printf("--- Starting ---\n");
+  for (std::vector<RLQualia*>::iterator it = qualias.begin(); it != qualias.end(); ++it) {
+    (*it)->start();
+  }
+
   stopTraining = false;
+  printf("--- Looping ---\n");
   while (!stopTraining) {
     unsigned long nSteps = 0;
     float totalReward = 0;
@@ -201,17 +195,7 @@ int main(int argc, char** argv) {
       int i=0;
       for (std::vector<RLQualia*>::iterator it = qualias.begin(); it != qualias.end(); ++it) {
         ObservationAction* oa = (*it)->step();
-        totalReward += ((OscRLEnvironment*)(*it)->environment)->currentObservation.reward / nAgents;
-
-        if (exportData) {
-          DiskXFile* f = files[i];
-          for (int j=0; j<dimObservations; j++)
-            f->printf("%f ", oa->observation->observations[j]);
-          for (int j=0; j<dimActions; j++)
-            f->printf("%d ", oa->action->actions[j]);
-          f->printf("\n");
-          i++;
-        }
+        totalReward += ((RLObservation*)oa)->reward / nAgents;
       }
       nSteps++;
     }
@@ -228,57 +212,36 @@ int main(int argc, char** argv) {
 //  if (myAlloc.nLeaks)
 //    printf("WARNING: Static Allocator has leaks: %d\n", myAlloc.nLeaks);
 
+  // Check if load needed.
+  if (strcmp(saveModelFileName, "") != 0) {
+    printf("--- Saving (NOT IMPLEMENTED FOR NOW) ---\n");
+//    for (std::vector<RLQualia*>::iterator it = qualias.begin(); it != qualias.end(); ++it) {
+//      DiskXFile loadFile(loadModelFileName, "r");
+//      ((QLearningAgent*)(*it)->agent)->function->load(&loadFile);
+//    }
+  }
+
   printf("--- Cleaning up ---\n");
-  for (std::vector<RLQualia*>::iterator it = qualias.begin(); it != qualias.end(); ++it)
-    releaseQualia(*it);
+  for (std::vector<RLQualia*>::iterator it = qualias.begin(); it != qualias.end(); ++it) {
+    if (*it) {
+      delete ((QLearningAgent*)(*it)->agent)->qFunction->function;
+      delete ((QLearningAgent*)(*it)->agent)->qFunction;
+      delete ((QLearningAgent*)(*it)->agent)->policy;
+      delete (*it)->agent;
+      if (exportData)
+        delete ((FileExportEnvironment*)(*it)->environment)->env;
+      delete (*it)->environment;
+      delete (*it);
+    }
+  }
 
-  for (std::vector<DiskXFile*>::iterator it = files.begin(); it != files.end(); ++it)
-    delete (*it);
-
-#if SHARED_NEURAL_NETWORK
-  delete sharedNet;
-#endif
   return 0;
 }
 
-RLQualia* createQualia(int id, int nHidden,
-                       float learningRate, float learningRateDecay, float weightDecay,
-                       float epsilon, float epsilonDecay,
-                       float lambda, float gamma,
-                       int dimObservations, ActionProperties* actionProperties) {
-#if SHARED_NEURAL_NETWORK
-  NeuralNetwork* net = sharedNet;
-  bool offPolicy = false;
-  ERROR("SHARED NEURAL NET NOT IMPLEMENTED (NEED TO FIX WITH QFUNCTION)");
-#else
-  NeuralNetwork* net = new NeuralNetwork(dimObservations + actionProperties->dim(), nHidden, 1, learningRate);
-  QFunction* qFunc = new QFunction(net, dimObservations, actionProperties);
-  bool offPolicy = false;
-#endif
-  return new RLQualia(
-      new QLearningAgent(qFunc,
-                         new QLearningEDecreasingPolicy(epsilon, epsilonDecay),
-                         dimObservations, actionProperties,
-                         lambda, gamma,
-                         offPolicy),
-      new OscRLEnvironment(id, dimObservations, actionProperties->dim())
-  );
-}
-
-void releaseQualia(RLQualia* q) {
-  if (q) {
-#if !SHARED_NEURAL_NETWORK
-    delete ((QLearningAgent*)q->agent)->qFunction->function;
-    delete ((QLearningAgent*)q->agent)->qFunction;
-#endif
-    delete ((QLearningAgent*)q->agent)->policy;
-    delete q->agent;
-    delete q->environment;
-    delete q;
-  }
-}
-
-void stop(int) {
-  stopTraining = true;
+void stop(int sig) {
+  if (stopTraining)
+    exit(sig);
+  else
+    stopTraining = true;
 }
 
