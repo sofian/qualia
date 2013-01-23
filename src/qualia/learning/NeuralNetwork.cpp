@@ -192,3 +192,20 @@ void NeuralNetwork::_deallocateLayer(Layer& layer) {
   Alloc::free(layer.error);
 }
 
+void NeuralNetwork::save(XFile* file) {
+  GradientFunction::save(file);
+  file->write(&learningRate,     sizeof(real), 1);
+  file->write(&decreaseConstant, sizeof(real), 1);
+  file->write(&weightDecay,      sizeof(real), 1);
+  file->write(&learningRateDiv,  sizeof(real), 1);
+}
+
+void NeuralNetwork::load(XFile* file) {
+  GradientFunction::load(file);
+  file->read(&learningRate,     sizeof(real), 1);
+  file->read(&decreaseConstant, sizeof(real), 1);
+  file->read(&weightDecay,      sizeof(real), 1);
+  file->read(&learningRateDiv,  sizeof(real), 1);
+}
+
+

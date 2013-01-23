@@ -43,6 +43,13 @@ public:
   virtual int nParams() const = 0;
   virtual void backpropagate(real* outputError) = 0;
   virtual void update() = 0;
+
+  virtual void save(XFile* file) {
+    file->taggedWrite(weights, sizeof(real), nParams(), "W");
+  }
+  virtual void load(XFile* file) {
+    file->taggedRead(weights, sizeof(real), nParams(), "W");
+  }
 };
 
 #endif /* GRADIENTFUNCTION_H_ */

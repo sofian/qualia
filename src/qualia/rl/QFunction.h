@@ -53,6 +53,9 @@ public:
   virtual void backpropagate(real* outputError) { function->backpropagate(outputError); }
   virtual void update() { function->update(); }
 
+  virtual void save(XFile* file) { function->save(file); }
+  virtual void load(XFile* file) { function->load(file); }
+
   // Returns Q(s,a) ie. the state-action value function (calls the approximator function).
   real getValue(const Observation* observation, const Action* action);
 

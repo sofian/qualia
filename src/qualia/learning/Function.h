@@ -22,6 +22,7 @@
 #define FUNCTION_H_
 
 #include <qualia/core/common.h>
+#include <qualia/core/XFile.h>
 
 class Function {
 
@@ -44,6 +45,9 @@ public:
 
   // Propagate to outputs.
   virtual void propagate() = 0;
+
+  virtual void save(XFile* file) = 0;
+  virtual void load(XFile* file) = 0;
 };
 
 #endif /* FUNCTION_H_ */

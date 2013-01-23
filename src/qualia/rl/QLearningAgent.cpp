@@ -77,3 +77,12 @@ Action* QLearningAgent::step(const Observation* observation) {
 void QLearningAgent::end(const Observation* observation) {
 
 }
+
+void QLearningAgent::save(XFile* file) {
+  qFunction->save(file);
+}
+
+void QLearningAgent::load(XFile* file) {
+  qFunction->load(file);
+}
+

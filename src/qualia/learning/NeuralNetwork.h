@@ -105,6 +105,9 @@ public:
 
   virtual void update();
 
+  virtual void save(XFile* file);
+  virtual void load(XFile* file);
+
 #ifdef DEBUG
 
   void printLayer(Layer* layer, Layer* lower);

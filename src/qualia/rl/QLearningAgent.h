@@ -84,6 +84,8 @@ public:
   virtual Action* step(const Observation* observation);
   virtual void end(const Observation* observation);
 
+  virtual void save(XFile* file);
+  virtual void load(XFile* file);
 };
 
 #endif /* QLEARNINGAGENT_H_ */
