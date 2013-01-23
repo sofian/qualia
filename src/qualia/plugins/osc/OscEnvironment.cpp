@@ -177,7 +177,7 @@ int OscEnvironment::handlerStartStep(const char *path, const char *types, lo_arg
       x = (observation_t)argv[i]->d;
       break;
     default:
-      printf("Error: wrong type at index %d: %c.\n", i, types[i]);
+      ERROR("Wrong type at index %d: %c.", i, types[i]);
       exit(-1);
     }
 
@@ -190,6 +190,6 @@ int OscEnvironment::handlerStartStep(const char *path, const char *types, lo_arg
 
 void OscEnvironment::error(int num, const char *msg, const char *path)
 {
-    printf("liblo server error %d in path %s: %s\n", num, path, msg);
-    fflush(stdout);
+  ERROR("liblo server error %d in path %s: %s\n", num, path, msg);
+  fflush(stdout);
 }
