@@ -20,7 +20,8 @@
 #include "TupleDataSet.h"
 
 TupleDataSet::TupleDataSet(XFile* file_, unsigned int observationDim_, ActionProperties* actionProperties_)
-  : file(file_),
+  : DataSet(0, 2*observationDim_ + actionProperties_->dim() + 1),
+    file(file_),
     lastObservation(observationDim_),
     lastAction(actionProperties_),
     observation(observationDim_) {
@@ -34,20 +35,28 @@ void TupleDataSet::init() {
   // First pass: count examples.
   nExamples = 0;
 
-  unsigned int dim;
+  unsigned int x;
   file->rewind();
 
-  file->read(&dim, sizeof(unsigned int), 1);
-  ASSERT_ERROR( dim == observation.dim() );
-  file->read(&dim, sizeof(unsigned int), 1);
-  ASSERT_ERROR( dim == lastAction.dim() );
+  file->read(&x, sizeof(unsigned int), 1);
+  ASSERT_ERROR( x == observation.dim() );
+  file->read(&x, sizeof(unsigned int), 1);
+  ASSERT_ERROR( x == lastAction.dim() );
 
-  observation.loadData(file);
-  while (!file->eof()) {
+  lastObservation.loadData(file);
+  unsigned int size = file->size();
+  while (file->tell() < size) {
     lastAction.loadData(file);
-    observation.loadData(file);
+    lastObservation.loadData(file);
     nExamples++;
   }
+
+  if (example) {
+    WARNING("Example already initialized: this may result in errors; check your code.");
+    Alloc::free(example);
+  }
+
+  example = (real*)Alloc::malloc(dim * sizeof(real));
 
   // Go back to start.
   reset();
@@ -59,7 +68,7 @@ void TupleDataSet::reset() {
   file->read(&dim, sizeof(unsigned int), 1);
   file->read(&dim, sizeof(unsigned int), 1);
 
-  lastObservation.loadData(file);
+  observation.loadData(file);
 
   currentExampleIndex = -1;
 }
@@ -68,6 +77,7 @@ void TupleDataSet::setExample(int t) {
   if (t != currentExampleIndex+1)
     ERROR("Seeking not allowed.");
 
+  lastObservation.copyFrom(observation);
   lastAction.loadData(file);
   observation.loadData(file);
 
@@ -80,8 +90,6 @@ void TupleDataSet::setExample(int t) {
   example[k++] = observation.reward;
   for (unsigned int i=0; i<observation.dim(); i++)
     example[k++] = observation[i];
-
-  lastObservation.copyFrom(observation);
 
   currentExampleIndex = t;
 }
