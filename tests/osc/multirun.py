@@ -12,7 +12,7 @@ if len(sys.argv) < 3:
 
 def stop(signal, frame):
   for i in range(nProcs):
-    procs[i].terminate()
+    procs[i].send_signal(CTRL_C_EVENT)
   time.sleep(1)
   exit(0)
 
