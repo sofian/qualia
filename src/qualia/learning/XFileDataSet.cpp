@@ -44,7 +44,7 @@ void XFileDataSet::init() {
 }
 
 void XFileDataSet::reset() {
-  ASSERT_ERROR( example );
+  ASSERT_ERROR_MESSAGE( example, "Example is NULL, maybe you forgot to call init()?" );
 
   file->rewind();
   int x;
