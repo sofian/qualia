@@ -33,6 +33,7 @@ BatchRLTrainer::~BatchRLTrainer() {
 }
 
 void BatchRLTrainer::init() {
+  DataSetTrainer::init();
 }
 
 void BatchRLTrainer::_doTrainEpisode(DataSet* data) {
@@ -55,6 +56,9 @@ void BatchRLTrainer::_doTrainEpisode(DataSet* data) {
 
   // Second pass: train Q function.
   tuples->reset();
+  // ??? Should we reset the network's weights?
+  // qFunction->init();
+  real mse = 0;
   for (int t=0; t<n; t++) {
     tuples->setExample(t);
 
@@ -66,7 +70,12 @@ void BatchRLTrainer::_doTrainEpisode(DataSet* data) {
 
     // Update using the function's own update rule.
     qFunction->update();
+
+    // Compute MSE.
+    mse += 0.5*error*error;
   }
+  mse /= n;
+  NOTICE("MSE: %f", mse);
 }
 
 
