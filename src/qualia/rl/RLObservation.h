@@ -21,6 +21,7 @@
 #ifndef RLOBSERVATION_H_
 #define RLOBSERVATION_H_
 
+#include <qualia/core/common.h>
 #include <qualia/core/Observation.h>
 
 class RLObservation : public Observation {
