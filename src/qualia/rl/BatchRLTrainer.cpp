@@ -43,6 +43,8 @@ void BatchRLTrainer::_doTrainEpisode(DataSet* data) {
   int n = min(tuples->nExamples, maxExamples);
 
   // First pass: assign targets based on current Q function.
+  real targetMin = INF;
+  real targetMax = -INF;
   tuples->reset();
   for (int t=0; t<n; t++) {
     tuples->setExample(t);
@@ -52,12 +54,21 @@ void BatchRLTrainer::_doTrainEpisode(DataSet* data) {
 
     // q(s,q) = r + gamma * max_a' Q^(s',a')
     targets[t] = tuples->observation.reward + gamma * maxQ;
+
+    targetMin = min(targetMin, targets[t]);
+    targetMax = max(targetMin, targets[t]);
+  }
+
+  // Remap targets to [0,1] as suggested in Thomas Gabel, Christian Lutz, Martin Riedmiller
+  // "Improved Neural Fitted Q Iteration Applied to a Novel Computer Gaming and Learning Benchmark"
+  // Source: http://ml.informatik.uni-freiburg.de/_media/publications/glr11.pdf
+  for (int t=0; t<n; t++) {
+    targets[t] = mapReal(targets[t], targetMin, targetMax, 0.0f, 1.0f);
   }
 
   // Second pass: train Q function.
   tuples->reset();
-  // ??? Should we reset the network's weights?
-  // qFunction->init();
+
   real mse = 0;
   for (int t=0; t<n; t++) {
     tuples->setExample(t);
