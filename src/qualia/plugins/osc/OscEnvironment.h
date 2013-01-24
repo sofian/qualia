@@ -49,7 +49,6 @@ public:
   observation_t* observationBuffer;
   volatile bool locked;
   char observationTypes[100];
-  char actionTypes[100];
 
 public:
   OscEnvironment(int id, int observationDim, int actionDim, int observationBufferDim);

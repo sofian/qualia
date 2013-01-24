@@ -26,13 +26,13 @@ OscEnvironment::OscEnvironment(int id_, int observationDim_, int actionDim_, int
   : id(id_),
     observationDim(observationDim_), actionDim(actionDim_),
     observationBufferDim(observationBufferDim_), locked(false) {
-  observationBuffer = (float*)malloc(observationBufferDim*sizeof(float));
+
+  observationBuffer = (observation_t*)malloc(observationBufferDim*sizeof(observation_t));
 #ifdef USE_DOUBLE
   repeatChar(observationTypes, 'd', observationBufferDim);
 #else
   repeatChar(observationTypes, 'f', observationBufferDim);
 #endif
-  repeatChar(actionTypes, 'i', actionDim);
 }
 
 OscEnvironment::~OscEnvironment() {
