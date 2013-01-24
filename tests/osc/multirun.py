@@ -10,10 +10,10 @@ if len(sys.argv) < 3:
   print "Usage: " + sys.argv[0] + " <n_processes> " + " <exec> <exec_args ...>"
   exit(0)
 
-def stop(signal, frame):
-  for i in range(nProcs):
-    procs[i].send_signal(CTRL_C_EVENT)
-  time.sleep(1)
+def stop(sig, frame):
+#  for i in range(nProcs):
+#    procs[i].send_signal(signal.SIGTERM)
+#  time.sleep(2)
   exit(0)
 
 signal.signal(signal.SIGINT, stop)
