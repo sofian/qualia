@@ -24,6 +24,10 @@
 
 #include <qualia/learning/NeuralNetwork.h>
 
+#include <qualia/core/FileExportEnvironment.h>
+#include <qualia/learning/MemoryDataSet.h>
+#include <qualia/rl/TupleDataSet.h>
+
 #include <qualia/rl/RLObservation.h>
 #include <qualia/rl/Policy.h>
 #include <qualia/rl/QLearningAgent.h>
@@ -664,12 +668,84 @@ void testBinaryChromosomes() {
   printf("-> PASSED\n");
 }
 
+void testDataSet() {
+  printf("== TEST DATASET ==\n");
+  randomSeed(222);
+  unsigned int observationDim = 2;
+  ActionProperties props(2, (const unsigned int[]){10, 10});
+
+  printf("- Test generating RAW data\n");
+  DiskXFile testFile("test_set.raw", "w+");
+  TestEnvironment testEnv;
+  FileExportEnvironment env(&testEnv, &testFile, observationDim, props.dim());
+
+  NeuralNetwork net(observationDim+props.dim(), 3, 1, 0.1f, 0, 0, false);
+  QFunction q(&net, observationDim, &props);
+  QLearningEGreedyPolicy egreedy(0.5f);
+  QLearningAgent agent(&q,
+                       &egreedy,
+                       observationDim,
+                       &props,
+                       1.0f, 0.1f, false); // lambda = 1.0 => no history
+
+  // Iterate and generate data.
+  RLQualia qualia(&agent, &env);
+
+  randomSeed(222);
+  qualia.init();
+  qualia.episode(11);
+
+  long expectedFileSize = sizeof(unsigned int)*2 + sizeof(observation_t)*(11*(observationDim+1)) + sizeof(action_dim_t)*10*props.dim();
+  ASSERT_ERROR( testFile.size() == expectedFileSize);
+
+  printf("-> PASSED\n");
+
+  printf("- Test reading and loading tuples from RAW file\n");
+  RLQualia qualia2(&agent, &testEnv);
+
+  TupleDataSet tuplesDataSet(&testFile, observationDim, &props);
+  MemoryDataSet memDataSet(&tuplesDataSet);
+
+  memDataSet.init();
+  memDataSet.reset();
+
+  randomSeed(222);
+  qualia2.init();
+
+  ObservationAction* oa = qualia2.start();
+  RLObservation lastObs(observationDim);
+  lastObs.copyFrom(*oa->observation);
+  for (int t=0; t<memDataSet.nExamples; t++) {
+    memDataSet.setExample(t);
+
+    // Data is (s, a, r, s')
+    real* ptr = memDataSet.example;
+    for (unsigned int i=0; i<observationDim; i++)
+      ASSERT_ERROR( lastObs[i] == *ptr++ );
+
+    for (unsigned int i=0; i<props.dim(); i++)
+      ASSERT_ERROR( oa->action->actions[i] == (action_dim_t) (*ptr++) );
+
+    oa = qualia2.step();
+
+    ASSERT_ERROR( ((RLObservation*)oa->observation)->reward == *ptr++ );
+
+    for (unsigned int i=0; i<observationDim; i++)
+      ASSERT_ERROR( oa->observation->observations[i] == *ptr++ );
+
+    lastObs.copyFrom(*oa->observation);
+
+  }
+
+}
+
 int main() {
   testActions();
   testObservations();
-  testPolicies();
+//  testPolicies();
   testLearning();
   testData();
   testBits();
   testBinaryChromosomes();
+  testDataSet();
 }
