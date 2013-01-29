@@ -21,26 +21,12 @@
 #define OSCAGENT_H_
 
 #include <qualia/core/Agent.h>
-
-#include <qualia/plugins/osc/OscEnvironment.h>
-
 #include <stdio.h>
 
-#ifdef _WIN32
-  #define _WINSOCKAPI_
-  #include <windows.h>
-  #include <winbase.h>
-#else
-  #include <unistd.h>
-#endif
-
-#include <lo/lo.h>
+#include "OscManager.h"
 
 class OscAgent: public Agent {
 public:
-  static lo_address client;
-  static lo_server_thread server;
-
   int id;
 
   int observationDim;
@@ -55,16 +41,14 @@ public:
   OscAgent(int id, int observationDim, int actionDim, int observationBufferDim);
   virtual ~OscAgent();
 
-  static void initOsc(const char* host, const char* port, const char* remotePort);
-
   char* getPath(const char* path);
 
   virtual void init();
   virtual Action* start(const Observation* observation);
   virtual Action* step(const Observation* observation);
-  virtual void end(const Observation* observation);
+  //virtual void end(const Observation* observation);
 
-  // Read the observation from the observationBuffer.
+  // Read the action from the observationBuffer.
   virtual Action* readAction(action_dim_t* buffer) = 0;
 
   //virtual void save(XFile* file) {}
@@ -77,7 +61,6 @@ public:
                          int argc, void *data, void *user_data);
   static int handlerStartStep(const char *path, const char *types, lo_arg **argv,
                               int argc, void *data, void *user_data);
-  static void error(int num, const char *m, const char *path);
 };
 
 #endif /* OSCAGENT_H_ */

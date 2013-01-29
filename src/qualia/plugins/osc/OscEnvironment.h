@@ -32,13 +32,10 @@
   #include <unistd.h>
 #endif
 
-#include <lo/lo.h>
+#include "OscManager.h"
 
 class OscEnvironment : public Environment {
 public:
-  static lo_address client;
-  static lo_server_thread server;
-
   int id;
 
   int observationDim;
@@ -54,8 +51,6 @@ public:
   OscEnvironment(int id, int observationDim, int actionDim, int observationBufferDim);
   virtual ~OscEnvironment();
 
-  static void initOsc(const char* host, const char* port, const char* remotePort);
-
   char* getPath(const char* path);
 
   // Main qualia environment methods.
@@ -66,15 +61,12 @@ public:
   // Read the observation from the observationBuffer.
   virtual Observation* readObservation(observation_t* buffer) = 0;
 
-  static void repeatChar(char* dst, char c, int times);
-
 //  static int handlerCreate(const char *path, const char *types, lo_arg **argv,
 //                           int argc, void *data, void *user_data);
   static int handlerInit(const char *path, const char *types, lo_arg **argv,
                          int argc, void *data, void *user_data);
   static int handlerStartStep(const char *path, const char *types, lo_arg **argv,
                          int argc, void *data, void *user_data);
-  static void error(int num, const char *m, const char *path);
 
 };
 

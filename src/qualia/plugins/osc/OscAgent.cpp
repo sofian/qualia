@@ -19,31 +19,17 @@
 
 #include "OscAgent.h"
 
-lo_address OscAgent::client;
-lo_server_thread OscAgent::server;
-
 OscAgent::OscAgent(int id_, int observationDim_, int actionDim_, int observationBufferDim_)
 : id(id_),
   observationDim(observationDim_), actionDim(actionDim_),
   observationBufferDim(observationBufferDim_), locked(false) {
 
   actionBuffer = (action_dim_t*)malloc(actionDim*sizeof(action_dim_t));
-  OscEnvironment::repeatChar(actionTypes, 'i', actionDim);
+  OscManager::repeatChar(actionTypes, 'i', actionDim);
 }
 
 
 OscAgent::~OscAgent() {
-}
-
-void OscAgent::initOsc(const char* host, const char* port, const char* remotePort) {
-  client = lo_address_new(host, remotePort);
-
-  /* start a new server on port 7770 */
-  server = lo_server_thread_new(port, OscAgent::error);
-
-  /* add method that will match any path and args */
-  // lo_server_thread_add_method(server, "/bang", "", OscManager::bangHandler, 0);
-  lo_server_thread_start(server);
 }
 
 char* OscAgent::getPath(const char* path) {
@@ -53,12 +39,12 @@ char* OscAgent::getPath(const char* path) {
 }
 
 void OscAgent::init() {
-  if (client == 0) {
-    printf("Error: OscAgent::initOsc() should be called prior to calling init()\n");
+  if (OscManager::client() == 0) {
+    printf("Error: OscManager::initOsc() should be called prior to calling init()\n");
     exit(-1);
   }
 
-  lo_send(client, "/qualia/agent/create", "iii", id, observationDim, actionDim);
+  lo_send(OscManager::client(), "/qualia/agent/create", "iii", id, observationDim, actionDim);
 #ifdef _WIN32
   Sleep(1000);
 #else
@@ -66,12 +52,12 @@ void OscAgent::init() {
 #endif
 
   // Create methods for responses.
-  lo_server_thread_add_method(server, getPath("/qualia/agent/response/init"), 0, OscAgent::handlerInit, this);
-  lo_server_thread_add_method(server, getPath("/qualia/agent/response/start"), actionTypes, OscAgent::handlerStartStep, this);
-  lo_server_thread_add_method(server, getPath("/qualia/agent/response/step"), actionTypes, OscAgent::handlerStartStep, this);
+  lo_server_thread_add_method(OscManager::server(), getPath("/qualia/agent/response/init"), 0, OscAgent::handlerInit, this);
+  lo_server_thread_add_method(OscManager::server(), getPath("/qualia/agent/response/start"), actionTypes, OscAgent::handlerStartStep, this);
+  lo_server_thread_add_method(OscManager::server(), getPath("/qualia/agent/response/step"), actionTypes, OscAgent::handlerStartStep, this);
 
   locked = true;
-  lo_send(client, getPath("/qualia/agent/init"), 0);
+  lo_send(OscManager::client(), getPath("/qualia/agent/init"), 0);
 
   while (locked)
   {
@@ -95,7 +81,7 @@ Action* OscAgent::start(const Observation* observation) {
       lo_message_add_float(msg, observation->observations[i]);
     else
       lo_message_add_double(msg, observation->observations[i]);
-  lo_send_message(client, getPath("/qualia/agent/start"), msg);
+  lo_send_message(OscManager::client(), getPath("/qualia/agent/start"), msg);
   lo_message_free(msg);
 
   // Wait for response.
@@ -124,7 +110,7 @@ Action* OscAgent::step(const Observation* observation) {
       lo_message_add_float(msg, observation->observations[i]);
     else
       lo_message_add_double(msg, observation->observations[i]);
-  lo_send_message(client, getPath("/qualia/agent/step"), msg);
+  lo_send_message(OscManager::client(), getPath("/qualia/agent/step"), msg);
   lo_message_free(msg);
 
   // Wait for response.
@@ -186,10 +172,3 @@ int OscAgent::handlerStartStep(const char *path, const char *types, lo_arg **arg
   obj->locked = false;
   return 0;
 }
-
-void OscAgent::error(int num, const char *msg, const char *path)
-{
-  ERROR("liblo server error %d in path %s: %s\n", num, path, msg);
-  fflush(stdout);
-}
-
