@@ -81,8 +81,8 @@ bool Qualia::episode(const unsigned int maxSteps) {
     isTerminal = stepResult->observation->terminal;
   }
 
-  if (!isTerminal) // stopped because maxSteps was reached
-    nEpisodes++;
+  // Increment number of episodes.
+  nEpisodes++;
 
   // Return the value of terminal to tell the caller whether the episode ended naturally or was cut off
   return isTerminal;
