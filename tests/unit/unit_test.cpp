@@ -274,7 +274,7 @@ const real weights2[] = { -0.639472, -0.362609, 0.641568, 0.377503, 1.160043, 0.
 //  const real weights2[] = { 0.744364, 0.004321, 0.968882, 0.918303, -0.363828, -0.167727, 0.651167, -0.050757, -0.312058, -0.087158, -0.875340, -0.646770, -0.005819, -0.509864, 0.682508, -0.944954, -0.895760, -0.380126, 0.224388 };
 #endif
 
-  qualia.episode(1000);
+  qualia.episode(1001); // does 1 call to start() and 1000 calls to step()
 
   for (int i=0; i<net._nParams; i++) {
     ASSERT_ERROR( approxEqual(weights2[i], net.weights[i]));
@@ -293,7 +293,7 @@ const real weights2[] = { -0.639472, -0.362609, 0.641568, 0.377503, 1.160043, 0.
 //  const real weights3[] = { 0.728281, -0.031507, 0.934786, 0.890957, -0.472604, -0.203539, 0.604837, -0.086146, -0.406650, -0.098449, -0.890225, -0.658924, -0.035352, -0.509864, 0.682508, -0.663268, -0.671780, -0.143882, 0.683062 };
 #endif
 
-  qualia.episode(1000);
+  qualia.episode(1001); // does 1 call to start() and 1000 calls to step()
 
   for (int i=0; i<net._nParams; i++) {
     ASSERT_ERROR( approxEqual(weights3[i], net.weights[i]));
