@@ -37,6 +37,7 @@
 #include <qualia/rl/RLQualia.h>
 
 #include <qualia/plugins/osc/OscRLEnvironment.h>
+#include <qualia/plugins/osc/OscBasicAgent.h>
 
 #include <cstdio>
 #include <cstring>
@@ -73,6 +74,7 @@ int main(int argc, char** argv) {
   char* saveModelFileName;
   char* loadModelFileName;
   bool isLearning;
+  bool isRemoteAgent;
 
   //=================== The command-line ==========================
 
@@ -114,6 +116,7 @@ int main(int argc, char** argv) {
   cmd.addText("\nMisc Options:");
   cmd.addBCmdOption("-export-data", &exportData, false, "export the data to files", false );
   cmd.addBCmdOption("-no-learning", &isLearning, true, "don't learn (just apply policy)", false );
+  cmd.addBCmdOption("-remote-agent", &isRemoteAgent, false, "remote controlled agent (ie. actions sent by OSC)", false );
   cmd.addICmdOption("-every", &outputEvery, 100, "output mean reward every X steps", false );
 //  cmd.addICmdOption("-seed", &the_seed, -1, "the random seed");
 //  cmd.addICmdOption("-load", &max_load, -1, "max number of examples to load for train");
@@ -146,22 +149,28 @@ int main(int argc, char** argv) {
   char oscRemotePortStr[100];
   sprintf(oscPortStr, "%d", oscPort);
   sprintf(oscRemotePortStr, "%d", oscRemotePort);
-  OscEnvironment::initOsc(oscIP, oscPortStr, oscRemotePortStr);
+  OscManager::initOsc(oscIP, oscPortStr, oscRemotePortStr);
 
   if (!isLearning)
     printf("Learning switched off\n");
 
   printf("--- Creating agent ---\n");
   ActionProperties actionProperties(dimActions, nActions);
-  NeuralNetwork* net = new NeuralNetwork(dimObservations + actionProperties.dim(), nHidden, 1, learningRate);
-  QFunction* qFunc = new QFunction(net, dimObservations, &actionProperties);
-  Policy* policy = new QLearningEDecreasingPolicy(epsilon, epsilonDecay);
-  QLearningAgent* agent = new QLearningAgent(
-                                qFunc,
-                                new QLearningEDecreasingPolicy(epsilon, epsilonDecay),
-                                dimObservations, &actionProperties,
-                                lambda, gamma);
-  agent->isLearning = isLearning;
+
+  Agent* agent;
+  if (isRemoteAgent) {
+    agent = new OscBasicAgent(agentId, dimObservations, dimObservations+1, &actionProperties);
+  } else {
+    NeuralNetwork* net = new NeuralNetwork(dimObservations + actionProperties.dim(), nHidden, 1, learningRate);
+    QFunction* qFunc = new QFunction(net, dimObservations, &actionProperties);
+    QLearningAgent* qAgent = new QLearningAgent(
+                                  qFunc,
+                                  new QLearningEDecreasingPolicy(epsilon, epsilonDecay),
+                                  dimObservations, &actionProperties,
+                                  lambda, gamma);
+    qAgent->isLearning = isLearning;
+    agent = qAgent;
+  }
 
   Environment* env;
   Environment* oscEnv = new OscRLEnvironment(agentId, dimObservations, actionProperties.dim());
@@ -181,7 +190,7 @@ int main(int argc, char** argv) {
   // Check if load needed.
   if (strcmp(loadModelFileName, "") != 0) {
     DiskXFile loadFile(loadModelFileName, "r");
-    agent->qFunction->load(&loadFile);
+    ((QLearningAgent*)agent)->qFunction->load(&loadFile);
   }
 
   printf("--- Starting ---\n");
@@ -194,7 +203,7 @@ int main(int argc, char** argv) {
     float totalReward = 0;
     for (int i=0; i<outputEvery; i++) {
       ObservationAction* oa = qualia->step();
-      //totalReward += ((RLObservation*)oa->observation)->reward;
+      totalReward += ((RLObservation*)oa->observation)->reward;
       nSteps++;
     }
     printf("Mean reward: %f\n", (double) totalReward / nSteps);
@@ -206,10 +215,15 @@ int main(int argc, char** argv) {
   }
 
   printf("--- Cleaning up ---\n");
-  delete qFunc;
-  delete policy;
-  delete net;
-  delete agent;
+  if (isRemoteAgent)
+    delete agent;
+  else {
+    QLearningAgent* qAgent = (QLearningAgent*)agent;
+    delete qAgent->qFunction->function;
+    delete qAgent->qFunction;
+    delete qAgent->policy;
+    delete qAgent;
+  }
   delete oscEnv;
   if (exportData)
     delete env;
