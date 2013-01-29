@@ -31,9 +31,15 @@ NeuralNetwork::NeuralNetwork(int nInputs_,
 {
   _nParams = nHiddens_ * (nInputs_ + 1) + nOutputs_ * (nHiddens_ + 1);
 
+  // Allocate weights and deltas.
   weights  = (real*) Alloc::malloc( _nParams * sizeof(real) );
   dWeights = (real*) Alloc::malloc( _nParams * sizeof(real) );
 
+  // Initialize to zero.
+  memset(weights,  0, _nParams*sizeof(real));
+  memset(dWeights, 0, _nParams*sizeof(real));
+
+  // Allocate/assign layers.
   int k=0;
   _allocateLayer(inputLayer, 0, nInputs_, k);
   _allocateLayer(hiddenLayer, nInputs_, nHiddens_, k);
