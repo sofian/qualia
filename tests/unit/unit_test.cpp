@@ -154,13 +154,13 @@ void testPolicies() {
   printf("-- Testing e-greedy (epsilon = 0.5) (actions should be semi random)\n");
   randomSeed(222);
   const action_dim_t pattern2[] = {
-      90, 9, 9, 9, 63, 47, 9, 9, 9, 9
+      90, 0, 0, 0, 63, 47, 0, 0, 0, 0,
+//      90, 9, 9, 9, 63, 47, 9, 9, 9, 9
   };
   egreedy.epsilon = 0.5;
   for (int i=0; i<10; i++) {
     egreedy.chooseAction(&action, &observation);
-//    printf("%d, ", action.conflated());
-    assert( action.conflated() == pattern2[i]);
+    ASSERT_ERROR( action.conflated() == pattern2[i] );
   }
   printf("-> PASSED\n");
 
@@ -171,13 +171,14 @@ void testPolicies() {
   printf("-- Testing \"greedy\" policy (epsilon = 0)\n");
   randomSeed(222);
   const action_dim_t pattern3[] = {
-      17, 66, 53, 82, 49, 61, 46, 28, 75, 56
+      18, 66, 53, 82, 49, 61, 46, 28, 76, 56,
+//      17, 66, 53, 82, 49, 61, 46, 28, 75, 56
   };
   softmax.epsilon = 0;
   softmax.chooseAction(&action, &observation);
   for (int i=0; i<10; i++) {
     softmax.chooseAction(&action, &observation);
-    assert( action.conflated() == pattern3[i]);
+    ASSERT_ERROR( action.conflated() == pattern3[i]);
   }
   printf("-> PASSED\n");
 
@@ -240,7 +241,7 @@ void testLearning() {
   randomSeed(222);
   ActionProperties props(2, (const unsigned int[]){10, 10});
   TestEnvironment env;
-  NeuralNetwork net(2+2, 3, 1, 0.1f, 0, 0, false);
+  NeuralNetwork net(2+2, 3, 1, 0.001f, 1e-6, 1e-6, false);
   QFunction q(&net, 2, &props);
   QLearningEGreedyPolicy egreedy(0.5f);
   QLearningAgent agent(&q,
@@ -250,15 +251,15 @@ void testLearning() {
                        1.0f, 0.1f, false); // lambda = 1.0 => no history
   RLQualia qualia(&agent, &env);
   qualia.init();
-  qualia.start();
 
   // Verify weights
-  const real weights1[] = { 0.744364, 0.002764, 0.976832, 0.922620, -0.371778, -0.170730, 0.666554, -0.042378, -0.327445, -0.088207, -0.870008, -0.643873, -0.011151, -0.509864, 0.682508, -0.935150, -0.855299, -0.330070, 0.295997 };
+  const real weights1[] = { -0.922944, -0.639856, 0.326380, 0.076001, 0.654564, -0.012578, 0.231147, -0.073863, -0.429572, 0.521223, 0.127283, 0.804040, 0.096144, 0.898829, 0.181497, 0.979205, 0.532769, 0.228138, -0.308403 };
 
   printf("-- Testing initialization\n");
   for (int i=0; i<net.nParams(); i++) {
-    assert( approxEqual(weights1[i], net.weights[i]));
+    ASSERT_ERROR( approxEqual(weights1[i], net.weights[i]));
   }
+
   printf("-> PASSED\n");
 
   printf("-- Testing learning loop without randomness\n");
@@ -267,17 +268,17 @@ void testLearning() {
 #if defined(__APPLE__)
   #warning "This test should be checked again on OSX"
   // Values as they were compiled on OSX.
-  const real weights2[] = { 0.720454, -0.032911, 0.924488, 0.885604, -0.462369, -0.196202, 0.629109, -0.115963, -0.376370, -0.176181, -0.877519, -0.654348, -0.032678, -0.524523, 0.656541, -0.593092, -0.641793, -0.115928, 0.761823 };
+#error "Need to recompile weights under OSX"
 #else // Linux
-  const real weights2[] = { 0.744364, 0.004321, 0.968882, 0.918303, -0.363828, -0.167727, 0.651167, -0.050757, -0.312058, -0.087158, -0.875340, -0.646770, -0.005819, -0.509864, 0.682508, -0.944954, -0.895760, -0.380126, 0.224388 };
+const real weights2[] = { -0.639472, -0.362609, 0.641568, 0.377503, 1.160043, 0.174291, 0.442735, 0.130206, -0.149630, 0.588551, 0.203283, 0.877763, 0.172145, 0.898829, 0.181497, 1.641998, 1.248770, 1.199502, 0.792247 };
+//  const real weights2[] = { 0.744364, 0.004321, 0.968882, 0.918303, -0.363828, -0.167727, 0.651167, -0.050757, -0.312058, -0.087158, -0.875340, -0.646770, -0.005819, -0.509864, 0.682508, -0.944954, -0.895760, -0.380126, 0.224388 };
 #endif
 
-  qualia.episode(100);
+  qualia.episode(1000);
 
   for (int i=0; i<net._nParams; i++) {
-    assert( approxEqual(weights2[i], net.weights[i]));
+    ASSERT_ERROR( approxEqual(weights2[i], net.weights[i]));
   }
-
   printf("-> PASSED\n");
 
   printf("-- Testing learning loop with 50%% randomness\n");
@@ -288,13 +289,14 @@ void testLearning() {
   // Values as they were compiled on OSX.
   const real weights3[] = { 0.720454, -0.032911, 0.924488, 0.885604, -0.462369, -0.196202, 0.629109, -0.115963, -0.376370, -0.176181, -0.877519, -0.654348, -0.032678, -0.524523, 0.656541, -0.593092, -0.641793, -0.115928, 0.761823 };
 #else // Linux
-  const real weights3[] = { 0.728281, -0.031507, 0.934786, 0.890957, -0.472604, -0.203539, 0.604837, -0.086146, -0.406650, -0.098449, -0.890225, -0.658924, -0.035352, -0.509864, 0.682508, -0.663268, -0.671780, -0.143882, 0.683062 };
+  const real weights3[] = { -0.560489, -0.284939, 0.778170, 0.518532, 1.348958, 0.253218, 0.582769, 0.272544, 0.015049, 0.626088, 0.294333, 0.968556, 0.238591, 0.898829, 0.181497, 2.085024, 1.635717, 1.655244, 1.293192 };
+//  const real weights3[] = { 0.728281, -0.031507, 0.934786, 0.890957, -0.472604, -0.203539, 0.604837, -0.086146, -0.406650, -0.098449, -0.890225, -0.658924, -0.035352, -0.509864, 0.682508, -0.663268, -0.671780, -0.143882, 0.683062 };
 #endif
 
-  qualia.episode(100);
+  qualia.episode(1000);
 
   for (int i=0; i<net._nParams; i++) {
-    assert( approxEqual(weights3[i], net.weights[i]));
+    ASSERT_ERROR( approxEqual(weights3[i], net.weights[i]));
   }
 
   printf("-> PASSED\n");

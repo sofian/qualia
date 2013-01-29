@@ -38,7 +38,7 @@ NeuralNetwork::NeuralNetwork(int nInputs_,
   _allocateLayer(inputLayer, 0, nInputs_, k);
   _allocateLayer(hiddenLayer, nInputs_, nHiddens_, k);
   _allocateLayer(outputLayer, nHiddens_, nOutputs_, k, linearOutput_);
-  init();
+  //init();
 }
 
 NeuralNetwork::~NeuralNetwork() {
