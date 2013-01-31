@@ -34,6 +34,7 @@
 #include <qualia/learning/NeuralNetwork.h>
 #include <qualia/rl/QLearningAgent.h>
 #include <qualia/rl/QLearningEDecreasingPolicy.h>
+#include <qualia/rl/QLearningSoftmaxPolicy.h>
 #include <qualia/rl/RLQualia.h>
 
 #include <qualia/plugins/osc/OscRLEnvironment.h>
@@ -42,6 +43,7 @@
 #include <cstdio>
 #include <cstring>
 #include <csignal>
+#include <ctime>
 
 void      stop(int);
 
@@ -57,6 +59,8 @@ int main(int argc, char** argv) {
   float weightDecay;
   float epsilon;
   float epsilonDecay;
+  bool useSoftmax;
+  float temperature;
   float lambda;
   float gamma;
   int dimObservations;
@@ -70,6 +74,7 @@ int main(int argc, char** argv) {
 
   bool exportData;
   int outputEvery;
+  int seed;
 
   char* saveModelFileName;
   char* loadModelFileName;
@@ -105,20 +110,22 @@ int main(int argc, char** argv) {
   cmd.addRCmdOption("-lrd", &learningRateDecay, 0.001, "learning rate decay", true);
   cmd.addRCmdOption("-wd", &weightDecay, 0, "weight decay", true);
 
-  cmd.addText("\nReinforcement learning options:");
+  cmd.addText("\nReinforcement Learning Options:");
   cmd.addRCmdOption("-gamma", &gamma, 0.999, "the gamma value", true);
   cmd.addRCmdOption("-lambda", &lambda, 0.1, "the lambda value of the TD-lambda algorithm", true);
 
   cmd.addText("\nPolicy Options:");
   cmd.addRCmdOption("-e", &epsilon, 0.1, "epsilon value", true);
   cmd.addRCmdOption("-ed", &epsilonDecay, 0, "epsilon decay", true);
+  cmd.addBCmdOption("-softmax", &useSoftmax, false, "use softmax policy", true);
+  cmd.addRCmdOption("-temp", &temperature, 1.0f, "softmax temperature param", true);
 
   cmd.addText("\nMisc Options:");
   cmd.addBCmdOption("-export-data", &exportData, false, "export the data to files", false );
   cmd.addBCmdOption("-no-learning", &isLearning, true, "don't learn (just apply policy)", false );
   cmd.addBCmdOption("-remote-agent", &isRemoteAgent, false, "remote controlled agent (ie. actions sent by OSC)", false );
   cmd.addICmdOption("-every", &outputEvery, 100, "output mean reward every X steps", false );
-//  cmd.addICmdOption("-seed", &the_seed, -1, "the random seed");
+  cmd.addICmdOption("-seed", &seed, -1, "the random seed (-1 = based on time)");
 //  cmd.addICmdOption("-load", &max_load, -1, "max number of examples to load for train");
 //  cmd.addICmdOption("-load_valid", &max_load_valid, -1, "max number of examples to load for valid");
 //  cmd.addSCmdOption("-valid", &valid_file, "", "validation file, if you want it");
@@ -149,7 +156,14 @@ int main(int argc, char** argv) {
   char oscRemotePortStr[100];
   sprintf(oscPortStr, "%d", oscPort);
   sprintf(oscRemotePortStr, "%d", oscRemotePort);
+  printf("Opening OSC connection (ip=%s, port=%s, remote_port=%s)\n", oscIP, oscPortStr, oscRemotePortStr);
   OscManager::initOsc(oscIP, oscPortStr, oscRemotePortStr);
+
+  // Set random seed.
+  if (seed == -1)
+    randomSeed(time(NULL) + agentId);
+  else
+    randomSeed(seed);
 
   if (!isLearning)
     printf("Learning switched off\n");
@@ -161,11 +175,17 @@ int main(int argc, char** argv) {
   if (isRemoteAgent) {
     agent = new OscBasicAgent(agentId, dimObservations, dimObservations+1, &actionProperties);
   } else {
-    NeuralNetwork* net = new NeuralNetwork(dimObservations + actionProperties.dim(), nHidden, 1, learningRate);
+    NeuralNetwork* net = new NeuralNetwork(dimObservations + actionProperties.dim(), nHidden, 1,
+                                           learningRate, learningRateDecay, weightDecay, false);
     QFunction* qFunc = new QFunction(net, dimObservations, &actionProperties);
+    Policy* policy = 0;
+    if (useSoftmax)
+      policy = new QLearningSoftmaxPolicy(temperature, epsilon);
+    else
+      policy = new QLearningEDecreasingPolicy(epsilon, epsilonDecay);
     QLearningAgent* qAgent = new QLearningAgent(
                                   qFunc,
-                                  new QLearningEDecreasingPolicy(epsilon, epsilonDecay),
+                                  policy,
                                   dimObservations, &actionProperties,
                                   lambda, gamma);
     qAgent->isLearning = isLearning;
@@ -206,7 +226,7 @@ int main(int argc, char** argv) {
       totalReward += ((RLObservation*)oa->observation)->reward;
       nSteps++;
     }
-    printf("Mean reward: %f\n", (double) totalReward / nSteps);
+    printf("Mean reward (agent #%d): %f\n", agentId, (double) totalReward / nSteps);
   }
 
   // Check if load needed.
