@@ -57,7 +57,8 @@ void MultiDataSet::setExample(int t) {
   for (int i=0; i<_nDataSets; i++) {
     if (t < _dataSets[i]->nExamples) {
       _dataSets[i]->setExample(t);
-      memcpy(example, _dataSets[i]->example, dim);
+      memcpy(example, _dataSets[i]->example, dim * sizeof(real));
+      break;
     } else {
       t -= _dataSets[i]->nExamples;
     }
