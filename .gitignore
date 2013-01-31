@@ -19,6 +19,10 @@ build/
 *.xls
 *.ppt
 
+# Own formats
+*.raw
+*.dat
+
 # Eclipse
 .project
 .cproject
