@@ -33,12 +33,14 @@ public:
   real* targets;
   int maxExamples;
   float gamma;
+  int maxTrainingIterationsPerEpisode;
 
   // Internal use.
-  Action _action;
+  RLObservation _lastObservation;
+  Action _lastOrNextAction;
   RLObservation _observation;
 
-  BatchRLTrainer(QFunction* qFunction, int maxExamples, float gamma);
+  BatchRLTrainer(QFunction* qFunction, int maxExamples, float gamma, int maxTrainingIterationsPerEpisode=-1);
   virtual ~BatchRLTrainer();
 
   virtual void init();

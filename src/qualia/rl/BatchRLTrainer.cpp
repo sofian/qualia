@@ -19,11 +19,13 @@
 
 #include "BatchRLTrainer.h"
 
-BatchRLTrainer::BatchRLTrainer(QFunction* qFunction, int maxExamples_, float gamma_)
+BatchRLTrainer::BatchRLTrainer(QFunction* qFunction, int maxExamples_, float gamma_, int maxTrainingIterationsPerEpisode_)
   : DataSetTrainer(qFunction),
     maxExamples(maxExamples_),
     gamma(gamma_),
-    _action(qFunction->actionProperties),
+    maxTrainingIterationsPerEpisode(maxTrainingIterationsPerEpisode_),
+    _lastObservation(qFunction->observationDim),
+    _lastOrNextAction(qFunction->actionProperties),
     _observation(qFunction->observationDim) {
   targets = (real*)Alloc::malloc(maxExamples*sizeof(real));
 }
@@ -37,11 +39,12 @@ void BatchRLTrainer::init() {
 }
 
 void BatchRLTrainer::_doTrainEpisode(DataSet* data) {
-  QFunction* qFunction = (QFunction*)function;
+  QFunction* qFunction = dynamic_cast<QFunction*>(function);
+  ASSERT_ERROR( qFunction );
 
   int n = min(data->nExamples, maxExamples);
 
-  // First pass: assign targets based on current Q function.
+  // First pass: assign targets based on current Q function ////////////////////////////////////////////////////
   real targetMin = INF;
   real targetMax = -INF;
   real reward;
@@ -69,28 +72,55 @@ void BatchRLTrainer::_doTrainEpisode(DataSet* data) {
     targets[t] = mapReal(targets[t], targetMin, targetMax, 0.0f, 1.0f);
   }
 
-  // Second pass: train Q function.
+  // Second pass: train Q function /////////////////////////////////////////////////////////////////////////////
+  // According to (Gabel, Lutz, Riedmiller) we should do this, but I'm not convinced because then the MSE
+  // does not go down in a steady fashion (actually it kinds of goes up after a certain point, pretty much all
+  // the time, so...)
+  // In fact, the truth is that we should actually train several episodes on the same data (see algo).
+  // When I leave it the weights change a lot from one episode to the next...
+  qFunction->init(); // reinit net weights
 
-  real mse = 0;
-  for (int t=0; t<n; t++) {
+  real mse;
+  real lastMse;
+  int nIter = 0;
+  do {
 
-    // Compute error derivative (= Q - target)
-    real dError = 2. * error;
+    lastMse = mse;
+    mse     = 0;
 
     data->reset();
-    // Back propagate the error.
-    qFunction->backpropagate(&dError);
+    for (int t=0; t<n; t++) {
 
       data->setExample(t);
-    // Update using the function's own update rule.
-    qFunction->update();
       TupleDataSet::tupleFromExample(&_lastObservation, &_lastOrNextAction, &reward, &_observation, data->example);
 
-    // Compute MSE.
-    mse += error*error;
-  }
-  mse /= n;
-  NOTICE("MSE: %f", mse);
+      // Compute error derivative (= Q - target)
+      real error = qFunction->getValue(&_lastObservation, &_lastOrNextAction) - targets[t];
+      real dError = 2. * error;
+
+      // Back propagate the error.
+      qFunction->backpropagate(&dError);
+
+      // Update using the function's own update rule.
+      qFunction->update();
+
+      // Compute MSE.
+      mse += error*error;
+    }
+
+    // MSE of batch.
+    mse /= n;
+    NOTICE("t=%d MSE: %f", nIter, mse);
+
+    // Increase iteration counter.
+    nIter++;
+
+  } while (mse < lastMse &&
+           (maxTrainingIterationsPerEpisode < 0 || nIter < maxTrainingIterationsPerEpisode));
+//
+//  for (int i=0; i<qFunction->nParams(); i++)
+//    printf("%f ", qFunction->function->weights[i]);
+//  printf("\n");
 }
 
 
