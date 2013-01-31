@@ -83,11 +83,11 @@ void NeuralNetwork::getOutputs(real *outputs) const {
 void NeuralNetwork::backpropagate(real *outputError) {
   // Initialize output error.
   for (int i=0; i<outputLayer.n; i++) {
+    outputLayer.error[i] = outputError[i];
     if (!outputLayer.linear) {
       real out = outputLayer.output[i];
       outputLayer.error[i] *= out * (1 - out);
     }
-    outputLayer.error[i] = outputError[i];
   }
 
   // Backpropagate inferior layers.
