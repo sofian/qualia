@@ -43,11 +43,7 @@ void DiskXFileDataSet::init() {
     ASSERT_WARNING( nExamples > 0 );
     ASSERT_WARNING( dim > 0 );
 
-    if (example) {
-      WARNING("Example already initialized: this may result in errors; check your code.");
-      Alloc::free(example);
-    }
-    example = (real*)Alloc::malloc(dim * sizeof(real));
+    DataSet::init();
 
     currentExampleIndex = -1;
   }
