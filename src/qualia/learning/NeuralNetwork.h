@@ -83,7 +83,7 @@ public:
                 float learningRate = 0.01,
                 float decreaseConstant = 0,
                 float weightDecay = 0,
-                bool linearOutput = true);
+                bool linearOutput = false);
   virtual ~NeuralNetwork();
 
   // Public methods.
