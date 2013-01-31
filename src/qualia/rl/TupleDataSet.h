@@ -52,6 +52,11 @@ public:
   unsigned int observationDim() const { return lastObservation.dim(); }
   unsigned int actionDim() const { return lastAction.dim(); }
 
+  // Get tuple (s, a, r, s') elements from example.
+  static void tupleFromExample(RLObservation* lastObservation, Action* lastAction, real* reward, RLObservation* observation, const real* example);
+
+  // Fill up example with the (s, a, r, s') tuple.
+  static void tupleToExample(real* example, const RLObservation& lastObservation, const Action& lastAction, real reward, const RLObservation& observation);
 };
 
 #endif /* TUPLEDATASET_H_ */

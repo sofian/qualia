@@ -38,22 +38,25 @@ void BatchRLTrainer::init() {
 
 void BatchRLTrainer::_doTrainEpisode(DataSet* data) {
   QFunction* qFunction = (QFunction*)function;
-  TupleDataSet* tuples = (TupleDataSet*)data;
 
-  int n = min(tuples->nExamples, maxExamples);
+  int n = min(data->nExamples, maxExamples);
 
   // First pass: assign targets based on current Q function.
   real targetMin = INF;
   real targetMax = -INF;
-  tuples->reset();
+  real reward;
+
+  data->reset();
   for (int t=0; t<n; t++) {
-    tuples->setExample(t);
+
+    data->setExample(t);
+    TupleDataSet::tupleFromExample(&_lastObservation, &_lastOrNextAction, &reward, &_observation, data->example);
 
     real maxQ;
-    qFunction->getMaxAction(&_action, &tuples->observation, &maxQ);
+    qFunction->getMaxAction(&_lastOrNextAction, &_observation, &maxQ);
 
     // q(s,q) = r + gamma * max_a' Q^(s',a')
-    targets[t] = tuples->observation.reward + gamma * maxQ;
+    targets[t] = reward + gamma * maxQ;
 
     targetMin = min(targetMin, targets[t]);
     targetMax = max(targetMin, targets[t]);
@@ -67,21 +70,21 @@ void BatchRLTrainer::_doTrainEpisode(DataSet* data) {
   }
 
   // Second pass: train Q function.
-  tuples->reset();
 
   real mse = 0;
   for (int t=0; t<n; t++) {
-    tuples->setExample(t);
 
     // Compute error derivative (= Q - target)
-    real error = qFunction->getValue(&tuples->lastObservation, &tuples->lastAction) - targets[t];
     real dError = 2. * error;
 
+    data->reset();
     // Back propagate the error.
     qFunction->backpropagate(&dError);
 
+      data->setExample(t);
     // Update using the function's own update rule.
     qFunction->update();
+      TupleDataSet::tupleFromExample(&_lastObservation, &_lastOrNextAction, &reward, &_observation, data->example);
 
     // Compute MSE.
     mse += error*error;

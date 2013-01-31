@@ -82,6 +82,31 @@ void TupleDataSet::setExample(int t) {
   observation.loadData(file);
 
   // Fill up example with the (s, a, r, s') tuple.
+  tupleToExample(example, lastObservation, lastAction, observation.reward, observation);
+
+}
+
+void TupleDataSet::tupleFromExample(RLObservation* lastObservation,
+                                    Action* lastAction, real* reward, RLObservation* observation,
+                                    const real* example) {
+  // Fill up example with the (s, a, r, s') tuple.
+  int k=0;
+  for (unsigned int i=0; i<lastObservation->dim(); i++)
+    lastObservation->observations[i] = example[k++];
+
+  for (unsigned int i=0; i<lastAction->dim(); i++)
+    lastAction->actions[i] = example[k++];
+
+  observation->reward = example[k++];
+
+  for (unsigned int i=0; i<observation->dim(); i++)
+    observation->observations[i] = example[k++];
+}
+
+void TupleDataSet::tupleToExample(real* example,
+                                  const RLObservation& lastObservation, const Action& lastAction, real reward,
+                                  const RLObservation& observation) {
+  // Fill up example with the (s, a, r, s') tuple.
   int k=0;
   for (unsigned int i=0; i<lastObservation.dim(); i++)
     example[k++] = lastObservation[i];
