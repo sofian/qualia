@@ -24,3 +24,10 @@ DataSet::DataSet(int nExamples_, int dim_)
 
 DataSet::~DataSet() {
 }
+
+void DataSet::init() {
+  if (!example)
+    example = (real*)Alloc::malloc(dim * sizeof(real));
+  else
+    example = (real*)Alloc::realloc(example, dim * sizeof(real));
+}

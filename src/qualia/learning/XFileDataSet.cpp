@@ -23,7 +23,6 @@ XFileDataSet::XFileDataSet(XFile* file_) : DataSet(), file(file_) {
 }
 
 XFileDataSet::~XFileDataSet() {
-  Alloc::free(example);
 }
 
 void XFileDataSet::init() {
@@ -34,11 +33,8 @@ void XFileDataSet::init() {
   ASSERT_WARNING( nExamples > 0 );
   ASSERT_WARNING( dim > 0 );
 
-  if (example) {
-    WARNING("Example already initialized: this may result in errors; check your code.");
-    Alloc::free(example);
-  }
-  example = (real*)Alloc::malloc(dim * sizeof(real));
+  // Allocate example.
+  DataSet::init();
 
   currentExampleIndex = -1;
 }
@@ -50,7 +46,7 @@ void XFileDataSet::reset() {
   int x;
   file->read(&x, sizeof(int), 1);
   ASSERT_WARNING( x == nExamples );
-  file->read(&x,       sizeof(int), 1);
+  file->read(&x, sizeof(int), 1);
   ASSERT_WARNING( x == dim );
 
   currentExampleIndex = -1;

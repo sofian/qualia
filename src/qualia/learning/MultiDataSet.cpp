@@ -37,21 +37,16 @@ MultiDataSet::MultiDataSet(DataSet** dataSets, int nDataSets)
 }
 
 MultiDataSet::~MultiDataSet() {
-  Alloc::free(example);
 }
 
 void MultiDataSet::init() {
-  if (example) {
-    WARNING("Example already initialized: this may result in errors; check your code.");
-    Alloc::free(example);
-  }
-  example = (real*)Alloc::malloc(dim * sizeof(real));
-
+  DataSet::init();
   for (int i=0; i<_nDataSets; i++)
     _dataSets[i]->init();
 }
 
 void MultiDataSet::reset() {
+  ASSERT_ERROR_MESSAGE( example, "Example is NULL, maybe you forgot to call init()?" );
   for (int i=0; i<_nDataSets; i++)
     _dataSets[i]->reset();
 }

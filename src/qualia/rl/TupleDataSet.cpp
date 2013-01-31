@@ -51,22 +51,19 @@ void TupleDataSet::init() {
     nExamples++;
   }
 
-  if (example) {
-    WARNING("Example already initialized: this may result in errors; check your code.");
-    Alloc::free(example);
-  }
-
-  example = (real*)Alloc::malloc(dim * sizeof(real));
+  // Allocate example.
+  DataSet::init();
 
   // Go back to start.
   reset();
 }
 
 void TupleDataSet::reset() {
-  unsigned int dim;
+  ASSERT_ERROR_MESSAGE( example, "Example is NULL, maybe you forgot to call init()?" );
+  unsigned int dummy;
   file->rewind();
-  file->read(&dim, sizeof(unsigned int), 1);
-  file->read(&dim, sizeof(unsigned int), 1);
+  file->read(&dummy, sizeof(unsigned int), 1);
+  file->read(&dummy, sizeof(unsigned int), 1);
 
   observation.loadData(file);
 
@@ -84,6 +81,7 @@ void TupleDataSet::setExample(int t) {
   // Fill up example with the (s, a, r, s') tuple.
   tupleToExample(example, lastObservation, lastAction, observation.reward, observation);
 
+  currentExampleIndex = t;
 }
 
 void TupleDataSet::tupleFromExample(RLObservation* lastObservation,
@@ -118,7 +116,4 @@ void TupleDataSet::tupleToExample(real* example,
 
   for (unsigned int i=0; i<observation.dim(); i++)
     example[k++] = observation[i];
-
-  currentExampleIndex = t;
 }
-

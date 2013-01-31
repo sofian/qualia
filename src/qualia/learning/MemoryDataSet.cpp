@@ -39,18 +39,6 @@ MemoryDataSet::MemoryDataSet(DataSet* dataSet) {
 }
 
 MemoryDataSet::~MemoryDataSet() {
-  Alloc::free(example);
-}
-
-void MemoryDataSet::init() {
-  if (example) {
-    WARNING("Example already initialized: this may result in errors; check your code.");
-    Alloc::free(example);
-  }
-  example = (real*)Alloc::malloc(dim * sizeof(real));
-}
-
-void MemoryDataSet::reset() {
 }
 
 void MemoryDataSet::setExample(int t) {
