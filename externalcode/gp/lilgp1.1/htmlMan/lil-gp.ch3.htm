@@ -1,0 +1,337 @@
+<HTML>
+<HEAD>
+
+<META NAME="GENERATOR" CONTENT="Internet Assistant for Microsoft Word 2.0z">
+<TITLE>                    lil-gp  1</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+
+<H1>
+<B><FONT SIZE="5">Chapter 3</FONT></B></H1>
+<PRE>
+     3.1    <A HREF="#3.1">Preparing the kernel</A>
+     3.2    <A HREF="#3.2">Building the Sample Problems</A>
+
+     3.3    <A HREF="#3.3">Running the Sample Problems</A>
+          3.3.1     <A HREF="#3.3.1">Symbolic Regression</A>          3.3.2     <A HREF="#3.3.2">Artificial Ant</A>
+          3.3.3     <A HREF="#3.3.3">Boolean 11-Multiplexer</A>
+          3.3.4     <A HREF="#3.3.4">Two-boxes</A>          3.3.5     <A HREF="#3.3.5">Lawnmower</A>
+     3.4    <A HREF="#3.4">Compiling Without the Makefile</A>
+
+<HR></PRE>
+<P>
+<B><FONT SIZE="5">Compiling lil-gp<BR>
+</FONT></B>
+</P>
+<P>
+When you unpack the distribution, you should get this directory
+tree:<BR>
+
+</P>
+<P>
+    <B>lilgp/</B>
+</P>
+<BLOCKQUOTE><B>app
+<TABLE BORDER="0" ALIGN="DEFAULT" WIDTH="100%">
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%"></TD>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>ant/</B>                 (artificial ant problem)</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%"></TD>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>lawnmower/           </B>(lawnmower problem)</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%"></TD>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>multiplexer/</B>         (Boolean 11-multiplexer problem)</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%"></TD>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>regression/</B>          (symbolic regression problem)</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%"></TD>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>skeleton/</B>            (skeleton code for new problems)</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%"></TD>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>twobox/</B>              (two-boxes problem)</TD>
+</TR>
+</TABLE>
+</B>
+<B>docs/</B>                   (documentation)
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+      <B>kernel/</B>                 (kernel source)
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<B>      params/</B>                 (sample parameter files)
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<B>      aux/</B>                    (miscellany)<BR>
+
+</BLOCKQUOTE>
+<P>
+This chapter describes how to prepare the kernel, and how to build
+and run the five sample problems included in the distribution.
+ It assumes your system is running on some flavor of Unix, and
+has the GNU <B>make</B> utility available.  If you don't have
+GNU make, read section 3.4 for tips on writing your own makefile
+or compiling manually.<BR>
+
+</P>
+<P>
+<B><A NAME="3.1">3.1 Preparing the kernel</A></B></P>
+<P>
+First you should examine the file <B>GNUmakefile.kernel</B> in
+the <B>kernel</B> directory.  At the top will be things (such
+as compiler flags) that need to be set for various systems.  Look
+to see if you need to make any changes there.</P>
+<P>
+Secondly, you need to customize the timing code, since timing
+relies on system calls which vary from system to system.  You
+need to create a pair of files, <B>event.c</B> and <B>event.h</B>.
+ There are three pairs of files
+provided:</P>
+<P>&nbsp;</P>
+<P>
+   <B>ev_times   </B>Use this if your system has the times() system
+call.  It will provide wall clock time, in addition to processor
+time spent in user and system spaces, to (on most systems) .01
+second resolution.<BR>
+
+</P>
+<P>
+   <B>ev_time</B>    Use this if your system only has the time()
+system call. It will provide wall clock time only, to the nearest
+second.<BR>
+
+</P>
+<P>
+   <B>ev_none</B>    Use this if nothing else works.  It provides
+no timing information at all, but will work on anything.<BR>
+
+</P>
+<P>
+Copy the appropriate pair to <B>event.c</B> and <B>event.h.</B>
+ Under Unix, that
+would be something like:<BR>
+
+</P>
+<PRE>
+<B>     % cp ev_times.c event.c</B>
+<B>     % cp ev_times.h event.h<BR>
+</B></PRE>
+<P>
+If you do not know which to use, try them in the order listed.
+ If compilation fails with a message like &quot;Undefined symbol,&quot;
+then try the next one.  If all else fails, <B>ev_none </B>will
+always work since it is not system-dependent.<BR>
+
+</P>
+<P>
+<B><A NAME="3.2">3.2 Building the Sample Problems</A></B></P>
+<P>
+Go into the directory for the problem you want to build.  Type
+<B>make</B>. If all goes well, you will be left with an executable
+named <B>gp</B> in the directory.  You can type <B>make clean</B>
+to remove all the object files in that directory, leaving only
+the executable.</P>
+<P>
+There is a makefile in the directory of each sample problem. 
+Each of these &quot;include&quot;s another file, <B>Makefile.kernel</B>,
+located in the kernel directory, which compiles the kernel code.
+ Application- specific makefile changes should be made in the
+problem's directory, while modifications to the kernel should
+be reflected in the kernel makefile, so that they will be visible
+for all applications</P>
+<P>
+The application makefiles included assume use of the <B>gcc</B>
+compiler.  If you do not have that, you can change the makefile
+to use something else.  Look for the line <B>CC = gcc</B> and
+change <B>gcc</B> to <B>cc</B>, or whatever the name of your C
+compiler is.  You may also need to change some of the compiler
+flags found just beneath that.<BR>
+
+</P>
+<P>
+<B><A NAME="3.3">3.3 Running the Sample Problems</A></B></P>
+<P>
+This section describes specific features and parameters for each
+sample problem.<BR>
+
+</P>
+<P>
+<B><A NAME="3.3.1">3.3.1 Symbolic Regression</A></B></P>
+<P>
+This uses GP to &quot;discover&quot; the function x<SUP>4</SUP>
++ x<SUP>3</SUP>+ x<SUP>2</SUP> + x, given some randomly chosen
+sample points in the interval [-1, 1).  In addition to the normal
+output files, it creates another (with the extension &quot;.<B>fn</B>&quot;),
+that has the best-of-run function evaluated at 201 points over
+the interval of interest.  You can use this file directly in a
+plotting utility such as gnuplot to compare the evolved function
+with the objective function</P>
+<P>
+There are three application-specific parameters.<BR>
+</P>
+<CENTER><TABLE BORDER="2" ALIGN="center" WIDTH="100%">
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>app.use_ercs</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">type:  binary </TD>
+<TD ALIGN="LEFT" VALIGN="TOP">If yes, an ephemeral random constant terminal (with the range
+[-1; 1)) is added to the function set.</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">default:  yes</TD>
+</TR>
+<TR>
+<TD><B>app.fitness_cases</B></TD>
+<TD>type: integer </TD>
+<TD>The number of fitness cases generated (sample points in the
+interval).</TD>
+<TD>default:  20</TD>
+</TR>
+</TABLE></CENTER>
+<P>&nbsp;</P>
+<P>
+When this problem computes the difference between the ideal value
+of the function and the value returned by the individual, large
+values are capped so as not to produce infinite results.  A parameter
+controls the value of this cap:<BR>
+</P>
+<CENTER><TABLE BORDER="2" ALIGN="center" WIDTH="100%">
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>app.value_cutoff</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">type:  double </TD>
+<TD ALIGN="LEFT" VALIGN="TOP">Maximum allowed value for the difference between objective function
+and evolved individual for any one fitness case.  Larger values
+are replaced by this number.</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">default:  1e15</TD>
+</TR>
+</TABLE></CENTER>
+<P>
+You can change the objective function by editing <B>app.c</B>,
+in the function <B>app_initialize().<BR>
+</B>
+</P>
+<P>
+<B><A NAME="3.3.2">3.3.2 Artificial Ant</A><BR>
+</B>
+</P>
+<P>
+This problem has three parameters:</P>
+<CENTER><TABLE BORDER="2" ALIGN="center" WIDTH="100%">
+<TR>
+<TD><B>app.maxtime</B></TD>
+<TD>type:  int </TD>
+<TD>Maximum number of time steps before the ant &quot;times out.&quot;</TD>
+<TD>default:  400</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>app.trail</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP"> type:  filename </TD>
+<TD ALIGN="LEFT" VALIGN="TOP">The name of a file depicting the &quot;trail&quot; of food for
+this run.  The first line of the file should have the x and y
+dimensions.  Remaining lines should have a &quot;<B>#</B>&quot;
+to indicate a square with food, any other character to indicate
+a blank square.</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">default:  none</TD>
+</TR>
+<TR>
+<TD><B>app.use_progn4</B></TD>
+<TD>type:  binary </TD>
+<TD>Whether or not the <B>PROGN4</B> fucntion should be included
+in the function set.</TD>
+<TD>default:  no</TD>
+</TR>
+</TABLE></CENTER>
+
+
+<P>
+   
+<BR>
+
+</P>
+<P>
+Two trail files are provided in the <B>ant/ </B>directory: <B>santafe.trl</B>
+and <B>losaltos.trl</B>, both taken from Koza's first book</P>
+<P>
+In addition to the normal information, the <B>.bst</B> file contains
+the number of time steps used by the ant, the food collected,
+and a picture of the trail.  Blank squares are shown by a &quot;.&quot;,
+uneaten food is a &quot;<B>#</B>&quot;, squares the ant passed
+through have an &quot;<B>x</B>&quot;, and the final location and
+facing direction of the ant are indicated by a &quot;<B>N</B>&quot;,
+&quot;<B>S</B>&quot;, &quot;<B>E</B>&quot;, or &quot;<B>W</B>&quot;
+in the appropriate square.<BR>
+
+</P>
+<P>
+<B><A NAME="3.3.3">3.3.3 Boolean 11-Multiplexer</A></B></P>
+<P>
+This problem has no parameters specific to it.  The <B>.bst</B>
+file contains the usual information plus a Koza-esque &quot;scoreboard,&quot;
+with hits indicated by &quot;<B>*</B>&quot; and misses by &quot;<B>.</B>&quot;.
+<BR>
+
+</P>
+<P>
+<B><A NAME="3.3.4">3.3.4 Two-boxes</A><BR>
+</B>
+There are no application-specific parameters, and no problem-specific
+output is generated.<BR>
+
+</P>
+<P>
+<B><A NAME="3.3.5">3.3.5 Lawnmower</A></B></P>
+<P>
+This problem has three parameters:<BR>
+</P>
+
+<CENTER><TABLE BORDER="2" ALIGN="center" WIDTH="100%">
+</TABLE></CENTER>
+<P>&nbsp;</P>
+
+
+<CENTER><TABLE BORDER="2" ALIGN="center" WIDTH="100%">
+<TR>
+<TD><B>app.use_adfs</B></TD>
+<TD>type:  binary </TD>
+<TD>Controls whether the ADFs are used.</TD>
+<TD>default:  yes</TD>
+</TR>
+<TR>
+<TD><B>app.lawn_width</B></TD>
+<TD>type:  int </TD>
+<TD>The width of the lawn.</TD>
+<TD>default:  8</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP"><B>app.lawn_height</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">type:  int        
+</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">The height of the lawn.</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">default:  8</TD>
+</TR>
+</TABLE></CENTER>
+   <BR>
+
+
+<P>&nbsp;</P>
+<P>
+<B><A NAME="3.4">3.4 Compiling Without the Makefile</A><BR>
+</B>
+</P>
+<P>
+You will first need to set up the <B>event.c</B> and <B>event.h</B>
+files just as if you were using a makefile.  Look in the file
+<B>GNUmakefile.kernel</B> in the <B>kernel</B> directory.  The
+first three lines (beginning <B>kobjects = main.o</B>
+</P>
+<P>
+<B>gp.o eval.o ...</B>) list all the kernel object files that
+need to be built, along with the application objects <B>function.o</B>
+and <B>app.o</B>. Building all those together should produce the
+executable.
+</P>
+</BODY>
+</HTML>

@@ -1,0 +1,651 @@
+<HTML>
+<HEAD>
+
+<META NAME="GENERATOR" CONTENT="Internet Assistant for Microsoft Word 2.0z">
+<TITLE>Untitled</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+
+<P>
+<B><FONT SIZE="5">Chapter 2</FONT></B></P>
+<PRE>
+     2.1    <A HREF="#2.1">Introduction</A>
+
+     2.2    <A HREF="#2.2">Defining an Application</A>
+            2.2.1     <A HREF="#2.2.1">Closure</A>
+            2.2.2     <A HREF="#2.2.2">Examples
+</A>
+     2.3    <A HREF="#2.3">Size of Individuals</A>
+     2.4    <A HREF="#2.4">Fitness</A>
+     2.5    <A HREF="#2.5">Population Initialization</A>
+     2.6    <A HREF="#2.6">Selection</A>
+     2.7    <A HREF="#2.7">Operators</A>
+          2.7.1     <A HREF="#2.7.1">Crossover</A>
+          2.7.2     <A HREF="#2.7.2">Reproduction</A>
+          2.7.3     <A HREF="#2.7.3">Mutation</A>
+
+     2.8    <A HREF="#2.8">Automatically Defined Functions (ADFs)</A>
+          2.8.1     <A HREF="#2.8.1">ADFs in lil-gp</A><BR>
+
+<HR></PRE>
+<P>
+<B><FONT SIZE="5">Background<BR>
+</FONT></B>
+</P>
+<P>
+<B><A NAME="2.1">2.1 Introduction</A></B></P>
+<P>
+The term <I>Genetic Programming</I> is associated with the work
+of John Koza [3,4].  A genetic program (or GP) is an adaptive
+learning system based on many of the principles of genetic algorithms
+(GA) as described by Holland's <I>Adaptation in Natural and Artificial
+Systems</I> [2] and Goldberg's <I>Genetic Algorithms</I> [1].
+</P>
+<P>
+There are many similarities between a GA and a GP. Both maintain
+a multitude of independent solutions, represented as individuals
+in a population.  Each runs in a cycle called a generation, in
+which the members of the present population are moved forward,
+deleted or modified into a new population.  Each uses a set of
+genetic operators
+</P>
+<P>
+to modify individuals of the population.  Each uses a selection
+operation to determine which individuals will moved to the next
+generation based on the <I>fitness</I> of those individuals, typically
+as measured by an external evaluation function.<BR>
+
+</P>
+<P>
+However, there are some important, basic differences as well:
+<BR>
+
+</P>
+<OL>
+<LI>
+   The structure of representation for a GP is a tree, while
+mostGA applications use a string for representing an individual
+in the population.<BR>
+
+</LI>
+<LI>
+    The nodes of a GP tree are typically functions or terminals,allowing each tree to be interpreted as a program.  While
+this could be true of a GA, it typically is not.  It is
+almost
+always true of a GP however.<BR>
+
+</LI>
+<LI>
+     While the length of a GA string is often fixed, the size
+of a GP individual is intrinsically variable in length.<BR>
+
+</LI>
+</OL>
+<P>
+In the rest of this section we will lay some of the groundwork
+for what a GP is, and how to work with it.  It will, by no means,
+be a complete exposition on genetic programming.  For such a description,
+we refer you to [3,4].<BR>
+
+</P>
+<P>
+<B><A NAME="2.2">2.2 Defining an Application</A></B></P>
+<P>
+To define a GP application, one must<SAMP> </SAMP>provide both the <I>function</I>
+and <I>terminal</I> nodes from which the GP tree is constructed.
+ The function nodes constitute the internal nodes of the tree,
+representing a function whose arguments are the subtrees below
+that node.  The
+terminal nodes constitute the terminal nodes of the tree, representing
+non-argument taking functions, or atoms</P>
+<P>
+Thus a GP constructs a parse tree of a function, and the functions
+contained in that tree take arguments from the evaluation of their
+subtrees.  The GP system generally either runs for a prespecified
+number of generations or until a satisfactory soluttion has beenfound.<BR>
+
+</P>
+<P>
+<B><A NAME="2.2.1">2.2.1 Closure</A></B></P>
+<P>
+Because a GP structure represents a program, and because the program
+can be constructed in ways not necessarily foreseen, the functions
+must designed such that they can take <I>any</I> arguments that
+could possibly be returned by an atom or the evaluation of another
+GP function.  A classic example would be a division operator.
+ A <B>division</B> used in a GP application that has numbers as
+atoms must be designed so that, when given a divisor of 0, <B>division</B>
+has some default behavior that allows the program to continue,
+rather than signaling an error condition and stopping.  Koza calls
+this the closure property.  One must take some care in designing
+the functions for an application such that they are indeed closed
+under the other functions and atoms.<BR>
+
+</P>
+<P>
+<B><A NAME="2.2.2">2.2.2 Examples</A></B></P>
+<P>
+There are 5 example programs, taken from GP I [3] and GP II [4],
+distributed with lil-gp.  We define them below to give you a feel
+for GP applications.<BR>
+
+</P>
+<P>
+<B>Artificial Ant</B></P>
+<P>
+In the artificial ant problem a grid is provided with a &quot;trail&quot;
+of food pellets distributed over the grid.  Two examples are provided,
+the Los Altos trail (100x100 with 105 food pellets) and the Santa
+Fe trail (32x32 with 89 food pellets).  The GP-program generates
+a path by walking through this map.  It is allowed to run for
+some number of time-steps t (400 in Santa Fe, 3000 in Los Altos),
+after which fitness is measured by the number of food pellets
+&quot;run over&quot; by the ant.  Each terminal costs one time
+step to evaluate, each
+function takes no time</P>
+<P>
+The function set has 4 members.  The first is <B>if-food-ahead</B>,
+which has two arguments_one to be performed if there is food in
+front of the ant, the other otherwise.  It has the for</P>
+<PRE>
+      <B>(if-food-ahead  (arg1-true-subtree)  (arg2-false-subtree))
+</B></PRE>
+<P>
+The other 3 functions are <B>progn2</B> (2 args), <B>progn3</B>
+(3 args), and <B>progn4</B> (4 args).  Each of these functions
+simply executes its children from left to right</P>
+<P>
+The terminal set has 3 members: <B>move</B>, which moves the ant
+one step forward.  <B>left</B>, which turns the ant left, and
+<B>right</B>, turns the ant right.<BR>
+
+</P>
+<P>
+<B>Boolean 11-multiplexer</B></P>
+<P>
+The Boolean 11-multiplexer problem generates GP-programs/individuals
+that show the same be- havior as a multiplexer with 3 address
+lines and 8 data lines.  That is, given all the possible inputs
+of an 11-multiplexer (211 possibilities), determine GP-program
+fitness based on how it compares on all 2048 cases</P>
+<P>
+The function set has 4 members, which are: <B>and</B> (2 args),
+<B>or</B> (2 args), <B>not</B> (1 arg), and an <B>if</B> function
+(3 args) that evaluates one or the other subtree associated with
+it based on a condition, as follows</P>
+<PRE>
+      <B>(if (arg1-cond) (arg2-true-subtree) (arg3-false-subtree))
+</B></PRE>
+<P>
+The terminal set has 11 members which are: the data lines {<I>d<SUB>0</SUB></I>
+: : :<I>d<SUB>7</SUB></I> }, and the address lines {<I>a<SUB>0</SUB></I>
+: : :<I>a<SUB>2</SUB></I> }.<BR>
+
+</P>
+<P>
+<B>Regression</B></P>
+<P>
+The GP-programs/individuals are designed to generate a function
+which matches a target curve.  The fitness cases are a number
+of known (<I>x,y</I>) pairs on the target curve.  The GP-program
+is evaluated at each of these <I>x</I>-coordinates, and the difference
+between the <I>y</I> value and the value returned by the GP-program,
+summed over all the cases, is the fitness</P>
+<P>
+The function set has 8 members which are: multiply, protected-divide
+(returns 1 when dividing by 0), add, subtract, sin, cos, exponentiation
+and protected-log (log of 0 is 0, otherwise is the log of the
+absolute value)</P>
+<P>
+The terminal set has one or two members: the input value <I>x</I>,
+and (optionally) <I>ephemeral random constants</I> or ERCs.  An
+ERC is a special terminal whose value is fixed.  When an ERC terminal
+is generated, either during the filling of the initial population
+or by mutation later in the run, a value is attached to that terminal
+and is unchanged by subsequent operations.  In our example, ERC's
+were generated in the range of [-1; 1).<BR>
+
+</P>
+<P>
+<B>Two-Boxes</B></P>
+<P>
+Here, the GP attempts to evolve the function <I>l<SUB>0</SUB>
+h<SUB>0</SUB> w<SUB>0</SUB> - l<SUB>1</SUB> h<SUB>1</SUB> w<SUB>1</SUB></I>
+using the four elementary arithmetic functions and six terminals,
+one for each variable.  This problem is included because it provides
+a simple introduction to the use of ADFs.<BR>
+
+</P>
+<P>
+<B>Lawnmower</B></P>
+<P>
+This problem evolves a control program for a lawnmower, with the
+goal being to mow the grass on every square of a toroidal grid.
+ The mower can move forward (and mow) one square, turn left, or
+jump any distance (relative to its own position and facing direction).
+ For more information, the reader is referred to [4].<BR>
+
+</P>
+<P>
+<B><A NAME="2.3">2.3 Size of Individuals</A></B></P>
+<P>
+The trees evolved by GP can grow very large.  To avoid wasting
+time evaluating a few very large trees, the user can place limits
+on the number of nodes and/or the depth of an individual.  In
+problems where individuals are composed of multiple trees (see
+Section 2.8.1), separate limits can be set for each component
+tree, as well as for the individual as a whole.</P>
+<P>
+Koza's experiments, in both books [3,4], place a maximum depth
+limit of 17 (with no restriction on the number of nodes).<BR>
+
+</P>
+<P>
+<B><A NAME="2.4">2.4 Fitness</A></B></P>
+<P>
+The fitness of each individual in the population is determined
+by use of an evaluation function.  Based on the results of the
+evaluation function, decisions are made with regards to the propagation
+and recombination of an individual into the next generation. 
+There are a number of types of &quot;fitness&quot; that can be
+used by a GP, which we note below:</P>
+<P>
+<B>Raw Fitness</B>, <I>f<SUB>r</SUB></I>    This measure is some
+direct measure, based on the application itself, of progress made
+in solving the problem. More often than not, such a measure is
+based on some comparison to fitness cases.  Much like a training
+set used in other applications like a neural net, one applies
+each of the fitness cases to the GP-program being evaluated, and
+the sum performance of that GP-program on <I>all</I> the cases
+is the raw fitness.<BR>
+
+For the three of the lil-gp test cases, raw fitness is
+measured as follows:<BR>
+</P>
+<BLOCKQUOTE>
+        <B>Regression</B>   Raw fitness is based on measuring
+the GP-generate curve against 20 test points on a test curve.
+ For each GP, if the generated point is within some , (0.01 by
+default) then it counts as a &quot;hit.&quot;  The raw fitness
+is the sum of the distances between the ideal and GP-calculated
+values over all the fitness cases.<BR>
+
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+        <B>Multiplexer  </B> For the &quot;11-multiplexer&quot;
+(3 address lines, 8 data lines), each of the 2048 cases (2<SUP>11</SUP>
+possible values of the 11 variables) is tested.  Raw fitness is
+the number of cases that the GP gets correct.<BR>
+
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+        <B>Artificial Ant   </B>A number of &quot;food&quot; pellets
+are placed on a map. The GP evolves a control program for the
+ant, and simulates the repeated execution of it until all the
+food is consumed or the maximum time limit is reached. Raw fitness
+is the number of food pellets that the ant hits.<BR>
+
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+        <B>Two-boxes</B>   Raw fitness is equal to the absolute
+difference between the correct answer and the GP-answer, summed
+over 10 fitness cases.  A hit is defined as a fitness case where
+the GP is within 0.01 of the correct answer.<BR>
+
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+        <B>Lawnmower</B>   Raw fitness is equal to the number
+of squares mowed during one execution of the GP-program.<BR>
+
+</BLOCKQUOTE>
+<P>
+<B>Standardized Fitness</B>, <I>f<SUB>s</SUB></I>   Standardized
+fitness simply reverses and/or translates the raw fitness so that
+all fitnesses are nonnegative, with 0 being for the best possible
+fitness.<BR>
+
+</P>
+<P>
+<B>Adjusted Fitness</B>, <I>f<SUB>a</SUB></I>   This value is
+calculated from the standardized fitness.  It is defined as follows
+for each individual <I>i </I></P>
+<PRE>
+                                           1
+                            <I>f</I></PRE>
+<P><SUB>a</SUB> (<I>i</I>) =
+                                       -----------
+                                       1 + <I>f<SUB>s</SUB></I>(<I>i</I>)
+
+</P>
+<P>
+<I> f<SUB>a</SUB></I> varies from 0 to 1, with 1 being best. 
+It has the advantage of exaggerating small differences as the
+fitness of the individuals increases.  Thus, as the solution is
+nearly complete, better feedback is give to the GP so that the
+best solutions can be pursued.<BR>
+
+</P>
+<P>Koza and others also refer to a &quot;normalized fitness.&quot;
+ This is simply adjusted fitness divided by the sum of all adjusted
+fitnesses in the population.  lil-gp does not use normalized fitness
+explicitly, but instead does implicit normalization of adjusted
+fitness where necessary (for instance, in fitness-proportionate
+selection).<BR>
+
+</P>
+<P>
+<B><A NAME="2.5">2.5 Population Initialization</A></B></P>
+<P>
+The GP-programs are created from random selections from the function
+and terminal set.  However, even though the selections are random
+there are some parameters which control the initial population.
+ See page 33 for a listing of lil-gp parameter names</P>
+<P>
+There are three methods available for creating these initial random
+structures</P>
+<P>
+<B>Full </B>   The full method generates only full trees, that
+is, trees which have all terminal nodes in the same level of the
+generated program tree.  Another way to say this is that the tree
+path length from any terminal node to the root of the tree is
+the same.<BR>
+</P>
+<P>
+<B>Grow </B>   The grow method chooses any node (function or terminal)
+for the root, then recursively calls itself to generate child
+trees for any nodes which need them.  It is restricted so that
+each tree has a maximum depth (if the tree reaches the maximum
+depth, all further nodes are restricted to be terminals, so growth
+will cease).<BR>
+
+</P>
+<P>
+<B>Half-and-half</B>   This method merely chooses the full method
+50% of the time and the grow method the other 50%.<BR>
+</P>
+<P>
+All of the generation methods can be specified with a &quot;ramp&quot;
+of initial depth values instead of a single value.  For instance,
+if the ramp is 2 - 5, then 25% of the trees will be generated
+with depth 2, 25% will be generated with depth 3, and so on. 
+Note that the grow method (and consequently, the half-and-half
+method), when called to generate a tree of depth <I>n</I>, can
+produce a tree with actual depth less than <I>n</I></P>
+<P>
+Half-and-half with a depth ramp is typically the method of choice
+for initialization since it produces a wide variety of tree shapes
+and sizes</P>
+<P>
+lil-gp checks each individual generated against node and/or depth
+limits (if any have been) set before inserting it into the initial
+population.  It also ensures that no duplicates are present in
+the initial population.<BR>
+
+</P>
+<P>
+<B><A NAME="2.6">2.6 Selection</A></B></P>
+<P>
+A selection method is routines used to select an individual from
+a population.  Currently, selections are used for two purposes
+in lil-gp: selecting the input individuals for a genetic operator
+(such as crossover) to work on, and selecting individuals to undergo
+subpopulation exchange in multiple- population problems</P>
+<P>
+Three commonly used selection methods are</P>
+<P>
+<B>Fitness-proportionate selection</B>   This selects an individual
+based on the proportion of that individual's adjusted fitness
+in comparison to the total adjusted fitness of the population.
+When there are <I>n</I> individuals in the population, an individual
+<I>i</I> will be chosen with probability</P>
+<PRE><BR>
+                      <I>f</I></PRE>
+<P><SUB>a</SUB>(<I>i</I>)
+ <I>  p<SUB>i      </SUB></I>=  -----------------------                      Sum(<I>j=1...n</I>)<I>f<SUB>a</SUB></I> (<I>j</I>)<BR>
+</P>
+
+
+<P>
+This is also known as the &quot;roulette wheel&quot; algorithm
+[1]. That is, each individual gets a portion of a roulette wheel
+based on the above formula (the entire wheel being equal to 1).
+ The wheel is then &quot;spun&quot; to determine which individual
+is next selected.  Individuals with a large portion of the overall
+fitness have an increased chance of being selected, but <I>every</I>
+individual has <I>some</I> chance.<BR>
+
+</P>
+<P>
+<B>(Greedy) Overselection</B>   Though fitness-proportionate selection
+is considered good for most applications, it is sometimes desirable
+to speed up the process.  For large populations (in [3] Koza defines
+large as over 500), you might use overselection.  Overselection
+partitions the population into two groups.  In Koza's standard
+formulation, 80% of the time, individuals are selected from Group
+I (based on fitness proportionate selection within the group)
+and 20% of the time from Group II. The partition into two groups
+can be arbitrary, but Koza has defined this partition based on
+fitness.  For a population of 1000, the top individuals accounting
+for 32% of the total adjusted fitness go into the first group,
+the rest into the second.  For popu- lations of 2000, the split
+occurs at 16% of the adjusted fitness, for populations of 4000,
+the split occurs at 8% and so on.  The particular percentages
+are parameters in lil-gp and can be altered.<BR>
+
+</P>
+<P>
+        <B>Overselection</B> results in much higher selection
+pressures on the population than fitness proportionate selection.
+ While such pressure often results in local minima solutions in
+GAs, Koza does not report such results in GPs.<BR>
+
+</P>
+<P>
+<B>Tournament Selection</B>   Tournament selection was originated
+in GAs to avoid overselection pres- sure on a population that
+could cause premature convergence.  In tournament selection <I>n</I>
+individuals are chosen in a uniform random manner, then the best
+(by fitness) of those <I>n</I> individuals is selected.  <I>n</I>
+is the <I>tournament size</I>.  Koza uses this type of selection,
+with a tournament size of 7, for most of the runs given in GP
+II [4].</P>
+<P>
+lil-gp provides these and 4 other selection methods.  See page
+33 for more information on these methods in lil-gp.<BR>
+
+</P>
+<P>
+<B><A NAME="2.7">2.7 Operators</A></B></P>
+<P>
+A genetic operator is a method for creating the individuals in
+each generation, usually by recombining pieces of individuals
+in the current generation.  Crossover, reproduction, and mutation
+are the three operators implemented in lil-gp.  For information
+on their use in lil-gp, see page 36.<BR>
+
+</P>
+<P>
+<B><A NAME="2.7.1">2.7.1 Crossover</A></B></P>
+<P>
+Crossover is the main operator in recombining old solutions into
+new and potentially better solutions in both GAs and GPs.  In
+a GP, crossover occurs on trees.  Thus two individuals are selected
+(using whatever selection method is in force) for crossover. 
+Let's call them A and B.  If the individuals in the current problem
+are composed of multiple trees (see Section 2.8.1), then one tree
+is randomly selected from each individual, subject to the restriction
+that both trees must share the same function set.  A node is randomly
+selected on each tree, <I>n</I><SUB>A</SUB> and <I>n</I><SUB>B</SUB>
+.  Crossover occurs by moving <I>n</I><SUB>A</SUB> <I>and</I>
+the subtree which has <I>n</I><SUB>A</SUB> as its root, to tree
+B at the position of <I>n</I><SUB>B</SUB> , and at the same time
+moving <I>n</I><SUB>B</SUB> <I>and</I> the subtree which has <I>n</I><SUB>B</SUB>
+as its root, to A at the position of <I>n</I><SUB>A</SUB> </P>
+<P>
+lil-gp allows mixed selection operations.  That is, certain operators
+such as crossover can use one selection method, while other operators
+use another.  This allows for experiments with mixed strategies.
+lil-gp also allows a different selection method to be used for
+each
+</P>
+<P>
+parent in crossover, and the probability that each crossover point
+is at an internal node versus an external node can be set by the
+user. If the individuals are composed of multiple trees, the probability
+that a given tree within an individual is chosen as the crossover
+tree can be set as well</P>
+<P>
+It is possible for crossover to create a tree that violates some
+of the node and/or depth maximums, if any are set by the user.
+ In such cases, Koza just reproduces one of the parents into the
+new population in place of the too-large offspring.  lil-gp supports
+this behavior, but can be set to continue picking random crossover
+points until two legal offspring are produced.<BR>
+
+</P>
+<P>
+<B><A NAME="2.7.2">2.7.2 Reproduction</A></B></P>
+<P>
+The simplest operator, reproduction simply chooses an individual
+in the current population and copies it verbatim into the new
+population. Apart from the choice of selection method, no options
+are available (or needed).<BR>
+
+</P>
+<P>
+<B><A NAME="2.7.3">2.7.3 Mutation</A></B></P>
+<P>
+Mutation in GP is typically a point mutation.  An individual is
+selected, and a mutation point picked.  The subtree with the mutation
+point as its root is deleted and replaced with a randomly generated
+subtree</P>
+<P>
+The mutation options in lil-gp are similar to those of crossover:
+method for selecting the individual, probabilities governing the
+location of the mutation point, what to do when mutation produces
+a tree that violates node and/or depth limits.  In addition, the
+user can specify the method and depth ramp for creating the new,
+random subtree.<BR>
+
+</P>
+<P>
+<B><A NAME="2.8">2.8 Automatically Defined Functions (ADFs)</A></B></P>
+<P>
+Koza's second book on genetic programming [4] was devoted mainly
+to exploring the use of au- tomatically defined functions (ADFs).
+ This technique places constraints on the tree_usually the nodes
+around the root have a constant structure for all individuals,
+and this constrant structure has two or more &quot;slots&quot;
+where the evolved portions of the individual hang off</P>
+<P>
+The running example in this section will be the &quot;two-boxes&quot;
+problem presented in [4].  This problem attempts to evolve a program
+to compute <I>l<SUB>0</SUB> w<SUB>0</SUB> h<SUB>0</SUB> - l<SUB>1</SUB>
+w<SUB>1</SUB> h<SUB>1</SUB></I> using the four basic arithmetic
+functions and six terminals representing the six variables.  Koza's
+experiments with this problem use a single three-argument ADF.
+ All individuals in the LISP representation of this problem fit
+the general framework depicted in Figure 2.1.<BR>
+
+</P>
+<PRE>
+                      progn
+
+                     /     \
+
+                  defun     \
+
+                /   |  \     \
+
+            ADF0    |   \     \                     
+
+                    |    \     \
+
+        (ARG0 ARG1 ARG2)  \     \
+
+                          |      \
+
+   - - - - - - - - - - - -|- - - -\- - - - - - - - - - - - - -
+
+                          |         \
+
+               &lt;body of ADF0&gt;     &lt;body of main program&gt;
+<BR></PRE>
+<PRE>
+    Figure 2.1: LISP representation of individual in two-boxes
+    problem.  (After figures in GP II.)<BR>
+
+</PRE>
+<P>
+The portion of the individual above the dotted line is just setup
+for the evaluation.  It serves to define a new three-argument
+function <B>ADF0</B> with the given body, and bind the arguments
+of the function to the symbols <B>ARG0</B>, <B>ARG1,</B> and <B>ARG2</B>
+within the function body.  It then evaluates the right, &quot;result-producing&quot;
+branch of the individual</P>
+<P>
+Each of the two evolved sections of the tree has its own set of
+functions and terminals.  The left branch (<B>ADF0</B>) has the
+four arithmetic functions available, but only its only terminals
+are the three arguments <B>ARG0</B>, <B>ARG1</B>, and <B>ARG2</B>.
+ The right branch, though, has the four arithmetic functions,
+the six terminals representing variables, and an additional three-argument
+function <B>ADF0</B> which causes evaluation of the left branch.
+ Genetic operators, such as crossover, must ensure that new individuals
+fit this scheme.  In this case, crossover must not occur within
+the nodes above the dotted line, and it must ensure that the operation
+preserves the separate function sets_ADF0s can only cross over
+with other ADF0s and RPBs can only cross over with other RPBs.
+ Similar retrictions apply for mutation.<BR>
+
+</P>
+<P>
+<B><A NAME="2.8.1">2.8.1 ADFs in lil-gp</A></B></P>
+<P>
+Representation of ADFs in lil-gp is different but essentially
+equivalent.  lil-gp stores only the &quot;guts&quot; of the individual_the
+portions below the dotted line.  lil-gp defines an &quot;individual&quot;
+as being a set of trees rather than a single tree.  The number
+of trees per individual is fixed (set by the application code),
+say at K.  Each tree 0...(K - 1) within an individual can have
+a different function set .  The function set for a particular
+tree number <I>k</I> is the same for all individuals</P>
+<P>
+lil-gp replaces the LISP bookkeeping stuff explicitly stored in
+the individual (the portions above the dotted line) with C bookkeeping
+stuff represented (1) implicitly in the user-defined func- tion
+sets, and (2) explicitly in the structure of the user-written
+individual evaluation function (<B>app_eval_fitness()</B>)</P>
+<P>
+In the two-boxes example, the application code would specify that
+individuals have two trees each.  Let us suppose tree 0 is the
+RPB and tree 1 is ADF0.  The corresponding function sets would
+look like</P>
+<PRE>
+<B>    tree 0:     {+, -, *, =, l0, w0, h0, l1, w1, h1, EVAL1}</B>
+<B>    tree 1:     {+, -, *, =, ARG0  , ARG1  , ARG2  }<BR></B></PRE>
+<P>
+<B>EVAL1</B> is a special type of function.  When the evaluation
+routine hits an <B>EVAL1</B>, it will evaluate tree 1 of the individual
+and take that value as the value of <B>EVAL1</B>.  <B>ARG0</B>,
+<B>ARG1</B>, and <B>ARG2</B> are special terminals that will take
+on the appropriate values (the arguments to the <B>EVAL1</B> function)
+each time an <B>EVAL1</B> is hit and tree 1 is evaluated.
+</P>
+<P>
+<B>EVAL</B><I>n</I> functions may be of any arity, including zero.
+ The arity of these functions is determined when the function
+set is initialized, by counting the number of <B>ARG</B><I>n</I>
+terminals in the target tree</P>
+<P>
+To determine the fitness of the individual in this example, the
+application code would just evaluate tree 0</P>
+<PRE>
+      <B>value = evaluate_tree ( ind-&gt;tr[0].data, 0 );<BR></B></PRE>
+<P>
+Any evaluation of tree 1 of the individual will be done via the
+<B>EVAL1</B> functions in tree 0.<BR>
+
+</P>
+</BODY>
+</HTML>

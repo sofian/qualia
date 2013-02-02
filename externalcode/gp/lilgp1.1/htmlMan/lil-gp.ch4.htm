@@ -1,0 +1,468 @@
+<HTML>
+<HEAD>
+
+<META NAME="GENERATOR" CONTENT="Internet Assistant for Microsoft Word 2.0z">
+<TITLE>                    lil-gp  1</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+
+<P>
+<B><FONT SIZE="5">Chapter 4</FONT><FONT><BR>
+</FONT></B>
+</P>
+<PRE>     4.1    <A HREF="#4.1">Invoking lil-gp</A>
+          4.1.1     <A HREF="#4.1.1">Parameter Files</A>
+
+     4.2    <A HREF="#4.2">Output Files</A>
+
+<HR></PRE>
+<P>
+<B><FONT SIZE="5">Running lil-gp</FONT></B></P>
+<P>
+This chapter describes how to use lil-gp once you have built the
+executable program, including the various command-line options
+available.</P>
+<P>
+<B><A NAME="4.1">4.1 Invoking lil-gp</A></B></P>
+<P>
+The default executable name produced by the makefile is &quot;gp&quot;.
+ Once you have built this, you can run it from the command line.
+ There are six command-line arguments you can use:<BR>
+
+</P>
+<P>
+<B>   -f</B>  &lt;<I>parameter</I>_<I>filename</I>&gt;
+</P>
+<P>
+This loads a parameter file into lil-gp's parameter database.
+ The format of this file is explained in section 4.1.1.  You can
+have multiple <B>-f</B> options.<BR>
+
+</P>
+<P>
+<B>   -p</B>  &lt;<I>parametername</I>=<I>value</I>&gt;
+</P>
+<P>
+          This sets the value of an individual parameter.  You
+can have multiple <B>-p</B> options.<BR>
+
+</P>
+<P>
+<B>   -c</B>  &lt;<I>checkpoint</I>_<I>filename</I>&gt;
+</P>
+<P>
+This restarts lil-gp from the specified checkpoint file. You may
+only have one -c option.<BR>
+
+</P>
+<P>
+<B>   -d</B>  &lt;<I>defined</I>_<I>symbo</I>l&gt;
+</P>
+<P>
+ This defines the given parameter file symbol.  The space between
+the &quot;d&quot; and the symbol is optional.<BR>
+
+</P>
+<P>
+<B>   -u</B>  &lt;<I>parameter</I>_<I>file</I>_<I>directive</I>&gt;
+</P>
+<P>
+This undefines the given parameter file symbol.  The space between
+the &quot;u&quot; and the symbol is optional.<BR>
+
+</P>
+<P>
+<B>   -q</B>
+</P>
+<P>
+Causes lil-gp to run in quiet mode, producing nothing on standard
+output.  Without this option, everything written to the <B>.SYS</B>
+output file is also printed to the terminal.<BR>
+
+</P>
+<P>
+These options can be specified in any order, but the order <I>is</I>
+significant.  Options that modify the parameter database (all
+except <B>-q</B>) are processed in the order they appear on the
+command line.  If a parameter is multiply defined, it is the <I>last</I>
+occurrence of it that takes effect.  A listing and explanation
+of all parameters available is given in chapter 5.  Order of directives
+is important too, so for
+instance</P>
+<PRE>
+<B>% gp -dBLAH -f file1 -uBLAH -f file2</B></PRE>
+<P>
+will cause the symbol &quot;BLAH&quot; to be defined during the
+processing of file1 but not file2.<BR>
+
+</P>
+<P>
+Note that all parameter settings are saved in the checkpoint files,
+so if you are just restarting an interrupted run you need only
+the<B> -c</B> option.  You can, however, use<B> -f</B> and <B>-p</B>
+to modify parameter
+settings--they should, of course, come after the <B>-c</B> option
+or they will have no effect.<BR>
+
+</P>
+<P>
+<B><A NAME="4.1.1">4.1.1 Parameter Files</A></B></P>
+<P>
+Parameter files have a simple syntax.  Comments can begin with
+a <B>'#'</B> or a <B>';'</B> and continue to the end of a line.
+<BR>
+
+</P>
+<P>
+The file is a series of &quot;name=value&quot; pairs.  If the
+last nonwhitespace, noncomment character on a line is a backslash
+then the next nonblank line is considered a continuation of the
+line.  Blank lines and lines that contain only comments are completely
+ignored, even in the middle of a continuation.  For instance:
+<BR>
+
+</P>
+<PRE>
+<B>sample = here is \</B></PRE>
+<PRE><B>     a single parameter that is continued \</B>
+
+<B># this comment is followed by a blank line<BR>
+</B><B># this comment is preceded by a blank line</B>
+
+<B>   right through a comment onto this line.<BR></B></PRE>
+<P>
+Whitespace (spaces and tabs) are ignored before the name, on either
+side of the equals sign, and after the value.  The following are
+all equivalent:</P>
+<PRE>
+<B>max_generations  =  100</B>
+
+<B>      max_generations=   100            ;  here  is  a  comment</B>
+
+<B>max_generations=100                     #  this  is  a  comment too.<BR>
+</B></PRE>
+<P>
+Both the name and the value of a parameter are just strings. 
+In many cases, the names have been chosen to convey the impression
+of a hierarchical structure, but as far as lil-gp is concerned,
+all parameter names are plain strings and no interpretation is
+applied. So, for example, the parameter names <B>breed[1].rate</B>,
+<B>breed[01].rate</B>, and <B>breed[1.0].rate</B> are all different.
+<BR>
+
+</P>
+<P>
+<B>&quot;Preprocessor&quot; Directives</B></P>
+<P>
+Parameter files also support a simple set of C-preprocessor-like
+directives to allow parts of the file to be processed optionally.
+They all begin with a &quot;%&quot; character, which must occur
+on the first column of the line.  They are:<BR>
+
+</P>
+<P>
+   <B>%define</B>  <I>symbol</I>
+</P>
+<P>
+          Defines the given symbol.  Equivalent to the <B>-d</B>
+command line option.<BR>
+
+</P>
+<P>
+   <B>%undefine</B>  <I>symbol</I>
+</P>
+<P>
+          Undefines the given symbol.  Equivalent to the<B> -u</B>
+command line option.<BR>
+
+</P>
+<P>
+  <B> %ifdef</B>  <I>symbol</I>
+</P>
+<P>
+ If the given symbol is defined, has no effect.  Otherwise skips
+all lines up until the next <B>%ifdef</B>, <B>%ifndef</B>, <B>%endif</B>,
+or end-of-file.<BR>
+
+</P>
+<P>
+   <B>%ifndef</B>  <I>symbol</I>
+</P>
+<P>
+          Same as <B>%ifdef</B>, but reverses the sense of the
+test.<BR>
+
+</P>
+<P>
+   <B>%endif</B>
+</P>
+<P>
+          Cancels a previous <B>%ifdef</B> or <B>%ifndef</B>.
+<BR>
+
+</P>
+<P>
+Symbols are case-sensitive.  Leading and trailing whitespace are
+ignored, but internal whitespace is allowed.<SUP>1</SUP> It is
+important to remember that these may look like C preprocessor
+directives, but they don't work the same.  In particular, you
+can't nest ifs and there are no Boolean operations (i.e.  <B>%ifdef
+FIRST &amp;&amp; SECOND </B>is legal, but it tests a single symbol
+named &quot;<B>FIRST &amp;&amp; SECOND</B>&quot;). Also, %define
+does not assign a value to the symbol, and no text substitution
+occurs.  This is merely meant as a simple mechanism for optionally
+setting groups of parameters, without having to fiddle with lots
+of different parameter files.</P>
+<P>
+The idea is that you can keep multiple sets of parameters in one
+parameter file, and switch among them using directives on the
+command line.  You can have a parameter file that looks like:</P>
+<PRE><B>&lt;some common parameters&gt;</B>
+
+<B>%ifdef FIRST</B>
+
+<B>&lt;one set of parameters&gt;</B>
+
+<B>%endif</B>
+
+<B>%ifdef SECOND</B>
+
+<B>&lt;another set of parameters&gt;</B>
+
+<B>%endif<BR></B></PRE>
+<P>
+You can then use one set or the other with a command line like:
+</P>
+<PRE>
+<B>gp -d FIRST -f parameter.file</B></PRE>
+<P>
+to select the first set.<BR>
+<BR>
+
+</P>
+<P>
+<B><A NAME="4.2">4.2 Output Files</A></B></P>
+<P>
+lil-gp produces a number of output files, with statistics on tree
+size and fitness for each generation.  The filenames are produced
+by appending a three-character extension to the value of the <B>output.basename</B>
+parameter.  They are:</P>
+<CENTER><TABLE BORDER="1" ALIGN="center" WIDTH="80%">
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%"><B>.sys</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">general information about the run</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%"><B>.gen</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">statistics on tree size and depth</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%"><B>.prg</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">statistics on fitness and hits</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%"><B>.bst</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">information about the current best-of-run individual(s)</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%"><B>.his</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">history of the<B> .bst</B> file</TD>
+</TR>
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="10%"><B>.stt</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">condensed version of all statistics</TD>
+</TR>
+</TABLE></CENTER>
+<P>&nbsp;
+  </P>
+<P>the <B>.bst</B> is rewritten every generation, and all the other
+files are flushed to disk at the completion of every generation.
+ This lets you see current information on backgrounded runs.</P>
+<P>
+Each message printed to an output file has an integer priority
+associated with it, ranging from 0 to 100.  A given message is
+produced only if its priority is less than or equal to the setting
+of the<B> output.detail</B> parameter.  You can experiment to
+find a level of output detail that you like.</P>
+<P>
+The <B>.gen</B> and <B>.prg</B> files can grow very large, and
+are basically just a human-readable form of the information in
+the <B>.stt</B> file.  This information is not written to them
+unless you really ask for it (by setting the <B>output.detail</B>
+parameter to at least 90)</P>
+<P>
+The <B>.stt</B> file has one line per subpopulation per generation,
+each line consisting of 20 space- separated numbers.  The parameter
+<B>output.stt_interval</B> can be set to modify how often the
+<B>.stt</B> file is written to.  The default is 1, meaning every
+generation.  For multiple-population problems, a line is written
+for each subpopulation, plus one more line for the population
+as a whole.  For single-population problems, only one line (the
+overall population line) is written, since the overall population
+is just the single subpop.  The meanings of each column are listed
+in Table 4.</P>
+<P>
+The<B> aux</B> directory in the distribution contains a short
+Perl script called <B>splitstt</B>.  This will split an <B>.stt</B>
+file into separate files for each subpopulation.  When invoked
+as
+</P>
+<PRE>
+<B>% splitstt myfile.stt<BR>
+</B></PRE>
+<P>
+it will produce files named <B>myfile.stt.pop0, myfile.stt.pop1</B>,
+etc.<BR>
+
+</P>
+<TABLE BORDER="2" ALIGN="DEFAULT">
+
+<TR>
+<TH ALIGN="LEFT" VALIGN="MIDDLE" WIDTH="109">
+<P ALIGN="center">&nbsp;</P>
+<P ALIGN="center"><B>column</B></P>
+</TH>
+<TH ALIGN="LEFT" VALIGN="BOTTOM" WIDTH="481">
+<P ALIGN="left">&nbsp;</P>
+contents</TH>
+</TR>
+
+<TR>
+<TD WIDTH="109">
+<P ALIGN="center">1</P>
+<P ALIGN="center">
+2
+</P>
+</TD>
+<TD WIDTH="481">generation number
+<P>
+subpopulation number (0 indicates the overall population)
+</P>
+</TD>
+</TR>
+
+<TR>
+<TD WIDTH="109">
+<P ALIGN="center">3</P>
+<P ALIGN="center">
+4
+</P>
+<P ALIGN="center">
+5
+</P>
+<P ALIGN="center">
+6
+</P>
+<P ALIGN="center">
+7
+</P>
+<P ALIGN="center">
+8
+</P>
+<P ALIGN="center">
+9
+</P>
+<P ALIGN="center">
+10
+</P>
+<P ALIGN="center">
+11
+</P>
+</TD>
+<TD WIDTH="481">mean standardized fitness of generation
+<P>
+standardized fitness of best-of-generation individual
+</P>
+<P>
+standardized fitness of worst-of-generation individual
+</P>
+<P>
+mean tree size of generation
+</P>
+<P>
+mean tree depth of generation
+</P>
+<P>
+tree size of best-of-generation individual
+</P>
+<P>
+tree depth of best-of-generation individual
+</P>
+<P>
+tree size of worst-of-generation individual
+</P>
+<P>
+tree depth of worst-of-generation individual
+</P>
+</TD>
+</TR>
+
+<TR>
+<TD WIDTH="109">
+<P ALIGN="center">12</P>
+<P ALIGN="center">
+13
+</P>
+<P ALIGN="center">
+14
+</P>
+<P ALIGN="center">
+15
+</P>
+<P ALIGN="center">
+16
+</P>
+<P ALIGN="center">
+17
+</P>
+<P ALIGN="center">
+18
+</P>
+<P ALIGN="center">
+19
+</P>
+<P ALIGN="center">
+20
+</P>
+</TD>
+<TD WIDTH="481">mean standardized fitness of run
+<P>
+standardized fitness of best-of-run individual
+</P>
+<P>
+standardized fitness of worst-of-run individual
+</P>
+<P>
+mean tree size of run
+</P>
+<P>
+mean tree depth of run
+</P>
+<P>
+tree size of best-of-run individual
+</P>
+<P>
+tree depth of best-of-run individual
+</P>
+<P>
+tree size of worst-of-run individual
+</P>
+<P>
+tree depth of worst-of-run individual
+</P>
+</TD>
+</TR>
+
+</TABLE>
+
+<P>&nbsp;
+ 
+</P>
+
+<P>
+ Table 4.1:  Columns of the <B>.stt</B> output file.<BR>
+<BR>
+
+</P>
+</BODY>
+</HTML>

@@ -91,8 +91,8 @@ mapper_device autoConnectDevice(mapper_device dev)
     mapper_db_device *dbdev = mapper_db_match_devices_by_name(db, "vector");
     if (dbdev) {
         acs->vector_device_name = strdup((*dbdev)->name);
-        mapper_monitor_link(acs->mon, (*dbdev)->name, mdev_name(acs->dev));
-        mapper_monitor_link(acs->mon, mdev_name(acs->dev), (*dbdev)->name);
+        mapper_monitor_link(acs->mon, (*dbdev)->name, mdev_name(acs->dev), 0, 0);
+        mapper_monitor_link(acs->mon, mdev_name(acs->dev), (*dbdev)->name, 0, 0);
 
         mapper_monitor_request_links_by_name(acs->mon, (*dbdev)->name);
     }

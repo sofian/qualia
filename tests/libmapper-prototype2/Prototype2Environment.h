@@ -20,10 +20,11 @@
 #ifndef PROTOTYPE2ENVIRONMENT_H_
 #define PROTOTYPE2ENVIRONMENT_H_
 
-#include "core/Environment.h"
-#include "rl/RLObservation.h"
-#include "AutoConnect.h"
+#include <qualia/core/Environment.h>
+#include <qualia/rl/RLObservation.h>
 #include <mapper/mapper.h>
+
+#include "AutoConnect.h"
 
 class Prototype2Environment : public Environment {
 public:

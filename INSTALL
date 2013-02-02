@@ -5,4 +5,4 @@ To install to default directory (/usr/local/lib):
 $ scons install
 
 To install to alternative directory:
-$ scons install PREFIX=/usr
+$ scons install PREFIX=/usr/

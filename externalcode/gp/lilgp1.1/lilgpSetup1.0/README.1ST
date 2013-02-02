@@ -1,0 +1,19 @@
+
+After unpacking the distribution, you should have the following tree
+structure:
+
+	lilgpSetup\
+	   classes\
+	   docs\
+	      images\
+	   javadocs\
+	      images\
+	   src\
+
+To build the .class files, change into the src\ directory and type:
+
+	javac -d ../classes *.java
+
+To run lilgpSetup, change into the classes\ directory and type:
+
+	java lilgpSetup
