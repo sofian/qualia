@@ -260,7 +260,7 @@ void testLearning() {
   const real weights1[] = { -0.922944, -0.639856, 0.326380, 0.076001, 0.654564, -0.012578, 0.231147, -0.073863, -0.429572, 0.521223, 0.127283, 0.804040, 0.096144, 0.898829, 0.181497, 0.979205, 0.532769, 0.228138, -0.308403 };
 
   printf("-- Testing initialization\n");
-  for (int i=0; i<net.nParams(); i++) {
+  for (unsigned int i=0; i<net.nParams(); i++) {
     ASSERT_ERROR( approxEqual(weights1[i], net.weights[i]));
   }
 
@@ -280,7 +280,7 @@ const real weights2[] = { -0.868334, -0.591405, 0.387102, 0.123143, 0.746422, 0.
 
   qualia.episode(1001); // does 1 call to start() and 1000 calls to step()
 
-  for (int i=0; i<net._nParams; i++) {
+  for (unsigned int i=0; i<net.nParams(); i++) {
     ASSERT_ERROR( approxEqual(weights2[i], net.weights[i]));
   }
   printf("-> PASSED\n");
@@ -299,7 +299,7 @@ const real weights2[] = { -0.868334, -0.591405, 0.387102, 0.123143, 0.746422, 0.
 
   qualia.episode(1001); // does 1 call to start() and 1000 calls to step()
 
-  for (int i=0; i<net._nParams; i++) {
+  for (unsigned int i=0; i<net.nParams(); i++) {
 //    printf("%f, ", net.weights[i]);
     ASSERT_ERROR( approxEqual(weights3[i], net.weights[i]));
   }

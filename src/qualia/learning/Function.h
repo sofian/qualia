@@ -34,8 +34,8 @@ public:
   // Public methods.
   virtual void init() {}
 
-  virtual int nInputs() const = 0;
-  virtual int nOutputs() const = 0;
+  virtual unsigned nInputs() const = 0;
+  virtual unsigned nOutputs() const = 0;
 
   virtual void setInputs(const real* input);
   virtual void getOutputs(real* output) const;

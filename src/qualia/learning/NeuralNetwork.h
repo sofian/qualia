@@ -60,7 +60,7 @@ public:
 
   // Layer structure.
   struct Layer {
-    int n;          // number of units in this layer
+    unsigned int n;          // number of units in this layer
     real *output;   // output of ith unit
     real *error;    // error term of ith unit
     real *weight;   // connection weights to ith unit
@@ -68,7 +68,7 @@ public:
     bool linear;    // whether the output of the layer is linear (otherwise it's sigmoid)
   };
 
-  int _nParams;    // number of parameters
+  unsigned int _nParams;    // number of parameters
 
   // The three MLP layers (inputs -> hidden -> outputs).
   Layer inputLayer, hiddenLayer, outputLayer;
@@ -77,9 +77,9 @@ public:
   // Interface ///////////////////
 
   // Constructor/destructor.
-  NeuralNetwork(int nInputs,
-                int nHiddens,
-                int nOutputs,
+  NeuralNetwork(unsigned int nInputs,
+                unsigned int nHiddens,
+                unsigned int nOutputs,
                 float learningRate = 0.01,
                 float decreaseConstant = 0,
                 float weightDecay = 0,
@@ -90,10 +90,10 @@ public:
 
   virtual void init();
 
-  virtual int nInputs() const { return inputLayer.n; }
-  virtual int nHidden() const { return hiddenLayer.n; }
-  virtual int nOutputs() const { return outputLayer.n; }
-  virtual int nParams() const { return _nParams; }
+  virtual unsigned int nInputs() const { return inputLayer.n; }
+  virtual unsigned int nHidden() const { return hiddenLayer.n; }
+  virtual unsigned int nOutputs() const { return outputLayer.n; }
+  virtual unsigned int nParams() const { return _nParams; }
 
   virtual void setInput(int i, real x);
   virtual void setInputs(const real *inputs);
@@ -118,7 +118,7 @@ public:
 #endif
 
   // Internal ("private") methods.
-  void _allocateLayer(Layer& layer, int nInputs, int nOutputs, int& k, bool isLinear=false);
+  void _allocateLayer(Layer& layer, unsigned int nInputs, unsigned int nOutputs, unsigned int& k, bool isLinear=false);
   void _deallocateLayer(Layer& layer);
 
   void _propagateLayer(Layer& lower, Layer& upper);
