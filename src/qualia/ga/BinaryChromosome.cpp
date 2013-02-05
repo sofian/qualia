@@ -26,10 +26,8 @@ BinaryChromosomeInfo::BinaryChromosomeInfo(unsigned int nGenes_, const uint8_t* 
   // Assign mutator function.
   if (!mutator)
     mutator = &BinaryChromosome::mutateFlip;
-  allocate(nGenes_, geneSizesInit_);
-}
 
-void BinaryChromosomeInfo::allocate(unsigned int nGenes_, const uint8_t* geneSizesInit_) {
+  // Allocate.
   if (geneSizes) // already allocated
     return; // TODO: error message
 

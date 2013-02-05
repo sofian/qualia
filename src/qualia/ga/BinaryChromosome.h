@@ -48,7 +48,6 @@ public:
   int getStartBitPosition(int gene) const;
 
   virtual bool equals(const BinaryChromosomeInfo& info);
-  void allocate(unsigned int nGenes, const uint8_t* geneSizesInit=0);
 };
 
 class BinaryChromosome: public Chromosome {
