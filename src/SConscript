@@ -1,7 +1,5 @@
 import os
 
-Import(["MODE"])
-
 # From http://code.activestate.com/recipes/502263/
 # By Paul Rubin
 def unique(seq, keepstr=True):
@@ -29,11 +27,14 @@ def fnCompress(target, source, env):
     for file in files:
         run(AVR_BIN_PREFIX+'ar rcs %s %s'%(target[0], file))
 
-## TODO: change this (make it more generic eg. settings file) ###############
-if (MODE == 'computer'):
-  INCLUDE_PATH = "/Users/tats/Documents/workspace/qualia/src/"
-else:
-  INCLUDE_PATH = "/Users/tats/Documents/workspace/qualia/src/:/Applications/Arduino.app/Contents/Resources/Java/hardware/tools/avr/avr/include/"
+Import(["platform", "mode"])
+SUBDIRS = ["qualia/core", "qualia/util", "qualia/rl", "qualia/ga", "qualia/computer", "qualia/learning"]
+
+if (platform == 'computer'):
+	SUBDIRS += ["qualia/computer"]
+
+env = Environment();
+arch = env['PLATFORM'];
 
 MCU = 'atmega168'
 F_CPU = 16000000
@@ -41,25 +42,18 @@ EXTRA_LIBS = ""
 LIBS = ""
 LIBPATH = ""
 AVR_GCC_DIR = ""
+PLUGINS = ""
 
-if (MODE == 'avr'):
-  AVR_GCC_DIR = "/Applications/Arduino.app/Contents/Resources/Java/hardware/tools/avr/bin/"
-#############################################################################
-
-  
-subdirs = ["core", "rl", "util"]
-sources = []
-for subdir in subdirs:
-    sources += Glob(subdir + "/*.cpp")
-    sources += Glob(subdir + "/*.c")
-
-# Remove avrdefs to avoid the "no symbol" linking error
-if (MODE == "computer"):
-  sources = [f for f in sources if "core/avrdefs.cpp" not in str(f)]
+# default
+if (platform == 'avr' or platform == 'arduino'):
+	if (arch == 'darwin'):
+	  AVR_GCC_DIR = "/Applications/Arduino.app/Contents/Resources/Java/hardware/tools/avr/bin/"
+	else:
+	  AVR_GCC_DIR = ""
 
 TARGET = "qualia"
 
-INCLUDE_PATH = ARGUMENTS.get('INCLUDE_PATH', INCLUDE_PATH).split(":")
+INCLUDE_PATH = ARGUMENTS.get('INCLUDE_PATH', "").split(":")
 INCLUDE_PATH = unique(INCLUDE_PATH + [os.getcwd()])
 
 # AVR arguments
@@ -75,6 +69,8 @@ EXTRA_LIBS = ARGUMENTS.get('EXTRA_LIBS', EXTRA_LIBS).split(':')
 LIBS = ARGUMENTS.get('LIBS', LIBS).split(',')
 LIBPATH = ARGUMENTS.get('LIBPATH', LIBPATH).split(':')
 
+PLUGINS = ARGUMENTS.get('PLUGINS', PLUGINS).split(',')
+
 # There should be a file with the same name as the folder and with the extension .pde
 #TARGET = os.path.basename(os.path.realpath(os.curdir))
 #assert(os.path.exists(TARGET+'.pde'))
@@ -85,8 +81,28 @@ if AVR_GCC_DIR:
 
 AVR_BIN_PREFIX = AVR_GCC_DIR + 'avr-'
 
+# Plugins.
+if ('osc' in PLUGINS):
+  LIBS += ["lo"]
+  SUBDIRS += ["qualia/plugins/osc"]
+if ('mapper' in PLUGINS):
+	LIBS += ["mapper-0", "lo"]
+	SUBDIRS += ["qualia/plugins/mapper"]
+
+LIBS += ["m"]
+#############################################################################
+ 
+sources = []
+for subdir in SUBDIRS:
+  sources += Glob(subdir + "/*.cpp")
+  sources += Glob(subdir + "/*.c")
+
+# Remove avrdefs to avoid the "no symbol" linking error
+if (platform == "computer"):
+	sources = [f for f in sources if "core/avrdefs.cpp" not in str(f)]
+
 # Create environment and set default configurations ###################################
-if (MODE == 'avr' or MODE == 'arduino'):
+if (platform == 'avr' or platform == 'arduino'):
   cFlags = ['-ffunction-sections', '-fdata-sections', '-fno-exceptions',
       '-funsigned-char', '-funsigned-bitfields', '-fpack-struct', '-fshort-enums',
       '-Os', '-mmcu=%s'%MCU]
@@ -95,7 +111,7 @@ if (MODE == 'avr' or MODE == 'arduino'):
       CFLAGS = cFlags+['-std=gnu99'], CCFLAGS = cFlags, TOOLS = ['gcc','g++'])
 
   #env.Append(BUILDERS={'Elf':Builder(action=AVR_BIN_PREFIX+'gcc '+
-  #        '-mmcu=%s -Os -Wl,--gc-sections -o $TARGET $SOURCES -lm'%MCU)})
+  #        '-mmcu=%s -Os -Wl,--gc-sections,--relax -o $TARGET $SOURCES -lm'%MCU)})
   #env.Append(BUILDERS={'Hex':Builder(action=AVR_BIN_PREFIX+'objcopy '+
   #        '-O ihex -R .eeprom $SOURCES $TARGET')})
   env.Append(BUILDERS = {'CompressCore':Builder(action = fnCompress) })
@@ -113,23 +129,37 @@ if (MODE == 'avr' or MODE == 'arduino'):
 #  env.Append(CPPPATH=["/usr/local/include", "/usr/include", os.getcwd()])
 
 else:
+  
   env = Environment()
-  env.Append(CPPPATH=["/usr/local/include", "/usr/include", os.getcwd()])
-
-
+  
+  # NOTE: This line was useless and was causing problem: it caused implicit dependency
+  # that made scons copy the include files to /usr/local/include even without 
+  # calling scons install
+  #env.Append(CPPPATH=["/usr/local/include", "/usr/include", os.getcwd()])
+  env.Append(CPPPATH=INCLUDE_PATH)
+  
+  env.Append(LIBS=LIBS)
+  if (mode == 'debug'):
+    env.Append(CPPFLAGS=['-Wall', '-g', '-DDEBUG=1', '-DDEBUG_LEVEL=3'])
+  else:
+    env.Append(CPPFLAGS=['-Wall', '-O2', '-DDEBUG_LEVEL=1'])
+  
   #objects = env.StaticObject(source = sources)
 
   # Peut etre une erreur: on devrait construire des OBJETS (?)
   lib = env.Library(target = TARGET, source = sources)
 
-  prefix = ARGUMENTS.get('PREFIX', "/usr/local")
+  if (arch == 'linux' or arch == 'darwin'):
+    prefix = ARGUMENTS.get('PREFIX', "/usr/local")
+  else:
+    prefix = ARGUMENTS.get('PREFIX', "")
+	
   installPath = prefix + "/lib"
 
-  il = env.Install(installPath, lib)
-  ih1 = env.Install(prefix+"/include/qualia/core", Glob('core/*.h'))
-  ih2 = env.Install(prefix+"/include/qualia/rl", Glob('rl/*.h'))
-  ih3 = env.Install(prefix+"/include/qualia/util", Glob('util/*.h'))
-  env.Alias("install", [il, ih1, ih2, ih3])
+  installPathList = env.Install(installPath, lib)
+  for subdir in SUBDIRS:
+  	installPathList += [ env.Install(prefix+"/include/" + subdir, Glob(subdir+"/*.h")) ]
+  env.Alias("install", installPathList)
 
 #execfile("./tools/scons/SConstruct.new")
 #
@@ -138,3 +168,4 @@ else:
 #SConscript("tests/unit/SConscript")
 #SConscript("tests/example/SConscript")
 #SConscript("tests/libmapper/SConscript")
+

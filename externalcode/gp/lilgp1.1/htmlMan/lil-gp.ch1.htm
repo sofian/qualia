@@ -1,0 +1,184 @@
+<HTML>
+<HEAD>
+<TITLE></TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<P><B><FONT SIZE="5">Chapter 1
+
+</FONT></B></P>
+<PRE>
+     1.1    <A HREF="#1.1">Features</A>
+     1.2    <A HREF="#1.2">Kernel</A>
+     1.3    <A HREF="#1.3">Specification of Problems</A>
+     1.4    <A HREF="#1.4">Multiple Populations</A>
+     1.5    <A HREF="#1.5">Availability</A>
+     1.6    <A HREF="#1.6">Author</A></PRE>
+<P>
+<HR>
+</P>
+<P>
+<B><FONT SIZE="5">Introduction</FONT></B></P>
+<P>
+lil-gp is a C language system for developing genetic
+programming applications based on the LISP
+work of John Koza at Stanford University.
+lil-gp evolves trees whose nodes are C function pointers,
+so tree evaluation is done entirely with complied
+code. This gives us a manyfold speed increase,
+allows us to handle much large problems (bigger
+populations, more generations), and is portable to a wide
+variety of platforms. lil-gp individuals can be composed
+of multiple trees, some of which can evaluate
+the others to give ADF capabilities. This
+system is the first (that we know of) to support multiple-population
+runs with arbitrary interchange topologies. lil-gp
+has many many options for controlling breeding, and is capable
+of emulating the &quot;Simple LISP Code,&quot; given
+in the appendix of Koza's book [3 ], as well
+as the parameters given in Chapter 7, &quot;Detailed Description
+of Genetic Programming,&quot; of that book.<FONT><BR>
+</FONT>
+</P>
+<P>
+<B><FONT SIZE="4"><A NAME="1.1">1.1 Features</A></FONT></B></P>
+<P>
+lil-gp features include:</P>
+<UL>
+<LI>ease-of-use: options are specified via a flexible format parameter
+file; command line arguments lend the system to batch operation
+for long series of runs 
+</LI>
+</UL>
+
+<UL>
+<LI>supports multiple subpopulations with arbitrary exchange topologies
+<BR>
+
+</LI>
+<LI>written in C for portability to a wide variety of Unix/DOS/Mac
+platforms<BR>
+
+</LI>
+<LI>7 selection methods: fitness proportionate, greedy overselection,
+inverse fitness, variable size tournament, random, best, worst
+<BR>
+
+</LI>
+<LI>3 genetic operators: crossover, reproduction, mutation<BR>
+
+</LI>
+<LI>writes and restarts from checkpoint files <BR>
+
+</LI>
+<LI>optional node and/or depth limitations on tree size<BR>
+
+</LI>
+<LI>support for ephemeral random constants<BR>
+
+</LI>
+<LI>extensive output, including statistics files ready for import
+into plotting/analysis packages<BR>
+
+</LI>
+</UL>
+
+<P>
+<B><FONT SIZE="4"><A NAME="1.2">1.2 Kernel</A></FONT></B></P>
+<P>
+At lil-gp's core is a tree representation that is compact yet
+amenable to extremely fast evaluation. Trees are stored as preorder
+expressions, with special symbols inserted to indicate ephemeral
+random constants and conditionally evaluated subtrees. The compactness
+of the representation allows larger populations to be stored in
+real memory, and the fact that trees are stored as contiguous
+blocks of memory minimizes the impact of paging on performance.
+The selection methods and genetic operators are implemented in
+an object-oriented fashion, allowing new routines to be added
+easily. Checkpoint files save the entire state of the run, allowing
+a promising run to be extended, or an interrupted run to be completed.
+A portable random number generator provides consistent results
+across platforms.<BR>
+
+</P>
+<P>
+<B><FONT SIZE="4"><A NAME="1.3">1.3 Specification of Problems</A></FONT></B></P>
+<P>
+Creating a program in lil-gp is done with a minimum of code writing.
+The use must provide one C function for each GP function and terminal,
+in addition to a fitness evaluation function. Several callback
+hooks are provided for initialization, customized output, and
+reading and writing user state information to checkpoint files.
+Once the user code is written, the executable need only be compiled
+once_all parameters and operators are available_even switch between
+single and multiple population runs_just by modifying the parameter
+file.<BR>
+
+</P>
+<P>
+<B><FONT SIZE="4"><A NAME="1.4">1.4 Multiple Populations</A></FONT></B></P>
+<P>
+lil-gp's support for multiple population problems includes user-specified
+exchange topology and exchange interval. The parameter file specifies
+how the individuals to be exchanged from each subpopulation are
+selected, and where they go. The output files include statistics
+on fitness and tree size for each subpopulation and for the entire
+population, both for the current generation and the entire run
+to that point.<BR>
+
+</P>
+<P>
+<B><FONT SIZE="4"><A NAME="1.5">1.5 Availability</A></FONT></B></P>
+<P>
+This is version 1.0 of lil-gp. The distribution includes implementations
+of three of the problems from Koza's first book [3]--the Boolean
+11-multiplexer, symbolic regression, and the artificial ant. Two
+problems from the second book [4] using ADFs are also implemented:
+the two-boxes problem and the lawnmower problem. This documentation
+covers building and running the sample problems, writing your
+own applications, and extending the kernel.<BR>
+
+</P>
+<P>
+<B><FONT SIZE="4"><A NAME="1.6">1.6 Author</A></FONT></B></P>
+<P>
+lil-gp was written by Douglas Zongker, under the direction of
+Dr. Bill Punch. Mike Boers, Mike Raymer, Dr. Erik Goodman, and
+the rest of the MSU GARAGe (Genetic Algorithms Research and Applications
+Group) also provided valuable assistance.
+</P>
+<P>
+Other users of lil-gp have provided suggestions and solutions
+for compatibility problems. Thanks especially go to Nigel Dodd,
+Kayvan Sylvan, Pierce T. Wetter III, and Glen Ropella.<BR>
+
+</P>
+<P>
+We want to hear about your experiences with lil-gp. We welcome
+your questions, comments, sugges- tions, and, of course, bug reports.1
+lil-gp related e-mail can be sent to zongker@isl.cps.msu.edu.
+You should always be able to find any new information on lil-gp
+on the World Wide Web, at the URL http://isl.cps.msu.edu/GA/software/lil-gp.
+Paper mail may be sent to:<BR>
+
+</P>
+<BLOCKQUOTE>
+Computer Science Department
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+A-714 Wells Hall
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+Michigan State University
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+East Lansing, MI 48824
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+USA<BR>
+
+</BLOCKQUOTE>
+<P>
+<FONT SIZE="2">1 Well, we don't actually welcome bug reports, but
+send them anyway.</FONT></P>
+</BODY>
+</HTML>

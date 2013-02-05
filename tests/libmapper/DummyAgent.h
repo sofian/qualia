@@ -21,18 +21,14 @@
 #ifndef DUMMYAGENT_H_
 #define DUMMYAGENT_H_
 
-#include "core/Agent.h"
-//#include <stdio.h>
-
-const unsigned int DUMMY_AGENT_N_ACTIONS[] = {255};
-#define DUMMY_AGENT_ACTIONS_DIM 1
+#include <core/Agent.h>
 
 class DummyAgent : public Agent {
 
 public:
   Action currentAction;
 
-  DummyAgent() : currentAction(DUMMY_AGENT_ACTIONS_DIM, DUMMY_AGENT_N_ACTIONS) {}
+  DummyAgent(int actionsDim, const unsigned int* nActions) : currentAction(actionsDim, nActions) {}
 
   virtual void init() {
     currentAction.reset();

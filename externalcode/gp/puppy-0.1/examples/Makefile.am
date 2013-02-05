@@ -1,0 +1,1 @@
+SUBDIRS = parity symbreg

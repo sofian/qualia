@@ -20,8 +20,8 @@
 #ifndef DUMMYREWARDENVIRONMENT_H_
 #define DUMMYREWARDENVIRONMENT_H_
 
-#include "rl/RewardEnvironment.h"
-#include "rl/Reward.h"
+#include <qualia/rl/RewardEnvironment.h>
+#include <qualia/rl/Reward.h>
 
 class DummyRewardEnvironment : public RewardEnvironment {
 public:
@@ -31,7 +31,7 @@ public:
     RewardEnvironment(observationDim, reward), currentObservation(observationDim) {}
 
   virtual void init() {
-    for (int i=0; i<currentObservation.dim; i++)
+    for (int i=0; i<currentObservation.dim(); i++)
       currentObservation[i] = 0;
   }
 
