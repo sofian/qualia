@@ -35,6 +35,7 @@ struct ObservationAction {
   Action* action;
 };
 
+// XXX: I'm considering getting rid of that class or at least renaming it.
 class Qualia {
 
 public:
