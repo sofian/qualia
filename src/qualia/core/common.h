@@ -42,7 +42,11 @@
 
 // Old systems need that to define FLT_MAX and DBL_MAX
 #ifndef DBL_MAX
-  #include <values.h>
+  #ifdef _WIN32
+    #include <float.h>
+  #else
+    #include <values.h>
+  #endif
 #endif
 
 #ifdef _MSC_VER
