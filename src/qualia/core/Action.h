@@ -47,7 +47,11 @@ public:
   int compareTo(const ActionProperties& p) const;
 
   // Returns a random action.
+#ifdef _WIN32
+  action_t random() const { return (action_t) rand() % nConflated(); }
+#else
   action_t random() const { return (action_t) ::random(nConflated()); }
+#endif
 };
 
 class Action {

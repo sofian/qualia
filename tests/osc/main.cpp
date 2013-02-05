@@ -161,9 +161,21 @@ int main(int argc, char** argv) {
 
   // Set random seed.
   if (seed == -1)
+  {
+#ifdef _WIN32
+	  srand(time(NULL) + agentId);
+#else
     randomSeed(time(NULL) + agentId);
+#endif
+  }
   else
+  {
+#ifdef _WIN32
+	  srand(seed);
+#else
     randomSeed(seed);
+#endif
+  }
 
   if (!isLearning)
     printf("Learning switched off\n");
