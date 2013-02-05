@@ -36,21 +36,34 @@ typedef real observation_t;
 
 class Observation {
 public:
-  unsigned int _dim;
-
+  /// The array containing the observations (of size dim()).
   observation_t* observations;
+
+  // Internal use.
+  unsigned int _dim; // dimension of data
+
+  /// True iff this observation is terminal.
   bool terminal;
 
+  /// Constructor (dimension needs to be known at construction).
   Observation(unsigned int dim);
+
+  // Class desctructor.
   virtual ~Observation();
 
+  /// Access operator.
   observation_t& operator[](int i) const { return observations[i]; }
 
+  /// Copies data from #src#.
   virtual Observation& copyFrom(const Observation& src);
 
+  /// Returns dimension of data.
   unsigned int dim() const { return _dim; }
 
+  /// Save data to #file# (in binary format).
   virtual void saveData(XFile* file) const;
+
+  /// Loads data from #file# (in binary format). Dimension needs to be known in advance.
   virtual void loadData(XFile* file);
 };
 

@@ -106,7 +106,7 @@ Action& Action::next() {
 }
 
 Action& Action::copyFrom(const Action& src) {
-  ASSERT_ERROR( properties->compareTo(*(src.properties)) == 0);
+  ASSERT_ERROR( properties->equals(*src.properties) );
   memcpy( actions, src.actions, dim()*sizeof(action_dim_t) );
   return *this;
 }
