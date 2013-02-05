@@ -51,7 +51,8 @@ public:
   unsigned long nConflated() const { return _nConflated; }
   unsigned int nActions(int i) const { return _nActions[i]; }
 
-  int compareTo(const ActionProperties& p) const;
+  /// Comparison method.
+  bool equals(const ActionProperties& p) const;
 
   // Returns a random action.
   action_t random() const { return (action_t) ::random(nConflated()); }

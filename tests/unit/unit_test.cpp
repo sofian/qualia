@@ -503,8 +503,8 @@ void testBinaryChromosomes() {
   printf("-- Testing equality operator\n");
   BinaryChromosomeInfo infoSame(9, geneSizes);
   BinaryChromosomeInfo infoWrong(9, geneSizes2);
-  assert( info == infoSame );
-  assert( info != infoWrong );
+  ASSERT_ERROR( info.equals(infoSame) );
+  ASSERT_ERROR( !info.equals(infoWrong) );
   printf("-> PASSED\n");
 
   printf("- Testing initializer\n");
@@ -567,29 +567,27 @@ void testBinaryChromosomes() {
   printf("- Test compare between chromosomes\n");
 
   printf("-- Test: chromosome equals itself\n");
-  assert( parent1.compare(parent1) == 0 );
-  assert( parent1 == parent1 );
+  ASSERT_ERROR( parent1.equals(parent1) );
   printf("-> PASSED\n");
 
   printf("-- Test: chromosome compare with different info that ==\n");
   BinaryChromosome parentSame(&infoSame);
-  parentSame.copy(parent1);
-  assert( parent1.compare(parentSame) == 0 );
-  assert( parent1 == parentSame );
+  parentSame.copyFrom(parent1);
+  ASSERT_ERROR( parent1.equals(parentSame) );
+  //assert( parent1 == parentSame );
   printf("-> PASSED\n");
 
   printf("-- Test: chromosome compare with different info (should return -1 / fail)\n");
   BinaryChromosome parentWrong(&infoWrong);
-  assert( parent1.compare(parentWrong) == -1 );
-  assert( parent1 != parentWrong );
+  ASSERT_ERROR( !parent1.equals(parentWrong) );
   printf("-> PASSED\n");
 
   printf("-- Test: chromosome compare with flip = n bits (all bits differ)\n");
-  tmp.copy(parent1); // copy
+  tmp.copyFrom(parent1); // copy
   parent1.mutate(1);
-  assert( parent1 != tmp );
-  printf("Diff %d\n", parent1.compare(tmp));
-  assert( parent1.compare(tmp) == TEST_CHROMOSOME_BITSIZE );
+  ASSERT_ERROR( !parent1.equals(tmp) );
+  //printf("Diff %d\n", parent1.compareTo(tmp));
+  //assert( parent1.compareTo(tmp) == TEST_CHROMOSOME_BITSIZE );
   printf("-> PASSED\n");
 
   printf("- Testing crossovers\n");
@@ -605,11 +603,11 @@ void testBinaryChromosomes() {
   printf("Children:\n");
   print(children1);
   print(children2);
-  assert( children1.compare(children2) == TEST_CHROMOSOME_BITSIZE);
+  //ASSERT_ERROR( children1.compareTo(children2) == TEST_CHROMOSOME_BITSIZE);
   // Repeat a few times.
   for (int i=0; i<100; i++) {
     BinaryChromosome::crossoverOnePoint(parent1, parent2, &children1, &children2);
-    assert( children1.compare(children2) == TEST_CHROMOSOME_BITSIZE);
+    //assert( children1.compareTo(children2) == TEST_CHROMOSOME_BITSIZE);
   }
   printf("-> PASSED\n");
 
@@ -618,11 +616,11 @@ void testBinaryChromosomes() {
   printf("Children:\n");
   print(children1);
   print(children2);
-  assert( children1.compare(children2) == TEST_CHROMOSOME_BITSIZE);
+  //ASSERT_ERROR( children1.compareTo(children2) == TEST_CHROMOSOME_BITSIZE);
   // Repeat a few times.
   for (int i=0; i<100; i++) {
     BinaryChromosome::crossoverTwoPoint(parent1, parent2, &children1, &children2);
-    assert( children1.compare(children2) == TEST_CHROMOSOME_BITSIZE);
+    //assert( children1.compareTo(children2) == TEST_CHROMOSOME_BITSIZE);
   }
   printf("-> PASSED\n");
 

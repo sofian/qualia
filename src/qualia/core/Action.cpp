@@ -44,13 +44,9 @@ ActionProperties::~ActionProperties() {
   Alloc::free(_nActions);
 }
 
-int ActionProperties::compareTo(const ActionProperties& p) const {
-  if (_dim == p._dim)
-    return memcmp(_nActions, p._nActions, _dim*sizeof(unsigned int));
-  else
-    return (_dim - p._dim);
+bool ActionProperties::equals(const ActionProperties& p) const {
+  return (_dim == p._dim && (memcmp(_nActions, p._nActions, _dim*sizeof(unsigned int)) == 0));
 }
-
 
 Action::Action(ActionProperties* properties_) : properties(properties_) {
   ASSERT_ERROR(properties);

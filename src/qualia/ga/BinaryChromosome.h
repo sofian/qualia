@@ -47,11 +47,9 @@ public:
   unsigned int byteSize() const { return ( (bitSize()+7) / 8); }
   int getStartBitPosition(int gene) const;
 
+  virtual bool equals(const BinaryChromosomeInfo& info);
   void allocate(unsigned int nGenes, const uint8_t* geneSizesInit=0);
 };
-
-int operator==(const BinaryChromosomeInfo& a, const BinaryChromosomeInfo& b);
-int operator!=(const BinaryChromosomeInfo& a, const BinaryChromosomeInfo& b);
 
 class BinaryChromosome: public Chromosome {
 public:
@@ -65,7 +63,7 @@ public:
 
   virtual void init();
   virtual void mutate(float p);
-  virtual int compare(const Chromosome& c) const;
+  virtual bool equals(const Chromosome& c) const;
 
   uint64_t getGeneValue(int gene) const;
   void setGeneValue(int gene, uint64_t value);
