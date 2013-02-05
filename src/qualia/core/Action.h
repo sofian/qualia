@@ -1,6 +1,13 @@
 /*
  * Action.h
  *
+ * Represent agent actions. Actions in Qualia are always discrete. A specific action is
+ * represented by a multi-dimensional array of integers. Meta-informations about the actions
+ * (dimensions and number of actions per dimension) are contained withing an ActionProperties
+ * object that can be shared accross many actions.
+ *
+ * This file is part of Qualia https://github.com/sofian/qualia
+ *
  * (c) 2011 Sofian Audry -- info(@)sofianaudry(.)com
  *
  * This program is free software: you can redistribute it and/or modify

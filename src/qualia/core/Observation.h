@@ -1,6 +1,14 @@
 /*
  * Observation.h
  *
+ * Represent observations returned by the environment to the agents. Observations in Qualia
+ * are continuous. A specific observation is represented by a multi-dimensional array of real
+ * numbers. Notice that discrete observation components can be represented as well since the
+ * underlying data is an array of real numbers, so you can put integers in there as long as
+ * you know what you're doing.
+ *
+ * This file is part of Qualia https://github.com/sofian/qualia
+ *
  * (c) 2011 Sofian Audry -- info(@)sofianaudry(.)com
  *
  * This program is free software: you can redistribute it and/or modify

@@ -1,6 +1,10 @@
 /*
  * MultiAgent.h
  *
+ * An agent that is composed of multiple sub-agents.
+ *
+ * This file is part of Qualia https://github.com/sofian/qualia
+ *
  * (c) 2012 Sofian Audry -- info(@)sofianaudry(.)com
  *
  * This program is free software: you can redistribute it and/or modify
