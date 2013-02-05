@@ -534,7 +534,7 @@ void testBinaryChromosomes() {
   print(parent2);
 
   printf("- Test copy\n");
-  tmp.copy(parent1);
+  tmp.copyFrom(parent1);
   print(tmp);
   assert( memcmp(tmp.code, parent1.code, info.byteSize()) == 0);
   printf("-> PASSED\n");
@@ -560,7 +560,7 @@ void testBinaryChromosomes() {
   printf("-> PASSED\n");
 
   printf("- Check flip mutate (prob=0.5)\n");
-  parent1.copy(tmp);
+  parent1.copyFrom(tmp);
   parent1.mutate(0.5f);
   print(parent1);
 
@@ -639,7 +639,7 @@ void testBinaryChromosomes() {
 
   for (int i=0; i<100; i++) {
     parent1.init();
-    tmp.copy(parent1);
+    tmp.copyFrom(parent1);
     parent1.mutate(1); // flip all
     for (int i=0; i<TEST_CHROMOSOME_N_GENES; i++) {
       // Check that pre-mutated gene is the exact opposite of post-mutated gene (XOR)

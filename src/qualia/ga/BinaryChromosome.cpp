@@ -22,23 +22,11 @@
 BinaryChromosomeInfo::BinaryChromosomeInfo(unsigned int nGenes_, const uint8_t* geneSizesInit_,
                                            Initializer initializer_, Mutator mutator_)
   : nGenes(0), geneSizes(0), initializer(initializer_), mutator(mutator_) {
+
+  // Assign mutator function.
   if (!mutator)
     mutator = &BinaryChromosome::mutateFlip;
   allocate(nGenes_, geneSizesInit_);
-}
-
-unsigned int BinaryChromosomeInfo::bitSize() const {
-  unsigned int size = 0;
-  for (unsigned int i=0; i<nGenes; i++)
-    size += geneSizes[i];
-  return size;
-}
-
-int BinaryChromosomeInfo::getStartBitPosition(int gene) const {
-  int pos = 0;
-  for (int i=0; i<gene; i++)
-    pos += geneSizes[i];
-  return pos;
 }
 
 void BinaryChromosomeInfo::allocate(unsigned int nGenes_, const uint8_t* geneSizesInit_) {

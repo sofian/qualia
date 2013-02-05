@@ -59,7 +59,7 @@ public:
   BinaryChromosome(BinaryChromosomeInfo* info);
   virtual ~BinaryChromosome();
 
-  virtual void copy(const Chromosome& c);
+  virtual void copyFrom(const Chromosome& c);
 
   virtual void init();
   virtual void mutate(float p);

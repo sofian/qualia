@@ -136,10 +136,10 @@ typedef void  (*AsexualCrossover) (const Chromosome&, Chromosome*);
 class Chromosome {
 public:
   Chromosome() {}
-  Chromosome(const Chromosome& c) { copy(c); }
+  //Chromosome(const Chromosome& c) { copyFrom(c); }
   virtual ~Chromosome() {}
 
-  virtual void copy(const Chromosome& c) { (*this) = c; }
+  virtual void copyFrom(const Chromosome& c) { (*this) = c; }
 
   virtual void init(){}
   virtual void mutate(float p){}
