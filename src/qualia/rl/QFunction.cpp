@@ -23,7 +23,7 @@ QFunction::QFunction(GradientFunction* function_, unsigned int observationDim_, 
   : function(function_),
     observationDim(observationDim_),
     actionProperties(actionProperties_) {
-  ASSERT_ERROR(observationDim + actionProperties->dim() == function->nInputs());
+  ASSERT_ERROR(observationDim + actionProperties->dim() == (unsigned int)function->nInputs());
   ASSERT_ERROR(function->nOutputs() == 1);
   input = (real*) Alloc::malloc( function->nInputs() * sizeof(real) );
   weights = function->weights;

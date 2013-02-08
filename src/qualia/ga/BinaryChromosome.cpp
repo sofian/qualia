@@ -22,26 +22,12 @@
 BinaryChromosomeInfo::BinaryChromosomeInfo(unsigned int nGenes_, const uint8_t* geneSizesInit_,
                                            Initializer initializer_, Mutator mutator_)
   : nGenes(0), geneSizes(0), initializer(initializer_), mutator(mutator_) {
+
+  // Assign mutator function.
   if (!mutator)
     mutator = &BinaryChromosome::mutateFlip;
-  allocate(nGenes_, geneSizesInit_);
-}
 
-unsigned int BinaryChromosomeInfo::bitSize() const {
-  unsigned int size = 0;
-  for (unsigned int i=0; i<nGenes; i++)
-    size += geneSizes[i];
-  return size;
-}
-
-int BinaryChromosomeInfo::getStartBitPosition(int gene) const {
-  int pos = 0;
-  for (int i=0; i<gene; i++)
-    pos += geneSizes[i];
-  return pos;
-}
-
-void BinaryChromosomeInfo::allocate(unsigned int nGenes_, const uint8_t* geneSizesInit_) {
+  // Allocate.
   if (geneSizes) // already allocated
     return; // TODO: error message
 
@@ -58,15 +44,24 @@ void BinaryChromosomeInfo::allocate(unsigned int nGenes_, const uint8_t* geneSiz
     memset(geneSizes, 0, nGenes * sizeof(uint8_t));
 }
 
-int operator==(const BinaryChromosomeInfo& a, const BinaryChromosomeInfo& b) {
-  return (&a == &b ||
-           (a.nGenes == b.nGenes &&
-            a.byteSize() == b.byteSize() &&
-            memcmp(a.geneSizes, b.geneSizes, a.byteSize()) == 0));
+unsigned int BinaryChromosomeInfo::bitSize() const {
+  unsigned int size = 0;
+  for (unsigned int i=0; i<nGenes; i++)
+    size += geneSizes[i];
+  return size;
 }
 
-int operator!=(const BinaryChromosomeInfo& a, const BinaryChromosomeInfo& b) {
-  return !(a == b);
+int BinaryChromosomeInfo::getStartBitPosition(int gene) const {
+  int pos = 0;
+  for (int i=0; i<gene; i++)
+    pos += geneSizes[i];
+  return pos;
+}
+
+bool BinaryChromosomeInfo::equals(const BinaryChromosomeInfo& info) {
+  int x = memcmp(geneSizes, info.geneSizes, nGenes * sizeof(uint8_t));
+  return (nGenes == info.nGenes &&
+          (memcmp(geneSizes, info.geneSizes, nGenes * sizeof(uint8_t)) == 0));
 }
 
 BinaryChromosome::BinaryChromosome(BinaryChromosomeInfo* info_)
@@ -82,9 +77,11 @@ BinaryChromosome::~BinaryChromosome() {
     Alloc::free(code);
 }
 
-void BinaryChromosome::copy(const Chromosome& c) {
-  const BinaryChromosome* bc = (const BinaryChromosome*)&c;
-  ASSERT_ERROR( *info == *bc->info );
+void BinaryChromosome::copyFrom(const Chromosome& c) {
+  const BinaryChromosome* bc = dynamic_cast<const BinaryChromosome*>(&c);
+  ASSERT_ERROR( bc );
+//  ASSERT_ERROR( *info == *bc->info );
+  ASSERT_ERROR( info->equals(*bc->info) );
   memcpy(code, bc->code, info->byteSize());
 }
 
@@ -102,16 +99,16 @@ void BinaryChromosome::mutate(float p) {
     mutateFlip(*this, p);
 }
 
-int BinaryChromosome::compare(const Chromosome& c) const {
-  const BinaryChromosome* bc = (const BinaryChromosome*)&c;
-  if (*info != *bc->info )
-    return -1;
+bool BinaryChromosome::equals(const Chromosome& c) const {
+  const BinaryChromosome* bc = dynamic_cast<const BinaryChromosome*>(&c);
+  if (!info->equals(*bc->info))
+    return false;
   else {
-    int sumDiffBits = 0;
     unsigned int bit = info->bitSize();
     while (bit--)
-      sumDiffBits += (arrayBitRead(code, bit) ^ arrayBitRead(bc->code, bit));
-    return sumDiffBits;
+      if (arrayBitRead(code, bit) != arrayBitRead(bc->code, bit))
+        return false;
+    return true;
   }
 }
 
@@ -171,14 +168,21 @@ void BinaryChromosome::mutateFlip(Chromosome& chromosome, float probability) {
 
 void BinaryChromosome::crossoverOnePoint(const Chromosome& parent1, const Chromosome& parent2,
                                          Chromosome* offspring1, Chromosome* offspring2) {
-  BinaryChromosome* p1 = (BinaryChromosome*)&parent1;
-  BinaryChromosome* p2 = (BinaryChromosome*)&parent2;
-  BinaryChromosome* o1 = (BinaryChromosome*)offspring1;
-  BinaryChromosome* o2 = (BinaryChromosome*)offspring2;
+  const BinaryChromosome* p1 = dynamic_cast<const BinaryChromosome*>(&parent1);
+  const BinaryChromosome* p2 = dynamic_cast<const BinaryChromosome*>(&parent2);
+  BinaryChromosome* o1 = dynamic_cast<BinaryChromosome*>(offspring1);
+  BinaryChromosome* o2 = dynamic_cast<BinaryChromosome*>(offspring2);
 
-  ASSERT_ERROR( (*p1->info) == (*p2->info) );
-  ASSERT_ERROR( (*p1->info) == (*o1->info) );
-  ASSERT_ERROR( (*p1->info) == (*o2->info) );
+  ASSERT_ERROR( p1 );
+  ASSERT_ERROR( p2 );
+  ASSERT_ERROR( o1 );
+  ASSERT_ERROR( o2 );
+//  ASSERT_ERROR( (*p1->info) == (*p2->info) );
+//  ASSERT_ERROR( (*p1->info) == (*o1->info) );
+//  ASSERT_ERROR( (*p1->info) == (*o2->info) );
+  ASSERT_ERROR( p1->info->equals(*p2->info) );
+  ASSERT_ERROR( p1->info->equals(*o1->info) );
+  ASSERT_ERROR( p1->info->equals(*o2->info) );
 
   unsigned int codeSize = p1->info->bitSize();
 
@@ -194,14 +198,21 @@ void BinaryChromosome::crossoverOnePoint(const Chromosome& parent1, const Chromo
 
 void BinaryChromosome::crossoverTwoPoint(const Chromosome& parent1, const Chromosome& parent2,
                                          Chromosome* offspring1, Chromosome* offspring2) {
-  BinaryChromosome* p1 = (BinaryChromosome*)&parent1;
-  BinaryChromosome* p2 = (BinaryChromosome*)&parent2;
-  BinaryChromosome* o1 = (BinaryChromosome*)offspring1;
-  BinaryChromosome* o2 = (BinaryChromosome*)offspring2;
+  const BinaryChromosome* p1 = dynamic_cast<const BinaryChromosome*>(&parent1);
+  const BinaryChromosome* p2 = dynamic_cast<const BinaryChromosome*>(&parent2);
+  BinaryChromosome* o1 = dynamic_cast<BinaryChromosome*>(offspring1);
+  BinaryChromosome* o2 = dynamic_cast<BinaryChromosome*>(offspring2);
 
-  ASSERT_ERROR( (*p1->info) == (*p2->info) );
-  ASSERT_ERROR( (*p1->info) == (*o1->info) );
-  ASSERT_ERROR( (*p1->info) == (*o2->info) );
+  ASSERT_ERROR( p1 );
+  ASSERT_ERROR( p2 );
+  ASSERT_ERROR( o1 );
+  ASSERT_ERROR( o2 );
+//  ASSERT_ERROR( (*p1->info) == (*p2->info) );
+//  ASSERT_ERROR( (*p1->info) == (*o1->info) );
+//  ASSERT_ERROR( (*p1->info) == (*o2->info) );
+  ASSERT_ERROR( p1->info->equals(*p2->info) );
+  ASSERT_ERROR( p1->info->equals(*o1->info) );
+  ASSERT_ERROR( p1->info->equals(*o2->info) );
 
   unsigned int codeSize = p1->info->bitSize();
 

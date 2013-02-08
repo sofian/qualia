@@ -1,6 +1,8 @@
 /*
  * Action.cpp
  *
+ * This file is part of Qualia https://github.com/sofian/qualia
+ *
  * (c) 2011 Sofian Audry -- info(@)sofianaudry(.)com
  *
  * This program is free software: you can redistribute it and/or modify
@@ -42,13 +44,9 @@ ActionProperties::~ActionProperties() {
   Alloc::free(_nActions);
 }
 
-int ActionProperties::compareTo(const ActionProperties& p) const {
-  if (_dim == p._dim)
-    return memcmp(_nActions, p._nActions, _dim*sizeof(unsigned int));
-  else
-    return (_dim - p._dim);
+bool ActionProperties::equals(const ActionProperties& p) const {
+  return (_dim == p._dim && (memcmp(_nActions, p._nActions, _dim*sizeof(unsigned int)) == 0));
 }
-
 
 Action::Action(ActionProperties* properties_) : properties(properties_) {
   ASSERT_ERROR(properties);
@@ -108,7 +106,7 @@ Action& Action::next() {
 }
 
 Action& Action::copyFrom(const Action& src) {
-  ASSERT_ERROR( properties->compareTo(*(src.properties)) == 0);
+  ASSERT_ERROR( properties->equals(*src.properties) );
   memcpy( actions, src.actions, dim()*sizeof(action_dim_t) );
   return *this;
 }

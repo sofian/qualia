@@ -20,11 +20,11 @@
 #include "Function.h"
 
 void Function::setInputs(const real* input) {
-  for (int i=0; i<nInputs(); i++)
+  for (unsigned int i=0; i<nInputs(); i++)
     setInput(i, input[i]);
 }
 
 void Function::getOutputs(real* output) const {
-  for (int i=0; i<nOutputs(); i++)
+  for (unsigned int i=0; i<nOutputs(); i++)
     output[i] = getOutput(i);
 }

@@ -42,9 +42,9 @@ public:
   virtual ~QFunction();
 
   virtual void init() { function->init(); }
-  virtual int nInputs() const { return function->nInputs(); }
-  virtual int nOutputs() const { return function->nOutputs(); }
-  virtual int nParams() const { return function->nParams(); }
+  virtual unsigned int nInputs() const { return function->nInputs(); }
+  virtual unsigned int nOutputs() const { return function->nOutputs(); }
+  virtual unsigned int nParams() const { return function->nParams(); }
 
   virtual void setInput(int i, real x) { function->setInput(i, x); }
   virtual real getOutput(int i) const { return function->getOutput(i); }

@@ -23,8 +23,10 @@ RLObservation::RLObservation(unsigned int dim)
   : Observation(dim), reward(0) { }
 
 Observation& RLObservation::copyFrom(const Observation& src) {
-  Observation::copyFrom(src);
-  reward = ((RLObservation*)&src)->reward;
+  const RLObservation* rlSrc = dynamic_cast<const RLObservation*>(&src);
+  ASSERT_ERROR( rlSrc );
+  Observation::copyFrom(*rlSrc);
+  reward = rlSrc->reward;
   return *this;
 }
 

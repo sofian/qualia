@@ -40,7 +40,7 @@ public:
     memset(dWeights, 0, nParams()*sizeof(real));
   }
 
-  virtual int nParams() const = 0;
+  virtual unsigned int nParams() const = 0;
   virtual void backpropagate(real* outputError) = 0;
   virtual void update() = 0;
 

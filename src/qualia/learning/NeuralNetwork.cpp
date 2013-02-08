@@ -18,13 +18,13 @@
  */
 #include "NeuralNetwork.h"
 
-NeuralNetwork::NeuralNetwork(int nInputs_,
-                              int nHiddens_,
-                              int nOutputs_,
-                              float learningRate_,
-                              float decreaseConstant_,
-                              float weightDecay_,
-                              bool linearOutput_)
+NeuralNetwork::NeuralNetwork(unsigned int nInputs_,
+                             unsigned int nHiddens_,
+                             unsigned int nOutputs_,
+                             float learningRate_,
+                             float decreaseConstant_,
+                             float weightDecay_,
+                             bool linearOutput_)
  : learningRate(learningRate_),
    decreaseConstant(decreaseConstant_),
    weightDecay(weightDecay_)
@@ -40,7 +40,7 @@ NeuralNetwork::NeuralNetwork(int nInputs_,
   memset(dWeights, 0, _nParams*sizeof(real));
 
   // Allocate/assign layers.
-  int k=0;
+  unsigned int k=0;
   _allocateLayer(inputLayer, 0, nInputs_, k);
   _allocateLayer(hiddenLayer, nInputs_, nHiddens_, k);
   _allocateLayer(outputLayer, nHiddens_, nOutputs_, k, linearOutput_);
@@ -57,7 +57,7 @@ NeuralNetwork::~NeuralNetwork() {
 
 void NeuralNetwork::init() {
   // randomize weights
-  for (int i=0; i<_nParams; i++) {
+  for (unsigned int i=0; i<_nParams; i++) {
     weights[i] = randomUniform(-1, +1);
     dWeights[i] = 0;
   }
@@ -82,7 +82,7 @@ void NeuralNetwork::getOutputs(real *outputs) const {
 
 void NeuralNetwork::backpropagate(real *outputError) {
   // Initialize output error.
-  for (int i=0; i<outputLayer.n; i++) {
+  for (unsigned int i=0; i<outputLayer.n; i++) {
     outputLayer.error[i] = outputError[i];
     if (!outputLayer.linear) {
       real out = outputLayer.output[i];
@@ -107,7 +107,7 @@ void NeuralNetwork::propagate() {
 
 void NeuralNetwork::update() {
   float lr = learningRate / learningRateDiv;
-  for (int i=0; i<_nParams; i++)
+  for (unsigned int i=0; i<_nParams; i++)
 //    weights[i] -= learningRate * dWeights[i];
     weights[i] -= lr * (dWeights[i] + weightDecay * weights[i]);
   clearDelta();
@@ -134,7 +134,7 @@ void NeuralNetwork::update() {
 //}
 //#endif
 
-void NeuralNetwork::_allocateLayer(Layer& layer, int nInputs, int nOutputs, int& k, bool isLinear) {
+void NeuralNetwork::_allocateLayer(Layer& layer, unsigned int nInputs, unsigned int nOutputs, unsigned int& k, bool isLinear) {
   layer.n = nOutputs;
   // TODO: output not needed for inputLayer
   layer.output   = (real*) Alloc::malloc( nOutputs * sizeof(real) );
@@ -153,10 +153,10 @@ void NeuralNetwork::_allocateLayer(Layer& layer, int nInputs, int nOutputs, int&
 
 void NeuralNetwork::_propagateLayer(Layer& lower, Layer& upper) {
 //void NeuralNetwork::_propagateLayer(real* layerInputs, real* layerWeights, real* layerOutputs, int nLayerInputs, int nLayerOutputs) {
-  int k=0;
-  for (int i=0; i<upper.n; i++) {
+  unsigned int k=0;
+  for (unsigned int i=0; i<upper.n; i++) {
     real sum = 0.0;
-    for (int j=0; j<lower.n; j++)
+    for (unsigned int j=0; j<lower.n; j++)
       sum += upper.weight[k++] * lower.output[j]; // TODO: pas super efficace, on devrait selectionner d'abord weight[i] et ensuite iterer sur les j
     sum += upper.weight[k++]; // bias
 
@@ -184,11 +184,11 @@ void NeuralNetwork::_propagateLayer(Layer& lower, Layer& upper) {
 }
 
 void NeuralNetwork::_backpropagateLayer(Layer& upper, Layer& lower) {
-  for (int i=0; i<=lower.n; i++) {
+  for (unsigned int i=0; i<=lower.n; i++) {
     real out = (i < lower.n ? lower.output[i] : 1); // last element is bias
     real err = 0;
     // NOTE: Variable k is used to iterate through upper weights column i
-    for (int j=0, k=i; j<upper.n; j++, k+=lower.n) {
+    for (unsigned int j=0, k=i; j<upper.n; j++, k+=lower.n) {
       err += upper.weight[k] * upper.error[j];   // k = j*lower.n + i: corresponds to w_{ji}
       upper.dWeight[k] += out * upper.error[j];
     }

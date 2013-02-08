@@ -1,7 +1,7 @@
 /*
  * common.h
  *
- * Common type definitions.
+ * Common definitions.
  *
  * This file is part of Qualia https://github.com/sofian/qualia
  *

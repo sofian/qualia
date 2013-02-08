@@ -1,7 +1,11 @@
 /*
  * Trainer.cpp
  *
+ * This file is part of Qualia https://github.com/sofian/qualia
+ *
+ * Loosely based on code from Torch 3.1
  * (c) 2013 Sofian Audry -- info(@)sofianaudry(.)com
+ * (c) 2003--2004 Ronan Collobert (collober@idiap.ch)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
