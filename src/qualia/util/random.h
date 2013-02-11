@@ -32,12 +32,14 @@
 #include <limits.h>
 #include <stdlib.h>
 
+#ifndef WIN32
 // Arduino definitions for random integers.
 #if !defined(ARDUINO)
 // Code from Arduino WMath.cpp
 void randomSeed(unsigned int seed);
 long random(long howbig);
 long random(long howsmall, long howbig);
+#endif
 #endif
 
 // Floating point random numbers.

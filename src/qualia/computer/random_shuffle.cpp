@@ -39,7 +39,11 @@ void randomShuffle(int* tabular, int nElems)
       int i;
       for (i = 0; i < nElems - 1; i++)
       {
+#ifdef WIN32
+        int j = i + rand() / (RAND_MAX / (nElems - i) + 1);
+#else
         int j = i + ::random() / (RAND_MAX / (nElems - i) + 1);
+#endif
         int t = tabular[j];
         tabular[j] = tabular[i];
         tabular[i] = t;
@@ -54,7 +58,11 @@ void randomShuffle(void *tabular, int sizeElem, int nElems)
 
   for(int i = 0; i < nElems-1; i++)
   {
+#ifdef _WIN32
+    int z = rand() % nElems-i;
+#else
     int z = random(nElems-i);
+#endif
     memcpy(save, tab+i*sizeElem, sizeElem);
     memmove(tab+i*sizeElem, tab+(z+i)*sizeElem, sizeElem);
     memcpy(tab+(z+i)*sizeElem, save, sizeElem);
