@@ -1,0 +1,195 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{C7B893DB-4C99-4413-8554-16517984DF6A}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>QualiaOSC</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\src;..\..\..\liblo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>..\..\..\liblo\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>liblo.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\src;..\..\..\liblo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>..\..\..\liblo\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>liblo.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\qualia\computer\CmdLine.cpp" />
+    <ClCompile Include="..\..\src\qualia\computer\CmdOption.cpp" />
+    <ClCompile Include="..\..\src\qualia\computer\DiskXFile.cpp" />
+    <ClCompile Include="..\..\src\qualia\computer\DiskXFileDataSet.cpp" />
+    <ClCompile Include="..\..\src\qualia\computer\random_shuffle.cpp" />
+    <ClCompile Include="..\..\src\qualia\computer\string_utils.cpp" />
+    <ClCompile Include="..\..\src\qualia\computer\SubDataSet.cpp" />
+    <ClCompile Include="..\..\src\qualia\core\Action.cpp" />
+    <ClCompile Include="..\..\src\qualia\core\Allocator.cpp" />
+    <ClCompile Include="..\..\src\qualia\core\avrdefs.cpp" />
+    <ClCompile Include="..\..\src\qualia\core\error.cpp" />
+    <ClCompile Include="..\..\src\qualia\core\FileExportEnvironment.cpp" />
+    <ClCompile Include="..\..\src\qualia\core\MultiAgent.cpp" />
+    <ClCompile Include="..\..\src\qualia\core\Observation.cpp" />
+    <ClCompile Include="..\..\src\qualia\core\Qualia.cpp" />
+    <ClCompile Include="..\..\src\qualia\core\StaticAllocator.cpp" />
+    <ClCompile Include="..\..\src\qualia\core\XFile.cpp" />
+    <ClCompile Include="..\..\src\qualia\learning\DataSet.cpp" />
+    <ClCompile Include="..\..\src\qualia\learning\DataSetTrainer.cpp" />
+    <ClCompile Include="..\..\src\qualia\learning\Function.cpp" />
+    <ClCompile Include="..\..\src\qualia\learning\MemoryDataSet.cpp" />
+    <ClCompile Include="..\..\src\qualia\learning\MultiDataSet.cpp" />
+    <ClCompile Include="..\..\src\qualia\learning\NeuralNetwork.cpp" />
+    <ClCompile Include="..\..\src\qualia\learning\StochasticDataSetTrainer.cpp" />
+    <ClCompile Include="..\..\src\qualia\learning\Trainer.cpp" />
+    <ClCompile Include="..\..\src\qualia\learning\XFileDataSet.cpp" />
+    <ClCompile Include="..\..\src\qualia\plugins\osc\OscAgent.cpp" />
+    <ClCompile Include="..\..\src\qualia\plugins\osc\OscBasicAgent.cpp" />
+    <ClCompile Include="..\..\src\qualia\plugins\osc\OscBasicEnvironment.cpp" />
+    <ClCompile Include="..\..\src\qualia\plugins\osc\OscEnvironment.cpp" />
+    <ClCompile Include="..\..\src\qualia\plugins\osc\OscManager.cpp" />
+    <ClCompile Include="..\..\src\qualia\plugins\osc\OscRLEnvironment.cpp" />
+    <ClCompile Include="..\..\src\qualia\rl\BatchRLTrainer.cpp" />
+    <ClCompile Include="..\..\src\qualia\rl\QFunction.cpp" />
+    <ClCompile Include="..\..\src\qualia\rl\QLearningAgent.cpp" />
+    <ClCompile Include="..\..\src\qualia\rl\QLearningEDecreasingPolicy.cpp" />
+    <ClCompile Include="..\..\src\qualia\rl\QLearningEGreedyPolicy.cpp" />
+    <ClCompile Include="..\..\src\qualia\rl\QLearningSoftmaxPolicy.cpp" />
+    <ClCompile Include="..\..\src\qualia\rl\RewardEnvironment.cpp" />
+    <ClCompile Include="..\..\src\qualia\rl\RLObservation.cpp" />
+    <ClCompile Include="..\..\src\qualia\rl\RLQualia.cpp" />
+    <ClCompile Include="..\..\src\qualia\rl\TDTrainer.cpp" />
+    <ClCompile Include="..\..\src\qualia\rl\TupleDataSet.cpp" />
+    <ClCompile Include="..\..\src\qualia\util\bitarray.cpp" />
+    <ClCompile Include="..\..\src\qualia\util\log_add.cpp" />
+    <ClCompile Include="..\..\src\qualia\util\map.cpp" />
+    <ClCompile Include="..\..\src\qualia\util\random.cpp" />
+    <ClCompile Include="..\..\src\qualia\util\random_dist.cpp" />
+    <ClCompile Include="..\..\src\qualia\util\random_normal.cpp" />
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\qualia\computer\CmdLine.h" />
+    <ClInclude Include="..\..\src\qualia\computer\CmdOption.h" />
+    <ClInclude Include="..\..\src\qualia\computer\DiskXFile.h" />
+    <ClInclude Include="..\..\src\qualia\computer\DiskXFileDataSet.h" />
+    <ClInclude Include="..\..\src\qualia\computer\random_shuffle.h" />
+    <ClInclude Include="..\..\src\qualia\computer\string_utils.h" />
+    <ClInclude Include="..\..\src\qualia\computer\SubDataSet.h" />
+    <ClInclude Include="..\..\src\qualia\core\Action.h" />
+    <ClInclude Include="..\..\src\qualia\core\Agent.h" />
+    <ClInclude Include="..\..\src\qualia\core\Allocator.h" />
+    <ClInclude Include="..\..\src\qualia\core\avrdefs.h" />
+    <ClInclude Include="..\..\src\qualia\core\common.h" />
+    <ClInclude Include="..\..\src\qualia\core\Environment.h" />
+    <ClInclude Include="..\..\src\qualia\core\error.h" />
+    <ClInclude Include="..\..\src\qualia\core\FileExportEnvironment.h" />
+    <ClInclude Include="..\..\src\qualia\core\MultiAgent.h" />
+    <ClInclude Include="..\..\src\qualia\core\Observation.h" />
+    <ClInclude Include="..\..\src\qualia\core\Qualia.h" />
+    <ClInclude Include="..\..\src\qualia\core\StaticAllocator.h" />
+    <ClInclude Include="..\..\src\qualia\core\XFile.h" />
+    <ClInclude Include="..\..\src\qualia\learning\DataSet.h" />
+    <ClInclude Include="..\..\src\qualia\learning\DataSetTrainer.h" />
+    <ClInclude Include="..\..\src\qualia\learning\Function.h" />
+    <ClInclude Include="..\..\src\qualia\learning\GradientFunction.h" />
+    <ClInclude Include="..\..\src\qualia\learning\MemoryDataSet.h" />
+    <ClInclude Include="..\..\src\qualia\learning\MultiDataSet.h" />
+    <ClInclude Include="..\..\src\qualia\learning\NeuralNetwork.h" />
+    <ClInclude Include="..\..\src\qualia\learning\StochasticDataSetTrainer.h" />
+    <ClInclude Include="..\..\src\qualia\learning\Trainer.h" />
+    <ClInclude Include="..\..\src\qualia\learning\XFileDataSet.h" />
+    <ClInclude Include="..\..\src\qualia\plugins\osc\OscAgent.h" />
+    <ClInclude Include="..\..\src\qualia\plugins\osc\OscBasicAgent.h" />
+    <ClInclude Include="..\..\src\qualia\plugins\osc\OscBasicEnvironment.h" />
+    <ClInclude Include="..\..\src\qualia\plugins\osc\OscEnvironment.h" />
+    <ClInclude Include="..\..\src\qualia\plugins\osc\OscManager.h" />
+    <ClInclude Include="..\..\src\qualia\plugins\osc\OscRLEnvironment.h" />
+    <ClInclude Include="..\..\src\qualia\rl\BatchRLTrainer.h" />
+    <ClInclude Include="..\..\src\qualia\rl\Policy.h" />
+    <ClInclude Include="..\..\src\qualia\rl\QFunction.h" />
+    <ClInclude Include="..\..\src\qualia\rl\QLearningAgent.h" />
+    <ClInclude Include="..\..\src\qualia\rl\QLearningEDecreasingPolicy.h" />
+    <ClInclude Include="..\..\src\qualia\rl\QLearningEGreedyPolicy.h" />
+    <ClInclude Include="..\..\src\qualia\rl\QLearningSoftmaxPolicy.h" />
+    <ClInclude Include="..\..\src\qualia\rl\Reward.h" />
+    <ClInclude Include="..\..\src\qualia\rl\RewardEnvironment.h" />
+    <ClInclude Include="..\..\src\qualia\rl\RLObservation.h" />
+    <ClInclude Include="..\..\src\qualia\rl\RLQualia.h" />
+    <ClInclude Include="..\..\src\qualia\rl\TDTrainer.h" />
+    <ClInclude Include="..\..\src\qualia\rl\TupleDataSet.h" />
+    <ClInclude Include="..\..\src\qualia\util\bitarray.h" />
+    <ClInclude Include="..\..\src\qualia\util\log_add.h" />
+    <ClInclude Include="..\..\src\qualia\util\map.h" />
+    <ClInclude Include="..\..\src\qualia\util\MovingAverage.h" />
+    <ClInclude Include="..\..\src\qualia\util\random.h" />
+    <ClInclude Include="..\..\src\qualia\util\random_dist.h" />
+    <ClInclude Include="..\..\src\qualia\util\random_normal.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

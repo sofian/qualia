@@ -161,9 +161,13 @@ int main(int argc, char** argv) {
 
   // Set random seed.
   if (seed == -1)
+  {
     randomSeed(time(NULL) + agentId);
+  }
   else
+  {
     randomSeed(seed);
+  }
 
   if (!isLearning)
     printf("Learning switched off\n");
