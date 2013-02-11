@@ -32,6 +32,7 @@
 #include <limits.h>
 #include <stdlib.h>
 
+// We use srandom/random/RANDOM_MAX instead of srand/rand/RAND_MAX
 #ifdef WIN32
 #define srandom srand
 #define random rand
