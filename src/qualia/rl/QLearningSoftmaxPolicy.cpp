@@ -20,7 +20,7 @@
 #include "QLearningSoftmaxPolicy.h"
 #include <qualia/util/random.h>
 
-QLearningSoftmaxPolicy::QLearningSoftmaxPolicy(real temperature_, real epsilon_)
+QLearningSoftmaxPolicy::QLearningSoftmaxPolicy(float temperature_, float epsilon_)
   : temperature(temperature_), epsilon(epsilon_) {}
 QLearningSoftmaxPolicy::~QLearningSoftmaxPolicy() {}
 

@@ -27,8 +27,8 @@
 
 class QLearningEGreedyPolicy : public Policy {
 public:
-  real epsilon;
-  QLearningEGreedyPolicy(real epsilon);
+  float epsilon;
+  QLearningEGreedyPolicy(float epsilon);
   virtual ~QLearningEGreedyPolicy();
 
   virtual void chooseAction(Action* action, const Observation* observation);

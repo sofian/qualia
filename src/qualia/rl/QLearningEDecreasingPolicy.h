@@ -24,12 +24,12 @@
 
 class QLearningEDecreasingPolicy: public QLearningEGreedyPolicy {
 public:
-  real decreaseConstant;
+  float decreaseConstant;
 
   // Internal use.
   float epsilonDiv;
 
-  QLearningEDecreasingPolicy(real epsilon, real decreaseConstant);
+  QLearningEDecreasingPolicy(float epsilon, float decreaseConstant);
 
   virtual void init();
   virtual void chooseAction(Action* action, const Observation* observation);

@@ -19,7 +19,7 @@
 
 #include "QLearningEGreedyPolicy.h"
 
-QLearningEGreedyPolicy::QLearningEGreedyPolicy(real epsilon_) : epsilon(epsilon_) {}
+QLearningEGreedyPolicy::QLearningEGreedyPolicy(float epsilon_) : epsilon(epsilon_) {}
 QLearningEGreedyPolicy::~QLearningEGreedyPolicy() {}
 
 void QLearningEGreedyPolicy::chooseAction(Action* action, const Observation* observation) {

@@ -19,7 +19,7 @@
 
 #include "QLearningEDecreasingPolicy.h"
 
-QLearningEDecreasingPolicy::QLearningEDecreasingPolicy(real epsilon_, real decreaseConstant_)
+QLearningEDecreasingPolicy::QLearningEDecreasingPolicy(float epsilon_, float decreaseConstant_)
   : QLearningEGreedyPolicy(epsilon_),
     decreaseConstant(decreaseConstant_),
     epsilonDiv(1) { }

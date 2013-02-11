@@ -26,9 +26,9 @@
 
 class QLearningSoftmaxPolicy : public Policy {
 public:
-  real temperature;
-  real epsilon;
-  QLearningSoftmaxPolicy(real temperature = 1.0, real epsilon = 0.0);
+  float temperature;
+  float epsilon;
+  QLearningSoftmaxPolicy(float temperature = 1.0, float epsilon = 0.0);
   virtual ~QLearningSoftmaxPolicy();
 
   virtual void chooseAction(Action* action, const Observation* observation);
