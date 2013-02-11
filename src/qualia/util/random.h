@@ -33,8 +33,8 @@
 #include <stdlib.h>
 
 #ifdef WIN32
-void srandom (unsigned int seed) { srand(seed); }
-long int random (void) { return rand(); }
+#define srandom srand
+#define random rand
 #endif
 
 #ifndef RANDOM_MAX

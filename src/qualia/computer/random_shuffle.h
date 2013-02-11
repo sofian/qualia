@@ -17,6 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef RANDOM_SHUFF
+#define RANDOM_SHUFF
 
 #include <qualia/core/common.h>
 #include <qualia/util/random.h>
@@ -27,4 +29,6 @@ void randomShuffledIndices(int *indices, int nIndices);
 void randomShuffle(int* tabular, int nElems);
 
 void randomShuffle(void *tabular, int sizeElem, int nElem);
+
+#endif
 
