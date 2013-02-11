@@ -24,11 +24,7 @@
 void randomSeed(unsigned int seed)
 {
   if (seed != 0) {
-#ifdef WIN32
-    srand(seed);
-#else
     srandom(seed);
-#endif
   }
 }
 
@@ -37,11 +33,7 @@ long random(long howbig)
   if (howbig == 0) {
     return 0;
   }
-#ifdef WIN32
-  return rand() % howbig;
-#else
   return random() % howbig;
-#endif
 }
 
 long random(long howsmall, long howbig)
@@ -56,17 +48,7 @@ long random(long howsmall, long howbig)
 #endif
 
 float randomUniform() {
-#ifdef WIN32
-  return (float)rand() / (float)
-#else
-  return (float)random() / (float)
-#endif
-#ifdef RANDOM_MAX
-      RANDOM_MAX
-#else
-      RAND_MAX
-#endif
-      ;
+  return (float)random() / (float) RANDOM_MAX;
 }
 
 float randomUniform(float h) {

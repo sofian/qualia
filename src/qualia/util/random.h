@@ -32,6 +32,15 @@
 #include <limits.h>
 #include <stdlib.h>
 
+#ifdef WIN32
+void srandom (unsigned int seed) { srand(seed); }
+long int random (void) { return rand(); }
+#endif
+
+#ifndef RANDOM_MAX
+#define RANDOM_MAX RAND_MAX
+#endif
+
 // Arduino definitions for random integers.
 #if !defined(ARDUINO)
 // Code from Arduino WMath.cpp

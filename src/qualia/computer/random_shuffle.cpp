@@ -29,7 +29,7 @@ void randomShuffledIndices(int *indices, int nIndices)
 
 void randomShuffle(int* tabular, int nElems)
 {
-  if (nElems > RAND_MAX / 10000UL) {
+  if (nElems > (int) (RANDOM_MAX / 10000UL)) {
     randomShuffle(tabular, sizeof(int), nElems);
   }
   // Code that requires no allocation. Code taken from:
@@ -39,7 +39,7 @@ void randomShuffle(int* tabular, int nElems)
       int i;
       for (i = 0; i < nElems - 1; i++)
       {
-        int j = i + ::random() / (RAND_MAX / (nElems - i) + 1);
+        int j = i + ::random() / (RANDOM_MAX / (nElems - i) + 1);
         int t = tabular[j];
         tabular[j] = tabular[i];
         tabular[i] = t;
