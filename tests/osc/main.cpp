@@ -45,9 +45,14 @@
 #include <csignal>
 #include <ctime>
 
-void      stop(int);
-
 bool stopTraining = true; // uninitialized
+
+static void stop(int);
+
+static void initOscParameter(int agentId, const char* paramName, float* param);
+
+static int handlerOscParameter(const char *path, const char *types, lo_arg **argv,
+                               int argc, void *data, void *user_data);
 
 int main(int argc, char** argv) {
   signal(SIGINT, stop);
@@ -196,6 +201,7 @@ int main(int argc, char** argv) {
     agent = qAgent;
   }
 
+  printf("--- Creating environment ---\n");
   Environment* env;
   Environment* oscEnv = new OscRLEnvironment(agentId, dimObservations, actionProperties.dim());
   if (exportData) {
@@ -207,6 +213,29 @@ int main(int argc, char** argv) {
     env = oscEnv;
 
   Qualia* qualia = new RLQualia(agent, env);
+
+  printf("--- Assigning OSC parameters ---\n");
+  if (!isRemoteAgent) {
+    QLearningAgent* qla = (QLearningAgent*)agent;
+    initOscParameter(agentId, "gamma",  &qla->trainer.gamma);
+    initOscParameter(agentId, "lambda", &qla->trainer.lambda);
+
+    NeuralNetwork* nn = (NeuralNetwork*) qla->qFunction->function;
+    initOscParameter(agentId, "learning_rate",       &nn->learningRate);
+    initOscParameter(agentId, "learning_rate_decay", &nn->decreaseConstant);
+    initOscParameter(agentId, "weight_decay",        &nn->weightDecay);
+
+    if (useSoftmax) {
+      QLearningSoftmaxPolicy* p = (QLearningSoftmaxPolicy*)qla->policy;
+      initOscParameter(agentId, "temperature", &p->temperature);
+      initOscParameter(agentId, "epsilon",     &p->epsilon);
+
+    } else {
+      QLearningEDecreasingPolicy* p = (QLearningEDecreasingPolicy*)qla->policy;
+      initOscParameter(agentId, "epsilon",       &p->epsilon);
+      initOscParameter(agentId, "epsilon_decay", &p->decreaseConstant);
+    }
+  }
 
   printf("--- Initialising ---\n");
   qualia->init();
@@ -262,4 +291,33 @@ void stop(int sig) {
   else
     stopTraining = true;
 }
+
+static int handlerOscParameter(const char *path, const char *types, lo_arg **argv,
+                               int argc, void *data, void *user_data) {
+  ASSERT_ERROR( argc == 1 );
+  printf("Received osc message: %s %c %d\n", path, types[0], argc);
+  float f;
+  switch (types[0]) {
+  case LO_FLOAT:
+    f = (float)argv[0]->f;
+    break;
+  case LO_DOUBLE:
+    f = (float)argv[0]->d;
+    break;
+  default:
+    ERROR("Wrong type : %c.", types[0]);
+    exit(-1);
+  }
+  *((float*)user_data) = f;
+  return 0;
+}
+
+static void initOscParameter(int agentId, const char* paramName, float* param) {
+  static char path[100];
+  sprintf(path, "/qualia/parameter/%d/%s", agentId, paramName);
+
+  // Initialize OSC messages for controlling parameters.
+  lo_server_thread_add_method(OscManager::server(), path, 0, handlerOscParameter, param);
+}
+
 
