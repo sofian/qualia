@@ -124,10 +124,10 @@ int main(int argc, char** argv) {
 
   DiskXFile trainFile(trainFileName, "r+");
   int nTrainFiles = 0;
-  char trainFileNames[100][100];
+  char trainFileNames[100][1000];
   DataSet* tupleSets[100];
   DiskXFile* trainFiles[100];
-  while (trainFile.gets(trainFileNames[nTrainFiles], 100) != NULL) {
+  while (trainFile.gets(trainFileNames[nTrainFiles], 1000) != NULL) {
     if (trainFile.eof())
       break;
 
