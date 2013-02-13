@@ -7,7 +7,7 @@ import time
 procs = []
 
 if len(sys.argv) < 4:
-  print "Usage: " + sys.argv[0] + " <start_id> <n_processes>  <exec> <exec_args ...>"
+  print "Usage: " + sys.argv[0] + " [-r] <start_id> <n_processes>  <exec> <exec_args ...>"
   exit(0)
 
 def stop(sig, frame):
@@ -21,13 +21,25 @@ def stop(sig, frame):
 
 signal.signal(signal.SIGINT, stop)
 
-startId = int(sys.argv[1])
-nProcs = int(sys.argv[2])
-procPath = sys.argv[3]
-procArgs = sys.argv[4:]
+arg = 1
+if (sys.argv[arg] == "-r"):
+  remoteAgent = True
+  arg += 1
+else:
+  remoteAgent = False
+
+startId = int(sys.argv[arg])
+arg+=1
+nProcs = int(sys.argv[arg])
+arg+=1
+procPath = sys.argv[arg]
+arg+=1
+procArgs = sys.argv[arg:]
 
 for i in range(nProcs):
   procCompleteArgs = [ procPath, str(i) ] + procArgs
+  if (remoteAgent and i==0):
+    procCompleteArgs += [ '-remote-agent' ]
   print procCompleteArgs
   p = Popen( procCompleteArgs )
   procs += [ p ]
