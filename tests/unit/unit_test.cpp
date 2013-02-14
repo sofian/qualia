@@ -66,19 +66,25 @@ void testActions() {
 
   printf("- Testing iteration\n");
   test.reset();
-  for (action_t i=0; test.hasNext(); test.next(), i++) {
-//    printf("action=%d confl=%d val = (%d %d %d)\n", i, test.conflated(), test[0], test[1], test[2] );
-    assert( i < test.nConflated() );
-    assert( test.conflated() == i );
+  ASSERT_ERROR(test.undefined());
+  action_t i = 0;
+  while (test.hasNext()) {
+    test.next();
+    ASSERT_ERROR(! test.undefined());
+    ASSERT_ERROR( i < test.nConflated() );
+    ASSERT_ERROR( test.conflated() == i );
+    i++;
   }
   printf("-> PASSED\n");
 
   printf("- Testing copyFrom\n");
   Action testCopy(&props);
-  test.reset();
-  for (action_t i=0; test.hasNext(); test.next(), i++) {
+  i = 0;
+  while (test.hasNext()) {
+    test.next();
     testCopy.copyFrom(test);
-    assert( test.conflated() == testCopy.conflated() );
+    ASSERT_ERROR( test.conflated() == testCopy.conflated() );
+    i++;
   }
   printf("-> PASSED\n");
 }
@@ -130,6 +136,7 @@ void testPolicies() {
 
   printf("- Testing egreedy\n");
   egreedy.setAgent(&agent);
+  agent.init();
 
   printf("-- Testing greedy policy (epsilon = 0)\n");
   randomSeed(222);
@@ -139,7 +146,7 @@ void testPolicies() {
   action_t a = action.conflated();
   for (int i=0; i<100; i++) {
     egreedy.chooseAction(&action, &observation);
-    assert( a == action.conflated() );
+    ASSERT_ERROR( a == action.conflated() );
   }
   printf("-> PASSED\n");
 
@@ -151,19 +158,20 @@ void testPolicies() {
   egreedy.epsilon = 1;
   for (int i=0; i<10; i++) {
     egreedy.chooseAction(&action, &observation);
-    assert( action.conflated() == pattern1[i]);
+    //printf("%d, ", action.conflated());
+    ASSERT_ERROR( action.conflated() == pattern1[i]);
   }
   printf("-> PASSED\n");
 
   printf("-- Testing e-greedy (epsilon = 0.5) (actions should be semi random)\n");
   randomSeed(222);
   const action_dim_t pattern2[] = {
-      90, 0, 0, 0, 63, 47, 0, 0, 0, 0,
-//      90, 9, 9, 9, 63, 47, 9, 9, 9, 9
+      90, 9, 9, 9, 63, 47, 9, 9, 9, 9
   };
   egreedy.epsilon = 0.5;
   for (int i=0; i<10; i++) {
     egreedy.chooseAction(&action, &observation);
+    //printf("%d, ", action.conflated());
     ASSERT_ERROR( action.conflated() == pattern2[i] );
   }
   printf("-> PASSED\n");
@@ -172,11 +180,10 @@ void testPolicies() {
   agent.policy = &softmax;
   softmax.setAgent(&agent);
 
-  printf("-- Testing \"greedy\" policy (epsilon = 0)\n");
+  printf("-- Testing pure softmax policy (epsilon = 0)\n");
   randomSeed(222);
   const action_dim_t pattern3[] = {
-      18, 66, 53, 82, 49, 61, 46, 28, 76, 56,
-//      17, 66, 53, 82, 49, 61, 46, 28, 75, 56
+      17, 66, 53, 82, 49, 61, 46, 28, 75, 56
   };
   softmax.epsilon = 0;
   softmax.chooseAction(&action, &observation);
@@ -184,6 +191,7 @@ void testPolicies() {
     softmax.chooseAction(&action, &observation);
     ASSERT_ERROR( action.conflated() == pattern3[i]);
   }
+
   printf("-> PASSED\n");
 
   printf("-- Testing random (epsilon = 1)\n");
