@@ -36,11 +36,13 @@ void QLearningSoftmaxPolicy::chooseAction(Action* action, const Observation* obs
   else {
     // First pass: compute (1/n) * sum_a exp[ Q(s,a) / T ] / exp[ Q_max(s,a) / T ]
     // Dividing each element by the max is designed to avoid overflows
-    action->reset();
     QFunction* q = qlagent->qFunction;
-    real n = action->nConflated();
-    real outMax = exp( q->getValue(observation, action) / temperature );
-    double sum = 1/n;
+
+    real n = (real)action->nConflated();
+    real outMax = 0;//exp( q->getValue(observation, action) / temperature );
+    double sum = 1.0/n;
+
+    action->reset();
     while (action->hasNext()) {
       action->next();
       real out = exp( q->getValue(observation, action) / temperature );
@@ -55,10 +57,10 @@ void QLearningSoftmaxPolicy::chooseAction(Action* action, const Observation* obs
     real rnd = randomUniform(sum);
     action->reset();
     while (action->hasNext()) {
+      action->next();
       rnd -= exp( q->getValue(observation, action) / temperature ) / outMax / n;
       if (rnd <= 0) // Action picked!
         break;
-      action->next();
     }
   }
 }

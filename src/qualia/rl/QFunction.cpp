@@ -59,8 +59,8 @@ void QFunction::getMaxAction(Action* dst, const Observation* observation, real *
   ASSERT_ERROR(dst);
 
   dst->reset();
-  action_t actionMax = dst->conflated();
-  real outMax        = getValue(observation, dst);
+  action_t actionMax = 0;
+  real outMax        = -INF;
 
   while (dst->hasNext()) {
     dst->next();
