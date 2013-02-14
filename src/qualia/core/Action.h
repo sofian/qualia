@@ -73,6 +73,9 @@ public:
   /// The array containing the actions (of size dim()).
   action_dim_t* actions;
 
+  /// Reset flag.
+  bool _undefined;
+
   /// Class constructor.
   Action(ActionProperties* properties);
 
@@ -88,11 +91,13 @@ public:
   /// Sets the action to the given conflated representation #action#.
   virtual Action& setConflated(action_t action);
 
+  /// Returns if this action is undefined (see Action::reset()).
+  bool undefined() const { return _undefined; }
+
   // Iterator methods.
 
   /**
-   * Resets iterator. Typically equivalent to setConflated(0) (although subclasses
-   * can change that behavior).
+   * Resets iterator. Notice that this sets the action to be undefined until the first call to next().
    */
   virtual Action& reset();
 
