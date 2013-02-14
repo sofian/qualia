@@ -24,6 +24,11 @@
 ActionProperties::ActionProperties(unsigned int dim, const unsigned int* nActions) : _dim(dim) {
   ASSERT_ERROR( nActions );
   ASSERT_ERROR( _dim > 0 );
+#if DEBUG_ERROR
+  // No dimension elements should be zero.
+  for (unsigned int i = 0; i < _dim; i++)
+    ASSERT_ERROR( nActions[i] != 0 );
+#endif
 
   // Allocate.
   _nActions = (unsigned int*) Alloc::malloc(_dim * sizeof(unsigned int));
@@ -74,6 +79,7 @@ action_t Action::conflated() const {
 }
 
 Action& Action::setConflated(action_t action) {
+  ASSERT_WARNING(action < nConflated());
   for (unsigned int i=0; i<dim(); i++) {
     actions[i] = action % nActions(i);
     action    /= nActions(i);
@@ -90,8 +96,9 @@ Action& Action::reset() {
 }
 
 bool Action::hasNext() {
-  if (_undefined && nConflated() > 0)
+  if (_undefined)
     return true;
+
   for (unsigned int i=0; i<dim(); i++)
     if (actions[i] != nActions(i)-1)
       return true;
@@ -100,23 +107,20 @@ bool Action::hasNext() {
 
 Action& Action::next() {
   ASSERT_WARNING( hasNext() );
-  if (nConflated() > 0) { // if no possible actions then next() does nothing...
+  // First call to next() sets to zero.
+  if (_undefined) {
+    memset(actions, 0, dim() * sizeof(action_dim_t));
+    _undefined = false;
+  }
 
-    // First call to next() sets to zero.
-    if (_undefined) {
-      memset(actions, 0, dim() * sizeof(action_dim_t));
-      _undefined = false;
-    }
-
-    // Later calls increase the counter.
-    else {
-      for (unsigned int i=0; i<dim(); i++) {
-        if (actions[i] == nActions(i)-1) {
-          actions[i] = 0;
-        } else {
-          actions[i]++;
-          break;
-        }
+  // Later calls increase the counter.
+  else {
+    for (unsigned int i=0; i<dim(); i++) {
+      if (actions[i] == nActions(i)-1) {
+        actions[i] = 0;
+      } else {
+        actions[i]++;
+        break;
       }
     }
   }
