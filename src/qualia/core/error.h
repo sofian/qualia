@@ -134,5 +134,7 @@ void noticemsg(const char* msg, ...);
   #define ASSERT_NOTICE_MESSAGE assertdummymsg
 #endif
 
+// XXX Uniformizes the calls to print messages but will eventually need to be redefined for AVR/Arduino.
+#define MESSAGE message
 
 #endif

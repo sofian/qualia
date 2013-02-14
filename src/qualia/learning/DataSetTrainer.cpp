@@ -37,7 +37,7 @@ void DataSetTrainer::init() {
 void DataSetTrainer::train(DataSet* data, int maxEpisodes) {
   init();
   data->init();
-  NOTICE("Training on %d examples.", data->nExamples);
+  MESSAGE("Training on %d examples.", data->nExamples);
   while (!stop() &&
          (maxEpisodes > 0 && nEpisodes < maxEpisodes)) {
     trainEpisode(data);
@@ -46,7 +46,7 @@ void DataSetTrainer::train(DataSet* data, int maxEpisodes) {
 
 void DataSetTrainer::trainEpisode(DataSet* data) {
   ASSERT_WARNING(data->nExamples >= 0);
-  NOTICE("Training episode # %d.", nEpisodes);
+  MESSAGE("Training episode # %d.", nEpisodes);
   _doTrainEpisode(data);
   nEpisodes++;
 }
