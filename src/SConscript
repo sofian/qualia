@@ -86,8 +86,10 @@ if ('osc' in PLUGINS):
   LIBS += ["lo"]
   SUBDIRS += ["qualia/plugins/osc"]
 if ('mapper' in PLUGINS):
-	LIBS += ["mapper-0", "lo"]
-	SUBDIRS += ["qualia/plugins/mapper"]
+  LIBS += ["mapper-0", "lo"]
+  SUBDIRS += ["qualia/plugins/mapper"]
+if ('bt' in PLUGINS):
+  SUBDIRS += ["qualia/plugins/bt"]
 
 LIBS += ["m"]
 #############################################################################

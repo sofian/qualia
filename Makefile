@@ -1,7 +1,7 @@
 EXAMPLES=$(wildcard tests/*)
 MODE = debug
 PLATFORM = computer
-PLUGINS = osc
+PLUGINS = osc,bt
 SCONS = `which scons`
 SCONS += mode=$(MODE) platform=$(PLATFORM) PLUGINS=$(PLUGINS)
 
