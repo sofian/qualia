@@ -8,7 +8,7 @@ class RepeatNode: public BehaviorTreeInternalNode
 public:
 	/** \param repeats the number of times to repeat the execution of the node's child before returning BT_SUCCESS
 	*/
-	RepeatNode::RepeatNode(int repeats);
+	RepeatNode(int repeats);
 	BehaviorTreeInternalNode* addChild(BehaviorTreeNode* newChild);
 	BEHAVIOR_STATUS execute(void* agent);
 	void init(void* agent);

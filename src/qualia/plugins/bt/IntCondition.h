@@ -78,24 +78,4 @@ namespace BehaviorTree
 		int val;
 
 	};
-
-	template<>
-	BEHAVIOR_STATUS IntCondition<NoClass>::execute(void* agent)
-	{
-		bool status;
-		switch (test)
-		{
-		case LESS_THAN:		status = ((*func2)() < val); break;
-		case GREATER_THAN:	status = ((*func2)() > val); break;
-		case LESS_OR_EQ:	status = ((*func2)() <= val); break;
-		case GREATER_OR_EQ: status = ((*func2)() >= val); break;
-		case EQUAL:			status = ((*func2)() == val); break;
-		case NOT_EQUAL:		status = ((*func2)() != val); break;
-		}
-
-		if (status)
-			return BT_SUCCESS;
-		else
-			return BT_FAILURE;
-	}
 }

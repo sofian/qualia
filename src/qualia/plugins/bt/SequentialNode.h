@@ -9,7 +9,7 @@ class SequentialNode:public BehaviorTreeInternalNode
 {
 public:
 	/// construct a sequentialNode
-	SequentialNode::SequentialNode();
+	SequentialNode();
 	BEHAVIOR_STATUS execute(void* agent);
 	void init(void* agent);
 
