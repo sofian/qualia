@@ -50,12 +50,13 @@ BEHAVIOR_STATUS PriorityNode::execute(void* agent)
 	while ((status = (*currentlyRunningNode).execute(agent)) == BT_FAILURE) //keep trying children until one doesn't fail
 	{
 		currentPosition++;
-		currentlyRunningNode = children.at(currentPosition);
 		if (currentPosition == children.size()) //all of the children failed
 		{
 			currentPosition = -1;
 			return BT_FAILURE;
 		}
+		else
+		  currentlyRunningNode = children.at(currentPosition);
 	}
 	return status;
 
