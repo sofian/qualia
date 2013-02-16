@@ -99,7 +99,8 @@ public:
   virtual Action* start(const Observation* observation);
   virtual Action* step(const Observation* observation);
 
-  bool hasClosest() const { return currentObservation->observations[HAS_CLOSEST]; }
+  bool hasClosest() const { return (currentObservation->observations[HAS_CLOSEST] > 0.5); }
+  float getClosestDistance() const { return (float)(currentObservation->observations[DIST_CLOSEST]); }
 };
 
 class ChooseAction : public BehaviorTreeNode
@@ -112,8 +113,8 @@ public:
 };
 
 #if ATTRACTION_MODE
-const action_dim_t ATTRACT = { 1 };
-const action_dim_t REPEL   = { 0 };
+const action_dim_t ATTRACT[] = { 1 };
+const action_dim_t REPEL[]   = { 0 };
 #else
 const action_dim_t UP[]    = { 1, 2 };
 const action_dim_t LEFT[]  = { 0, 1 };
@@ -199,18 +200,27 @@ int main(int argc, char** argv) {
   ActionProperties actionProperties(ACTION_DIM, N_ACTIONS);
 
 #if ATTRACTION_MODE
-  BehaviorTreeInternalNode* root = new SequentialNode();
+  BehaviorTreeInternalNode* root = new PriorityNode();
   int nRepeat = (agentId + 1) * 10;
-  root->addChild((new RepeatNode(nRepeat))
-        ->addChild((new BoolCondition<TestBTreeAgent>))
 
-        ->addChild((new ChooseAction(&actionProperties, UP))))
-      ->addChild((new RepeatNode(nRepeat))
-        ->addChild((new ChooseAction(&actionProperties, RIGHT))))
-      ->addChild((new RepeatNode(nRepeat))
-        ->addChild((new ChooseAction(&actionProperties, DOWN))))
-      ->addChild((new RepeatNode(nRepeat))
-        ->addChild((new ChooseAction(&actionProperties, LEFT))));
+  ProbabilityNode* probNode = new ProbabilityNode();
+  probNode->addChild(new ChooseAction(&actionProperties, ATTRACT), 0.99f);
+  probNode->addChild(new AlwaysFailure(), 0.01f);
+
+  root->addChild((new SequentialNode())
+        ->addChild(new BoolCondition<TestBTreeAgent>(&TestBTreeAgent::hasClosest, false))
+        ->addChild((new PriorityNode())
+          ->addChild((new RepeatNode(-1))
+            ->addChild((new SequentialNode)
+              ->addChild(new FloatCondition<TestBTreeAgent>(&TestBTreeAgent::getClosestDistance, GREATER_OR_CLOSE, 0.05))
+              ->addChild(new ChooseAction(&actionProperties, ATTRACT))))
+          ->addChild((new RepeatNode(-1))
+            ->addChild(probNode))))
+
+      ->addChild((new SequentialNode())
+        ->addChild(new BoolCondition<TestBTreeAgent>(&TestBTreeAgent::hasClosest, true))
+        ->addChild((new RepeatNode(500))
+            ->addChild(new ChooseAction(&actionProperties, REPEL))));
 
 #else
   int nRepeat = (agentId + 1) * 10;
