@@ -42,7 +42,7 @@
 
 // Old systems need that to define FLT_MAX and DBL_MAX
 #ifndef DBL_MAX
-  #ifdef _WIN32
+  #if !is_computer() or defined(_WIN32)
     #include <float.h>
   #else
     #include <values.h>

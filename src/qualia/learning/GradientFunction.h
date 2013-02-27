@@ -24,7 +24,7 @@
 #include <qualia/core/common.h>
 #include <qualia/learning/Function.h>
 
-#include <cstring>
+#include <string.h>
 
 class GradientFunction : public Function {
 public:

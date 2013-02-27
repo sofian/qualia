@@ -21,7 +21,7 @@
 #define MULTIDATASET_H_
 
 #include "DataSet.h"
-#include <cstring>
+#include <string.h>
 
 class MultiDataSet: public DataSet {
 public:

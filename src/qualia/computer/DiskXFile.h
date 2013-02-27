@@ -32,7 +32,7 @@
 #include <qualia/core/common.h>
 #include <qualia/core/XFile.h>
 
-#include <cstdio>
+#include <stdio.h>
 
 /** A file on the disk.
     

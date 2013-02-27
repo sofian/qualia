@@ -78,7 +78,7 @@ BinaryChromosome::~BinaryChromosome() {
 }
 
 void BinaryChromosome::copyFrom(const Chromosome& c) {
-  const BinaryChromosome* bc = dynamic_cast<const BinaryChromosome*>(&c);
+  const BinaryChromosome* bc = (const BinaryChromosome*)&c;
   ASSERT_ERROR( bc );
 //  ASSERT_ERROR( *info == *bc->info );
   ASSERT_ERROR( info->equals(*bc->info) );
@@ -100,7 +100,7 @@ void BinaryChromosome::mutate(float p) {
 }
 
 bool BinaryChromosome::equals(const Chromosome& c) const {
-  const BinaryChromosome* bc = dynamic_cast<const BinaryChromosome*>(&c);
+  const BinaryChromosome* bc = (const BinaryChromosome*)&c;
   if (!info->equals(*bc->info))
     return false;
   else {
@@ -168,10 +168,10 @@ void BinaryChromosome::mutateFlip(Chromosome& chromosome, float probability) {
 
 void BinaryChromosome::crossoverOnePoint(const Chromosome& parent1, const Chromosome& parent2,
                                          Chromosome* offspring1, Chromosome* offspring2) {
-  const BinaryChromosome* p1 = dynamic_cast<const BinaryChromosome*>(&parent1);
-  const BinaryChromosome* p2 = dynamic_cast<const BinaryChromosome*>(&parent2);
-  BinaryChromosome* o1 = dynamic_cast<BinaryChromosome*>(offspring1);
-  BinaryChromosome* o2 = dynamic_cast<BinaryChromosome*>(offspring2);
+  const BinaryChromosome* p1 = (const BinaryChromosome*)&parent1;
+  const BinaryChromosome* p2 = (const BinaryChromosome*)&parent2;
+  BinaryChromosome* o1 = (BinaryChromosome*)offspring1;
+  BinaryChromosome* o2 = (BinaryChromosome*)offspring2;
 
   ASSERT_ERROR( p1 );
   ASSERT_ERROR( p2 );
@@ -198,10 +198,10 @@ void BinaryChromosome::crossoverOnePoint(const Chromosome& parent1, const Chromo
 
 void BinaryChromosome::crossoverTwoPoint(const Chromosome& parent1, const Chromosome& parent2,
                                          Chromosome* offspring1, Chromosome* offspring2) {
-  const BinaryChromosome* p1 = dynamic_cast<const BinaryChromosome*>(&parent1);
-  const BinaryChromosome* p2 = dynamic_cast<const BinaryChromosome*>(&parent2);
-  BinaryChromosome* o1 = dynamic_cast<BinaryChromosome*>(offspring1);
-  BinaryChromosome* o2 = dynamic_cast<BinaryChromosome*>(offspring2);
+  const BinaryChromosome* p1 = (const BinaryChromosome*)&parent1;
+  const BinaryChromosome* p2 = (const BinaryChromosome*)&parent2;
+  BinaryChromosome* o1 = (BinaryChromosome*)offspring1;
+  BinaryChromosome* o2 = (BinaryChromosome*)offspring2;
 
   ASSERT_ERROR( p1 );
   ASSERT_ERROR( p2 );

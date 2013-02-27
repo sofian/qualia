@@ -21,7 +21,7 @@
 #define MEMORYDATASET_H_
 
 #include "DataSet.h"
-#include <cstring>
+#include <string.h>
 
 // A DataSet that is fully loaded into memory.
 class MemoryDataSet: public DataSet {

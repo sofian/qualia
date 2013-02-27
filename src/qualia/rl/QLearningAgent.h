@@ -33,7 +33,7 @@
 #include "RLObservation.h"
 #include "Policy.h"
 
-#include <cstring>
+#include <string.h>
 
 
 class QLearningAgent : public Agent {

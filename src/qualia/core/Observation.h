@@ -30,7 +30,7 @@
 
 #include <qualia/core/common.h>
 #include <qualia/core/XFile.h>
-#include <cstring>
+#include <string.h>
 
 typedef real observation_t;
 

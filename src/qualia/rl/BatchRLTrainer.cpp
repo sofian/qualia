@@ -39,8 +39,7 @@ void BatchRLTrainer::init() {
 }
 
 void BatchRLTrainer::_doTrainEpisode(DataSet* data) {
-  QFunction* qFunction = dynamic_cast<QFunction*>(function);
-  ASSERT_ERROR( qFunction );
+  QFunction* qFunction = (QFunction*)(function);
 
   int n = min(data->nExamples, maxExamples);
 

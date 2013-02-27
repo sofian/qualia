@@ -107,7 +107,7 @@ void noticemsg(const char* msg, ...);
   void ASSERT_ERROR_MESSAGE(bool expr, const char* msg, ...);
   #define ASSERT_ERROR(expr) __TRIGGER_ASSERT(expr, errormsg)
 #else
-  #define error dummymsg
+  #define ERROR dummymsg
   #define ASSERT_ERROR(expr) __DUMMY_ASSERT
   #define ASSERT_ERROR_MESSAGE assertdummymsg
 #endif

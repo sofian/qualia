@@ -26,6 +26,7 @@
 #define X_FILE_INC
 
 #include <qualia/core/common.h>
+#include <string.h>
 
 #ifndef SEEK_SET // from stdio.h
 #define SEEK_SET 0x0

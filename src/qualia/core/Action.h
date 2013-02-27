@@ -31,7 +31,7 @@
 #include <qualia/core/XFile.h>
 #include <qualia/util/random.h>
 
-#include <cstring>
+#include <string.h>
 
 typedef unsigned long action_t;
 typedef unsigned int  action_dim_t;
