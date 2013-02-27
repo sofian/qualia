@@ -161,7 +161,7 @@ int main(int argc, char** argv) {
   char oscRemotePortStr[100];
   sprintf(oscPortStr, "%d", oscPort);
   sprintf(oscRemotePortStr, "%d", oscRemotePort);
-  printf("Opening OSC connection (ip=%s, port=%s, remote_port=%s)\n", oscIP, oscPortStr, oscRemotePortStr);
+  printf("Opening OSC connection for agent id=%d (ip=%s, port=%s, remote_port=%s)\n", agentId, oscIP, oscPortStr, oscRemotePortStr);
   OscManager::initOsc(oscIP, oscPortStr, oscRemotePortStr);
 
   // Set random seed.
