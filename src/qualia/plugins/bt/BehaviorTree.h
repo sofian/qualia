@@ -1,6 +1,7 @@
 #ifndef BEHAVIORTREE_H_
 #define BEHAVIORTREE_H_
 
+#include <qualia/core/common.h>
 #include "Common.h"
 #include "BehaviorTreeBase.h"
 #include "BoolCondition.h"

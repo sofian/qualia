@@ -40,12 +40,12 @@ void CountLimitNode::initChildren(void* agent)
 
 BehaviorTreeInternalNode* CountLimitNode::addChild( BehaviorTreeNode* newChild )
 {
-	if (children.size() == 0)
-		BehaviorTreeInternalNode::addChild(newChild);
-	else
-		throw new std::exception();//"Cannot add more than one child to a count limit node");
+  if (children.size() == 0)
+    BehaviorTreeInternalNode::addChild(newChild);
+  else
+    ERROR("Cannot add more than one child to a count limit node");
 
-	return this;
+  return this;
 }
 
 CountLimitNode::CountLimitNode(int _limit,bool _allow_reinitialize)

@@ -33,7 +33,7 @@ void BehaviorTree::RepeatNode::init( void* agent )
 
 BehaviorTreeInternalNode* BehaviorTree::RepeatNode::addChild( BehaviorTreeNode* newChild )
 {
-	assert(children.size() == 0);
+	ASSERT_ERROR_MESSAGE(children.size() == 0, "RepeatNode can only contain one child.");
 	BehaviorTreeInternalNode::addChild(newChild);
 	return this;
 }
