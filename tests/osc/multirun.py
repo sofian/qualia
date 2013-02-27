@@ -37,8 +37,9 @@ arg+=1
 procArgs = sys.argv[arg:]
 
 for i in range(nProcs):
-  procCompleteArgs = [ procPath, str(i) ] + procArgs
-  if (remoteAgent and i==0):
+  id = startId + i
+  procCompleteArgs = [ procPath, str(id) ] + procArgs
+  if (remoteAgent and id==0):
     procCompleteArgs += [ '-remote-agent' ]
   print procCompleteArgs
   p = Popen( procCompleteArgs )
