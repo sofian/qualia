@@ -42,6 +42,7 @@
 #include <cstring>
 #include <csignal>
 #include <ctime>
+#include <exception>
 
 bool stopLoop = false;
 
@@ -86,6 +87,8 @@ enum ObservationIndices {
 };
 #endif
 
+const real CORNERED_THRESHOLD = (10.0/640.0f);
+
 class TestBTreeAgent : public Agent {
 public:
   Action* currentAction;
@@ -101,6 +104,13 @@ public:
 
   bool hasClosest() const { return (currentObservation->observations[HAS_CLOSEST] > 0.5); }
   float getClosestDistance() const { return (float)(currentObservation->observations[DIST_CLOSEST]); }
+
+  bool isCornered() const {
+    real x = currentObservation->observations[X];
+    real y = currentObservation->observations[X];
+    return (x < CORNERED_THRESHOLD || x > 1.0-CORNERED_THRESHOLD ||
+            y < CORNERED_THRESHOLD || y > 1.0-CORNERED_THRESHOLD);
+  }
 };
 
 class ChooseAction : public BehaviorTreeNode
@@ -112,6 +122,25 @@ public:
   void init(void* agent){}
 };
 
+#include <iostream>
+#include <stdexcept>
+
+#include <execinfo.h>
+
+void
+handler()
+{
+    void *trace_elems[20];
+    int trace_elem_count(backtrace( trace_elems, 20 ));
+    char **stack_syms(backtrace_symbols( trace_elems, trace_elem_count ));
+    for ( int i = 0 ; i < trace_elem_count ; ++i )
+    {
+        std::cout << stack_syms[i] << "\n";
+    }
+    free( stack_syms );
+
+    exit(1);
+}
 #if ATTRACTION_MODE
 const action_dim_t ATTRACT[] = { 1 };
 const action_dim_t REPEL[]   = { 0 };
@@ -123,8 +152,9 @@ const action_dim_t RIGHT[] = { 2, 1 };
 #endif
 
 int main(int argc, char** argv) {
-  signal(SIGINT, stop);
-  signal(SIGTERM, stop);
+  //signal(SIGINT, stop);
+  //signal(SIGTERM, stop);
+  std::set_terminate(handler);
 
   int dimObservations;
   int dimActions;
@@ -221,6 +251,9 @@ int main(int argc, char** argv) {
         ->addChild(new BoolCondition<TestBTreeAgent>(&TestBTreeAgent::hasClosest, true))
         ->addChild((new RepeatNode(500))
             ->addChild(new ChooseAction(&actionProperties, REPEL))));
+//            ->addChild((new SequentialNode)
+//              ->addChild(new BoolCondition<TestBTreeAgent>(&TestBTreeAgent::isCornered, false))
+//              ->addChild(new ChooseAction(&actionProperties, REPEL)))));
 
 #else
   int nRepeat = (agentId + 1) * 10;
