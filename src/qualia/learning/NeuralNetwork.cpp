@@ -26,7 +26,6 @@ NeuralNetwork::NeuralNetwork(unsigned int nInputs_,
                              float weightDecay_,
                              bool linearOutput_)
  : learningRate(learningRate_),
-   startLearningRate(learningRate_),
    decreaseConstant(decreaseConstant_),
    weightDecay(weightDecay_)
 {
@@ -57,15 +56,14 @@ NeuralNetwork::~NeuralNetwork() {
 }
 
 void NeuralNetwork::init() {
-  // Reinit learning rate and n iterations.
-  learningRate = startLearningRate;
-  iter = 0;
-
   // randomize weights
   for (unsigned int i=0; i<_nParams; i++) {
     weights[i] = randomUniform(-1, +1);
     dWeights[i] = 0;
   }
+
+  currentLearningRate = learningRate;
+  _learningRateDiv = 1;
 }
 
 void NeuralNetwork::setInput(int i, real x) {
@@ -110,10 +108,19 @@ void NeuralNetwork::propagate() {
 }
 
 void NeuralNetwork::update() {
-  float lr = learningRate / (1.0f + ((float)iter) * decreaseConstant);
+  // Update learning rate.
+  currentLearningRate = learningRate / _learningRateDiv;
+
+  // Update weights.
   for (unsigned int i=0; i<_nParams; i++)
-    weights[i] -= lr * (dWeights[i] + weightDecay * weights[i]);
+//    weights[i] -= learningRate * dWeights[i];
+    weights[i] -= currentLearningRate * (dWeights[i] + weightDecay * weights[i]);
+
+  // Clear derivatives.
   clearDelta();
+
+  // Update learning rate divider.
+  _learningRateDiv += decreaseConstant;
 }
 
 //#ifdef DEBUG
@@ -211,20 +218,19 @@ void NeuralNetwork::_deallocateLayer(Layer& layer) {
 
 void NeuralNetwork::save(XFile* file) {
   GradientFunction::save(file);
-  file->write(&startLearningRate, sizeof(float), 1);
-  file->write(&decreaseConstant,  sizeof(float), 1);
-  file->write(&weightDecay,       sizeof(float), 1);
-  file->write(&learningRate,      sizeof(float), 1);
-  file->write(&iter,              sizeof(unsigned long), 1);
+  file->write(&learningRate,     sizeof(real), 1);
+  file->write(&decreaseConstant, sizeof(real), 1);
+  file->write(&weightDecay,      sizeof(real), 1);
+  file->write(&_learningRateDiv,  sizeof(real), 1);
 }
 
 void NeuralNetwork::load(XFile* file) {
   GradientFunction::load(file);
-  file->read(&startLearningRate, sizeof(float), 1);
-  file->read(&decreaseConstant,  sizeof(float), 1);
-  file->read(&weightDecay,       sizeof(float), 1);
-  file->read(&learningRate,      sizeof(float), 1);
-  file->read(&iter,              sizeof(unsigned long), 1);
+  file->read(&learningRate,     sizeof(real), 1);
+  file->read(&decreaseConstant, sizeof(real), 1);
+  file->read(&weightDecay,      sizeof(real), 1);
+  file->read(&_learningRateDiv, sizeof(real), 1);
+  currentLearningRate = learningRate / _learningRateDiv;
 }
 
 

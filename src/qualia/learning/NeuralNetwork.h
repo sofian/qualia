@@ -50,7 +50,7 @@ public:
   // Source:
   // http://pages.cs.wisc.edu/~bolo/shipyard/neural/tort.html
   // http://en.wikipedia.org/wiki/Q-learning#Learning_rate
-  float startLearningRate;
+  float learningRate;
 
   // The learning rate decrease constant. Value should be >= 0, usually in [0, 1].
   // The decrease constant is applied as a way to slowly decrease the learning rate during gradient descent to help
@@ -63,13 +63,12 @@ public:
   // weights and thus also limits the freedom in the model.
   float weightDecay;
 
-  /// Internal use.
+  // Internal use ////////////////
 
-  // The current learning rate.
-  float learningRate;
+  // The current learning rate (read-only).
+  float currentLearningRate;
 
-  // Number of iterations performed thus far.
-  unsigned long iter;
+  float _learningRateDiv;
 
   // Layer structure.
   struct Layer {
