@@ -30,9 +30,6 @@ public:
   // from being more exploratory to being more greedy.
   float decreaseConstant;
 
-  // Current epsilon value (read-only).
-  float currentEpsilon;
-
   // Internal use.
   float _epsilonDiv;
 
@@ -40,6 +37,9 @@ public:
 
   virtual void init();
   virtual void chooseAction(Action* action, const Observation* observation);
+
+  // Returns the current epsilon value ie. = epsilon / (1 + t * decreaseConstant).
+  virtual float getCurrentEpsilon() const;
 };
 
 #endif /* QLEARNINGEDECREASINGPOLICY_H_ */

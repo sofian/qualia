@@ -57,7 +57,6 @@ NeuralNetwork::~NeuralNetwork() {
 
 void NeuralNetwork::init() {
   // Reset learning parameters.
-  currentLearningRate = learningRate;
   _learningRateDiv = 1;
 
   // Randomize weights.
@@ -65,6 +64,10 @@ void NeuralNetwork::init() {
     weights[i] = randomUniform(-1, +1);
     dWeights[i] = 0;
   }
+}
+
+float NeuralNetwork::getCurrentLearningRate() const {
+  return learningRate / _learningRateDiv;
 }
 
 void NeuralNetwork::setInput(int i, real x) {
@@ -110,12 +113,12 @@ void NeuralNetwork::propagate() {
 
 void NeuralNetwork::update() {
   // Update learning rate.
-  currentLearningRate = learningRate / _learningRateDiv;
+  float lr = getCurrentLearningRate();
 
   // Update weights.
   for (unsigned int i=0; i<_nParams; i++)
 //    weights[i] -= learningRate * dWeights[i];
-    weights[i] -= currentLearningRate * (dWeights[i] + weightDecay * weights[i]);
+    weights[i] -= lr * (dWeights[i] + weightDecay * weights[i]);
 
   // Clear derivatives.
   clearDelta();
@@ -230,7 +233,6 @@ void NeuralNetwork::load(XFile* file) {
   file->read(&decreaseConstant, sizeof(real), 1);
   file->read(&weightDecay,      sizeof(real), 1);
   file->read(&_learningRateDiv, sizeof(real), 1);
-  currentLearningRate = learningRate / _learningRateDiv;
 }
 
 

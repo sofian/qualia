@@ -63,9 +63,6 @@ public:
   // weights and thus also limits the freedom in the model.
   float weightDecay;
 
-  // The current learning rate (read-only).
-  float currentLearningRate;
-
   // Internal use ////////////////
 
   // This value is used to keep track of the learning rate divider: it is equal to (1 + t * decreaseConstant).
@@ -109,6 +106,8 @@ public:
   virtual unsigned int nHidden() const { return hiddenLayer.n; }
   virtual unsigned int nOutputs() const { return outputLayer.n; }
   virtual unsigned int nParams() const { return _nParams; }
+
+  virtual float getCurrentLearningRate() const;
 
   virtual void setInput(int i, real x);
   virtual void setInputs(const real *inputs);
