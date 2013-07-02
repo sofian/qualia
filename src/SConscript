@@ -9,6 +9,31 @@ def unique(seq, keepstr=True):
   seen = []
   return t(c for c in seq if not (c in seen or seen.append(c)))
 
+VARTAB = {}
+CONFIG = {}
+
+def resolve_var(varname, default_value):
+    global VARTAB
+    global CONFIG
+    # precedence: 
+    # 1. scons argument
+    # 2. global variable
+    # 3. environment variable
+    # 4. default value
+    ret = ARGUMENTS.get(varname, None)
+    VARTAB[varname] = ('arg', ret)
+    if ret == None:
+        if (varname in CONFIG):
+          ret = CONFIG[varname]
+        VARTAB[varname] = ('var', ret)
+    if ret == None:
+        ret = os.environ.get(varname, None)
+        VARTAB[varname] = ('env', ret)
+    if ret == None:
+        ret = default_value
+        VARTAB[varname] = ('dfl', ret)
+    return ret
+
 def run(cmd):
     """Run a command and decipher the return code. Exit by default."""
     import SCons.Script
@@ -38,6 +63,7 @@ arch = env['PLATFORM'];
 
 MCU = 'atmega168'
 F_CPU = 16000000
+VARIANT = 'standard'
 EXTRA_LIBS = ""
 LIBS = ""
 LIBPATH = ""
@@ -45,12 +71,23 @@ AVR_GCC_DIR = ""
 PLUGINS = ""
 
 # default
-if (platform == 'avr' or platform == 'arduino'):
-	if (arch == 'darwin'):
-	  AVR_GCC_DIR = "/Applications/Arduino.app/Contents/Resources/Java/hardware/tools/avr/bin/"
-	else:
-	  AVR_GCC_DIR = ""
-
+if platform == 'arduino':
+  if arch == 'darwin':
+      # For MacOS X, pick up the AVR tools from within Arduino.app
+      ARDUINO_HOME        = resolve_var('ARDUINO_HOME',
+                                        '/Applications/Arduino.app/Contents/Resources/Java')
+      AVR_GCC_DIR         = resolve_var('AVR_GCC_PATH',
+                                        path.join(ARDUINO_HOME, 'hardware/tools/avr/bin'))
+  elif arch == 'win32':
+      # For Windows, use environment variables.
+      ARDUINO_HOME        = resolve_var('ARDUINO_HOME', None)
+      AVR_GCC_DIR         = resolve_var('AVR_GCC_PATH',
+                                        path.join(ARDUINO_HOME, 'hardware/tools/avr/bin'))
+  else:
+      # For Ubuntu Linux (9.10 or higher)
+      ARDUINO_HOME        = resolve_var('ARDUINO_HOME', '/usr/share/arduino/')
+      AVR_GCC_DIR         = resolve_var('AVR_GCC_PATH', '')
+      
 TARGET = "qualia"
 
 INCLUDE_PATH = ARGUMENTS.get('INCLUDE_PATH', "").split(":")
@@ -61,6 +98,7 @@ INCLUDE_PATH = unique(INCLUDE_PATH + [os.getcwd()])
 MCU = ARGUMENTS.get('MCU', MCU)
 #F_CPU = getBoardConf(r'^%s\.build\.f_cpu=(.*)'%ARDUINO_BOARD)
 F_CPU = ARGUMENTS.get('F_CPU', F_CPU)
+VARIANT = ARGUMENTS.get('VARIANT', VARIANT)
 
 # Arduino arguments
 EXTRA_LIBS = ARGUMENTS.get('EXTRA_LIBS', EXTRA_LIBS).split(':')
@@ -108,9 +146,22 @@ if (platform == 'avr' or platform == 'arduino'):
   cFlags = ['-ffunction-sections', '-fdata-sections', '-fno-exceptions',
       '-funsigned-char', '-funsigned-bitfields', '-fpack-struct', '-fshort-enums',
       '-Os', '-mmcu=%s'%MCU]
+  
+  cppDefs = {'F_CPU':F_CPU}
+  if (platform == 'arduino'):
+    cppDefs['ARDUINO'] = 100
+
   env = Environment(CC = AVR_BIN_PREFIX+'gcc', CXX = AVR_BIN_PREFIX+'g++',
-      CPPPATH = INCLUDE_PATH, CPPDEFINES = {'F_CPU':F_CPU}, 
+      CPPPATH = INCLUDE_PATH, CPPDEFINES = cppDefs,
       CFLAGS = cFlags+['-std=gnu99'], CCFLAGS = cFlags, TOOLS = ['gcc','g++'])
+
+  if platform == 'arduino':
+    
+    env.Append(CPPPATH = ARDUINO_HOME + "/hardware/arduino/cores/arduino/")
+    
+    hwVariant = ARDUINO_HOME + '/hardware/arduino/variants/' + VARIANT
+    if hwVariant:
+      env.Append(CPPPATH = hwVariant)
 
   #env.Append(BUILDERS={'Elf':Builder(action=AVR_BIN_PREFIX+'gcc '+
   #        '-mmcu=%s -Os -Wl,--gc-sections,--relax -o $TARGET $SOURCES -lm'%MCU)})
@@ -151,7 +202,7 @@ else:
   # Peut etre une erreur: on devrait construire des OBJETS (?)
   lib = env.Library(target = TARGET, source = sources)
 
-  if (arch == 'linux' or arch == 'darwin'):
+  if (arch == 'linux' or arch == 'posix' or arch == 'darwin'):
     prefix = ARGUMENTS.get('PREFIX', "/usr/local")
   else:
     prefix = ARGUMENTS.get('PREFIX', "")
