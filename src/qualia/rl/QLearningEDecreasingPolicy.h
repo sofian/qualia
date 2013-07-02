@@ -24,10 +24,17 @@
 
 class QLearningEDecreasingPolicy: public QLearningEGreedyPolicy {
 public:
+  // The epsilon decrease constant. Value should be >= 0, usually in [0, 1].
+  // The decrease constant is applied in a similar fashion to the one for the stochastic gradient (see NeuralNetwork.h).
+  // Here, it is used to slowly decrease the epsilon value, thus allowing the agent to adapt its policy over time
+  // from being more exploratory to being more greedy.
   float decreaseConstant;
 
+  // Current epsilon value (read-only).
+  float currentEpsilon;
+
   // Internal use.
-  float epsilonDiv;
+  float _epsilonDiv;
 
   QLearningEDecreasingPolicy(float epsilon, float decreaseConstant);
 

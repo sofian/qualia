@@ -21,24 +21,24 @@
 
 QLearningEDecreasingPolicy::QLearningEDecreasingPolicy(float epsilon_, float decreaseConstant_)
   : QLearningEGreedyPolicy(epsilon_),
-    decreaseConstant(decreaseConstant_),
-    epsilonDiv(1) { }
+    decreaseConstant(decreaseConstant_) {}
 
 void QLearningEDecreasingPolicy::init() {
-  epsilonDiv = 1; // reset
+  currentEpsilon = epsilon;
+  _epsilonDiv = 1; // reset
 }
 
 void QLearningEDecreasingPolicy::chooseAction(Action* action, const Observation* observation) {
   // Init.
-  real epsTmp = epsilon; // copy epsilon
-  epsilon /= epsilonDiv; // compute current epsilon value
+  currentEpsilon = epsilon / _epsilonDiv;
 
-  // Choose action according to e-greedy policy
-  QLearningEGreedyPolicy::chooseAction(action, observation);
-
-  // Copy original epsilon back.
-  epsilon = epsTmp;
+  // Choose action according to e-greedy policy. Since the parent class uses epsilon, we need
+  // to save it, change it, choose the action and copy it back.
+  float epsilonTemp = epsilon; // copy epsilon
+  epsilon = currentEpsilon;    // update epsilon to current value
+  QLearningEGreedyPolicy::chooseAction(action, observation); // choose action with parent class
+  epsilon = epsilonTemp; // copy back
 
   // Update divider.
-  epsilonDiv += decreaseConstant;
+  _epsilonDiv += decreaseConstant;
 }
