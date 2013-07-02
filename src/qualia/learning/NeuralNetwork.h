@@ -40,7 +40,7 @@ class NeuralNetwork : public GradientFunction {
 public:
   // Configurable parameters /////
 
-  // Learning rate. Value should be >= 0, usually in [0, 1].
+  // The starting learning rate. Value should be >= 0, usually in [0, 1].
   // The learning rate is used to adjust the speed of training. The higher the learning rate the faster the
   // network is trained. However, the network has a better chance of being trained to a local minimum solution.
   // A local minimum is a point at which the network stabilizes on a solution which is not the most optimal
@@ -50,13 +50,18 @@ public:
   // Source:
   // http://pages.cs.wisc.edu/~bolo/shipyard/neural/tort.html
   // http://en.wikipedia.org/wiki/Q-learning#Learning_rate
-  float learningRate;
+  float startLearningRate;
 
   float decreaseConstant;
   float weightDecay;
 
-  // Internal use ////////////////
-  float learningRateDiv;
+  /// Internal use.
+
+  // The current learning rate.
+  float learningRate;
+
+  // Number of iterations performed thus far.
+  unsigned long iter;
 
   // Layer structure.
   struct Layer {

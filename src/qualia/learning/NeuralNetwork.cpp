@@ -26,6 +26,7 @@ NeuralNetwork::NeuralNetwork(unsigned int nInputs_,
                              float weightDecay_,
                              bool linearOutput_)
  : learningRate(learningRate_),
+   startLearningRate(learningRate_),
    decreaseConstant(decreaseConstant_),
    weightDecay(weightDecay_)
 {
@@ -56,12 +57,15 @@ NeuralNetwork::~NeuralNetwork() {
 }
 
 void NeuralNetwork::init() {
+  // Reinit learning rate and n iterations.
+  learningRate = startLearningRate;
+  iter = 0;
+
   // randomize weights
   for (unsigned int i=0; i<_nParams; i++) {
     weights[i] = randomUniform(-1, +1);
     dWeights[i] = 0;
   }
-  learningRateDiv = 1;
 }
 
 void NeuralNetwork::setInput(int i, real x) {
@@ -106,12 +110,10 @@ void NeuralNetwork::propagate() {
 }
 
 void NeuralNetwork::update() {
-  float lr = learningRate / learningRateDiv;
+  float lr = learningRate / (1.0f + ((float)iter) * decreaseConstant);
   for (unsigned int i=0; i<_nParams; i++)
-//    weights[i] -= learningRate * dWeights[i];
     weights[i] -= lr * (dWeights[i] + weightDecay * weights[i]);
   clearDelta();
-  learningRateDiv += decreaseConstant;
 }
 
 //#ifdef DEBUG
@@ -209,18 +211,20 @@ void NeuralNetwork::_deallocateLayer(Layer& layer) {
 
 void NeuralNetwork::save(XFile* file) {
   GradientFunction::save(file);
-  file->write(&learningRate,     sizeof(real), 1);
-  file->write(&decreaseConstant, sizeof(real), 1);
-  file->write(&weightDecay,      sizeof(real), 1);
-  file->write(&learningRateDiv,  sizeof(real), 1);
+  file->write(&startLearningRate, sizeof(float), 1);
+  file->write(&decreaseConstant,  sizeof(float), 1);
+  file->write(&weightDecay,       sizeof(float), 1);
+  file->write(&learningRate,      sizeof(float), 1);
+  file->write(&iter,              sizeof(unsigned long), 1);
 }
 
 void NeuralNetwork::load(XFile* file) {
   GradientFunction::load(file);
-  file->read(&learningRate,     sizeof(real), 1);
-  file->read(&decreaseConstant, sizeof(real), 1);
-  file->read(&weightDecay,      sizeof(real), 1);
-  file->read(&learningRateDiv,  sizeof(real), 1);
+  file->read(&startLearningRate, sizeof(float), 1);
+  file->read(&decreaseConstant,  sizeof(float), 1);
+  file->read(&weightDecay,       sizeof(float), 1);
+  file->read(&learningRate,      sizeof(float), 1);
+  file->read(&iter,              sizeof(unsigned long), 1);
 }
 
 
