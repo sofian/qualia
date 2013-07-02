@@ -63,11 +63,14 @@ public:
   // weights and thus also limits the freedom in the model.
   float weightDecay;
 
-  // Internal use ////////////////
-
   // The current learning rate (read-only).
   float currentLearningRate;
 
+  // Internal use ////////////////
+
+  // This value is used to keep track of the learning rate divider: it is equal to (1 + t * decreaseConstant).
+  // It is more efficient than the usual way of updating the learning rate, because it requires only one floating
+  // point addition per iteration, instead of an addition and a multiplication.
   float _learningRateDiv;
 
   // Layer structure.

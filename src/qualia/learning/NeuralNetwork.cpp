@@ -56,14 +56,15 @@ NeuralNetwork::~NeuralNetwork() {
 }
 
 void NeuralNetwork::init() {
-  // randomize weights
+  // Reset learning parameters.
+  currentLearningRate = learningRate;
+  _learningRateDiv = 1;
+
+  // Randomize weights.
   for (unsigned int i=0; i<_nParams; i++) {
     weights[i] = randomUniform(-1, +1);
     dWeights[i] = 0;
   }
-
-  currentLearningRate = learningRate;
-  _learningRateDiv = 1;
 }
 
 void NeuralNetwork::setInput(int i, real x) {
@@ -119,7 +120,6 @@ void NeuralNetwork::update() {
   // Clear derivatives.
   clearDelta();
 
-  // Update learning rate divider.
   _learningRateDiv += decreaseConstant;
 }
 
