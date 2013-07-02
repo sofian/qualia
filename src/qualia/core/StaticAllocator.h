@@ -47,11 +47,11 @@
 #include "Allocator.h"
 
 class StaticAllocator: public Allocator {
+public:
   unsigned char* buffer;
   size_t bufferSize;
   unsigned int bufferIdx;
 
-public:
   // Keeps track of leaks, for debugging.
   unsigned int nLeaks;
   unsigned char* lastLeak;
