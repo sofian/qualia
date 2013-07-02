@@ -22,7 +22,7 @@
 
 #include <qualia/core/common.h>
 #include <qualia/util/random.h>
-#include <cstring>
+#include <string.h>
 
 void randomShuffledIndices(int *indices, int nIndices);
 

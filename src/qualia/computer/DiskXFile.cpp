@@ -32,7 +32,7 @@
 #include <fcntl.h>
 #endif
 
-#include <cstdarg>
+#include <stdarg.h>
 
 bool DiskXFile::is_native_mode = true;
 
