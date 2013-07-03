@@ -17,7 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #ifndef CHROMOSOME_H_
 #define CHROMOSOME_H_
 
@@ -163,11 +162,5 @@ public:
 ////  Comparator comparator(Comparator c){ return (comparator=c); }
 
 };
-
-//inline int operator== (const Chromosome& a, const Chromosome& b)
-//{ return (a.compareTo(b) == 0); }
-//
-//inline int operator!= (const Chromosome& a, const Chromosome& b)
-//{ return (a.compareTo(b) != 0); }
 
 #endif /* CHROMOSOME_H_ */
