@@ -157,11 +157,11 @@ void IntCmdOption::read(int *argc_, char ***argv_)
   char *maryline;
 
   if(*argc_ == 0)
-    ERROR("IntCmdOption: cannot correctly set <%s>", name);
+    Q_ERROR("IntCmdOption: cannot correctly set <%s>", name);
 
   *ptr = strtol(argv[0], &maryline, 10);
   if( *maryline != '\0' )
-    ERROR("IntCmdOption: <%s> requires an integer", name);
+    Q_ERROR("IntCmdOption: <%s> requires an integer", name);
 
   (*argc_)--;
   (*argv_)++;
@@ -211,11 +211,11 @@ void RealCmdOption::read(int *argc_, char ***argv_)
   char *maryline;
 
   if(*argc_ == 0)
-    ERROR("RealCmdOption: cannot correctly set <%s>", name);
+    Q_ERROR("RealCmdOption: cannot correctly set <%s>", name);
 
   *ptr = strtod(argv[0], &maryline);
   if( *maryline != '\0' )
-    ERROR("RealCmdOption: <%s> requires a real", name);
+    Q_ERROR("RealCmdOption: <%s> requires a real", name);
 
   (*argc_)--;
   (*argv_)++;
@@ -300,7 +300,7 @@ void StringCmdOption::read(int *argc_, char ***argv_)
   char **argv = *argv_;
 
   if(*argc_ == 0)
-    ERROR("StringCmdOption: cannot correctly set <%s>", name);
+    Q_ERROR("StringCmdOption: cannot correctly set <%s>", name);
 
   Alloc::free(*ptr);
   *ptr = (char *)Alloc::malloc(strlen(argv[0])+1);

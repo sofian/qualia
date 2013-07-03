@@ -20,8 +20,8 @@
 #include "SubDataSet.h"
 
 SubDataSet::SubDataSet(DataSet* dataSet_, int* indices_, int nExamples_) : DataSet(nExamples_), _dataSet(dataSet_) {
-  ASSERT_ERROR( _dataSet );
-  ASSERT_WARNING( _dataSet->nExamples <= nExamples );
+  Q_ASSERT_ERROR( _dataSet );
+  Q_ASSERT_WARNING( _dataSet->nExamples <= nExamples );
   dim = _dataSet->dim;
   _indices = (int*)Alloc::malloc(nExamples * sizeof(int));
   memcpy(_indices, indices_, nExamples * sizeof(int));
@@ -37,7 +37,7 @@ void SubDataSet::init() {
 }
 
 void SubDataSet::reset() {
-  ASSERT_ERROR_MESSAGE( example, "Example is NULL, maybe you forgot to call init()?" );
+  Q_ASSERT_ERROR_MESSAGE( example, "Example is NULL, maybe you forgot to call init()?" );
   _dataSet->reset();
 }
 
@@ -67,12 +67,12 @@ void SubDataSet::getStandardDataSets(SubDataSet** train, SubDataSet** valid,
   randomShuffledIndices(indices, dataSet->nExamples);
 
   // Get number of examples for train / valid / test.
-  ASSERT_ERROR( propTrain + propValid + propTest == 1.0f );
+  Q_ASSERT_ERROR( propTrain + propValid + propTest == 1.0f );
   int nTrain = (int)dataSet->nExamples * propTrain;
   int nValid = (int)dataSet->nExamples * propValid;
   int nTest  = dataSet->nExamples - nTrain - nValid;
 
-  NOTICE("Splitting in train=%d / valid=%d / test=%d examples", nTrain, nValid, nTest);
+  Q_NOTICE("Splitting in train=%d / valid=%d / test=%d examples", nTrain, nValid, nTest);
 
   // Create data sets.
   *train = new(Alloc::instance()) SubDataSet(dataSet, indices,               nTrain);

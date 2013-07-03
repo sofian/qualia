@@ -22,8 +22,8 @@
 FileExportEnvironment::FileExportEnvironment(Environment* env_, XFile* file_,
                                              unsigned int observationDim_, unsigned int actionDim_)
   : Environment(), env(env_), file(file_), observationDim(observationDim_), actionDim(actionDim_) {
-  ASSERT_ERROR(env);
-  ASSERT_ERROR(file);
+  Q_ASSERT_ERROR(env);
+  Q_ASSERT_ERROR(file);
 }
 
 FileExportEnvironment::~FileExportEnvironment() {

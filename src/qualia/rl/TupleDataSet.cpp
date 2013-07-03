@@ -25,7 +25,7 @@ TupleDataSet::TupleDataSet(XFile* file_, unsigned int observationDim_, ActionPro
     lastObservation(observationDim_),
     lastAction(actionProperties_),
     observation(observationDim_) {
-  ASSERT_ERROR( file );
+  Q_ASSERT_ERROR( file );
 }
 
 TupleDataSet::~TupleDataSet() {
@@ -39,9 +39,9 @@ void TupleDataSet::init() {
   file->rewind();
 
   file->read(&x, sizeof(unsigned int), 1);
-  ASSERT_ERROR( x == observation.dim() );
+  Q_ASSERT_ERROR( x == observation.dim() );
   file->read(&x, sizeof(unsigned int), 1);
-  ASSERT_ERROR( x == lastAction.dim() );
+  Q_ASSERT_ERROR( x == lastAction.dim() );
 
   lastObservation.loadData(file);
   unsigned int size = file->size();
@@ -59,7 +59,7 @@ void TupleDataSet::init() {
 }
 
 void TupleDataSet::reset() {
-  ASSERT_ERROR_MESSAGE( example, "Example is NULL, maybe you forgot to call init()?" );
+  Q_ASSERT_ERROR_MESSAGE( example, "Example is NULL, maybe you forgot to call init()?" );
   unsigned int dummy;
   file->rewind();
   file->read(&dummy, sizeof(unsigned int), 1);
@@ -71,8 +71,7 @@ void TupleDataSet::reset() {
 }
 
 void TupleDataSet::setExample(int t) {
-  if (t != currentExampleIndex+1)
-    ERROR("Seeking not allowed.");
+  Q_ASSERT_ERROR_MESSAGE(t == currentExampleIndex+1, "Seeking not allowed.");
 
   lastObservation.copyFrom(observation);
   lastAction.loadData(file);

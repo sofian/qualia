@@ -67,7 +67,7 @@ bool BinaryChromosomeInfo::equals(const BinaryChromosomeInfo& info) {
 BinaryChromosome::BinaryChromosome(BinaryChromosomeInfo* info_)
   : Chromosome(), info(info_), code(0)
 {
-  ASSERT_ERROR(info);
+  Q_ASSERT_ERROR(info);
   code = (uint8_t*) Alloc::malloc(info->byteSize()*sizeof(uint8_t));
   memset(code, 0, info->byteSize()*sizeof(uint8_t));
 }
@@ -79,9 +79,9 @@ BinaryChromosome::~BinaryChromosome() {
 
 void BinaryChromosome::copyFrom(const Chromosome& c) {
   const BinaryChromosome* bc = (const BinaryChromosome*)&c;
-  ASSERT_ERROR( bc );
+  Q_ASSERT_ERROR( bc );
 //  ASSERT_ERROR( *info == *bc->info );
-  ASSERT_ERROR( info->equals(*bc->info) );
+  Q_ASSERT_ERROR( info->equals(*bc->info) );
   memcpy(code, bc->code, info->byteSize());
 }
 
@@ -173,16 +173,16 @@ void BinaryChromosome::crossoverOnePoint(const Chromosome& parent1, const Chromo
   BinaryChromosome* o1 = (BinaryChromosome*)offspring1;
   BinaryChromosome* o2 = (BinaryChromosome*)offspring2;
 
-  ASSERT_ERROR( p1 );
-  ASSERT_ERROR( p2 );
-  ASSERT_ERROR( o1 );
-  ASSERT_ERROR( o2 );
+  Q_ASSERT_ERROR( p1 );
+  Q_ASSERT_ERROR( p2 );
+  Q_ASSERT_ERROR( o1 );
+  Q_ASSERT_ERROR( o2 );
 //  ASSERT_ERROR( (*p1->info) == (*p2->info) );
 //  ASSERT_ERROR( (*p1->info) == (*o1->info) );
 //  ASSERT_ERROR( (*p1->info) == (*o2->info) );
-  ASSERT_ERROR( p1->info->equals(*p2->info) );
-  ASSERT_ERROR( p1->info->equals(*o1->info) );
-  ASSERT_ERROR( p1->info->equals(*o2->info) );
+  Q_ASSERT_ERROR( p1->info->equals(*p2->info) );
+  Q_ASSERT_ERROR( p1->info->equals(*o1->info) );
+  Q_ASSERT_ERROR( p1->info->equals(*o2->info) );
 
   unsigned int codeSize = p1->info->bitSize();
 
@@ -203,16 +203,16 @@ void BinaryChromosome::crossoverTwoPoint(const Chromosome& parent1, const Chromo
   BinaryChromosome* o1 = (BinaryChromosome*)offspring1;
   BinaryChromosome* o2 = (BinaryChromosome*)offspring2;
 
-  ASSERT_ERROR( p1 );
-  ASSERT_ERROR( p2 );
-  ASSERT_ERROR( o1 );
-  ASSERT_ERROR( o2 );
+  Q_ASSERT_ERROR( p1 );
+  Q_ASSERT_ERROR( p2 );
+  Q_ASSERT_ERROR( o1 );
+  Q_ASSERT_ERROR( o2 );
 //  ASSERT_ERROR( (*p1->info) == (*p2->info) );
 //  ASSERT_ERROR( (*p1->info) == (*o1->info) );
 //  ASSERT_ERROR( (*p1->info) == (*o2->info) );
-  ASSERT_ERROR( p1->info->equals(*p2->info) );
-  ASSERT_ERROR( p1->info->equals(*o1->info) );
-  ASSERT_ERROR( p1->info->equals(*o2->info) );
+  Q_ASSERT_ERROR( p1->info->equals(*p2->info) );
+  Q_ASSERT_ERROR( p1->info->equals(*o1->info) );
+  Q_ASSERT_ERROR( p1->info->equals(*o2->info) );
 
   unsigned int codeSize = p1->info->bitSize();
 

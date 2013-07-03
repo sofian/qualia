@@ -39,7 +39,7 @@ real logAdd(real log_a, real log_b)
 
   real minusdif = log_b - log_a;
 
-  ASSERT_ERROR_MESSAGE (!isnan(minusdif), "LogAdd: minusdif (%f) log_b (%f) or log_a (%f) is nan",minusdif,log_b,log_a);
+  Q_ASSERT_ERROR_MESSAGE (!isnan(minusdif), "LogAdd: minusdif (%f) log_b (%f) or log_a (%f) is nan",minusdif,log_b,log_a);
 
   if (minusdif < MINUS_LOG_THRESHOLD)
     return log_a;
@@ -49,11 +49,11 @@ real logAdd(real log_a, real log_b)
 
 real logSub(real log_a, real log_b)
 {
-  ASSERT_ERROR_MESSAGE (log_a >= log_b, "LogSub: log_a (%f) should be greater than log_b (%f)", log_a, log_b);
+  Q_ASSERT_ERROR_MESSAGE (log_a >= log_b, "LogSub: log_a (%f) should be greater than log_b (%f)", log_a, log_b);
 
   real minusdif = log_b - log_a;
 
-  ASSERT_ERROR_MESSAGE (!isnan(minusdif), "LogSub: minusdif (%f) log_b (%f) or log_a (%f) is nan",minusdif,log_b,log_a);
+  Q_ASSERT_ERROR_MESSAGE (!isnan(minusdif), "LogSub: minusdif (%f) log_b (%f) or log_a (%f) is nan",minusdif,log_b,log_a);
 
   if (log_a == log_b)
     return LOG_ZERO;

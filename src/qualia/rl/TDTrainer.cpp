@@ -33,14 +33,14 @@ TDTrainer::TDTrainer(QFunction* qFunction_, unsigned int observationDim_, Action
     exampleLastAction(actionProperties),
     exampleAction(actionProperties)*/
 {
-  ASSERT_WARNING(0 <= lambda && lambda <= 1);
-  ASSERT_WARNING(0 <= gamma && gamma <= 1);
-  ASSERT_ERROR( qFunction_->nInputs() == (observationDim + actionDim) );
-  ASSERT_ERROR( qFunction_->nOutputs() == 1 );
+  Q_ASSERT_WARNING(0 <= lambda && lambda <= 1);
+  Q_ASSERT_WARNING(0 <= gamma && gamma <= 1);
+  Q_ASSERT_ERROR( qFunction_->nInputs() == (observationDim + actionDim) );
+  Q_ASSERT_ERROR( qFunction_->nOutputs() == 1 );
 
   eTraces = (real*)Alloc::malloc( ((QFunction*)function)->nParams() * sizeof(real));
 
-  ASSERT_WARNING_MESSAGE( !offPolicy , "Off policy learning is known to diverge when used with linear function approximators.");
+  Q_ASSERT_WARNING_MESSAGE( !offPolicy , "Off policy learning is known to diverge when used with linear function approximators.");
 }
 
 TDTrainer::~TDTrainer() {

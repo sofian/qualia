@@ -22,12 +22,12 @@
 #include "Action.h"
 
 ActionProperties::ActionProperties(unsigned int dim, const unsigned int* nActions) : _dim(dim) {
-  ASSERT_ERROR( nActions );
-  ASSERT_ERROR( _dim > 0 );
+  Q_ASSERT_ERROR( nActions );
+  Q_ASSERT_ERROR( _dim > 0 );
 #if DEBUG_ERROR
   // No dimension elements should be zero.
   for (unsigned int i = 0; i < _dim; i++)
-    ASSERT_ERROR( nActions[i] != 0 );
+    Q_ASSERT_ERROR( nActions[i] != 0 );
 #endif
 
   // Allocate.
@@ -54,7 +54,7 @@ bool ActionProperties::equals(const ActionProperties& p) const {
 }
 
 Action::Action(ActionProperties* properties_) : properties(properties_), _undefined(false) {
-  ASSERT_ERROR(properties);
+  Q_ASSERT_ERROR(properties);
 
   // Allocate.
   actions =  (action_dim_t*) Alloc::malloc(dim() * sizeof(action_dim_t));
@@ -68,7 +68,7 @@ Action::~Action() {
 }
 
 action_t Action::conflated() const {
-  ASSERT_ERROR_MESSAGE( !_undefined, "Undefined action: you likely called reset() without calling next().");
+  Q_ASSERT_ERROR_MESSAGE( !_undefined, "Undefined action: you likely called reset() without calling next().");
   action_t action = 0;
   unsigned long mult = 1;
   for (unsigned int i=0; i<dim(); i++) {
@@ -79,7 +79,7 @@ action_t Action::conflated() const {
 }
 
 Action& Action::setConflated(action_t action) {
-  ASSERT_WARNING(action < nConflated());
+  Q_ASSERT_WARNING(action < nConflated());
   for (unsigned int i=0; i<dim(); i++) {
     actions[i] = action % nActions(i);
     action    /= nActions(i);
@@ -106,7 +106,7 @@ bool Action::hasNext() {
 }
 
 Action& Action::next() {
-  ASSERT_WARNING( hasNext() );
+  Q_ASSERT_WARNING( hasNext() );
   // First call to next() sets to zero.
   if (_undefined) {
     memset(actions, 0, dim() * sizeof(action_dim_t));
@@ -128,14 +128,14 @@ Action& Action::next() {
 }
 
 Action& Action::copyFrom(const Action& src) {
-  ASSERT_ERROR( properties->equals(*src.properties) );
+  Q_ASSERT_ERROR( properties->equals(*src.properties) );
   memcpy( actions, src.actions, dim()*sizeof(action_dim_t) );
   return *this;
 }
 
 void Action::saveData(XFile* file) const {
 #if DEBUG_LEVEL_WARNING
-  ASSERT_WARNING( file->write(actions, sizeof(action_dim_t), dim()) == (int) dim() );
+  Q_ASSERT_WARNING( file->write(actions, sizeof(action_dim_t), dim()) == (int) dim() );
 #else
   file->write(actions, sizeof(action_dim_t), dim());
 #endif
@@ -144,7 +144,7 @@ void Action::saveData(XFile* file) const {
 #include <stdio.h>
 void Action::loadData(XFile* file) {
 #if DEBUG_LEVEL_WARNING
-  ASSERT_WARNING( file->read(actions, sizeof(action_dim_t), dim()) == (int) dim() );
+  Q_ASSERT_WARNING( file->read(actions, sizeof(action_dim_t), dim()) == (int) dim() );
 #else
   file->read(actions, sizeof(action_dim_t), dim());
 #endif

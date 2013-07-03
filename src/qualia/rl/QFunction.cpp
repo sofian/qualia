@@ -23,8 +23,8 @@ QFunction::QFunction(GradientFunction* function_, unsigned int observationDim_, 
   : function(function_),
     observationDim(observationDim_),
     actionProperties(actionProperties_) {
-  ASSERT_ERROR(observationDim + actionProperties->dim() == (unsigned int)function->nInputs());
-  ASSERT_ERROR(function->nOutputs() == 1);
+  Q_ASSERT_ERROR(observationDim + actionProperties->dim() == (unsigned int)function->nInputs());
+  Q_ASSERT_ERROR(function->nOutputs() == 1);
   input = (real*) Alloc::malloc( function->nInputs() * sizeof(real) );
   weights = function->weights;
   dWeights = function->dWeights;
@@ -35,8 +35,8 @@ QFunction::~QFunction() {
 }
 
 real QFunction::getValue(const Observation* observation, const Action* action) {
-  ASSERT_ERROR( observation->dim() == observationDim );
-  ASSERT_ERROR( action->dim() == actionProperties->dim() );
+  Q_ASSERT_ERROR( observation->dim() == observationDim );
+  Q_ASSERT_ERROR( action->dim() == actionProperties->dim() );
 
   // Set input.
   int k = 0;
@@ -56,7 +56,7 @@ real QFunction::getValue(const Observation* observation, const Action* action) {
 }
 
 void QFunction::getMaxAction(Action* dst, const Observation* observation, real *maxQ) {
-  ASSERT_ERROR(dst);
+  Q_ASSERT_ERROR(dst);
 
   dst->reset();
   action_t actionMax = 0;

@@ -57,10 +57,10 @@ public:
   // convergence to a better minimum.
   float decreaseConstant;
 
-  // The weight decay. Value should be >= 0, usually in [0, 1].
-  // Weight decay is a simple regularization method that limits the number of free parameters in the model so as
-  // to prevent over-fitting (in other words, to get a better generalization). In practice, it penalizes large
-  // weights and thus also limits the freedom in the model.
+    // The weight decay. Value should be >= 0, usually in [0, 1].
+    // Weight decay is a simple regularization method that limits the number of free parameters in the model so as
+    // to prevent over-fitting (in other words, to get a better generalization). In practice, it penalizes large
+    // weights and thus also limits the freedom in the model.
   float weightDecay;
 
   // Internal use ////////////////

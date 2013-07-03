@@ -31,9 +31,10 @@
 
 // # Macro definitions #####################################################
 
-// Force NODEBUG when running in AVR/Arduino mode
+// Force DEBUG_LEVEL_NODEBUG when running in AVR/Arduino mode
 #if (! is_computer())
   #ifdef DEBUG_LEVEL
+    #warning "DEBUG_LEVEL is not supported on AVR/Arduino: forcing DEBUG_LEVEL_NODEBUG"
     #undef DEBUG_LEVEL
   #endif
   #define DEBUG_LEVEL DEBUG_LEVEL_NODEBUG
@@ -71,70 +72,72 @@
 
 // This macro is absolutely NOT SAFE! NEVER USE IT ALONE!!!
 // Use ASSERT_ERROR, ASSERT_WARNING and ASSERT_NOTICE instead, below.
-#define __TRIGGER_ASSERT(expr, func) \
-((expr) ? static_cast<void>(0) : func("fail: " __STRING(expr)) );
-#define __DUMMY_ASSERT (static_cast<void>(0));
+#define __DEBUG_TRIGGER_ASSERT(expr, func) \
+((expr) ? static_cast<void>(0) : func("Fail: " __STRING(expr)) );
+
+// Dummy instruction (does nothing).
+#define __DEBUG_DUMMY_INSTRUCTION (static_cast<void>(0))
 
 //#define dummymsg static_cast<void>(0);
 
 // # Message functions #####################################################
 
-// Dummy methods (used for empty macros, see up there).
-inline void dummymsg(const char* , ...) {}
-inline void assertdummymsg(bool, const char* , ...) {}
-
-//! Prints a message.
-void message(const char* msg, ...);
-
-//! Like printf.
-void print(const char* msg, ...);
-
-//! Prints an error message. The program will exit.
-void errormsg(const char* msg, ...);
-
-//! Prints a warning message. The program will not.
-void warningmsg(const char* msg, ...);
-
-//! Prints a notice, usually intended for deep information at the programmer's intent.
-void noticemsg(const char* msg, ...);
-
 // # Assertions and messages functions #####################################
 
 //! Error messages/assertion.
 #if DEBUG_ERROR
-  // XXX This was conflicting...
-  #define ERROR errormsg
-  void ASSERT_ERROR_MESSAGE(bool expr, const char* msg, ...);
-  #define ASSERT_ERROR(expr) __TRIGGER_ASSERT(expr, errormsg)
+
+  //! Prints an error message. The program will exit.
+  void    Q_ERROR(const char* msg, ...);
+  void    Q_ASSERT_ERROR_MESSAGE(bool expr, const char* msg, ...);
+  #define Q_ASSERT_ERROR(expr) __DEBUG_TRIGGER_ASSERT(expr, Q_ERROR)
+
 #else
-  #define ERROR dummymsg
-  #define ASSERT_ERROR(expr) __DUMMY_ASSERT
-  #define ASSERT_ERROR_MESSAGE assertdummymsg
+
+  #define Q_ERROR(...) __DEBUG_DUMMY_INSTRUCTION
+  #define Q_ASSERT_ERROR_MESSAGE(expr, ...) __DEBUG_DUMMY_INSTRUCTION
+  #define Q_ASSERT_ERROR(expr) __DEBUG_DUMMY_INSTRUCTION
+
 #endif
 
 //! Warning messages/assertion.
 #if DEBUG_WARNING
-  #define WARNING warningmsg
-  void ASSERT_WARNING_MESSAGE(bool expr, const char* msg, ...);
-  #define ASSERT_WARNING(expr) __TRIGGER_ASSERT(expr, warningmsg)
+
+  //! Prints a warning message. The program will not exit.
+  void Q_WARNING(const char* msg, ...);
+  void Q_ASSERT_WARNING_MESSAGE(bool expr, const char* msg, ...);
+  #define Q_ASSERT_WARNING(expr) __DEBUG_TRIGGER_ASSERT(expr, Q_WARNING)
+
 #else
-  #define WARNING dummymsg
-  #define ASSERT_WARNING(expr) __DUMMY_ASSERT
-  #define ASSERT_WARNING_MESSAGE assertdummymsg
+
+  #define Q_WARNING(...) __DEBUG_DUMMY_INSTRUCTION
+  #define Q_ASSERT_WARNING_MESSAGE(expr, ...) __DEBUG_DUMMY_INSTRUCTION
+  #define Q_ASSERT_WARNING(expr) __DEBUG_DUMMY_INSTRUCTION
+
 #endif
 
 //! Notice messages/assertion.
 #if DEBUG_NOTICE
-  #define NOTICE noticemsg
-  void ASSERT_NOTICE_MESSAGE(bool expr, const char* msg, ...);
-  #define ASSERT_NOTICE(expr) __TRIGGER_ASSERT(expr, noticemsg)
+
+  //! Prints a notice, usually intended for deep information at the programmer's intent.
+  void Q_NOTICE(const char* msg, ...);
+  void Q_ASSERT_NOTICE_MESSAGE(bool expr, const char* msg, ...);
+  #define Q_ASSERT_NOTICE(expr) __DEBUG_TRIGGER_ASSERT(expr, Q_NOTICE)
+
 #else
-  #define NOTICE dummymsg
-  #define ASSERT_NOTICE(expr) __DUMMY_ASSERT
-  #define ASSERT_NOTICE_MESSAGE assertdummymsg
+
+  #define Q_NOTICE(...) __DEBUG_DUMMY_INSTRUCTION
+  #define Q_ASSERT_NOTICE_MESSAGE(expr, ...) __DEBUG_DUMMY_INSTRUCTION
+  #define Q_ASSERT_NOTICE(expr) __DEBUG_DUMMY_INSTRUCTION
+
 #endif
 
-// XXX Uniformizes the calls to print messages but will eventually need to be redefined for AVR/Arduino.
-#define MESSAGE message
+#if (is_computer())
+  void Q_PRINT(const char* msg, ...);
+  void Q_MESSAGE(const char* msg, ...);
+#else
+  #define Q_PRINT(...) __DEBUG_DUMMY_INSTRUCTION
+  #define Q_MESSAGE(...) __DEBUG_DUMMY_INSTRUCTION
+#endif
 
 #endif

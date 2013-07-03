@@ -35,7 +35,7 @@ Observation::~Observation() {
 }
 
 Observation& Observation::copyFrom(const Observation& src) {
-  ASSERT_ERROR( _dim == src._dim );
+  Q_ASSERT_ERROR( _dim == src._dim );
   terminal = src.terminal;
   memcpy(observations, src.observations, _dim * sizeof(observation_t));
   return *this;
@@ -43,7 +43,7 @@ Observation& Observation::copyFrom(const Observation& src) {
 
 void Observation::saveData(XFile* file) const {
 #if DEBUG_LEVEL_WARNING
-  ASSERT_WARNING(file->write(observations, sizeof(observation_t), dim()) == (int) dim());
+  Q_ASSERT_WARNING(file->write(observations, sizeof(observation_t), dim()) == (int) dim());
 #else
   file->write(observations, sizeof(observation_t), dim());
 #endif
@@ -51,7 +51,7 @@ void Observation::saveData(XFile* file) const {
 
 void Observation::loadData(XFile* file) {
 #if DEBUG_LEVEL_WARNING
-  ASSERT_WARNING(file->read(observations, sizeof(observation_t), dim()) == (int) dim());
+  Q_ASSERT_WARNING(file->read(observations, sizeof(observation_t), dim()) == (int) dim());
 #else
   file->read(observations, sizeof(observation_t), dim());
 #endif

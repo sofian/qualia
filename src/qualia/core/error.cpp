@@ -31,94 +31,102 @@
 
 // These implementations were taken from Torch 3 (http://www.torch.ch).
 
-char xxpetit_message_pour_melanie[10000];
-
 #if DEBUG_ERROR
-void ASSERT_ERROR_MESSAGE(bool expr, const char* msg, ...)
+
+void Q_ERROR(const char* msg, ...)
+{
+  char buffer[10000];
+  va_list args;
+  va_start(args,msg);
+  vsprintf(buffer, msg, args);
+  printf("\nE: %s\n\n", buffer);
+  fflush(stdout);
+  va_end(args);
+  exit(-1);
+}
+
+void Q_ASSERT_ERROR_MESSAGE(bool expr, const char* msg, ...)
 {
   if (!expr)
   {
     va_list ap;
     va_start(ap, msg);
-    errormsg(msg, ap);
+    Q_ERROR(msg, ap);
     va_end(ap);
   }
 }
 #endif
 
 #if DEBUG_WARNING
-void ASSERT_WARNING_MESSAGE(bool expr, const char* msg, ...)
+
+void Q_WARNING(const char* msg, ...)
+{
+  char buffer[10000];
+  va_list args;
+  va_start(args,msg);
+  vsprintf(buffer, msg, args);
+  printf("W: %s\n", buffer);
+  fflush(stdout);
+  va_end(args);
+}
+
+void Q_ASSERT_WARNING_MESSAGE(bool expr, const char* msg, ...)
 {
   if (!expr)
   {
     va_list ap;
     va_start(ap, msg);
-    warningmsg(msg, ap);
+    Q_WARNING(msg, ap);
     va_end(ap);
   }
 }
+
 #endif
 
 #if DEBUG_NOTICE
-void ASSERT_NOTICE_MESSAGE(bool expr, const char* msg, ...)
+void Q_NOTICE(const char* msg, ...)
+{
+  char buffer[10000];
+  va_list args;
+  va_start(args,msg);
+  vsprintf(buffer, msg, args);
+  printf("N: %s\n",  buffer);
+  fflush(stdout);
+  va_end(args);
+}
+
+void Q_ASSERT_NOTICE_MESSAGE(bool expr, const char* msg, ...)
 {
   if (!expr)
   {
     va_list ap;
     va_start(ap, msg);
-    noticemsg(msg, ap);
+    Q_NOTICE(msg, ap);
     va_end(ap);
   }
 }
 #endif
 
-void errormsg(const char* msg, ...)
+#if (is_computer())
+void Q_PRINT(const char* msg, ...)
 {
+  char buffer[10000];
   va_list args;
   va_start(args,msg);
-  vsprintf(xxpetit_message_pour_melanie, msg, args);
-  printf("\nE: %s\n\n", xxpetit_message_pour_melanie);
-  fflush(stdout);
-  va_end(args);
-  exit(-1);
-}
-
-void warningmsg(const char* msg, ...)
-{
-  va_list args;
-  va_start(args,msg);
-  vsprintf(xxpetit_message_pour_melanie, msg, args);
-  printf("W: %s\n", xxpetit_message_pour_melanie);
+  vsprintf(buffer, msg, args);
+  printf("%s",  buffer);
   fflush(stdout);
   va_end(args);
 }
 
-void noticemsg(const char* msg, ...)
+void Q_MESSAGE(const char* msg, ...)
 {
+  char buffer[10000];
   va_list args;
   va_start(args,msg);
-  vsprintf(xxpetit_message_pour_melanie, msg, args);
-  printf("N: %s\n",  xxpetit_message_pour_melanie);
+  vsprintf(buffer, msg, args);
+  printf("# %s\n",  buffer);
   fflush(stdout);
   va_end(args);
 }
-
-void message(const char* msg, ...)
-{
-  va_list args;
-  va_start(args,msg);
-  vsprintf(xxpetit_message_pour_melanie, msg, args);
-  printf("# %s\n", xxpetit_message_pour_melanie);
-  fflush(stdout);
-  va_end(args);
-}
-
-void print(const char* msg, ...)
-{
-  va_list args;
-  va_start(args,msg);
-  vsprintf(xxpetit_message_pour_melanie, msg, args);
-  printf("%s", xxpetit_message_pour_melanie);
-  fflush(stdout);
-  va_end(args);
-}
+#endif

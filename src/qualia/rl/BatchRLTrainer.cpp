@@ -109,7 +109,7 @@ void BatchRLTrainer::_doTrainEpisode(DataSet* data) {
 
     // MSE of batch.
     mse /= n;
-    MESSAGE("t=%d MSE: %f", nIter, mse);
+    Q_MESSAGE("t=%d MSE: %f", nIter, mse);
 
     // Increase iteration counter.
     nIter++;

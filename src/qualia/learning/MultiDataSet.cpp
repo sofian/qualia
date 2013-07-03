@@ -21,16 +21,16 @@
 
 MultiDataSet::MultiDataSet(DataSet** dataSets, int nDataSets)
   : _dataSets(dataSets), _nDataSets(nDataSets) {
-  ASSERT_ERROR( _dataSets );
+  Q_ASSERT_ERROR( _dataSets );
   if (nDataSets <= 0)
-    WARNING("Number of dataset is set to zero. Make sure you know what you're doing.");
+    Q_WARNING("Number of dataset is set to zero. Make sure you know what you're doing.");
   else {
-    ASSERT_ERROR( _dataSets[0] );
+    Q_ASSERT_ERROR( _dataSets[0] );
     dim = _dataSets[0]->dim;
     nExamples = _dataSets[0]->nExamples;
     for (int i=1; i<_nDataSets; i++) {
-      ASSERT_ERROR( _dataSets[i] );
-      ASSERT_ERROR( _dataSets[i]->dim == dim );
+      Q_ASSERT_ERROR( _dataSets[i] );
+      Q_ASSERT_ERROR( _dataSets[i]->dim == dim );
       nExamples += _dataSets[i]->nExamples;
     }
   }
@@ -46,13 +46,13 @@ void MultiDataSet::init() {
 }
 
 void MultiDataSet::reset() {
-  ASSERT_ERROR_MESSAGE( example, "Example is NULL, maybe you forgot to call init()?" );
+  Q_ASSERT_ERROR_MESSAGE( example, "Example is NULL, maybe you forgot to call init()?" );
   for (int i=0; i<_nDataSets; i++)
     _dataSets[i]->reset();
 }
 
 void MultiDataSet::setExample(int t) {
-  ASSERT_ERROR(0 <= t && t < nExamples);
+  Q_ASSERT_ERROR(0 <= t && t < nExamples);
 
   for (int i=0; i<_nDataSets; i++) {
     if (t < _dataSets[i]->nExamples) {

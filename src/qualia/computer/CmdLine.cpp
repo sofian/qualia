@@ -194,7 +194,7 @@ int CmdLine::read(int argc_, char **argv_)
     if(current_option >= 0)
     {
       if(cmd_options_[current_option]->is_setted)
-        ERROR("CmdLine: option %s is setted twice", cmd_options_[current_option]->name);
+        Q_ERROR("CmdLine: option %s is setted twice", cmd_options_[current_option]->name);
       cmd_options_[current_option]->read(&argc, &argv);
       cmd_options_[current_option]->is_setted = true;
     }
@@ -216,7 +216,7 @@ int CmdLine::read(int argc_, char **argv_)
         cmd_options_[current_option]->is_setted = true;        
       }
       else
-        ERROR("CmdLine: parse error near <%s>. Too many arguments.", argv[0]);
+        Q_ERROR("CmdLine: parse error near <%s>. Too many arguments.", argv[0]);
     }    
   }
 
@@ -225,7 +225,7 @@ int CmdLine::read(int argc_, char **argv_)
   {
     if(cmd_options_[i]->isArgument() && (!cmd_options_[i]->is_setted))
     {
-      message("CmdLine: not enough arguments!\n");
+      Q_MESSAGE("CmdLine: not enough arguments!\n");
       help();
     }
   }
@@ -243,7 +243,7 @@ int CmdLine::read(int argc_, char **argv_)
 void CmdLine::help()
 {
   if(text_info)
-    print("%s\n", text_info);
+    Q_PRINT("%s\n", text_info);
 
   for(int master_switch_ = 0; master_switch_ < n_master_switches; master_switch_++)
   {
@@ -259,25 +259,25 @@ void CmdLine::help()
 
     if(master_switch_ == 0)
     {
-      print("#\n");
-      print("# usage: %s", program_name);
+      Q_PRINT("#\n");
+      Q_PRINT("# usage: %s", program_name);
       if(n_real_options > 0)
-        print(" [options]");
+        Q_PRINT(" [options]");
     }
     else
     {
-      print("\n#\n");
-      print("# or: %s %s", program_name, cmd_options_[0]->name);
+      Q_PRINT("\n#\n");
+      Q_PRINT("# or: %s %s", program_name, cmd_options_[0]->name);
       if(n_real_options > 0)
-        print(" [options]");
+        Q_PRINT(" [options]");
     }
 
     for(int i = 0; i < n_cmd_options_; i++)
     {
       if(cmd_options_[i]->isArgument())
-        print(" <%s>", cmd_options_[i]->name);
+        Q_PRINT(" <%s>", cmd_options_[i]->name);
     }
-    print("\n#\n");
+    Q_PRINT("\n#\n");
 
     // Cherche la longueur max du param
     int long_max = 0;
@@ -300,45 +300,45 @@ void CmdLine::help()
       if(cmd_options_[i]->isText())
       {
         z = -1;
-        print("%s", cmd_options_[i]->name);
+        Q_PRINT("%s", cmd_options_[i]->name);
       }
 
       if(cmd_options_[i]->isArgument())
       {
         z = strlen(cmd_options_[i]->name)+2;
-        print("  ");
-        print("<%s>", cmd_options_[i]->name);
+        Q_PRINT("  ");
+        Q_PRINT("<%s>", cmd_options_[i]->name);
       }
       
       if(cmd_options_[i]->isOption())
       {
         z = strlen(cmd_options_[i]->name)+strlen(cmd_options_[i]->type_name)+1;
-        print("  ");
-        print("%s", cmd_options_[i]->name);
-        print(" %s", cmd_options_[i]->type_name);
+        Q_PRINT("  ");
+        Q_PRINT("%s", cmd_options_[i]->name);
+        Q_PRINT(" %s", cmd_options_[i]->type_name);
       }
 
       if(z >= 0)
       {
         for(int i = 0; i < long_max+1-z; i++)
-          print(" ");
+          Q_PRINT(" ");
       }
       
       if( cmd_options_[i]->isOption() || cmd_options_[i]->isArgument() )
-        print("-> %s", cmd_options_[i]->help);
+        Q_PRINT("-> %s", cmd_options_[i]->help);
     
       if(cmd_options_[i]->isArgument())
-        print(" (%s)", cmd_options_[i]->type_name);
+        Q_PRINT(" (%s)", cmd_options_[i]->type_name);
 
       if(cmd_options_[i]->isOption())
       {
         DiskXFile std_out(stdout);
-        print(" ");
+        Q_PRINT(" ");
         cmd_options_[i]->printValue(&std_out);
       }
 
       if(!cmd_options_[i]->isMasterSwitch())
-        print("\n");
+        Q_PRINT("\n");
     }
   }  
   exit(-1);
@@ -374,7 +374,7 @@ DiskXFile *CmdLine::getXFile(const char *filename)
 void CmdLine::save(DiskXFile *file)
 {
   if(master_switch < 0)
-    ERROR("CmdLine: nothing to save!");
+    Q_ERROR("CmdLine: nothing to save!");
 
   writeLog(file, true);
 
@@ -514,7 +514,7 @@ void CmdLine::load(DiskXFile *file)
   }
   
   if(header_end != 3)
-    ERROR("CmdLine: cannot find the end of the header!");
+    Q_ERROR("CmdLine: cannot find the end of the header!");
 
   //////////////////
 

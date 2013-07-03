@@ -20,7 +20,7 @@
 #include "MemoryDataSet.h"
 
 MemoryDataSet::MemoryDataSet(DataSet* dataSet) {
-  ASSERT_ERROR( dataSet );
+  Q_ASSERT_ERROR( dataSet );
 
   dataSet->init();
   dataSet->reset();

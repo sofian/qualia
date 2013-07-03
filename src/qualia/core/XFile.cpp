@@ -32,7 +32,7 @@ int XFile::taggedRead(void *ptr, int block_size, int n_blocks, const char *tag)
   this->read(&tag_size, sizeof(int), 1);
   if(tag_size != (int)strlen(tag))
   {
-    ERROR("XFile: sorry, the tag <%s> cannot be read!", tag);
+    Q_ERROR("XFile: sorry, the tag <%s> cannot be read!", tag);
     return (-1);
   }
 
@@ -42,7 +42,7 @@ int XFile::taggedRead(void *ptr, int block_size, int n_blocks, const char *tag)
     this->read(&c, sizeof(char), 1);
     if (c != tag[i])
     {
-      ERROR("XFile: tag <%s> not found!", tag);
+      Q_ERROR("XFile: tag <%s> not found!", tag);
       return (-1);
     }
   }
@@ -62,7 +62,7 @@ int XFile::taggedRead(void *ptr, int block_size, int n_blocks, const char *tag)
 
   if (block_size_ != block_size || n_blocks_ != n_blocks)
   {
-    ERROR("XFile: tag <%s> has a corrupted size!", tag);
+    Q_ERROR("XFile: tag <%s> has a corrupted size!", tag);
     return (-1);
   }
 

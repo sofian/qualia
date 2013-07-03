@@ -61,12 +61,12 @@ DiskXFile::DiskXFile(const char *file_name, const char *open_flags)
       char *cmd_buffer = strConcat(2, "zcat ", file_name);
       file = fopen(file_name, "r");
       if(!file)
-        ERROR("DiskXFile: cannot open the file <%s> for reading", file_name);
+        Q_ERROR("DiskXFile: cannot open the file <%s> for reading", file_name);
       fclose(file);
 
       file = popen(cmd_buffer, open_flags);
       if(!file)
-        ERROR("DiskXFile: cannot execute the command <%s>", file_name, cmd_buffer);
+        Q_ERROR("DiskXFile: cannot execute the command <%s>", file_name, cmd_buffer);
       free(cmd_buffer);
     }
   }
@@ -75,7 +75,7 @@ DiskXFile::DiskXFile(const char *file_name, const char *open_flags)
   {
     file = fopen(file_name, open_flags);
     if(!file)
-      ERROR("DiskXFile: cannot open <%s> in mode <%s>. Sorry.", file_name, open_flags);
+      Q_ERROR("DiskXFile: cannot open <%s> in mode <%s>. Sorry.", file_name, open_flags);
   }
   is_opened = true;
 

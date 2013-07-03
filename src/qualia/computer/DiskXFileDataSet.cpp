@@ -40,8 +40,8 @@ void DiskXFileDataSet::init() {
     diskFile->scanf("%d", &nExamples);
     diskFile->scanf("%d", &dim);
 
-    ASSERT_WARNING( nExamples > 0 );
-    ASSERT_WARNING( dim > 0 );
+    Q_ASSERT_WARNING( nExamples > 0 );
+    Q_ASSERT_WARNING( dim > 0 );
 
     DataSet::init();
 
@@ -54,14 +54,14 @@ void DiskXFileDataSet::reset() {
   if (!ascii)
     XFileDataSet::reset();
   else {
-    ASSERT_ERROR( example );
+    Q_ASSERT_ERROR( example );
 
     diskFile->rewind();
     int x;
     diskFile->scanf("%d", &x);
-    ASSERT_WARNING( x == nExamples );
+    Q_ASSERT_WARNING( x == nExamples );
     diskFile->scanf("%d", &x);
-    ASSERT_WARNING( x == dim );
+    Q_ASSERT_WARNING( x == dim );
 
     currentExampleIndex = -1;
   }
@@ -73,11 +73,11 @@ void DiskXFileDataSet::setExample(int t) {
   if (!ascii)
     XFileDataSet::setExample(t);
   else {
-    ASSERT_ERROR( example );
-    ASSERT_ERROR( 0 <= t && t < nExamples);
+    Q_ASSERT_ERROR( example );
+    Q_ASSERT_ERROR( 0 <= t && t < nExamples);
 
     if (t != currentExampleIndex+1)
-      ERROR("Seeking not allowed in ascii mode.");
+      Q_ERROR("Seeking not allowed in ascii mode.");
 
     for (int i=0; i<dim; i++)
       diskFile->scanf(REAL_FORMAT, &example[i]);
