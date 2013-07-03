@@ -751,6 +751,7 @@ void testDataSet() {
 
 void testArduinoCompat() {
   printf("== TEST ARDUINO COMPAT ==\n");
+
   printf("- Test timing functions\n");
   unsigned long m = millis();
   delay(100);
@@ -761,6 +762,38 @@ void testArduinoCompat() {
   delayMicroseconds(1000);
   unsigned long diffMic = micros() - mic;
   Q_ASSERT_ERROR_MESSAGE(800 < abs(diffMic)  && abs(diffMic) < 1200, "micros() and delayMicroseconds() work");
+  printf("-> PASSED\n");
+
+  printf("- Test String\n");
+  String a = "A";
+  String b(10);
+  Q_ASSERT_ERROR(a == "A");
+  Q_ASSERT_ERROR(b == "10");
+  a += b;
+  Q_ASSERT_ERROR(a == "A10");
+
+  String dec(100, DEC);
+  String hex(0xff, HEX);
+  String oct(7, OCT);
+  String bin(0xff, BIN);
+  Q_ASSERT_ERROR(dec == "100");
+  Q_ASSERT_ERROR(hex == "ff");
+  Q_ASSERT_ERROR(oct == "7");
+  Q_ASSERT_ERROR(bin == "11111111");
+
+  String c = "";
+  c.concat(0x0);
+  Q_ASSERT_ERROR(c == "0");
+  c.concat((int)100);
+  Q_ASSERT_ERROR(c == "0100");
+  c.concat((unsigned int)100);
+  Q_ASSERT_ERROR(c == "0100100");
+  c.concat((long)100);
+  Q_ASSERT_ERROR(c == "0100100100");
+  c.concat((unsigned long)100);
+  Q_ASSERT_ERROR(c == "0100100100100");
+
+  printf("-> PASSED\n");
 }
 
 int main() {
