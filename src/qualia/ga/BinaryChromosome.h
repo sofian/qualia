@@ -20,15 +20,15 @@
 #ifndef BINARYCHROMOSOME_H_
 #define BINARYCHROMOSOME_H_
 
-#include "Chromosome.h"
 #include <qualia/core/common.h>
 #include <qualia/util/bitarray.h>
 #include <qualia/util/random.h>
 
+#include "Chromosome.h"
+
 #include <string.h>
 //void defaultMutator(Chromosome& chromosome, float);
 //void defaultInitializer(Chromosome& chromosome);
-
 
 class BinaryChromosomeInfo {
 public:
@@ -38,6 +38,7 @@ public:
   /// The size (in bits) of each gene.
   uint8_t* _geneSizes;
 
+  /// The initializer, mutator and evaluator functions.
   Initializer initializer;
   Mutator mutator;
   Evaluator evaluator;
@@ -50,10 +51,17 @@ public:
 
   /// Returns the size (in bits) of gene #i#.
   uint8_t geneSize(int i) const { return _geneSizes[i]; }
+
+  /// Returns the total size (in bits) of the chromosome.
   unsigned int bitSize() const;
+
+  /// Returns the total size (in bytes) of the chromosome.
   unsigned int byteSize() const { return ( (bitSize()+7) / 8); }
+
+  /// Returns the bit at which gene #gene# starts.
   int getStartBitPosition(int gene) const;
 
+  /// Tests equality.
   virtual bool equals(const BinaryChromosomeInfo& info);
 };
 
@@ -71,7 +79,10 @@ public:
   virtual void mutate(float p);
   virtual bool equals(const Chromosome& c) const;
 
+  /// Returns the value of gene #gene# as a 64-bit integer.
   uint64_t getGeneValue(int gene) const;
+
+  /// Sets the value of gene #gene# to #value# (max. 64-bit).
   void setGeneValue(int gene, uint64_t value);
 
   // Static methods.
