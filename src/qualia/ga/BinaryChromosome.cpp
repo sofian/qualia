@@ -19,7 +19,7 @@
 
 #include "BinaryChromosome.h"
 
-BinaryChromosomeInfo::BinaryChromosomeInfo(unsigned int nGenes, const uint8_t* geneSizes,
+BinaryChromosomeProperties::BinaryChromosomeProperties(unsigned int nGenes, const uint8_t* geneSizes,
                                            Initializer initializer_, Mutator mutator_)
   : _nGenes(nGenes), _geneSizes(0), initializer(initializer_), mutator(mutator_) {
   Q_ASSERT_ERROR( geneSizes );
@@ -37,27 +37,27 @@ BinaryChromosomeInfo::BinaryChromosomeInfo(unsigned int nGenes, const uint8_t* g
   memcpy(_geneSizes, geneSizes, _nGenes * sizeof(uint8_t));
 }
 
-unsigned int BinaryChromosomeInfo::bitSize() const {
+unsigned int BinaryChromosomeProperties::bitSize() const {
   unsigned int size = 0;
   for (unsigned int i=0; i<_nGenes; i++)
     size += _geneSizes[i];
   return size;
 }
 
-int BinaryChromosomeInfo::getStartBitPosition(int gene) const {
+int BinaryChromosomeProperties::getStartBitPosition(int gene) const {
   int pos = 0;
   for (int i=0; i<gene; i++)
     pos += _geneSizes[i];
   return pos;
 }
 
-bool BinaryChromosomeInfo::equals(const BinaryChromosomeInfo& info) {
+bool BinaryChromosomeProperties::equals(const BinaryChromosomeProperties& info) {
   //int x = memcmp(_geneSizes, info._geneSizes, _nGenes * sizeof(uint8_t));
   return (_nGenes == info._nGenes &&
           (memcmp(_geneSizes, info._geneSizes, _nGenes * sizeof(uint8_t)) == 0));
 }
 
-BinaryChromosome::BinaryChromosome(BinaryChromosomeInfo* info_)
+BinaryChromosome::BinaryChromosome(BinaryChromosomeProperties* info_)
   : Chromosome(), info(info_), code(0)
 {
   Q_ASSERT_ERROR(info);

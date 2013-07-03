@@ -497,7 +497,7 @@ void testBinaryChromosomes() {
 
   const uint8_t geneSizes[] = { 1, 2, 3, 4, 6, 8, 10, 22, 5 };
   const uint8_t geneSizes2[] = { 2, 2, 3, 4, 6, 8, 10, 22, 5 };
-  BinaryChromosomeInfo info(TEST_CHROMOSOME_N_GENES, geneSizes);
+  BinaryChromosomeProperties info(TEST_CHROMOSOME_N_GENES, geneSizes);
 
   printf("- Testing BitChromosomeInfo\n");
 
@@ -509,8 +509,8 @@ void testBinaryChromosomes() {
   printf("-> PASSED\n");
 
   printf("-- Testing equality operator\n");
-  BinaryChromosomeInfo infoSame(9, geneSizes);
-  BinaryChromosomeInfo infoWrong(9, geneSizes2);
+  BinaryChromosomeProperties infoSame(9, geneSizes);
+  BinaryChromosomeProperties infoWrong(9, geneSizes2);
   Q_ASSERT_ERROR( info.equals(infoSame) );
   Q_ASSERT_ERROR( !info.equals(infoWrong) );
   printf("-> PASSED\n");

@@ -30,7 +30,7 @@
 //void defaultMutator(Chromosome& chromosome, float);
 //void defaultInitializer(Chromosome& chromosome);
 
-class BinaryChromosomeInfo {
+class BinaryChromosomeProperties {
 public:
   /// The number of genes in the chromosome.
   unsigned int _nGenes;
@@ -43,7 +43,7 @@ public:
   Mutator mutator;
   Evaluator evaluator;
 
-  BinaryChromosomeInfo(unsigned int nGenes, const uint8_t* geneSizes,
+  BinaryChromosomeProperties(unsigned int nGenes, const uint8_t* geneSizes,
                        Initializer initializer=0, Mutator mutator=0);
 
   /// Returns the number of genes in the chromosome.
@@ -62,15 +62,15 @@ public:
   int getStartBitPosition(int gene) const;
 
   /// Tests equality.
-  virtual bool equals(const BinaryChromosomeInfo& info);
+  virtual bool equals(const BinaryChromosomeProperties& info);
 };
 
 class BinaryChromosome: public Chromosome {
 public:
-  BinaryChromosomeInfo* info;
+  BinaryChromosomeProperties* info;
   uint8_t* code;
 
-  BinaryChromosome(BinaryChromosomeInfo* info);
+  BinaryChromosome(BinaryChromosomeProperties* info);
   virtual ~BinaryChromosome();
 
   virtual void copyFrom(const Chromosome& c);
