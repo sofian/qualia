@@ -114,7 +114,7 @@ class CmdOption
     virtual void load(DiskXFile *file) {}
     virtual void save(DiskXFile *file) {}
 
-    ~CmdOption();
+    virtual ~CmdOption();
 };
 
 /** This class defines a integer command-line option.
