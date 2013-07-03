@@ -31,18 +31,27 @@
 
 class DataSetTrainer : public Trainer {
 public:
-  int nEpisodes;
-
+  /// Constructor.
   DataSetTrainer(Function* function);
   virtual ~DataSetTrainer();
 
-  virtual void init();
+  /**
+   * Trains the function over a dataset. Training will stop when the stop() method returns true OR when
+   * the number of episodes reaches #maxEpisodes#. If #maxEpisodes# <= 0 is specified then it will not
+   * be considered (ie. it will only stop when stop() returns true).
+   */
+  virtual void train(DataSet* data, int maxEpisodes=10);
 
-  virtual void train(DataSet* data, int maxEpisodes=0);
+  /// Trains one episode over the dataset.
   virtual void trainEpisode(DataSet* data);
 
+  /**
+   * Should return true iff the training is ended (can be used to provide early-stopping capability).
+   * This method is meant to be overriden by subclasses.
+   */
   virtual bool stop() { return false; }
 
+  /// This method should be overriden by subclasses to train a single episode over the dataset.
   virtual void _doTrainEpisode(DataSet* data) = 0;
 };
 

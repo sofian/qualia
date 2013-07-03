@@ -39,9 +39,9 @@ void BatchRLTrainer::init() {
 }
 
 void BatchRLTrainer::_doTrainEpisode(DataSet* data) {
-  QFunction* qFunction = (QFunction*)(function);
+  QFunction* qFunction = (QFunction*)(_function);
 
-  int n = min(data->nExamples, maxExamples);
+  int n = min(data->nExamples(), maxExamples);
 
   // First pass: assign targets based on current Q function ////////////////////////////////////////////////////
   real targetMin = INF;

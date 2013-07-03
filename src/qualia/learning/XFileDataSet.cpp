@@ -19,50 +19,50 @@
 
 #include "XFileDataSet.h"
 
-XFileDataSet::XFileDataSet(XFile* file_) : DataSet(), file(file_) {
+XFileDataSet::XFileDataSet(XFile* file_) : DataSet(), _file(file_) {
 }
 
 XFileDataSet::~XFileDataSet() {
 }
 
 void XFileDataSet::init() {
-  file->rewind();
-  file->read(&nExamples, sizeof(int), 1);
-  file->read(&dim,       sizeof(int), 1);
+  _file->rewind();
+  _file->read(&_nExamples, sizeof(int), 1);
+  _file->read(&_dim,       sizeof(int), 1);
 
-  Q_ASSERT_WARNING( nExamples > 0 );
-  Q_ASSERT_WARNING( dim > 0 );
+  Q_ASSERT_WARNING( _nExamples > 0 );
+  Q_ASSERT_WARNING( _dim > 0 );
 
   // Allocate example.
   DataSet::init();
 
-  currentExampleIndex = -1;
+  _currentExampleIndex = -1;
 }
 
 void XFileDataSet::reset() {
   Q_ASSERT_ERROR_MESSAGE( example, "Example is NULL, maybe you forgot to call init()?" );
 
-  file->rewind();
+  _file->rewind();
   int x;
-  file->read(&x, sizeof(int), 1);
-  Q_ASSERT_WARNING( x == nExamples );
-  file->read(&x, sizeof(int), 1);
-  Q_ASSERT_WARNING( x == dim );
+  _file->read(&x, sizeof(int), 1);
+  Q_ASSERT_WARNING( x == _nExamples );
+  _file->read(&x, sizeof(int), 1);
+  Q_ASSERT_WARNING( x == _dim );
 
-  currentExampleIndex = -1;
+  _currentExampleIndex = -1;
 }
 
 void XFileDataSet::setExample(int t) {
   Q_ASSERT_ERROR( example );
-  Q_ASSERT_ERROR( 0 <= t && t < nExamples);
+  Q_ASSERT_ERROR( 0 <= t && t < _nExamples);
 
-  if (t != currentExampleIndex+1) {
+  if (t != _currentExampleIndex+1) {
 
-    if (file->seek(2*sizeof(int) + t*dim*sizeof(real), SEEK_SET) != 0)
+    if (_file->seek(2*sizeof(int) + t*_dim*sizeof(real), SEEK_SET) != 0)
       Q_ERROR("Cannot seek to position %d.", t);
 
-    file->read(example, sizeof(real), dim);
-    currentExampleIndex = t;
+    _file->read(example, sizeof(real), _dim);
+    _currentExampleIndex = t;
   }
 }
 

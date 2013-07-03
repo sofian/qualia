@@ -25,8 +25,8 @@
 
 class XFileDataSet: public DataSet {
 public:
-  XFile* file;
-  int currentExampleIndex;
+  XFile* _file;
+  int _currentExampleIndex;
 
   XFileDataSet(XFile* file);
   virtual ~XFileDataSet();

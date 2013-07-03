@@ -722,7 +722,7 @@ void testDataSet() {
   ObservationAction* oa = qualia2.start();
   RLObservation lastObs(observationDim);
   lastObs.copyFrom(*oa->observation);
-  for (int t=0; t<memDataSet.nExamples; t++) {
+  for (int t=0; t<memDataSet.nExamples(); t++) {
     memDataSet.setExample(t);
 
     // Data is (s, a, r, s')

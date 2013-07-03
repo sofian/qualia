@@ -26,12 +26,12 @@ MultiDataSet::MultiDataSet(DataSet** dataSets, int nDataSets)
     Q_WARNING("Number of dataset is set to zero. Make sure you know what you're doing.");
   else {
     Q_ASSERT_ERROR( _dataSets[0] );
-    dim = _dataSets[0]->dim;
-    nExamples = _dataSets[0]->nExamples;
+    _dim = _dataSets[0]->dim();
+    _nExamples = _dataSets[0]->nExamples();
     for (int i=1; i<_nDataSets; i++) {
       Q_ASSERT_ERROR( _dataSets[i] );
-      Q_ASSERT_ERROR( _dataSets[i]->dim == dim );
-      nExamples += _dataSets[i]->nExamples;
+      Q_ASSERT_ERROR( _dataSets[i]->dim() == _dim );
+      _nExamples += _dataSets[i]->nExamples();
     }
   }
 }
@@ -52,15 +52,15 @@ void MultiDataSet::reset() {
 }
 
 void MultiDataSet::setExample(int t) {
-  Q_ASSERT_ERROR(0 <= t && t < nExamples);
+  Q_ASSERT_ERROR(0 <= t && t < _nExamples);
 
   for (int i=0; i<_nDataSets; i++) {
-    if (t < _dataSets[i]->nExamples) {
+    if (t < _dataSets[i]->nExamples()) {
       _dataSets[i]->setExample(t);
-      memcpy(example, _dataSets[i]->example, dim * sizeof(real));
+      memcpy(example, _dataSets[i]->example, _dim * sizeof(real));
       break;
     } else {
-      t -= _dataSets[i]->nExamples;
+      t -= _dataSets[i]->nExamples();
     }
   }
 }

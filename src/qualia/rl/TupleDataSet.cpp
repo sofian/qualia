@@ -33,7 +33,7 @@ TupleDataSet::~TupleDataSet() {
 
 void TupleDataSet::init() {
   // First pass: count examples.
-  nExamples = 0;
+  _nExamples = 0;
 
   unsigned int x;
   file->rewind();
@@ -48,7 +48,7 @@ void TupleDataSet::init() {
   while (file->tell() < size) {
     lastAction.loadData(file);
     lastObservation.loadData(file);
-    nExamples++;
+    _nExamples++;
   }
 
   // Allocate example.

@@ -148,7 +148,7 @@ int main(int argc, char** argv) {
 
   data->init();
 //  BatchRLTrainer trainer(&qFunction, data->nExamples, gamma);
-  BatchRLTrainer trainer(&qFunction, data->nExamples, gamma, 30);
+  BatchRLTrainer trainer(&qFunction, data->nExamples(), gamma, 30);
 
   printf("--- Starting ---\n");
 
