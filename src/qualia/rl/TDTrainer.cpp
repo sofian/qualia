@@ -54,7 +54,7 @@ void TDTrainer::init() {
   qFunction->init();
 
   // Initialize elligibility traces.
-  for (int i=0; i<qFunction->nParams(); i++)
+  for (unsigned int i=0; i<qFunction->nParams(); i++)
     eTraces[i]=0;
 }
 
@@ -82,7 +82,7 @@ void TDTrainer::step(const RLObservation* lastObservation, const Action* lastAct
   // Update weights.
   real* dWeights = qFunction->dWeights;
   real lambdaTimesGamma = lambda * gamma;
-  for (int i=0; i<qFunction->nParams(); i++) {
+  for (unsigned int i=0; i<qFunction->nParams(); i++) {
     eTraces[i] = lambdaTimesGamma * eTraces[i] + dWeights[i];
     dWeights[i] = - delta * eTraces[i];
   }

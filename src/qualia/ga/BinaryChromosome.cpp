@@ -59,7 +59,7 @@ int BinaryChromosomeInfo::getStartBitPosition(int gene) const {
 }
 
 bool BinaryChromosomeInfo::equals(const BinaryChromosomeInfo& info) {
-  int x = memcmp(geneSizes, info.geneSizes, nGenes * sizeof(uint8_t));
+  //int x = memcmp(geneSizes, info.geneSizes, nGenes * sizeof(uint8_t));
   return (nGenes == info.nGenes &&
           (memcmp(geneSizes, info.geneSizes, nGenes * sizeof(uint8_t)) == 0));
 }
