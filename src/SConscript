@@ -129,6 +129,8 @@ if ('mapper' in PLUGINS):
 if ('bt' in PLUGINS):
   SUBDIRS += ["qualia/plugins/bt"]
 
+SUBDIRS += [ "qualia/compat" ]
+
 LIBS += ["m"]
 #############################################################################
  
@@ -138,8 +140,8 @@ for subdir in SUBDIRS:
   sources += Glob(subdir + "/*.c")
 
 # Remove avrdefs to avoid the "no symbol" linking error
-if (platform == "computer"):
-	sources = [f for f in sources if "core/avrdefs.cpp" not in str(f)]
+#if (platform == "computer"):
+#	sources = [f for f in sources if "core/avrdefs.cpp" not in str(f)]
 
 # Create environment and set default configurations ###################################
 if (platform == 'avr' or platform == 'arduino'):
