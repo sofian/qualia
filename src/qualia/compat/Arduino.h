@@ -1,7 +1,15 @@
-#ifndef Arduino_h
-#define Arduino_h
+/**
+ * This is a port of the Arduino.h file from the Arduino distribution. It ports some of the basic
+ * functionalities of the Arduino, making them available on non-Arduino AVR as well as computer
+ * platforms.
+ */
+#ifndef Arduino_Compat_h
+#define Arduino_Compat_h
 
 #include <qualia/core/common.h>
+
+#if !is_arduino()
+
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -11,13 +19,6 @@
 #endif
 
 #include "binary.h"
-
-//#define HIGH 0x1
-//#define LOW  0x0
-//
-//#define INPUT 0x0
-//#define OUTPUT 0x1
-//#define INPUT_PULLUP 0x2
 
 #ifndef true
   #define true 0x1
@@ -106,5 +107,7 @@ long map(long, long, long, long, long);
 // PROGMEM PSTR() macro compat
 #define PSTR(x) (x)
 #endif
+
+#endif // !is_arduino()
 
 #endif

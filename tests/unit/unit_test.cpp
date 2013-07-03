@@ -746,6 +746,23 @@ void testDataSet() {
 
 }
 
+#include <time.h>
+#include <sys/times.h>
+
+void testArduinoCompat() {
+  printf("== TEST ARDUINO COMPAT ==\n");
+  printf("- Test timing functions\n");
+  unsigned long m = millis();
+  delay(100);
+  unsigned long diff = millis() - m;
+  Q_ASSERT_ERROR_MESSAGE(90 < abs(diff)  && abs(diff) < 110, "millis() and delay() work: orig = %d, diff = %d", m, diff);
+
+  unsigned long mic = micros();
+  delayMicroseconds(1000);
+  unsigned long diffMic = micros() - mic;
+  Q_ASSERT_ERROR_MESSAGE(800 < abs(diffMic)  && abs(diffMic) < 1200, "micros() and delayMicroseconds() work");
+}
+
 int main() {
   testActions();
   testObservations();
@@ -755,4 +772,5 @@ int main() {
   testBits();
   testBinaryChromosomes();
   testDataSet();
+  testArduinoCompat();
 }

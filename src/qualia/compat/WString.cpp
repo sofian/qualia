@@ -60,13 +60,15 @@ String::String(char c)
 	*this = buf;
 }
 
-void sprintbinf(char* buf, const uint8_t* value, int size) {
+#if is_computer()
+void String::valueToBinaryStr(char* buf, const uint8_t* value, int size) {
   for (int i=0; i<size; i++) {
     for (int j=0; j<8; j++)
       sprintf(buf++, "%d", (int)bitRead(value[i], j));
   }
   buf = '\0';
 }
+#endif
 
 String::String(unsigned char value, unsigned char base)
 {
@@ -77,15 +79,14 @@ String::String(unsigned char value, unsigned char base)
 #else
 	char buf[sizeof(value)*8+1];
 	if (base == BIN)
-	  sprintbinf(buf, &value, 1);
+	  valueToBinaryStr(buf, &value, 1);
 	else
 	{
     switch (base) {
-    case HEX: sprintf(buf, "%x", value);
-    case OCT: sprintf(buf, "%o", value);
-    case DEC:
-    default:
-      sprintf(buf, "%u", value);
+    case HEX: sprintf(buf, "%x", value); break;
+    case OCT: sprintf(buf, "%o", value); break;
+    case DEC: sprintf(buf, "%u", value); break;
+    default: Q_ERROR("Unsupported base: %u.", base);
     }
 	}
 #endif
@@ -101,15 +102,14 @@ String::String(int value, unsigned char base)
 #else
   char buf[sizeof(value)*8+2];
   if (base == BIN)
-    sprintbinf(buf, (const uint8_t*)&value, 1);
+    valueToBinaryStr(buf, (const uint8_t*)&value, 1);
   else
   {
     switch (base) {
-    case HEX: sprintf(buf, "%x", value);
-    case OCT: sprintf(buf, "%o", value);
-    case DEC:
-    default:
-      sprintf(buf, "%d", value);
+    case HEX: sprintf(buf, "%x", value); break;
+    case OCT: sprintf(buf, "%o", value); break;
+    case DEC: sprintf(buf, "%d", value); break;
+    default: Q_ERROR("Unsupported base: %u.", base);
     }
   }
 #endif
@@ -125,15 +125,14 @@ String::String(unsigned int value, unsigned char base)
 #else
   char buf[sizeof(value)*8+1];
   if (base == BIN)
-    sprintbinf(buf, (const uint8_t*)&value, 1);
+    valueToBinaryStr(buf, (const uint8_t*)&value, 1);
   else
   {
     switch (base) {
-    case HEX: sprintf(buf, "%x", value);
-    case OCT: sprintf(buf, "%o", value);
-    case DEC:
-    default:
-      sprintf(buf, "%d", value);
+    case HEX: sprintf(buf, "%x", value); break;
+    case OCT: sprintf(buf, "%o", value); break;
+    case DEC: sprintf(buf, "%d", value); break;
+    default: Q_ERROR("Unsupported base: %u.", base);
     }
   }
 #endif
@@ -149,15 +148,14 @@ String::String(long value, unsigned char base)
 #else
   char buf[sizeof(value)*8+2];
   if (base == BIN)
-    sprintbinf(buf, (const uint8_t*)&value, 1);
+    valueToBinaryStr(buf, (const uint8_t*)&value, 1);
   else
   {
     switch (base) {
-    case HEX: sprintf(buf, "%lx", value);
-    case OCT: sprintf(buf, "%lo", value);
-    case DEC:
-    default:
-      sprintf(buf, "%ld", value);
+    case HEX: sprintf(buf, "%lx", value); break;
+    case OCT: sprintf(buf, "%lo", value); break;
+    case DEC: sprintf(buf, "%ld", value); break;
+    default: Q_ERROR("Unsupported base: %u.", base);
     }
   }
 #endif
@@ -173,15 +171,14 @@ String::String(unsigned long value, unsigned char base)
 #else
   char buf[sizeof(value)*8+1];
   if (base == BIN)
-    sprintbinf(buf, (const uint8_t*)&value, 1);
+    valueToBinaryStr(buf, (const uint8_t*)&value, 1);
   else
   {
     switch (base) {
-    case HEX: sprintf(buf, "%lx", value);
-    case OCT: sprintf(buf, "%lo", value);
-    case DEC:
-    default:
-      sprintf(buf, "%lu", value);
+    case HEX: sprintf(buf, "%lx", value); break;
+    case OCT: sprintf(buf, "%lo", value); break;
+    case DEC: sprintf(buf, "%lu", value); break;
+    default: Q_ERROR("Unsupported base: %u.", base);
     }
   }
 #endif

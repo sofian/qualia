@@ -19,8 +19,12 @@
   parsing functions based on TextFinder library by Michael Margolis
 */
 
-#ifndef Stream_h
-#define Stream_h
+#ifndef Stream_Compat_h
+#define Stream_Compat_h
+
+#include <qualia/core/common.h>
+
+#if !is_arduino()
 
 #include <inttypes.h>
 #include "Print.h"
@@ -92,5 +96,7 @@ class Stream : public Print
 
   float parseFloat(char skipChar);  // as above but the given skipChar is ignored
 };
+
+#endif
 
 #endif

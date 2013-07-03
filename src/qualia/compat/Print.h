@@ -17,10 +17,12 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#ifndef Print_h
-#define Print_h
+#ifndef Print_Compat_h
+#define Print_Compat_h
 
 #include <qualia/core/common.h>
+
+#if !is_arduino()
 
 #include <inttypes.h>
 #include <stdio.h> // for size_t
@@ -86,5 +88,7 @@ class Print
     size_t println(const Printable&);
     size_t println(void);
 };
+
+#endif // !is_arduino()
 
 #endif

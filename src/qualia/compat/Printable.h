@@ -17,8 +17,10 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#ifndef Printable_h
-#define Printable_h
+#ifndef Printable_Compat_h
+#define Printable_Compat_h
+
+#if !is_arduino()
 
 class Print;
 
@@ -33,6 +35,8 @@ class Printable
   public:
     virtual size_t printTo(Print& p) const = 0;
 };
+
+#endif
 
 #endif
 

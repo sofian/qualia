@@ -19,11 +19,14 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#ifndef String_class_h
-#define String_class_h
-#ifdef __cplusplus
+#ifndef String_class_Compat_h
+#define String_class_Compat_h
 
 #include <qualia/core/common.h>
+
+#if !is_arduino()
+
+#ifdef __cplusplus
 
 #include <stdlib.h>
 #include <string.h>
@@ -177,6 +180,10 @@ public:
 	// parsing/conversion
 	long toInt(void) const;
 
+#if is_computer()
+	static void valueToBinaryStr(char* buf, const uint8_t* value, int size);
+#endif
+
 protected:
 	char *buffer;	        // the actual char array
 	unsigned int capacity;  // the array length minus one (for the '\0')
@@ -209,4 +216,5 @@ public:
 };
 
 #endif  // __cplusplus
+#endif  // !is_arduino()
 #endif  // String_class_h

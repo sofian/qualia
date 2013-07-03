@@ -29,6 +29,8 @@
 #ifndef RANDOM_INC
 #define RANDOM_INC
 
+#include <qualia/core/common.h>
+
 #include <limits.h>
 #include <stdlib.h>
 
@@ -40,14 +42,6 @@
 
 #ifndef RANDOM_MAX
 #define RANDOM_MAX RAND_MAX
-#endif
-
-// Arduino definitions for random integers.
-#if !defined(ARDUINO)
-// Code from Arduino WMath.cpp
-void randomSeed(unsigned int seed);
-long random(long howbig);
-long random(long howsmall, long howbig);
 #endif
 
 // Floating point random numbers.

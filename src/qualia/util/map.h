@@ -17,17 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #ifndef MAP_H_
 #define MAP_H_
 
 #include <qualia/core/common.h>
 
-// More stuff.
 // Remaps a value in [minVal, maxVal].
-#if ( ! is_arduino() )
-long map(long x, long in_min, long in_max, long out_min, long out_max);
-#endif
 
 real mapReal(real x, real in_min, real in_max, real out_min, real out_max);
 

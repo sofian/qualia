@@ -19,13 +19,6 @@
 
 #include "map.h"
 
-#if ( ! is_arduino() )
-long map(long x, long in_min, long in_max, long out_min, long out_max)
-{
-  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-}
-#endif
-
 real mapReal(real x, real in_min, real in_max, real out_min, real out_max)
 {
   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;

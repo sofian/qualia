@@ -3,16 +3,30 @@
 // Definitions (could go somewhere else...)
 #if is_computer()
 
-#include <time.h>
+  #include <time.h>
 
   unsigned long millis(void) {
-    return clock() * 1000 / CLOCKS_PER_SEC;
+    return micros() / 1000;
   }
+
+  // TODO: Reimplement for Windows
   unsigned long micros(void) {
-    return clock() * 1000000UL / CLOCKS_PER_SEC;
+    static struct timespec start = { 0, 0 };
+    if (start.tv_sec == 0 && start.tv_nsec == 0)
+      clock_gettime(CLOCK_REALTIME, &start);
+
+    struct timespec end;
+    clock_gettime(CLOCK_REALTIME, &end);
+
+    unsigned long long seconds  = end.tv_sec  - start.tv_sec;
+    unsigned long long nseconds      = end.tv_nsec - start.tv_nsec;
+
+    return (seconds * 1000000UL + nseconds / 1000) /* + 0.5 */;
   }
 
   #ifdef WIN32
+
+    #warning "millis(), micros(), delay() and delayMicroseconds() have not been tested under Windows"
 
     #include <windows.h>
 
@@ -40,9 +54,9 @@
 
     #include <unistd.h>
 
-    void delay(unsigned long milliseconds)
+    void delay(unsigned long ms)
     {
-      usleep(milliseconds * 1000); // takes microseconds
+      usleep(ms*1000);
     }
 
     void delayMicroseconds(unsigned int us) {
