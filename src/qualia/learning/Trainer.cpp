@@ -23,13 +23,14 @@
 
 #include "Trainer.h"
 
-Trainer::Trainer(Function* function_) : function(function_), nEpisodes(0) {
+Trainer::Trainer(Function* function_) : _function(function_), _nEpisodes(0) {
 }
 
 Trainer::~Trainer() {
 }
 
 void Trainer::init() {
-  function->init();
+  _function->init();
+  _nEpisodes = 0;
 }
 

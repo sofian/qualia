@@ -28,12 +28,21 @@
 
 class DataSet {
 public:
-  int nExamples; // number of examples in the dataset
-  int dim;       // dimension of the example
-  real* example; // current example
+  /// Number of examples in the dataset
+  int _nExamples;
 
+  // Dimension of the example.
+  int _dim;
+
+  // Current example.
+  real* example;
+
+  /// Constructor.
   DataSet(int nExamples=0, int dim=0);
   virtual ~DataSet();
+
+  int dim() const { return _dim; }
+  int nExamples() const { return _nExamples; }
 
   // To be called before training. Should allocate example, among other things. Default version allocates example to
   // the size of #dim#.
@@ -42,7 +51,7 @@ public:
   // To be called before every episode.
   virtual void reset() {}
 
-  // Sets this->example to given index t.
+  // Sets this->example to given index #t#.
   virtual void setExample(int t) = 0;
 };
 

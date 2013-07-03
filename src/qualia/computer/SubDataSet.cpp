@@ -21,10 +21,10 @@
 
 SubDataSet::SubDataSet(DataSet* dataSet_, int* indices_, int nExamples_) : DataSet(nExamples_), _dataSet(dataSet_) {
   Q_ASSERT_ERROR( _dataSet );
-  Q_ASSERT_WARNING( _dataSet->nExamples <= nExamples );
-  dim = _dataSet->dim;
-  _indices = (int*)Alloc::malloc(nExamples * sizeof(int));
-  memcpy(_indices, indices_, nExamples * sizeof(int));
+  Q_ASSERT_WARNING( _dataSet->nExamples() <= _nExamples );
+  _dim = _dataSet->dim();
+  _indices = (int*)Alloc::malloc(_nExamples * sizeof(int));
+  memcpy(_indices, indices_, _nExamples * sizeof(int));
 }
 
 SubDataSet::~SubDataSet() {
@@ -43,12 +43,12 @@ void SubDataSet::reset() {
 
 void SubDataSet::setExample(int t) {
   _dataSet->setExample(_indices[t]);
-  memcpy(example, _dataSet->example, dim * sizeof(real));
+  memcpy(example, _dataSet->example, _dim * sizeof(real));
 }
 
 SubDataSet* SubDataSet::getShuffledDataSet(DataSet* dataSet, int nExamples) {
   if (nExamples < 0)
-    nExamples = dataSet->nExamples;
+    nExamples = dataSet->nExamples();
 
   int* indices = (int*) Alloc::malloc(nExamples * sizeof(int));
   randomShuffledIndices(indices, nExamples);
@@ -63,14 +63,14 @@ void SubDataSet::getStandardDataSets(SubDataSet** train, SubDataSet** valid,
     float propTest) {
 
   // Get shuffled indices.
-  int* indices = (int*) Alloc::malloc(dataSet->nExamples * sizeof(int));
-  randomShuffledIndices(indices, dataSet->nExamples);
+  int* indices = (int*) Alloc::malloc(dataSet->nExamples() * sizeof(int));
+  randomShuffledIndices(indices, dataSet->nExamples());
 
   // Get number of examples for train / valid / test.
   Q_ASSERT_ERROR( propTrain + propValid + propTest == 1.0f );
-  int nTrain = (int)dataSet->nExamples * propTrain;
-  int nValid = (int)dataSet->nExamples * propValid;
-  int nTest  = dataSet->nExamples - nTrain - nValid;
+  int nTrain = (int)dataSet->nExamples() * propTrain;
+  int nValid = (int)dataSet->nExamples() * propValid;
+  int nTest  = dataSet->nExamples() - nTrain - nValid;
 
   Q_NOTICE("Splitting in train=%d / valid=%d / test=%d examples", nTrain, nValid, nTest);
 

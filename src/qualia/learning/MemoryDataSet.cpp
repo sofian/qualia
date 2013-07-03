@@ -25,15 +25,15 @@ MemoryDataSet::MemoryDataSet(DataSet* dataSet) {
   dataSet->init();
   dataSet->reset();
 
-  nExamples = dataSet->nExamples;
-  dim       = dataSet->dim;
+  _nExamples = dataSet->nExamples();
+  _dim       = dataSet->dim();
 
-  data      = (real*)Alloc::malloc(nExamples*dim*sizeof(real));
+  data      = (real*)Alloc::malloc(_nExamples*_dim*sizeof(real));
 
 //  real* ptr = data;
-  for (int t=0; t<nExamples; t++) {
+  for (int t=0; t<_nExamples; t++) {
     dataSet->setExample(t);
-    memcpy(&data[t*dim], dataSet->example, dim*sizeof(real));
+    memcpy(&data[t*_dim], dataSet->example, _dim*sizeof(real));
 //    ptr += dim;
   }
 }
@@ -42,5 +42,5 @@ MemoryDataSet::~MemoryDataSet() {
 }
 
 void MemoryDataSet::setExample(int t) {
-  memcpy(example, &data[t*dim], dim * sizeof(real));
+  memcpy(example, &data[t*_dim], _dim * sizeof(real));
 }

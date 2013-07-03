@@ -28,11 +28,17 @@
 
 class Trainer {
 public:
-  Function* function;
-  int nEpisodes;
+  /// The function this Trainer is optimizing.
+  Function* _function;
 
+  /// The number of episodes this trainer went through (read-only).
+  int _nEpisodes;
+
+  /// Constructor.
   Trainer(Function* function);
   virtual ~Trainer();
+
+  int nEpisodes() const { return _nEpisodes; }
 
   virtual void init();
 };

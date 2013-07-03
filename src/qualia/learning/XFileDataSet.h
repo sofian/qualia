@@ -25,8 +25,11 @@
 
 class XFileDataSet: public DataSet {
 public:
-  XFile* file;
-  int currentExampleIndex;
+  /// The file (XFile) that stores the dataset.
+  XFile* _file;
+
+  /// The index of the current example (internal use).
+  int _currentExampleIndex;
 
   XFileDataSet(XFile* file);
   virtual ~XFileDataSet();

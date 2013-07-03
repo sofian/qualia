@@ -24,14 +24,14 @@
 #include "DataSet.h"
 
 DataSet::DataSet(int nExamples_, int dim_)
-  : nExamples(nExamples_), dim(dim_), example(0) {}
+  : _nExamples(nExamples_), _dim(dim_), example(0) {}
 
 DataSet::~DataSet() {
 }
 
 void DataSet::init() {
   if (!example)
-    example = (real*)Alloc::malloc(dim * sizeof(real));
+    example = (real*)Alloc::malloc(_dim * sizeof(real));
   else
-    example = (real*)Alloc::realloc(example, dim * sizeof(real));
+    example = (real*)Alloc::realloc(example, _dim * sizeof(real));
 }

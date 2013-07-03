@@ -25,7 +25,10 @@
 
 class DiskXFileDataSet: public XFileDataSet {
 public:
-  DiskXFile* diskFile;
+  /// The DiskXFile where the dataset is stored.
+  DiskXFile* _diskFile;
+
+  /// Ascii or binary mode.
   bool ascii;
 
   DiskXFileDataSet(DiskXFile* diskFile, bool useAscii=false);

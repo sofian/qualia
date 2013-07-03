@@ -30,7 +30,7 @@ StochasticDataSetTrainer::~StochasticDataSetTrainer() {
 }
 
 void StochasticDataSetTrainer::_doTrainEpisode(DataSet* data) {
-  for (int t=0; t<data->nExamples; t++) {
+  for (int t=0; t<data->nExamples(); t++) {
     data->setExample(t);
     trainExample(data->example);
   }

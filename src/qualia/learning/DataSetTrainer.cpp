@@ -23,32 +23,27 @@
 
 #include "DataSetTrainer.h"
 
-DataSetTrainer::DataSetTrainer(Function* function_) : Trainer(function_), nEpisodes(0) {
+DataSetTrainer::DataSetTrainer(Function* function_) : Trainer(function_) {
 }
 
 DataSetTrainer::~DataSetTrainer() {
 }
 
-void DataSetTrainer::init() {
-  function->init();
-  nEpisodes = 0;
-}
-
 void DataSetTrainer::train(DataSet* data, int maxEpisodes) {
   init();
   data->init();
-  Q_MESSAGE("Training on %d examples.", data->nExamples);
+  Q_MESSAGE("Training on %d examples.", data->nExamples());
   while (!stop() &&
-         (maxEpisodes > 0 && nEpisodes < maxEpisodes)) {
+         (maxEpisodes > 0 && _nEpisodes < maxEpisodes)) {
     trainEpisode(data);
   }
 }
 
 void DataSetTrainer::trainEpisode(DataSet* data) {
-  Q_ASSERT_WARNING(data->nExamples >= 0);
-  Q_MESSAGE("Training episode # %d.", nEpisodes);
+  Q_ASSERT_WARNING(data->nExamples() >= 0);
+  Q_MESSAGE("Training episode # %d.", _nEpisodes);
   _doTrainEpisode(data);
-  nEpisodes++;
+  _nEpisodes++;
 }
 
 
