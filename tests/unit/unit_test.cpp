@@ -502,10 +502,10 @@ void testBinaryChromosomes() {
   printf("- Testing BitChromosomeInfo\n");
 
   printf("-- Testing bitSize() / byteSize()\n");
-  printf("Info params: %d %d %d\n", info.nGenes, info.bitSize(), info.byteSize());
+  printf("Info params: %d %d %d\n", info.nGenes(), info.bitSize(), info.byteSize());
   assert( info.bitSize()  == TEST_CHROMOSOME_BITSIZE );
   assert( info.byteSize() == TEST_CHROMOSOME_BYTESIZE );
-  assert( info.nGenes == TEST_CHROMOSOME_N_GENES );
+  assert( info.nGenes() == TEST_CHROMOSOME_N_GENES );
   printf("-> PASSED\n");
 
   printf("-- Testing equality operator\n");
@@ -662,9 +662,9 @@ void testBinaryChromosomes() {
   parent2.init();
 
   for (int i=0; i<TEST_CHROMOSOME_N_GENES; i++) {
-    uint64_t maxGeneValue = (uint64_t) pow(2, info.geneSizes[i])-1;
+    uint64_t maxGeneValue = (uint64_t) pow(2, info.geneSize(i))-1;
     // Don't go through all values cause it can be very long.
-    uint64_t inc          = info.geneSizes[i] > 8 ? info.geneSizes[i]*11 : 1;
+    uint64_t inc          = info.geneSize(i) > 8 ? info.geneSize(i)*11 : 1;
     for (uint64_t x=0; x<maxGeneValue-1; x += inc) {
       parent1.setGeneValue(i, x);
       assert( parent1.getGeneValue(i) == x);

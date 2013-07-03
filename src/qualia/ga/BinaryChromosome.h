@@ -32,17 +32,24 @@
 
 class BinaryChromosomeInfo {
 public:
-  unsigned int nGenes;
-  uint8_t* geneSizes; // the size (in bits) of each gene
-  //int codeSize;
+  /// The number of genes in the chromosome.
+  unsigned int _nGenes;
+
+  /// The size (in bits) of each gene.
+  uint8_t* _geneSizes;
 
   Initializer initializer;
   Mutator mutator;
   Evaluator evaluator;
 
-  BinaryChromosomeInfo(unsigned int nGenes, const uint8_t* geneSizesInit=0,
+  BinaryChromosomeInfo(unsigned int nGenes, const uint8_t* geneSizes,
                        Initializer initializer=0, Mutator mutator=0);
 
+  /// Returns the number of genes in the chromosome.
+  unsigned int nGenes() const { return _nGenes; }
+
+  /// Returns the size (in bits) of gene #i#.
+  uint8_t geneSize(int i) const { return _geneSizes[i]; }
   unsigned int bitSize() const;
   unsigned int byteSize() const { return ( (bitSize()+7) / 8); }
   int getStartBitPosition(int gene) const;

@@ -19,49 +19,42 @@
 
 #include "BinaryChromosome.h"
 
-BinaryChromosomeInfo::BinaryChromosomeInfo(unsigned int nGenes_, const uint8_t* geneSizesInit_,
+BinaryChromosomeInfo::BinaryChromosomeInfo(unsigned int nGenes, const uint8_t* geneSizes,
                                            Initializer initializer_, Mutator mutator_)
-  : nGenes(0), geneSizes(0), initializer(initializer_), mutator(mutator_) {
-
-  // Assign mutator function.
-  if (!mutator)
-    mutator = &BinaryChromosome::mutateFlip;
-
-  // Allocate.
-  if (geneSizes) // already allocated
-    return; // TODO: error message
-
-  // Set dimension.
-  nGenes = nGenes_;
+  : _nGenes(nGenes), _geneSizes(0), initializer(initializer_), mutator(mutator_) {
+  Q_ASSERT_ERROR( geneSizes );
+  Q_ASSERT_ERROR( _nGenes > 0 );
+#if DEBUG_ERROR
+  // No dimension elements should be zero.
+  for (unsigned int i = 0; i < _nGenes; i++)
+    Q_ASSERT_ERROR( geneSizes[i] != 0 );
+#endif
 
   // Allocate.
-  geneSizes = (uint8_t*) Alloc::malloc(nGenes * sizeof(uint8_t));
+  _geneSizes = (uint8_t*) Alloc::malloc(_nGenes * sizeof(uint8_t));
 
   // Init.
-  if (geneSizesInit_)
-    memcpy(geneSizes, geneSizesInit_, nGenes * sizeof(uint8_t));
-  else
-    memset(geneSizes, 0, nGenes * sizeof(uint8_t));
+  memcpy(_geneSizes, geneSizes, _nGenes * sizeof(uint8_t));
 }
 
 unsigned int BinaryChromosomeInfo::bitSize() const {
   unsigned int size = 0;
-  for (unsigned int i=0; i<nGenes; i++)
-    size += geneSizes[i];
+  for (unsigned int i=0; i<_nGenes; i++)
+    size += _geneSizes[i];
   return size;
 }
 
 int BinaryChromosomeInfo::getStartBitPosition(int gene) const {
   int pos = 0;
   for (int i=0; i<gene; i++)
-    pos += geneSizes[i];
+    pos += _geneSizes[i];
   return pos;
 }
 
 bool BinaryChromosomeInfo::equals(const BinaryChromosomeInfo& info) {
-  //int x = memcmp(geneSizes, info.geneSizes, nGenes * sizeof(uint8_t));
-  return (nGenes == info.nGenes &&
-          (memcmp(geneSizes, info.geneSizes, nGenes * sizeof(uint8_t)) == 0));
+  //int x = memcmp(_geneSizes, info._geneSizes, _nGenes * sizeof(uint8_t));
+  return (_nGenes == info._nGenes &&
+          (memcmp(_geneSizes, info._geneSizes, _nGenes * sizeof(uint8_t)) == 0));
 }
 
 BinaryChromosome::BinaryChromosome(BinaryChromosomeInfo* info_)
@@ -122,18 +115,18 @@ bool BinaryChromosome::equals(const Chromosome& c) const {
 
 //double BinaryChromosome::doubleValue(int gene) const {
 //  int64_t val;
-//  copyBits(&val, code, info->getStartBitPosition(gene), info->geneSizes[gene], sizeof(int64_t));
+//  copyBits(&val, code, info->getStartBitPosition(gene), info->_geneSizes[gene], sizeof(int64_t));
 //  return double(val);
 //}
 
 uint64_t BinaryChromosome::getGeneValue(int gene) const {
   uint64_t val;
-  arrayBlockCopy(&val, code, info->getStartBitPosition(gene), info->geneSizes[gene], sizeof(uint64_t));
+  arrayBlockCopy(&val, code, info->getStartBitPosition(gene), info->_geneSizes[gene], sizeof(uint64_t));
   return val;
 }
 
 void BinaryChromosome::setGeneValue(int gene, uint64_t value) {
-  arrayBlockWrite(code, &value, info->getStartBitPosition(gene), 0, info->geneSizes[gene]);
+  arrayBlockWrite(code, &value, info->getStartBitPosition(gene), 0, info->_geneSizes[gene]);
 }
 
 void BinaryChromosome::initializeRandom(Chromosome& chromosome) {
