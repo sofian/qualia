@@ -66,13 +66,13 @@ void testActions() {
 
   printf("- Testing iteration\n");
   test.reset();
-  ASSERT_ERROR(test.undefined());
+  Q_ASSERT_ERROR(test.undefined());
   action_t i = 0;
   while (test.hasNext()) {
     test.next();
-    ASSERT_ERROR(! test.undefined());
-    ASSERT_ERROR( i < test.nConflated() );
-    ASSERT_ERROR( test.conflated() == i );
+    Q_ASSERT_ERROR(! test.undefined());
+    Q_ASSERT_ERROR( i < test.nConflated() );
+    Q_ASSERT_ERROR( test.conflated() == i );
     i++;
   }
   printf("-> PASSED\n");
@@ -83,7 +83,7 @@ void testActions() {
   while (test.hasNext()) {
     test.next();
     testCopy.copyFrom(test);
-    ASSERT_ERROR( test.conflated() == testCopy.conflated() );
+    Q_ASSERT_ERROR( test.conflated() == testCopy.conflated() );
     i++;
   }
   printf("-> PASSED\n");
@@ -146,7 +146,7 @@ void testPolicies() {
   action_t a = action.conflated();
   for (int i=0; i<100; i++) {
     egreedy.chooseAction(&action, &observation);
-    ASSERT_ERROR( a == action.conflated() );
+    Q_ASSERT_ERROR( a == action.conflated() );
   }
   printf("-> PASSED\n");
 
@@ -159,7 +159,7 @@ void testPolicies() {
   for (int i=0; i<10; i++) {
     egreedy.chooseAction(&action, &observation);
     //printf("%d, ", action.conflated());
-    ASSERT_ERROR( action.conflated() == pattern1[i]);
+    Q_ASSERT_ERROR( action.conflated() == pattern1[i]);
   }
   printf("-> PASSED\n");
 
@@ -172,7 +172,7 @@ void testPolicies() {
   for (int i=0; i<10; i++) {
     egreedy.chooseAction(&action, &observation);
     //printf("%d, ", action.conflated());
-    ASSERT_ERROR( action.conflated() == pattern2[i] );
+    Q_ASSERT_ERROR( action.conflated() == pattern2[i] );
   }
   printf("-> PASSED\n");
 
@@ -189,7 +189,7 @@ void testPolicies() {
   softmax.chooseAction(&action, &observation);
   for (int i=0; i<10; i++) {
     softmax.chooseAction(&action, &observation);
-    ASSERT_ERROR( action.conflated() == pattern3[i]);
+    Q_ASSERT_ERROR( action.conflated() == pattern3[i]);
   }
 
   printf("-> PASSED\n");
@@ -269,7 +269,7 @@ void testLearning() {
 
   printf("-- Testing initialization\n");
   for (unsigned int i=0; i<net.nParams(); i++) {
-    ASSERT_ERROR( approxEqual(weights1[i], net.weights[i]));
+    Q_ASSERT_ERROR( approxEqual(weights1[i], net.weights[i]));
   }
 
   printf("-> PASSED\n");
@@ -289,7 +289,7 @@ const real weights2[] = { -0.868334, -0.591405, 0.387102, 0.123143, 0.746422, 0.
   qualia.episode(1001); // does 1 call to start() and 1000 calls to step()
 
   for (unsigned int i=0; i<net.nParams(); i++) {
-    ASSERT_ERROR( approxEqual(weights2[i], net.weights[i]));
+    Q_ASSERT_ERROR( approxEqual(weights2[i], net.weights[i]));
   }
   printf("-> PASSED\n");
 
@@ -309,7 +309,7 @@ const real weights2[] = { -0.868334, -0.591405, 0.387102, 0.123143, 0.746422, 0.
 
   for (unsigned int i=0; i<net.nParams(); i++) {
 //    printf("%f, ", net.weights[i]);
-    ASSERT_ERROR( approxEqual(weights3[i], net.weights[i]));
+    Q_ASSERT_ERROR( approxEqual(weights3[i], net.weights[i]));
   }
 
   printf("-> PASSED\n");
@@ -334,7 +334,7 @@ void testData() {
   file.rewind();
   char verify[1000];
   file.scanf("%s", verify);
-  ASSERT_ERROR( strcmp(verify, TEST_STRING) == 0 );
+  Q_ASSERT_ERROR( strcmp(verify, TEST_STRING) == 0 );
 
   file.rewind();
   int nExamples = 100;
@@ -354,14 +354,14 @@ void testData() {
   file.scanf("%d", &test);
   assert( test == nExamples );
   file.scanf("%d", &test);
-  ASSERT_ERROR( test == dim );
+  Q_ASSERT_ERROR( test == dim );
 
   k=0;
   for (int t=0; t<nExamples; t++) {
     for (int i=0; i<dim; i++) {
       float tmp;
       file.scanf(REAL_FORMAT, &tmp);
-      ASSERT_ERROR( tmp == k );
+      Q_ASSERT_ERROR( tmp == k );
       k++;
     }
   }
@@ -375,7 +375,7 @@ void testData() {
   for (int t=0; t<nExamples; t++) {
     dataset.setExample(t);
     for (int i=0; i<dim; i++) {
-      ASSERT_ERROR_MESSAGE( dataset.example[i] == k, "Wrong value at example %d (%f != %f)", t, dataset.example[i], k);
+      Q_ASSERT_ERROR_MESSAGE( dataset.example[i] == k, "Wrong value at example %d (%f != %f)", t, dataset.example[i], k);
       k++;
     }
   }
@@ -511,8 +511,8 @@ void testBinaryChromosomes() {
   printf("-- Testing equality operator\n");
   BinaryChromosomeInfo infoSame(9, geneSizes);
   BinaryChromosomeInfo infoWrong(9, geneSizes2);
-  ASSERT_ERROR( info.equals(infoSame) );
-  ASSERT_ERROR( !info.equals(infoWrong) );
+  Q_ASSERT_ERROR( info.equals(infoSame) );
+  Q_ASSERT_ERROR( !info.equals(infoWrong) );
   printf("-> PASSED\n");
 
   printf("- Testing initializer\n");
@@ -575,25 +575,25 @@ void testBinaryChromosomes() {
   printf("- Test compare between chromosomes\n");
 
   printf("-- Test: chromosome equals itself\n");
-  ASSERT_ERROR( parent1.equals(parent1) );
+  Q_ASSERT_ERROR( parent1.equals(parent1) );
   printf("-> PASSED\n");
 
   printf("-- Test: chromosome compare with different info that ==\n");
   BinaryChromosome parentSame(&infoSame);
   parentSame.copyFrom(parent1);
-  ASSERT_ERROR( parent1.equals(parentSame) );
+  Q_ASSERT_ERROR( parent1.equals(parentSame) );
   //assert( parent1 == parentSame );
   printf("-> PASSED\n");
 
   printf("-- Test: chromosome compare with different info (should return -1 / fail)\n");
   BinaryChromosome parentWrong(&infoWrong);
-  ASSERT_ERROR( !parent1.equals(parentWrong) );
+  Q_ASSERT_ERROR( !parent1.equals(parentWrong) );
   printf("-> PASSED\n");
 
   printf("-- Test: chromosome compare with flip = n bits (all bits differ)\n");
   tmp.copyFrom(parent1); // copy
   parent1.mutate(1);
-  ASSERT_ERROR( !parent1.equals(tmp) );
+  Q_ASSERT_ERROR( !parent1.equals(tmp) );
   //printf("Diff %d\n", parent1.compareTo(tmp));
   //assert( parent1.compareTo(tmp) == TEST_CHROMOSOME_BITSIZE );
   printf("-> PASSED\n");
@@ -611,7 +611,7 @@ void testBinaryChromosomes() {
   printf("Children:\n");
   print(children1);
   print(children2);
-  //ASSERT_ERROR( children1.compareTo(children2) == TEST_CHROMOSOME_BITSIZE);
+  //Q_ASSERT_ERROR( children1.compareTo(children2) == TEST_CHROMOSOME_BITSIZE);
   // Repeat a few times.
   for (int i=0; i<100; i++) {
     BinaryChromosome::crossoverOnePoint(parent1, parent2, &children1, &children2);
@@ -624,7 +624,7 @@ void testBinaryChromosomes() {
   printf("Children:\n");
   print(children1);
   print(children2);
-  //ASSERT_ERROR( children1.compareTo(children2) == TEST_CHROMOSOME_BITSIZE);
+  //Q_ASSERT_ERROR( children1.compareTo(children2) == TEST_CHROMOSOME_BITSIZE);
   // Repeat a few times.
   for (int i=0; i<100; i++) {
     BinaryChromosome::crossoverTwoPoint(parent1, parent2, &children1, &children2);
@@ -703,7 +703,7 @@ void testDataSet() {
   qualia.episode(11);
 
   long expectedFileSize = sizeof(unsigned int)*2 + sizeof(observation_t)*(11*(observationDim+1)) + sizeof(action_dim_t)*10*props.dim();
-  ASSERT_ERROR( testFile.size() == expectedFileSize);
+  Q_ASSERT_ERROR( testFile.size() == expectedFileSize);
 
   printf("-> PASSED\n");
 
@@ -728,17 +728,17 @@ void testDataSet() {
     // Data is (s, a, r, s')
     real* ptr = memDataSet.example;
     for (unsigned int i=0; i<observationDim; i++)
-      ASSERT_ERROR( lastObs[i] == *ptr++ );
+      Q_ASSERT_ERROR( lastObs[i] == *ptr++ );
 
     for (unsigned int i=0; i<props.dim(); i++)
-      ASSERT_ERROR( oa->action->actions[i] == (action_dim_t) (*ptr++) );
+      Q_ASSERT_ERROR( oa->action->actions[i] == (action_dim_t) (*ptr++) );
 
     oa = qualia2.step();
 
-    ASSERT_ERROR( ((RLObservation*)oa->observation)->reward == *ptr++ );
+    Q_ASSERT_ERROR( ((RLObservation*)oa->observation)->reward == *ptr++ );
 
     for (unsigned int i=0; i<observationDim; i++)
-      ASSERT_ERROR( oa->observation->observations[i] == *ptr++ );
+      Q_ASSERT_ERROR( oa->observation->observations[i] == *ptr++ );
 
     lastObs.copyFrom(*oa->observation);
 
