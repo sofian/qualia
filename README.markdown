@@ -10,21 +10,37 @@ Current version is 0.2.
 Authors
 -------
 
-Head developer:
-Sofian Audry
+Head developer:  
+Sofian Audry  
 info(@)sofianaudry(.)com
+
+Windows compliance:  
+Bruno Angeles
 
 Copyright
 ---------
 
-Copyright (c) 2011-2012 Sofian Audry (the main author)
+Copyright (c) 2011-2012 Sofian Audry (the main author)  
 This software library is distributed under the Gnu GPL version 3. Please refer to LICENSE file for details.
 
-This software library includes code from the following sources:
+This software library includes code from the following softwares:
 
-GALib : library of genetic algorithm components (BSD License)
-  Copyright (c) 1995-1996 Massachusetts Institute of Technology (MIT)
+Torch3 : machine-learning library
+  Website: http://www.torch.ch/torch3/  
+  License: BSD  
+  Copyright (c) 2003--2004 Ronan Collobert  
+  Copyright (c) 2003--2004 Samy Bengio  
+  Copyright (c) 2003--2004 Johnny Mariéthoz
+
+GALib : library of genetic algorithm components  
+  Website: http://lancet.mit.edu/ga/  
+  License: BSD  
+  Copyright (c) 1995-1996 Massachusetts Institute of Technology (MIT)  
   Copyright (c) 1996-2005 Matthew Wall (the Author)
+
+Libbehavior : reactive AI library based on the concept of "behavior trees"
+  Website: http://code.google.com/p/libbehavior/  
+  License: New BSD License
 
 Thanks
 ------
