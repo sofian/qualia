@@ -1,0 +1,10 @@
+/**
+ * RobGP Header file. This file is automatically compiled by the Makefile to
+ * include all of the RobGP header files. This provides one include file for
+ * external programs using any of the contained classes.
+ *
+ * @author Robert Flack
+ */
+
+#pragma once
+

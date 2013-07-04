@@ -1,0 +1,23 @@
+/*!
+\mainpage
+
+Qualia is a free (FLOSS) software library for agent-based systems written in simple C++. 
+It is meant to run on embedded devices as well as on general purpose computers, with a specific 
+focus on AVR microcontrollers such as the ones used on Arduino. It makes it easy for designers, 
+artists and researchers to experiment with different sorts of agents (reinforcement learning, finite 
+state machines, cellular automata, etc) and environments (simulation, physical/embedded, network-based, etc).
+
+Key concepts
+------------
+
+An Agent is a device/being/thing that takes actions in response to observations. In Qualia, agents will 
+typically be platform-agnostic.
+
+An Environment is a component that gives back observations in response to actions. In Qualia, 
+environments typically implement the platform-specific behaviors of actually "doing" the action 
+(eg. by asking a microcontroller to send a signal to one of its pins) and "reading" the observation (eg. 
+by getting them from a sensor).
+
+A Qualia is simply the combination of an agent and an environment, managing the interaction between them 
+both and thus creating the behavioral loop.
+*/

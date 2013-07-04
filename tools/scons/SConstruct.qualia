@@ -10,47 +10,28 @@ def unique(seq, keepstr=True):
   return t(c for c in seq if not (c in seen or seen.append(c)))
 
 # General arguments
+
+# Get mode.
+platform = ARGUMENTS.get("platform", "computer")
+mode     = ARGUMENTS.get("mode", "release")
+
+TARGET = None
+
 INCLUDE_PATH = ""
 MCU = 'atmega168'
 F_CPU = 16000000
 EXTRA_LIBS = ""
-AVR_GCC_DIR = ""
 LIBS = ""
 LIBPATH = ""
-
-# Get mode.
-AddOption('--avr',
-          dest='avr',
-          action="store_true",
-          default=False,
-          help="AVR mode");
-AddOption('--arduino',
-          dest='arduino',
-          action="store_true",
-          default=False,
-          help="Arduino mode");
-
-if GetOption('arduino'):
-  MODE = 'arduino'
-elif GetOption('avr'):
-  MODE = 'avr'
-else:
-  MODE = 'computer'
-
-TARGET = None
-
-MCU = 'atmega168'
-F_CPU = 16000000
-EXTRA_LIBS = ""
-LIBS = ""
-LIBPATH = ""
+SOURCEPATH = ""
 AVR_GCC_DIR = ""
+QUALIA_DIR = ""
 
-if (MODE == 'avr'):
+if (platform == 'avr' or platform == 'arduino'):
   AVR_GCC_DIR = "/Applications/Arduino.app/Contents/Resources/Java/hardware/tools/avr/bin/"
 
 # Import settings
-CONFIG = ['INCLUDE_PATH', 'MCU', 'F_CPU', 'EXTRA_LIBS', 'AVR_GCC_DIR', 'MODE', 'TARGET', 'LIBS', 'LIBPATH']
+CONFIG = ['INCLUDE_PATH', 'MCU', 'F_CPU', 'EXTRA_LIBS', 'AVR_GCC_DIR', 'TARGET', 'LIBS', 'LIBPATH', 'SOURCEPATH', 'QUALIA_DIR', 'platform', 'mode']
 conf = SConscript(dirs='.', exports=CONFIG)
 for i in range(len(CONFIG)):
   vars()[CONFIG[i]] = conf[i]
@@ -67,6 +48,8 @@ MCU = ARGUMENTS.get('MCU', MCU)
 #F_CPU = getBoardConf(r'^%s\.build\.f_cpu=(.*)'%ARDUINO_BOARD)
 F_CPU = ARGUMENTS.get('F_CPU', F_CPU)
 
+QUALIA_DIR = ARGUMENTS.get('QUALIA_DIR', QUALIA_DIR)
+
 # Arduino arguments
 EXTRA_LIBS = ARGUMENTS.get('EXTRA_LIBS', EXTRA_LIBS).split(':')
 
@@ -74,8 +57,11 @@ EXTRA_LIBS = ARGUMENTS.get('EXTRA_LIBS', EXTRA_LIBS).split(':')
 LIBS = ARGUMENTS.get('LIBS', LIBS).split(',')
 LIBPATH = ARGUMENTS.get('LIBPATH', LIBPATH).split(':')
 
-LIBS += ["qualia"]
-LIBPATH += ["../../build/"]
+BUILD_DIR = "build/" + platform + "/"
+
+LIBS += ["qualia", "m"]
+LIBPATH += [ QUALIA_DIR + "/" + BUILD_DIR + "/qualia"]
+INCLUDE_PATH += [ QUALIA_DIR + "/src"]
 
 # There should be a file with the same name as the folder and with the extension .pde
 #TARGET = os.path.basename(os.path.realpath(os.curdir))
@@ -87,45 +73,72 @@ if AVR_GCC_DIR:
 
 AVR_BIN_PREFIX = AVR_GCC_DIR + 'avr-'
 
+SOURCEPATH = ARGUMENTS.get('SOURCEPATH', SOURCEPATH).split(':');
+
+sources = []
+for dir in SOURCEPATH:
+	sources += Glob(dir + "/*.cpp")
+	sources += Glob(dir + "/*.cxx")
+	sources += Glob(dir + "/*.c")
+
+# Remove empty items
+LIBS = filter(None, LIBS)
+LIBPATH = filter(None, LIBPATH)
+
 # Create environment and set default configurations ###################################
-if (MODE == 'avr' or MODE == 'arduino'):
+if (platform == 'avr' or platform == 'arduino'):
   cFlags = ['-ffunction-sections', '-fdata-sections', '-fno-exceptions',
-      '-funsigned-char', '-funsigned-bitfields', '-fpack-struct', '-fshort-enums',
-      '-Os', '-mmcu=' + MCU]
-  
+            '-funsigned-char', '-funsigned-bitfields', '-fpack-struct', '-fshort-enums',
+            '-Os', '-mmcu=%s'%MCU]
   env = Environment(CC = AVR_BIN_PREFIX+'gcc',
                     CXX = AVR_BIN_PREFIX+'g++',
+                    AS = AVR_BIN_PREFIX + 'gcc',
                     CPPPATH = INCLUDE_PATH,
-                    LIBPATH = ["../../build/"], # path to qualia static lib
-                    LIBS = ["qualia", "m"], 
+                    LIBPATH = LIBPATH, # path to qualia static lib
+                    LIBS = LIBS, 
                     CPPDEFINES = {'F_CPU':F_CPU}, 
                     CFLAGS = cFlags + ['-std=gnu99'], 
                     CCFLAGS = cFlags, 
-                    LINKFLAGS = '-mmcu=' + MCU)
+                    ASFLAGS = ['-assembler-with-cpp','-mmcu=%s' % MCU],
+                    LINKFLAGS = ['-mmcu=%s' % MCU ])
 
-#  env.Append(BUILDERS = {'Elf':Builder(action=
-#          "$CC $CFLAGS $TARGET $SOURCE -lm -lqualia")})
-  env.Append(BUILDERS={'Hex':Builder(action=AVR_BIN_PREFIX+'objcopy '+
-          '-O ihex -R .eeprom $SOURCES $TARGET')})
+  libPathFlags = ' '.join([ "-L" + x for x in LIBPATH ])
+  libFlags    = ' '.join([ "-l" + x for x in LIBS ])
+  env.Append(BUILDERS = {'Elf':Builder(action=AVR_BIN_PREFIX+'gcc -mmcu=%s ' % MCU +
+                         '-Os -Wl,--gc-sections,--relax -o $TARGET $SOURCES ' + libPathFlags + ' ' + libFlags)})
+  env.Append(BUILDERS = {'Hex':Builder(action=AVR_BIN_PREFIX+'objcopy '+
+                         '-O ihex -R .eeprom $SOURCES $TARGET')})
   
-  env.VariantDir("build", ".", duplicate=0)
+  env.VariantDir(BUILD_DIR, ".", duplicate=0)
   
-  sources = Glob("build/*.cpp")
-  env.Program(target = "build/" + TARGET + '.elf', source = sources, LINKFLAGS = "-Wl,--gc-sections")
-  env.Hex("build/" + TARGET + '.hex', "build/" + TARGET + '.elf')
+  sources += Glob(BUILD_DIR + "*.cpp")
+  sources += Glob(BUILD_DIR + "*.cxx")
+  sources += Glob(BUILD_DIR + "*.c")
+  
+  objs = env.Object(sources)
+  env.Elf(BUILD_DIR + TARGET + '.elf', objs)
+#  env.Program(target = BUILD_DIR + TARGET + '.elf', source = sources, 
+#  					  CPPFLAGS = ['-mmcu=%s' % MCU, '-Os'],
+#  						LINKFLAGS = "-Wl,--gc-sections,--relax", )
+  env.Hex(BUILD_DIR + TARGET + '.hex', BUILD_DIR + TARGET + '.elf')
   
   #MAX_SIZE = getBoardConf(r'^%s\.upload.maximum_size=(.*)'%ARDUINO_BOARD)
   #print ("maximum size for hex file: %s bytes"%MAX_SIZE)
-  env.Command(None, "build/" + TARGET+'.hex', AVR_BIN_PREFIX+'size --target=ihex $SOURCE')
+  env.Command(None, BUILD_DIR + TARGET+'.hex', AVR_BIN_PREFIX+'size --target=ihex $SOURCE')
 
 else:
   env = Environment()
   env.Append(CPPPATH=["/usr/local/include", "/usr/include", os.getcwd()])
+  if (mode == 'debug'):
+    env.Append(CPPFLAGS=['-Wall', '-g', '-DDEBUG=1'])
+  else:
+    env.Append(CPPFLAGS=['-O2'])
 
-  env.VariantDir("build", ".")
-  sources = Glob("build/*.cpp")
-  sources += Glob("build/*.c")
-  env.Program("build/" + TARGET, sources, LIBS = LIBS, CPPPATH = INCLUDE_PATH, LIBPATH = LIBPATH)
+  env.VariantDir(BUILD_DIR, ".", duplicate=0)
+  sources += Glob(BUILD_DIR + "*.cpp")
+  sources += Glob(BUILD_DIR + "*.c")
+  
+  env.Program(BUILD_DIR + TARGET, sources, LIBS = LIBS, CPPPATH = INCLUDE_PATH, LIBPATH = LIBPATH)
 
 
   #objects = env.StaticObject(source = sources)
