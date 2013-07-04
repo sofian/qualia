@@ -1,27 +1,11 @@
 /*
  * StaticAllocator.h
  *
- * An allocator (see Allocator.h) that "allocated" memory based on a
+ * An allocator (see Allocator.h) that "allocates" memory based on a
  * pre-allocated static memory pool/buffer. Useful to manage memory on
  * architectures that don't support well dynamic allocation (such as
  * AVR-based systems). On such systems, it is usually recommended NOT
  * to use dynamic allocation to avoid problems.
- *
- * WARNING: Calling StaticAllocator::free() does NOT free the pointer at all. You should in fact
- * NEVER have to call that function (because the memory then becomes completely useless). The
- * object keeps track of any calls to free() by incrementing the nLeaks counter. The variable
- * lastLeak is also updated with the value of the pointer on which free() was called last.
- *
- * NOTE: An alternative is to tune the heap start and end in malloc.
- * http://www.nongnu.org/avr-libc/user-manual/malloc.html
- *
- * Usage:
- * <code>
- * unsigned char mybuffer[100];
- * StaticAllocator alloc(mybuffer, 100);
- * int* myarray = (int*)alloc.malloc(10*sizeof(int));
- * Object myobject = new(alloc) Object(1,2);
- * </code>
  *
  * This file is part of Qualia https://github.com/sofian/qualia
  *
@@ -46,6 +30,29 @@
 
 #include "Allocator.h"
 
+/**
+ * An allocator (see Allocator) that "allocates" memory based on a
+ * pre-allocated static memory pool/buffer. Useful to manage memory on
+ * architectures that don't support well dynamic allocation (such as
+ * AVR-based systems). On such systems, it is usually recommended NOT
+ * to use dynamic allocation to avoid problems.
+ *
+ * WARNING: Calling StaticAllocator::free() does NOT free the pointer at all. You should in fact
+ * NEVER have to call that function (because the memory then becomes completely useless). The
+ * object keeps track of any calls to free() by incrementing the nLeaks counter. The variable
+ * lastLeak is also updated with the value of the pointer on which free() was called last.
+ *
+ * NOTE: An alternative is to tune the heap start and end in malloc.
+ * http://www.nongnu.org/avr-libc/user-manual/malloc.html
+ *
+ * Usage:
+ * @code
+ * unsigned char mybuffer[100];
+ * StaticAllocator alloc(mybuffer, 100);
+ * int* myarray = (int*)alloc.malloc(10*sizeof(int));
+ * Object myobject = new(&alloc) Object(1,2);
+ * @endcode
+*/
 class StaticAllocator: public Allocator {
 public:
   unsigned char* buffer;

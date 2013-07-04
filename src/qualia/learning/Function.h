@@ -24,6 +24,9 @@
 #include <qualia/core/common.h>
 #include <qualia/core/XFile.h>
 
+/**
+ * An abstract class for a feed-forward function, such as a NeuralNetwork.
+ */
 class Function {
 
 public:
@@ -32,21 +35,35 @@ public:
   virtual ~Function() {}
 
   // Public methods.
+
+  /// Initializes the function.
   virtual void init() {}
 
+  /// Returns the number of inputs.
   virtual unsigned nInputs() const = 0;
+
+  /// Returns the number of outputs.
   virtual unsigned nOutputs() const = 0;
 
+  /// Sets the value of the inputs.
   virtual void setInputs(const real* input);
+
+  /// Get the value of the outputs.
   virtual void getOutputs(real* output) const;
 
+  /// Sets input *i* to value *x*.
   virtual void setInput(int i, real x) = 0;
+
+  /// Get output *i*.
   virtual float getOutput(int i) const = 0;
 
-  // Propagate to outputs.
+  /// Propagates inputs to outputs.
   virtual void propagate() = 0;
 
+  /// Saves to file.
   virtual void save(XFile* file) = 0;
+
+  /// Loads from file.
   virtual void load(XFile* file) = 0;
 };
 

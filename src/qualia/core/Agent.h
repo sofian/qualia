@@ -1,7 +1,7 @@
 /*
  * Agent.h
  *
- * Interface for an agent acting within an environment in the Qualia framework.
+ * Provides an interface for an agent acting within an environment in the Qualia framework.
  *
  * This file is part of Qualia https://github.com/sofian/qualia
  *
@@ -31,17 +31,32 @@
 #include <qualia/core/Observation.h>
 #include <qualia/core/XFile.h>
 
+/**
+ * Provides an interface for an agent acting within an environment in the Qualia framework.
+ * An agent is a device/being/thing that takes actions in response to observations.
+ * In Qualia, agents will typically be platform-agnostic.
+ */
 class Agent {
 
 public:
   virtual ~Agent() {}
 
+  /// Initializes the agent.
   virtual void init() {}
+
+  /// Chooses the first action in the episode.
   virtual Action* start(const Observation* observation) = 0;
+
+  /// Performs an episode step.
   virtual Action* step(const Observation* observation) = 0;
+
+  /// Performs the last episode step.
   virtual void end(const Observation* observation) {}
 
+  /// Saves the agent.
   virtual void save(XFile* file) {}
+
+  /// Loads an agent.
   virtual void load(XFile* file) {}
 };
 

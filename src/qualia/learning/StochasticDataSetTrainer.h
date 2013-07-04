@@ -29,7 +29,9 @@
 
 #include "DataSetTrainer.h"
 
-// Dataset trainer that trains on one example at a time.
+/**
+ * Dataset trainer that trains on one example at a time.
+ */
 class StochasticDataSetTrainer: public DataSetTrainer {
 public:
   StochasticDataSetTrainer(Function* function);

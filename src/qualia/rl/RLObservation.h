@@ -17,15 +17,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #ifndef RLOBSERVATION_H_
 #define RLOBSERVATION_H_
 
 #include <qualia/core/common.h>
 #include <qualia/core/Observation.h>
 
+/**
+ * An observation that contains a reward, for use in Reinforcement Learning (RL).
+ */
 class RLObservation : public Observation {
 public:
+  /// The reward component.
   real reward;
 
   RLObservation(unsigned int dim);

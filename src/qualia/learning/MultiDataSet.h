@@ -23,6 +23,9 @@
 #include "DataSet.h"
 #include <string.h>
 
+/**
+ * A dataset that is the result of the concatenation of many datasets.
+ */
 class MultiDataSet: public DataSet {
 public:
   DataSet** _dataSets;

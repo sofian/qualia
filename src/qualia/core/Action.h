@@ -1,10 +1,9 @@
 /*
  * Action.h
  *
- * Represent agent actions. Actions in Qualia are always discrete. A specific action is
- * represented by a multi-dimensional array of integers. Meta-informations about the actions
- * (dimensions and number of actions per dimension) are contained withing an ActionProperties
- * object that can be shared accross many actions.
+ * Actions in Qualia are always discrete. A specific action is represented by a multi-dimensional
+ * array of integers. Meta-informations about the actions (dimensions and number of actions per
+ * dimension) are contained withing an ActionProperties object that can be shared accross many actions.
  *
  * This file is part of Qualia https://github.com/sofian/qualia
  *
@@ -36,6 +35,10 @@
 typedef unsigned long action_t;
 typedef unsigned int  action_dim_t;
 
+/**
+ * Represents a set of properties (basically, action dimension and number of possible actions
+ * per dimension) from which specific actions are drawn.
+ */
 class ActionProperties {
 public:
   // Internal use.
@@ -65,6 +68,15 @@ public:
   action_t random() const { return (action_t) ::random(nConflated()); }
 };
 
+/**
+ * Represent an agent action. Actions in Qualia are always discrete. A specific action has two
+ * representations:
+ * 1. A multi-dimensional array of integers (each of type action_dim_t)
+ * 2. A single integer (conflated representation, of type action_t)
+ *
+ * Meta-informations about the actions (dimensions and number of actions per dimension) are contained
+ * within an ActionProperties object that can be shared accross many actions.
+ */
 class Action {
 public:
   /// Pointer to the action properties (read-only).
@@ -88,10 +100,10 @@ public:
   /// Returns the conflated representation of current action.
   virtual action_t conflated() const;
 
-  /// Sets the action to the given conflated representation #action#.
+  /// Sets the action to the given conflated representation *action*.
   virtual Action& setConflated(action_t action);
 
-  /// Returns if this action is undefined (see Action::reset()).
+  /// Returns true if this action is undefined (see Action::reset()).
   bool undefined() const { return _undefined; }
 
   // Iterator methods.
@@ -110,7 +122,7 @@ public:
    */
   virtual Action& next();
 
-  /// Copies data from #src#.
+  /// Copies data from *src*.
   virtual Action& copyFrom(const Action& src);
 
   /// Dimension of actions.
@@ -119,16 +131,16 @@ public:
   /// Number of conflated actions.
   unsigned long nConflated() const { return properties->nConflated(); }
 
-  /// Number of possible actions in dimension #i#.
+  /// Number of possible actions in dimension *i*.
   unsigned int nActions(int i) const { return properties->nActions(i); }
 
   // TODO: remove dim / nAtions / etc from class and put it in some sort of TemplateAction class
   // otherwise the save/load are not really what they look like. This is why I named them saveData/loadData
   // instead of just save/load.
-  /// Save data to #file# (in binary format).
+  /// Save data to *file* (in binary format).
   virtual void saveData(XFile* file) const;
 
-  /// Loads data from #file# (in binary format). Dimension needs to be known in advance.
+  /// Loads data from *file* (in binary format). Dimension needs to be known in advance.
   virtual void loadData(XFile* file);
 };
 

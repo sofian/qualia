@@ -40,37 +40,37 @@ class NeuralNetwork : public GradientFunction {
 public:
   // Configurable parameters /////
 
-  // The starting learning rate. Value should be >= 0, usually in [0, 1].
-  // The learning rate is used to adjust the speed of training. The higher the learning rate the faster the
-  // network is trained. However, the network has a better chance of being trained to a local minimum solution.
-  // A local minimum is a point at which the network stabilizes on a solution which is not the most optimal
-  // global solution. In the case of reinforcement learning, the learning rate determines to what extent the newly
-  // acquired information will override the old information. A factor of 0 will make the agent not learn anything,
-  // while a factor of 1 would make the agent consider only the most recent information.
-  // Source:
-  // http://pages.cs.wisc.edu/~bolo/shipyard/neural/tort.html
-  // http://en.wikipedia.org/wiki/Q-learning#Learning_rate
+  /// The starting learning rate. Value should be >= 0, usually in [0, 1].
+  /// The learning rate is used to adjust the speed of training. The higher the learning rate the faster the
+  /// network is trained. However, the network has a better chance of being trained to a local minimum solution.
+  /// A local minimum is a point at which the network stabilizes on a solution which is not the most optimal
+  /// global solution. In the case of reinforcement learning, the learning rate determines to what extent the newly
+  /// acquired information will override the old information. A factor of 0 will make the agent not learn anything,
+  /// while a factor of 1 would make the agent consider only the most recent information.
+  /// Source:
+  /// http://pages.cs.wisc.edu/~bolo/shipyard/neural/tort.html
+  /// http://en.wikipedia.org/wiki/Q-learning#Learning_rate
   float learningRate;
 
-  // The learning rate decrease constant. Value should be >= 0, usually in [0, 1].
-  // The decrease constant is applied as a way to slowly decrease the learning rate during gradient descent to help
-  // convergence to a better minimum.
+  /// The learning rate decrease constant. Value should be >= 0, usually in [0, 1].
+  /// The decrease constant is applied as a way to slowly decrease the learning rate during gradient descent to help
+  /// convergence to a better minimum.
   float decreaseConstant;
 
-    // The weight decay. Value should be >= 0, usually in [0, 1].
-    // Weight decay is a simple regularization method that limits the number of free parameters in the model so as
-    // to prevent over-fitting (in other words, to get a better generalization). In practice, it penalizes large
-    // weights and thus also limits the freedom in the model.
+  /// The weight decay. Value should be >= 0, usually in [0, 1].
+  /// Weight decay is a simple regularization method that limits the number of free parameters in the model so as
+  /// to prevent over-fitting (in other words, to get a better generalization). In practice, it penalizes large
+  /// weights and thus also limits the freedom in the model.
   float weightDecay;
 
   // Internal use ////////////////
 
-  // This value is used to keep track of the learning rate divider: it is equal to (1 + t * decreaseConstant).
-  // It is more efficient than the usual way of updating the learning rate, because it requires only one floating
-  // point addition per iteration, instead of an addition and a multiplication.
+  /// This value is used to keep track of the learning rate divider: it is equal to (1 + t * decreaseConstant).
+  /// It is more efficient than the usual way of updating the learning rate, because it requires only one floating
+  /// point addition per iteration, instead of an addition and a multiplication.
   float _learningRateDiv;
 
-  // Layer structure.
+  /// Layer structure.
   struct Layer {
     unsigned int n;          // number of units in this layer
     real *output;   // output of ith unit
@@ -80,9 +80,10 @@ public:
     bool linear;    // whether the output of the layer is linear (otherwise it's sigmoid)
   };
 
-  unsigned int _nParams;    // number of parameters
+  /// Number of parameters.
+  unsigned int _nParams;
 
-  // The three MLP layers (inputs -> hidden -> outputs).
+  /// The three MLP layers (inputs -> hidden -> outputs).
   Layer inputLayer, hiddenLayer, outputLayer;
 
 public:
@@ -100,13 +101,22 @@ public:
 
   // Public methods.
 
+  /// Initializes the network (resets the weights, among other things).
   virtual void init();
 
+  /// Returns the number of inputs.
   virtual unsigned int nInputs() const { return inputLayer.n; }
+
+  /// Returns the number of hidden neurons.
   virtual unsigned int nHidden() const { return hiddenLayer.n; }
+
+  /// Returns the number of outputs.
   virtual unsigned int nOutputs() const { return outputLayer.n; }
+
+  /// Returns the number of parameters.
   virtual unsigned int nParams() const { return _nParams; }
 
+  /// Returns the current effective learning rate (= learningRate / (1 + t * decreaseConstant).
   virtual float getCurrentLearningRate() const;
 
   virtual void setInput(int i, real x);

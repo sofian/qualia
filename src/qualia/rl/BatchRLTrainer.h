@@ -28,6 +28,15 @@
 #include <qualia/rl/QFunction.h>
 #include <qualia/rl/TupleDataSet.h>
 
+/**
+ * This class implements the *Batch reinforcement learning algorithm*. It trains a QFunction on a DataSet containing
+ * (s, a, r, s') tuples.
+ *
+ * Reference: S. Lange, T. Gabel and M. Riedmiller. *Batch Reinforcement Learning*. In Wiering, M. and van Otterlo, M., editor,
+ * Reinforcement Learning: State of the Art, Springer, in press, 2011
+ *
+ * @see TupleDataSet
+ */
 class BatchRLTrainer: public DataSetTrainer {
 public:
   real* targets;

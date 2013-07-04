@@ -22,8 +22,7 @@
 
 #include <qualia/core/common.h>
 
-// Remaps a value in [minVal, maxVal].
-
+/// Remaps a real value in [minVal, maxVal].
 real mapReal(real x, real in_min, real in_max, real out_min, real out_max);
 
 #endif /* MAP_H_ */

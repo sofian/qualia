@@ -29,6 +29,9 @@
 #include <qualia/learning/Trainer.h>
 #include <qualia/learning/DataSet.h>
 
+/**
+ * Trains a function over a dataset.
+ */
 class DataSetTrainer : public Trainer {
 public:
   /// Constructor.
@@ -37,7 +40,7 @@ public:
 
   /**
    * Trains the function over a dataset. Training will stop when the stop() method returns true OR when
-   * the number of episodes reaches #maxEpisodes#. If #maxEpisodes# <= 0 is specified then it will not
+   * the number of episodes reaches *maxEpisodes*. If *maxEpisodes* <= 0 is specified then it will not
    * be considered (ie. it will only stop when stop() returns true).
    */
   virtual void train(DataSet* data, int maxEpisodes=10);

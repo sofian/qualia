@@ -24,6 +24,10 @@
 #include "Reward.h"
 #include "RLObservation.h"
 
+/**
+ * Abstract class that provides a framework for using reward functions. The environment performs
+ * the action but delegates the reward assignment to a Reward instance.
+ */
 class RewardEnvironment : public Environment {
 public:
   Reward* reward;
@@ -36,9 +40,14 @@ public:
 
   virtual Observation* step(const Action* action);
 
-  virtual RLObservation* doStart() = 0;
-  virtual RLObservation* doAction(const Action* action) = 0;
+  /// Abstract method implemented by subclasses, called during start().
+  virtual RLObservation* doStart() = 0; // XXX Is this method really necessary? It is a bit confusing...
 
+  /**
+   * Abstract method implemented by subclasses, called during step(). Performs the action *action*
+   * without setting a reward.
+   */
+  virtual RLObservation* doAction(const Action* action) = 0;
 };
 
 #endif /* REWARDENVIRONMENT_H_ */

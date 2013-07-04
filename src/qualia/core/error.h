@@ -27,6 +27,16 @@
 #ifndef ERROR_INCLUDED
 #define ERROR_INCLUDED
 
+/**
+ * Error/warning/notification routines/macros. Level of debugging can be set by defining
+ * DEBUG_LEVEL at compile time. Assertions and messages that are below the level will simply
+ * be erased by the preprocessor (macros are actually replaced by a dummy/void operation),
+ * thus saving on memory usage and execution time.
+ *
+ * WARNING: Notice that DEBUG_LEVEL is not supported on AVR/Arduino ie. all error macros are disabled
+ * on such platforms.
+ */
+
 #include <qualia/core/common.h>
 
 // # Macro definitions #####################################################
@@ -53,7 +63,6 @@
 
 //! Catch errors, warnings and notices.
 #define DEBUG_LEVEL_NOTICE  2
-
 
 // Default debug level.
 #ifndef DEBUG_LEVEL
@@ -84,12 +93,15 @@
 
 // # Assertions and messages functions #####################################
 
-//! Error messages/assertion.
 #if DEBUG_ERROR
 
-  //! Prints an error message. The program will exit.
+  /// Prints an error message. The program will exit.
   void    Q_ERROR(const char* msg, ...);
+
+  /// Assert expression: if it is false, prints error message and exits.
   void    Q_ASSERT_ERROR_MESSAGE(bool expr, const char* msg, ...);
+
+  /// Asserts expression: if it is false, prints the expression and exits.
   #define Q_ASSERT_ERROR(expr) __DEBUG_TRIGGER_ASSERT(expr, Q_ERROR)
 
 #else
@@ -100,12 +112,15 @@
 
 #endif
 
-//! Warning messages/assertion.
 #if DEBUG_WARNING
 
-  //! Prints a warning message. The program will not exit.
+  /// Prints warning message.
   void Q_WARNING(const char* msg, ...);
+
+  /// Assert expression: if it is false, prints warning message.
   void Q_ASSERT_WARNING_MESSAGE(bool expr, const char* msg, ...);
+
+  /// Asserts expression: if it is false, prints the expression as a warning message.
   #define Q_ASSERT_WARNING(expr) __DEBUG_TRIGGER_ASSERT(expr, Q_WARNING)
 
 #else
@@ -116,12 +131,15 @@
 
 #endif
 
-//! Notice messages/assertion.
 #if DEBUG_NOTICE
 
-  //! Prints a notice, usually intended for deep information at the programmer's intent.
+  /// Prints a notice, usually intended for deep information at the programmer's intent.
   void Q_NOTICE(const char* msg, ...);
+
+  /// Assert expression: if it is false, prints message as a notice.
   void Q_ASSERT_NOTICE_MESSAGE(bool expr, const char* msg, ...);
+
+  /// Asserts expression: if it is false, prints the expression as a notice message.
   #define Q_ASSERT_NOTICE(expr) __DEBUG_TRIGGER_ASSERT(expr, Q_NOTICE)
 
 #else
@@ -133,7 +151,10 @@
 #endif
 
 #if (is_computer())
+  /// Same as printf.
   void Q_PRINT(const char* msg, ...);
+
+  /// Prints a formatted message.
   void Q_MESSAGE(const char* msg, ...);
 #else
   #define Q_PRINT(...) __DEBUG_DUMMY_INSTRUCTION

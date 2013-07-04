@@ -23,6 +23,9 @@
 #include <qualia/learning/DataSet.h>
 #include <qualia/core/XFile.h>
 
+/**
+ * A DataSet that reads data from an XFile.
+ */
 class XFileDataSet: public DataSet {
 public:
   /// The file (XFile) that stores the dataset.

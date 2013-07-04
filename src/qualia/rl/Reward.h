@@ -22,6 +22,10 @@
 
 #include <qualia/core/Environment.h>
 
+/**
+ * Abstract class that provides a framework for specifying reward functions. Needs to be used in pair
+ * with the RewardEnvironment class.
+ */
 class Reward {
 public:
   Environment* environment;
@@ -31,6 +35,8 @@ public:
   virtual void setEnvironment(Environment* environment_) {
     environment = environment_;
   }
+
+  /// Abstract method overriden by subclasses, implementing a reward as r = f(s, a, s').
   virtual real reward(const Observation* before, const Action* action, const Observation* after) = 0;
 };
 

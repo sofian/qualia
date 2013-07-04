@@ -90,12 +90,13 @@ void delayMicroseconds(unsigned int us);
 
 #include "Stream.h" // in replacement of #include "HardwareSerial.h"
 
+// WMath prototypes
+
 uint16_t makeWord(uint16_t w);
 uint16_t makeWord(byte h, byte l);
 
 #define word(...) makeWord(__VA_ARGS__)
 
-// WMath prototypes
 long random(long);
 long random(long, long);
 void randomSeed(unsigned int);

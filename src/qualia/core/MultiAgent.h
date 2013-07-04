@@ -39,9 +39,9 @@ public:
   bool ownsAgents;
 
   /**
-   * Constructor. Creates a multi-agent of #nAgents# sub-agents. Sub-agents can be assigned on-the-spot
-   * by specifying #assign# or later on by assigning them eg. this->agents[i] = new MyAgent().
-   * If such is the case (ie. if #assign# is NULL), then the MultiAgent will also own the agents.
+   * Constructor. Creates a multi-agent of *nAgents* sub-agents. Sub-agents can be assigned on-the-spot
+   * by specifying *assign* or later on by assigning them eg. this->agents[i] = new MyAgent().
+   * If such is the case (ie. if *assign* is NULL), then the MultiAgent will also own the agents.
    */
   MultiAgent(int nAgents, Agent** assign=0);
 
@@ -55,13 +55,13 @@ public:
   virtual void end(const Observation* observation);
 
   /**
-   * Returns an observation suitable for sub-agent #agentIdx# starting from observation #observation# as
+   * Returns an observation suitable for sub-agent *agentIdx* starting from observation *observation* as
    * received by this MultiAgent.
    */
   virtual Observation* extractAgentObservation(int agentIdx, const Observation* observation) = 0;
 
   /**
-   * Appends action from sub-agent #agentIdx# to the action that will later be returned by the call to
+   * Appends action from sub-agent *agentIdx* to the action that will later be returned by the call to
    * combineAgentActions().
    */
   virtual void appendAgentAction(int agentIdx, const Action* agentAction) = 0;

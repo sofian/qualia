@@ -30,13 +30,25 @@
 #include "Observation.h"
 #include "Action.h"
 
+/**
+ * Class interface for an environment in the Qualia framework. An environment is a
+ * component that gives back observations in response to actions. In Qualia, environments
+ * typically implement the platform-specific behaviors of actually "doing" the action
+ * (eg. by asking a microcontroller to send a signal to one of its pins) and "reading" the
+ * observation (eg. by getting them from a sensor).
+ */
 class Environment {
 
 public:
   virtual ~Environment() {}
 
+  /// Initializes the environment.
   virtual void init() {}
+
+  /// Sends the first  observation.
   virtual Observation* start() = 0;
+
+  /// Performs action *action* and returns observation.
   virtual Observation* step(const Action* action) = 0;
 };
 

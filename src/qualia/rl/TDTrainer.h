@@ -26,37 +26,41 @@
 #include <qualia/rl/QFunction.h>
 #include <qualia/rl/RLObservation.h>
 
+/**
+ * This class trains a QFunction using the Temporal-Difference (TD-λ) algorithm.
+ */
 class TDTrainer : public Trainer {
 public:
-  real* eTraces; // elligibility traces
+  /// The elligibility traces.
+  real* eTraces;
 
   // Configurable parameters /////
 
   // NOTICE: These parameters can be changed during the course of learning, although the user must be
   // aware of the consequences on learning (which might be severely hampered).
 
-  // Discounting factor. Value should be in [0, 1], typical value in [0.9, 1).
-  // The discount factor determines the importance of future rewards. A factor of 0 will make the agent
-  // "opportunistic" by only considering current rewards, while a factor approaching 1 will make it strive
-  // for a long-term high reward. If the discount factor meets or exceeds 1, the Q values may diverge.
-  // Source: http://en.wikipedia.org/wiki/Q-learning#Discount_factor
+  /// Discounting factor. Value should be in [0, 1], typical value in [0.9, 1).
+  /// The discount factor determines the importance of future rewards. A factor of 0 will make the agent
+  /// "opportunistic" by only considering current rewards, while a factor approaching 1 will make it strive
+  /// for a long-term high reward. If the discount factor meets or exceeds 1, the Q values may diverge.
+  /// Source: http://en.wikipedia.org/wiki/Q-learning#Discount_factor
   float gamma;
 
-  // Trace decay. Value should be in [0, 1], typical value in (0, 0.1].
-  // Heuristic parameter controlling the temporal credit assignment of how an error detected at a given time
-  // step feeds back to correct previous estimates. When lambda = 0, no feedback occurs beyond the current time
-  // step, while when lambda = 1, the error feeds back without decay arbitrarily far in time. Intermediate
-  // values of lambda provide a smooth way to interpolate between these two limiting cases.
-  // Source: http://www.research.ibm.com/massive/tdl.html
+  /// Trace decay. Value should be in [0, 1], typical value in (0, 0.1].
+  /// Heuristic parameter controlling the temporal credit assignment of how an error detected at a given time
+  /// step feeds back to correct previous estimates. When lambda = 0, no feedback occurs beyond the current time
+  /// step, while when lambda = 1, the error feeds back without decay arbitrarily far in time. Intermediate
+  /// values of lambda provide a smooth way to interpolate between these two limiting cases.
+  /// Source: http://www.research.ibm.com/massive/tdl.html
   float lambda;
 
-  // Controls wether to use the off-policy learning algorithm (Q-Learning) or the on-policy algorithm (Sarsa).
-  // Default value: false ie. on-policy (Sarsa) learning
-  // NOTE: Off-policy learning should be used at all time when training on a pre-generated dataset. When the agent is
-  // trained online (eg. in real time) the on-policy algorithm will result in the agent showing a better online
-  // performance at the expense of finding a sub-optimal solution. On the opposite, the off-policy strategy will
-  // converge to the optimal solution but will usually show a lower online performance as it will more often make
-  // mistakes.
+  /// Controls wether to use the off-policy learning algorithm (Q-Learning) or the on-policy algorithm (Sarsa).
+  /// Default value: false ie. on-policy (Sarsa) learning
+  /// NOTE: Off-policy learning should be used at all time when training on a pre-generated dataset. When the agent is
+  /// trained online (eg. in real time) the on-policy algorithm will result in the agent showing a better online
+  /// performance at the expense of finding a sub-optimal solution. On the opposite, the off-policy strategy will
+  /// converge to the optimal solution but will usually show a lower online performance as it will more often make
+  /// mistakes.
   bool offPolicy;
 
   Action bufferAction;
@@ -70,6 +74,7 @@ public:
 
   virtual void init();
 
+  /// Performs a training step.
   virtual void step(const RLObservation* lastObservation, const Action* lastAction,
                     const RLObservation* observation,     const Action* action);
 };

@@ -20,12 +20,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+/**
+ * This file provides some common includes and definition. Among other things,
+ * it gives access to some common Arduino functions when compiling on a computer.
+ * This file should be included at the top of every header file that uses Qualia.
+ */
 #ifndef COMMON_H_
 #define COMMON_H_
 
 // Platform check macros.
+
+/// True iff we are compiling for AVR.
 #define is_avr()      defined(__AVR__)
+
+/// True iff we are compiling for Arduino (notice that is_arduino() implies is_avr())
 #define is_arduino()  defined(ARDUINO)
+
+/// True iff we are compiling for a non-AVR platform.
 #define is_computer() !defined(__AVR__)
 
 // Define WIN32 (for liblo)
@@ -72,58 +84,11 @@
 
 #else
 
-//  // Make sure to redefine the min/max/abs macros
-////  #ifdef min
-////    #undef min
-////  #endif
-////
-////  #ifdef max
-////    #undef max
-////  #endif
-//
-//  #ifndef true
-//    #define true 0x1
-//  #endif
-//
-//  #ifndef false
-//    #define false 0x0
-//  #endif
-//
-//  #define PI 3.1415926535897932384626433832795
-//  #define HALF_PI 1.5707963267948966192313216916398
-//  #define TWO_PI 6.283185307179586476925286766559
-//  #define DEG_TO_RAD 0.017453292519943295769236907684886
-//  #define RAD_TO_DEG 57.295779513082320876798154814105
-//
-//  #ifdef __GNUC__
-//    // min/max are undefined in bits/c++config.h so we define them as templates
-//    // note that this might yield different results than what you will get on Arduino (which uses macros)
-//    template<typename T> T min(T a, T b) { return a < b ? a : b; }
-//    template<typename T> T max(T a, T b) { return a > b ? a : b; }
-//  #else
-//    #define min(a,b) ((a)<(b)?(a):(b))
-//    #define max(a,b) ((a)>(b)?(a):(b))
-//  #endif
-//
-//  #ifndef WIN32
-//    #define abs(x) ((x)>=0?(x):-(x))
-//  #endif
-//
-//  #define constrain(amt,low,high) ((amt)<(low)?(low):((amt)>(high)?(high):(amt)))
-//  //#define round(x)     ((x)>=0?(long)((x)+0.5):(long)((x)-0.5))
-//  #define radians(deg) ((deg)*DEG_TO_RAD)
-//  #define degrees(rad) ((rad)*RAD_TO_DEG)
-//  #define sq(x) ((x)*(x))
-//
-//  #define bitRead(value, bit) (((value) >> (bit)) & 0x01)
-//  #define bitSet(value, bit) ((value) |= (1UL << (bit)))
-//  #define bitClear(value, bit) ((value) &= ~(1UL << (bit)))
-//  #define bitWrite(value, bit, bitvalue) (bitvalue ? bitSet(value, bit) : bitClear(value, bit))
-
 #endif
 
-// Added an extra bit macro.
-#define bitFlip(value, bit) ((value) ^= (1UL << (bit)))
+
+/// Flips bit #bit# in element #value#.
+#define bitFlip(value, bit) ((value) ^= (1UL << (bit))) // Added an extra bit macro.
 
 // Parameters.
 //#define USE_DOUBLE
@@ -138,6 +103,16 @@
 #else
   typedef float real;
   #define INF FLT_MAX
+#endif
+
+  // We use srandom/random/RANDOM_MAX instead of srand/rand/RAND_MAX
+#ifdef WIN32
+  #define srandom srand
+  #define random rand
+#endif
+
+#ifndef RANDOM_MAX
+  #define RANDOM_MAX RAND_MAX
 #endif
 
 #if (!is_arduino())

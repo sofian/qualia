@@ -23,9 +23,12 @@
 #include "DataSet.h"
 #include <string.h>
 
-// A DataSet that is fully loaded into memory.
+/**
+ *  A DataSet that is fully loaded into memory (RAM).
+ */
 class MemoryDataSet: public DataSet {
 public:
+  /// Pointer to the data.
   real* data;
 
   MemoryDataSet(DataSet* dataSet);

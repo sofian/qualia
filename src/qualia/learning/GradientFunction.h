@@ -17,7 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #ifndef GRADIENTFUNCTION_H_
 #define GRADIENTFUNCTION_H_
 
@@ -26,27 +25,45 @@
 
 #include <string.h>
 
+/**
+ * Abstract class for gradient functions, such as a NeuralNetwork. A GradientFunction has
+ * a set of parameters (weights) and error derivatives. It can back-propagate the errors to
+ * compute the derivatives and udpate its weights accordingly.
+ */
 class GradientFunction : public Function {
 public:
   // Parameters.
-  real *weights;  // weights
-  real *dWeights; // weights derivatives
+
+  /// The weights (parameters) of the gradient function.
+  real *weights;
+
+  /// The derivatives of the weights.
+  real *dWeights;
 
   // Constructor/destructor.
   GradientFunction() : weights(0), dWeights(0) {}
   virtual ~GradientFunction() {}
 
+  /// Clears the derivatives.
   virtual void clearDelta() {
     memset(dWeights, 0, nParams()*sizeof(real));
   }
 
+  /// Returns the number of parameters.
   virtual unsigned int nParams() const = 0;
+
+  /// Backpropagates the error, updating the derivatives.
   virtual void backpropagate(real* outputError) = 0;
+
+  /// Updates the weights according to the derivatives.
   virtual void update() = 0;
 
+  /// Saves the model to a file.
   virtual void save(XFile* file) {
     file->taggedWrite(weights, sizeof(real), nParams(), "W");
   }
+
+  /// Loads the model from a file.
   virtual void load(XFile* file) {
     file->taggedRead(weights, sizeof(real), nParams(), "W");
   }

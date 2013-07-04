@@ -26,8 +26,12 @@
 #include <qualia/learning/DataSet.h>
 #include <qualia/rl/RLObservation.h>
 
-// A data set containing reinforcement learning (s,a,r,s') tuples (for batch learning).
-// It reads from an XFile in the Qualia RAW format (cf. FileExportEnvironment).
+/**
+ * A data set containing reinforcement learning (s,a,r,s') tuples (for batch learning).
+ * It reads from an XFile in the Qualia RAW format (cf. FileExportEnvironment).
+ *
+ * @see BatchRLTrainer
+ */
 class TupleDataSet: public DataSet {
 public:
   XFile* file;

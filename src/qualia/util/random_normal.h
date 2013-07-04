@@ -21,12 +21,15 @@
 #ifndef RANDOM_NORMAL_H_
 #define RANDOM_NORMAL_H_
 
+/**
+ * Provides methods for generating random numbers according to a normal distribution.
+ */
 #include "random.h"
 #include <math.h>
 
 /**
  * Generates a random number from a normal distribution.
- * (With mean #mean# and standard deviation #stdv >= 0#).
+ * (With mean *mean* and standard deviation *stdv* >= 0).
  */
 float randomNormal(float mean=0, float stdv=1);
 

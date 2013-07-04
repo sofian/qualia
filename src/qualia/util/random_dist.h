@@ -26,6 +26,10 @@
 #include <math.h>
 
 /**
+ * Provides methods for generating random numbers according to various probabitily distributions.
+ */
+
+/**
  * Generates a random number from an exponential distribution.
  * The density is $p(x) = lambda * exp(-lambda * x)$, where
  * lambda is a positive number.

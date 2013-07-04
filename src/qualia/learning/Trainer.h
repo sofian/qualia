@@ -26,6 +26,14 @@
 
 #include <qualia/learning/Function.h>
 
+/**
+ * A trainer is able to train a function. This class does almost nothing, all the logic
+ * being deferred to subclasses.
+ *
+ * Main subclasses:
+ * - TDTrainer
+ * - DataSetTrainer
+ */
 class Trainer {
 public:
   /// The function this Trainer is optimizing.

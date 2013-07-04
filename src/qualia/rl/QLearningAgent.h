@@ -2,8 +2,7 @@
  * QLearningAgent.h
  *
  * An agent that behaves according to an action-value, TD-lambda reinforcement
- * learning algorithm. The model allows for both on-policy (SARSA) and off-policy
- * (Q learning) learning.
+ * learning algorithm.
  *
  * This file is part of Qualia https://github.com/sofian/qualia
  *
@@ -35,7 +34,11 @@
 
 #include <string.h>
 
-
+/**
+ * An agent that behaves according to an action-value, TD-lambda reinforcement
+ * learning algorithm. The model allows for both on-policy (SARSA) and off-policy
+ * (Q-learning) learning.
+ */
 class QLearningAgent : public Agent {
 
 public:
@@ -44,16 +47,16 @@ public:
   // NOTICE: These parameters can be changed during the course of learning, although the user must be
   // aware of the consequences on learning (which might be severely hampered).
 
-  // Toggle learning.
+  /// Toggle learning.
   bool isLearning;
 
-  // The policy used by the agent.
+  /// The policy used by the agent.
   Policy* policy;
 
-  // The state-action value approximator function.
+  /// The state-action value approximator function.
   QFunction* qFunction;
 
-  // The trainer that we use to train the function.
+  /// The trainer that we use to train the function.
   TDTrainer trainer;
 
   // Internal use ////////////////

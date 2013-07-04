@@ -1,9 +1,7 @@
 /*
  * Random.h
  *
- * Static class providing 32-bit random generator (using random number
- * generator from stdlib.h) as well as various probability distributions
- * for generating random numbers.
+ * Provides methods for generating uniform random numbers.
  * 
  * This file is part of Qualia https://github.com/sofian/qualia
  *
@@ -29,20 +27,13 @@
 #ifndef RANDOM_INC
 #define RANDOM_INC
 
+/**
+ * Provides methods for generating uniform random numbers.
+ */
 #include <qualia/core/common.h>
 
 #include <limits.h>
 #include <stdlib.h>
-
-// We use srandom/random/RANDOM_MAX instead of srand/rand/RAND_MAX
-#ifdef WIN32
-#define srandom srand
-#define random rand
-#endif
-
-#ifndef RANDOM_MAX
-#define RANDOM_MAX RAND_MAX
-#endif
 
 // Floating point random numbers.
 
