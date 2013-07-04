@@ -61,14 +61,14 @@ Compiling
 Standard build (eg. on i386 platforms):
 $ scons
 
-Build for AVR:
-$ scons --avr
+Build for AVR (release mode):
+$ scons platform=avr mode=release
 
-Build for Arduino:
-$ scons --arduino
+Build for Arduino (debug mode):
+$ scons platform=arduino mode=debug
 
 Cleaning up (example):
-$ scons --avr --clean
+$ scons platform=arduino --clean
 
 To compile examples, go to the example folder and run scons. The qualia library needs to be compiled first.
 
