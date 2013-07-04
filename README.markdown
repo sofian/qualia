@@ -25,22 +25,22 @@ This software library is distributed under the Gnu GPL version 3. Please refer t
 
 This software library includes code from the following softwares:
 
-Torch3 : machine-learning library
-  Website: http://www.torch.ch/torch3/  
-  License: BSD  
-  Copyright (c) 2003--2004 Ronan Collobert  
-  Copyright (c) 2003--2004 Samy Bengio  
-  Copyright (c) 2003--2004 Johnny Mariéthoz
+    Torch3 : machine-learning library
+      Website: http://www.torch.ch/torch3/  
+      License: BSD  
+      Copyright (c) 2003--2004 Ronan Collobert  
+      Copyright (c) 2003--2004 Samy Bengio  
+      Copyright (c) 2003--2004 Johnny Mariéthoz
 
-GALib : library of genetic algorithm components  
-  Website: http://lancet.mit.edu/ga/  
-  License: BSD  
-  Copyright (c) 1995-1996 Massachusetts Institute of Technology (MIT)  
-  Copyright (c) 1996-2005 Matthew Wall (the Author)
+    GALib : library of genetic algorithm components  
+      Website: http://lancet.mit.edu/ga/  
+      License: BSD  
+      Copyright (c) 1995-1996 Massachusetts Institute of Technology (MIT)  
+      Copyright (c) 1996-2005 Matthew Wall (the Author)
 
-Libbehavior : reactive AI library based on the concept of "behavior trees"
-  Website: http://code.google.com/p/libbehavior/  
-  License: New BSD License
+    Libbehavior : reactive AI library based on the concept of "behavior trees"  
+      Website: http://code.google.com/p/libbehavior/  
+      License: New BSD License
 
 Thanks
 ------
