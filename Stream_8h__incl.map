@@ -1,0 +1,10 @@
+<map id="src/qualia/compat/Stream.h" name="src/qualia/compat/Stream.h">
+<area shape="rect" id="node3" href="$common_8h.html" title="qualia/core/common.h" alt="" coords="332,237,481,267"/>
+<area shape="rect" id="node34" href="$Print_8h.html" title="Print.h" alt="" coords="472,83,530,112"/>
+<area shape="rect" id="node13" href="$Arduino_8h.html" title="qualia/compat/Arduino.h" alt="" coords="113,315,276,344"/>
+<area shape="rect" id="node23" href="$error_8h.html" title="qualia/core/error.h" alt="" coords="444,315,569,344"/>
+<area shape="rect" id="node26" href="$Allocator_8h.html" title="qualia/core/Allocator.h" alt="" coords="644,315,793,344"/>
+<area shape="rect" id="node20" href="$binary_8h.html" title="binary.h" alt="" coords="312,392,378,421"/>
+<area shape="rect" id="node40" href="$WString_8h.html" title="qualia/compat/WString.h" alt="" coords="324,160,489,189"/>
+<area shape="rect" id="node43" href="$Printable_8h.html" title="qualia/compat/Printable.h" alt="" coords="513,160,681,189"/>
+</map>

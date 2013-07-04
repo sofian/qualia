@@ -1,0 +1,6 @@
+<map id="OscBasicAgent" name="OscBasicAgent">
+<area shape="rect" id="node2" href="$classOscAgent.html" title="OscAgent" alt="" coords="5,101,85,131"/>
+<area shape="rect" id="node4" href="$classAgent.html" title="Agent" alt="" coords="12,5,68,35"/>
+<area shape="rect" id="node6" href="$classAction.html" title="Action" alt="" coords="117,101,176,131"/>
+<area shape="rect" id="node8" href="$classActionProperties.html" title="ActionProperties" alt="" coords="92,5,209,35"/>
+</map>

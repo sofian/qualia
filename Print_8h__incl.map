@@ -1,0 +1,9 @@
+<map id="src/qualia/compat/Print.h" name="src/qualia/compat/Print.h">
+<area shape="rect" id="node3" href="$common_8h.html" title="qualia/core/common.h" alt="" coords="332,160,481,189"/>
+<area shape="rect" id="node36" href="$WString_8h.html" title="qualia/compat/WString.h" alt="" coords="170,83,336,112"/>
+<area shape="rect" id="node39" href="$Printable_8h.html" title="qualia/compat/Printable.h" alt="" coords="597,83,765,112"/>
+<area shape="rect" id="node13" href="$Arduino_8h.html" title="qualia/compat/Arduino.h" alt="" coords="113,237,276,267"/>
+<area shape="rect" id="node23" href="$error_8h.html" title="qualia/core/error.h" alt="" coords="444,237,569,267"/>
+<area shape="rect" id="node26" href="$Allocator_8h.html" title="qualia/core/Allocator.h" alt="" coords="644,237,793,267"/>
+<area shape="rect" id="node20" href="$binary_8h.html" title="binary.h" alt="" coords="312,315,378,344"/>
+</map>

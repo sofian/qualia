@@ -1,0 +1,10 @@
+<map id="src/qualia/computer/CmdLine.h" name="src/qualia/computer/CmdLine.h">
+<area shape="rect" id="node3" href="$common_8h.html" title="qualia/core/common.h" alt="" coords="345,333,495,363"/>
+<area shape="rect" id="node32" href="$CmdOption_8h.html" title="qualia/computer/CmdOption.h" alt="" coords="432,101,627,131"/>
+<area shape="rect" id="node34" href="$DiskXFile_8h.html" title="qualia/computer/DiskXFile.h" alt="" coords="436,179,623,208"/>
+<area shape="rect" id="node13" href="$Arduino_8h.html" title="qualia/compat/Arduino.h" alt="" coords="280,411,443,440"/>
+<area shape="rect" id="node23" href="$error_8h.html" title="qualia/core/error.h" alt="" coords="699,411,824,440"/>
+<area shape="rect" id="node26" href="$Allocator_8h.html" title="qualia/core/Allocator.h" alt="" coords="5,411,155,440"/>
+<area shape="rect" id="node20" href="$binary_8h.html" title="binary.h" alt="" coords="411,488,477,517"/>
+<area shape="rect" id="node37" href="$XFile_8h.html" title="qualia/core/XFile.h" alt="" coords="580,256,711,285"/>
+</map>

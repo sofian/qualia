@@ -1,0 +1,6 @@
+<map id="Agent" name="Agent">
+<area shape="rect" id="node3" href="$classMultiAgent.html" title="MultiAgent" alt="" coords="5,83,88,112"/>
+<area shape="rect" id="node5" href="$classOscAgent.html" title="OscAgent" alt="" coords="112,83,192,112"/>
+<area shape="rect" id="node9" href="$classQLearningAgent.html" title="QLearningAgent" alt="" coords="216,83,331,112"/>
+<area shape="rect" id="node7" href="$classOscBasicAgent.html" title="OscBasicAgent" alt="" coords="96,160,208,189"/>
+</map>

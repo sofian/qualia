@@ -1,0 +1,9 @@
+<map id="RLQualia" name="RLQualia">
+<area shape="rect" id="node2" href="$classQualia.html" title="Qualia" alt="" coords="127,293,185,323"/>
+<area shape="rect" id="node4" href="$classAgent.html" title="Agent" alt="" coords="5,197,61,227"/>
+<area shape="rect" id="node6" href="$structObservationAction.html" title="ObservationAction" alt="" coords="196,197,324,227"/>
+<area shape="rect" id="node8" href="$classAction.html" title="Action" alt="" coords="107,101,165,131"/>
+<area shape="rect" id="node10" href="$classActionProperties.html" title="ActionProperties" alt="" coords="77,5,195,35"/>
+<area shape="rect" id="node12" href="$classObservation.html" title="Observation" alt="" coords="215,101,305,131"/>
+<area shape="rect" id="node15" href="$classEnvironment.html" title="Environment" alt="" coords="348,197,441,227"/>
+</map>

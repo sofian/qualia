@@ -1,0 +1,21 @@
+<map id="src/qualia/learning/DataSet.h" name="src/qualia/learning/DataSet.h">
+<area shape="rect" id="node3" href="$SubDataSet_8h.html" title="src/qualia/computer\l/SubDataSet.h" alt="" coords="135,102,271,149"/>
+<area shape="rect" id="node7" href="$DataSet_8cpp.html" title="src/qualia/learning\l/DataSet.cpp" alt="" coords="424,102,549,149"/>
+<area shape="rect" id="node9" href="$DataSetTrainer_8h.html" title="src/qualia/learning\l/DataSetTrainer.h" alt="" coords="573,102,699,149"/>
+<area shape="rect" id="node21" href="$MemoryDataSet_8h.html" title="src/qualia/learning\l/MemoryDataSet.h" alt="" coords="969,102,1100,149"/>
+<area shape="rect" id="node25" href="$MultiDataSet_8h.html" title="src/qualia/learning\l/MultiDataSet.h" alt="" coords="1137,102,1263,149"/>
+<area shape="rect" id="node29" href="$XFileDataSet_8h.html" title="src/qualia/learning\l/XFileDataSet.h" alt="" coords="1300,102,1425,149"/>
+<area shape="rect" id="node37" href="$TupleDataSet_8h.html" title="src/qualia/rl/TupleDataSet.h" alt="" coords="743,111,927,140"/>
+<area shape="rect" id="node5" href="$SubDataSet_8cpp.html" title="src/qualia/computer\l/SubDataSet.cpp" alt="" coords="5,198,141,245"/>
+<area shape="rect" id="node11" href="$DataSetTrainer_8cpp.html" title="src/qualia/learning\l/DataSetTrainer.cpp" alt="" coords="376,198,515,245"/>
+<area shape="rect" id="node13" href="$StochasticDataSetTrainer_8h.html" title="src/qualia/learning\l/StochasticDataSetTrainer.h" alt="" coords="165,198,352,245"/>
+<area shape="rect" id="node17" href="$BatchRLTrainer_8h.html" title="src/qualia/rl/BatchRLTrainer.h" alt="" coords="539,207,733,236"/>
+<area shape="rect" id="node15" href="$StochasticDataSetTrainer_8cpp.html" title="src/qualia/learning\l/StochasticDataSetTrainer.cpp" alt="" coords="159,294,359,341"/>
+<area shape="rect" id="node19" href="$BatchRLTrainer_8cpp.html" title="src/qualia/rl/BatchRLTrainer.cpp" alt="" coords="532,303,740,332"/>
+<area shape="rect" id="node23" href="$MemoryDataSet_8cpp.html" title="src/qualia/learning\l/MemoryDataSet.cpp" alt="" coords="979,198,1125,245"/>
+<area shape="rect" id="node27" href="$MultiDataSet_8cpp.html" title="src/qualia/learning\l/MultiDataSet.cpp" alt="" coords="1149,198,1275,245"/>
+<area shape="rect" id="node31" href="$DiskXFileDataSet_8h.html" title="src/qualia/computer\l/DiskXFileDataSet.h" alt="" coords="1451,198,1592,245"/>
+<area shape="rect" id="node35" href="$XFileDataSet_8cpp.html" title="src/qualia/learning\l/XFileDataSet.cpp" alt="" coords="1299,198,1427,245"/>
+<area shape="rect" id="node33" href="$DiskXFileDataSet_8cpp.html" title="src/qualia/computer\l/DiskXFileDataSet.cpp" alt="" coords="1444,294,1599,341"/>
+<area shape="rect" id="node40" href="$TupleDataSet_8cpp.html" title="src/qualia/rl/TupleDataSet.cpp" alt="" coords="757,207,955,236"/>
+</map>

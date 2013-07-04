@@ -1,0 +1,7 @@
+<map id="src/qualia/plugins/mapper/MapperConnector.h" name="src/qualia/plugins/mapper/MapperConnector.h">
+<area shape="rect" id="node11" href="$common_8h.html" title="qualia/core/common.h" alt="" coords="411,101,560,131"/>
+<area shape="rect" id="node20" href="$Arduino_8h.html" title="qualia/compat/Arduino.h" alt="" coords="100,179,263,208"/>
+<area shape="rect" id="node29" href="$error_8h.html" title="qualia/core/error.h" alt="" coords="743,179,868,208"/>
+<area shape="rect" id="node32" href="$Allocator_8h.html" title="qualia/core/Allocator.h" alt="" coords="476,179,625,208"/>
+<area shape="rect" id="node26" href="$binary_8h.html" title="binary.h" alt="" coords="131,256,197,285"/>
+</map>

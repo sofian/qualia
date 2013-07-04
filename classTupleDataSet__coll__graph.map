@@ -1,0 +1,8 @@
+<map id="TupleDataSet" name="TupleDataSet">
+<area shape="rect" id="node2" href="$classDataSet.html" title="DataSet" alt="" coords="5,101,75,131"/>
+<area shape="rect" id="node4" href="$classRLObservation.html" title="RLObservation" alt="" coords="99,101,208,131"/>
+<area shape="rect" id="node6" href="$classObservation.html" title="Observation" alt="" coords="105,5,196,35"/>
+<area shape="rect" id="node8" href="$classAction.html" title="Action" alt="" coords="248,101,307,131"/>
+<area shape="rect" id="node10" href="$classActionProperties.html" title="ActionProperties" alt="" coords="220,5,337,35"/>
+<area shape="rect" id="node12" href="$classXFile.html" title="XFile" alt="" coords="344,101,395,131"/>
+</map>

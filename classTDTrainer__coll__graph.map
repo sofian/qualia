@@ -1,0 +1,6 @@
+<map id="TDTrainer" name="TDTrainer">
+<area shape="rect" id="node2" href="$classTrainer.html" title="Trainer" alt="" coords="28,101,89,131"/>
+<area shape="rect" id="node4" href="$classFunction.html" title="Function" alt="" coords="5,5,77,35"/>
+<area shape="rect" id="node6" href="$classAction.html" title="Action" alt="" coords="121,101,180,131"/>
+<area shape="rect" id="node8" href="$classActionProperties.html" title="ActionProperties" alt="" coords="101,5,219,35"/>
+</map>

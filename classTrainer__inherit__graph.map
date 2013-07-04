@@ -1,0 +1,6 @@
+<map id="Trainer" name="Trainer">
+<area shape="rect" id="node3" href="$classDataSetTrainer.html" title="DataSetTrainer" alt="" coords="89,83,199,112"/>
+<area shape="rect" id="node9" href="$classTDTrainer.html" title="TDTrainer" alt="" coords="223,83,303,112"/>
+<area shape="rect" id="node5" href="$classBatchRLTrainer.html" title="BatchRLTrainer" alt="" coords="5,160,117,189"/>
+<area shape="rect" id="node7" href="$classStochasticDataSetTrainer.html" title="StochasticDataSetTrainer" alt="" coords="141,160,312,189"/>
+</map>

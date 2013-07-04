@@ -1,0 +1,12 @@
+<map id="src/qualia/learning/DataSetTrainer.cpp" name="src/qualia/learning/DataSetTrainer.cpp">
+<area shape="rect" id="node3" href="$DataSetTrainer_8h.html" title="DataSetTrainer.h" alt="" coords="403,101,523,131"/>
+<area shape="rect" id="node5" href="$common_8h.html" title="qualia/core/common.h" alt="" coords="345,411,495,440"/>
+<area shape="rect" id="node34" href="$Trainer_8h.html" title="qualia/learning/Trainer.h" alt="" coords="383,179,543,208"/>
+<area shape="rect" id="node43" href="$DataSet_8h.html" title="qualia/learning/DataSet.h" alt="" coords="572,256,740,285"/>
+<area shape="rect" id="node15" href="$Arduino_8h.html" title="qualia/compat/Arduino.h" alt="" coords="280,488,443,517"/>
+<area shape="rect" id="node25" href="$error_8h.html" title="qualia/core/error.h" alt="" coords="699,488,824,517"/>
+<area shape="rect" id="node28" href="$Allocator_8h.html" title="qualia/core/Allocator.h" alt="" coords="5,488,155,517"/>
+<area shape="rect" id="node22" href="$binary_8h.html" title="binary.h" alt="" coords="411,565,477,595"/>
+<area shape="rect" id="node36" href="$Function_8h.html" title="qualia/learning/Function.h" alt="" coords="377,256,548,285"/>
+<area shape="rect" id="node39" href="$XFile_8h.html" title="qualia/core/XFile.h" alt="" coords="457,333,588,363"/>
+</map>

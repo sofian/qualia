@@ -1,0 +1,15 @@
+<map id="src/qualia/plugins/osc/OscBasicAgent.cpp" name="src/qualia/plugins/osc/OscBasicAgent.cpp">
+<area shape="rect" id="node3" href="$OscBasicAgent_8h.html" title="OscBasicAgent.h" alt="" coords="1077,101,1200,131"/>
+<area shape="rect" id="node5" href="$OscAgent_8h.html" title="OscAgent.h" alt="" coords="1093,179,1184,208"/>
+<area shape="rect" id="node7" href="$Agent_8h.html" title="qualia/core/Agent.h" alt="" coords="809,256,943,285"/>
+<area shape="rect" id="node60" href="$OscManager_8h.html" title="OscManager.h" alt="" coords="1200,256,1307,285"/>
+<area shape="rect" id="node9" href="$common_8h.html" title="qualia/core/common.h" alt="" coords="607,488,756,517"/>
+<area shape="rect" id="node38" href="$Action_8h.html" title="qualia/core/Action.h" alt="" coords="703,333,839,363"/>
+<area shape="rect" id="node41" href="$XFile_8h.html" title="qualia/core/XFile.h" alt="" coords="933,411,1064,440"/>
+<area shape="rect" id="node52" href="$Observation_8h.html" title="qualia/core/Observation.h" alt="" coords="913,333,1084,363"/>
+<area shape="rect" id="node19" href="$Arduino_8h.html" title="qualia/compat/Arduino.h" alt="" coords="600,565,763,595"/>
+<area shape="rect" id="node29" href="$error_8h.html" title="qualia/core/error.h" alt="" coords="787,565,912,595"/>
+<area shape="rect" id="node32" href="$Allocator_8h.html" title="qualia/core/Allocator.h" alt="" coords="144,565,293,595"/>
+<area shape="rect" id="node26" href="$binary_8h.html" title="binary.h" alt="" coords="739,643,805,672"/>
+<area shape="rect" id="node45" href="$random_8h.html" title="qualia/util/random.h" alt="" coords="267,411,400,440"/>
+</map>
