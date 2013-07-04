@@ -1,7 +1,11 @@
 Description
 -----------
 Qualia is a free software library for embedded AVR agent-based systems written in simple C++.
+
 The software is licensed under the Gnu GPL version 3 (see LICENSE file).
+
+* Source repository: https://github.com/sofian/qualia
+* API Documentation: http://sofian.github.io/qualia/
 
 Version
 -------
