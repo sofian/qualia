@@ -30,7 +30,7 @@ Torch3 : machine-learning library
   License: BSD  
   Copyright (c) 2003--2004 Ronan Collobert  
   Copyright (c) 2003--2004 Samy Bengio  
-  Copyright (c) 2003--2004 Johnny MariÃ©thoz
+  Copyright (c) 2003--2004 Johnny Mariéthoz
 
 GALib : library of genetic algorithm components  
   Website: http://lancet.mit.edu/ga/  
