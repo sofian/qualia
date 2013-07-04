@@ -26,11 +26,11 @@
 #include "QLearningAgent.h"
 
 /**
- * Implements the ϵ-greedy policy.
+ * Implements the \epsilon-greedy policy.
  */
 class QLearningEGreedyPolicy : public Policy {
 public:
-  /// The ϵ value (should be in [0,1]).
+  /// The \epsilon value (should be in [0,1]).
   float epsilon;
 
   QLearningEGreedyPolicy(float epsilon);
