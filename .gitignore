@@ -32,6 +32,9 @@ build/
 # Scons
 .sconsign.dblite
 
+# Doxygen
+html/
+
 # Waf
 .waf-*
 
