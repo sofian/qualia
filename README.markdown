@@ -5,7 +5,7 @@ The software is licensed under the Gnu GPL version 3 (see LICENSE file).
 
 Version
 -------
-Current version is 0.1.
+Current version is 0.2.
 
 Authors
 -------
