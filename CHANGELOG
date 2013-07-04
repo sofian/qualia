@@ -1,0 +1,26 @@
+Qualia 0.2 - 2013.07.04
+=======================
+
+ * added a Behavior Tree (BT) plugin
+ * created a basic version of Genetic Algorithm library (with an implementation of binary chromosomes)
+ * documented most classes with Doxygen comments
+ * renamed macros in error.h
+ * fixed many compatibility issues under Windows
+ * added an epsilon-decreasing policy
+ * made some Arduino basic methods and classes available under PC and AVR
+ * put Arduino compatibility files in a separate folder
+ * refactor random and math methods
+ * allow QLearningAgent to stop learning
+ * saving/loading of models
+ * improved building process
+ * reorganization of file structure
+ * OSC plugin
+ * Libmapper plugin
+
+Qualia 0.1 - 2011.10.27
+=======================
+
+ * main abstract components: Agent, Environment, Observation, Action
+ * reinforcement learning module
+ * basic documentation
+ * easy switch AVR vs PC
