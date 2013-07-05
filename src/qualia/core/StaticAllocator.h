@@ -35,7 +35,8 @@
  * pre-allocated static memory pool/buffer. Useful to manage memory on
  * architectures that don't support well dynamic allocation (such as
  * AVR-based systems). On such systems, it is usually recommended NOT
- * to use dynamic allocation to avoid problems.
+ * to use dynamic allocation to avoid problems. StaticAllocator makes
+ * sure the memory is allocated from the stack rather than from the heap.
  *
  * WARNING: Calling StaticAllocator::free() does NOT free the pointer at all. You should in fact
  * NEVER have to call that function (because the memory then becomes completely useless). The
