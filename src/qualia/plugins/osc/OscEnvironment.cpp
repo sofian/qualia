@@ -42,10 +42,7 @@ char* OscEnvironment::getPath(const char* path) {
 }
 
 void OscEnvironment::init() {
-  if (OscManager::client() == 0) {
-    printf("Error: OscManager::initOsc() should be called prior to calling init()\n");
-    exit(-1);
-  }
+  Q_ASSERT_ERROR_MESSAGE(OscManager::client() != 0, "OscManager::initOsc() should be called prior to calling init().");
 
   lo_send(OscManager::client(), "/qualia/create", "iii", id, observationDim, actionDim);
 #ifdef _WIN32
@@ -134,7 +131,7 @@ int OscEnvironment::handlerInit(const char *path, const char *types, lo_arg **ar
 int OscEnvironment::handlerStartStep(const char *path, const char *types, lo_arg **argv,
                                      int argc, void *data, void *user_data) {
   OscEnvironment *obj = ((OscEnvironment*)user_data);
-  ASSERT_ERROR( argc == obj->observationBufferDim );
+  Q_ASSERT_ERROR( argc == obj->observationBufferDim );
   for (int i=0; i<argc; i++) {
     float x;
     switch (types[i]) {
@@ -151,8 +148,7 @@ int OscEnvironment::handlerStartStep(const char *path, const char *types, lo_arg
       x = (observation_t)argv[i]->d;
       break;
     default:
-      ERROR("Wrong type at index %d: %c.", i, types[i]);
-      exit(-1);
+      Q_ERROR("Wrong type at index %d: %c.", i, types[i]);
     }
 
     // Copy to buffer.

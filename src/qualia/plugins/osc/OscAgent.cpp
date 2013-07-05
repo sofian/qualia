@@ -39,10 +39,7 @@ char* OscAgent::getPath(const char* path) {
 }
 
 void OscAgent::init() {
-  if (OscManager::client() == 0) {
-    printf("Error: OscManager::initOsc() should be called prior to calling init()\n");
-    exit(-1);
-  }
+  Q_ASSERT_ERROR_MESSAGE(OscManager::client() != 0, "OscManager::initOsc() should be called prior to calling init().");
 
   lo_send(OscManager::client(), "/qualia/agent/create", "iii", id, observationDim, actionDim);
 #ifdef _WIN32
@@ -145,7 +142,7 @@ int OscAgent::handlerInit(const char *path, const char *types, lo_arg **argv,
 int OscAgent::handlerStartStep(const char *path, const char *types, lo_arg **argv,
                                      int argc, void *data, void *user_data) {
   OscAgent *obj = ((OscAgent*)user_data);
-  ASSERT_ERROR( argc == obj->actionDim );
+  Q_ASSERT_ERROR( argc == obj->actionDim );
   for (int i=0; i<argc; i++) {
     float x;
     switch (types[i]) {
@@ -162,8 +159,7 @@ int OscAgent::handlerStartStep(const char *path, const char *types, lo_arg **arg
       x = (action_dim_t)argv[i]->d;
       break;
     default:
-      ERROR("Wrong type at index %d: %c.", i, types[i]);
-      exit(-1);
+      Q_ERROR("Wrong type at index %d: %c.", i, types[i]);
     }
 
     // Copy to buffer.

@@ -150,10 +150,10 @@ int main(int argc, char** argv) {
   strcpy(tmp, stringNActions);
   int k=0;
   for (int i=0; i<dimActions-1; i++, k++) {
-    ASSERT_ERROR_MESSAGE( sscanf(tmp, "%d,%s", &nActions[k], tmp) > 0, "Malformed argument <n_actions>: %s", stringNActions);
+    Q_ASSERT_ERROR_MESSAGE( sscanf(tmp, "%d,%s", &nActions[k], tmp) > 0, "Malformed argument <n_actions>: %s", stringNActions);
     printf("%d ", nActions[k]);
   }
-  ASSERT_ERROR_MESSAGE( sscanf(tmp, "%d", &nActions[k]), "Malformed argument <n_actions>: %s", stringNActions);
+  Q_ASSERT_ERROR_MESSAGE( sscanf(tmp, "%d", &nActions[k]), "Malformed argument <n_actions>: %s", stringNActions);
   printf("%d \n", nActions[k]);
 
   oscPort += agentId;
@@ -294,7 +294,7 @@ void stop(int sig) {
 
 static int handlerOscParameter(const char *path, const char *types, lo_arg **argv,
                                int argc, void *data, void *user_data) {
-  ASSERT_ERROR( argc == 1 );
+  Q_ASSERT_ERROR( argc == 1 );
   printf("Received osc message: %s %c %d\n", path, types[0], argc);
   float f;
   switch (types[0]) {
@@ -305,7 +305,7 @@ static int handlerOscParameter(const char *path, const char *types, lo_arg **arg
     f = (float)argv[0]->d;
     break;
   default:
-    ERROR("Wrong type : %c.", types[0]);
+    Q_ERROR("Wrong type : %c.", types[0]);
     exit(-1);
   }
   *((float*)user_data) = f;
