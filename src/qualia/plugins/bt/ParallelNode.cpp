@@ -97,7 +97,7 @@ BEHAVIOR_STATUS ParallelNode::execute(void* agent)
 		init(agent);
 		return BT_FAILURE;
 	}
-	else if ( sawSuccess && (succeedPolicy == SUCCEED_ON_ALL || succeedPolicy == SUCCEED_ON_ONE) )
+	else if ( (sawAllSuccess && succeedPolicy == SUCCEED_ON_ALL) || (sawSuccess && succeedPolicy == SUCCEED_ON_ONE) )
 	{
 		init(agent);
 		return BT_SUCCESS;
