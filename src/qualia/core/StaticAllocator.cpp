@@ -30,6 +30,10 @@ void* StaticAllocator::malloc(size_t size) {
   return (void*)tmp;
 }
 
+void* Allocator::calloc(size_t num, size_t size) {
+  return malloc(size * num);
+}
+
 void* StaticAllocator::realloc(void* ptr, size_t size) {
   free(ptr);
   return malloc(size);
