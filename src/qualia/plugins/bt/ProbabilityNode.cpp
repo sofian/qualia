@@ -5,34 +5,29 @@ using namespace std;
 
 #include <time.h>
 
-
-
 void ProbabilityNode::init(void* agent)
 {
 	currentNode = NULL;
-	for (BehaviorTreeListIter iter = children.begin();iter!=children.end();iter++)
-		(*iter)->init(agent);
+  for (uint8_t i=0; i<nChildren; i++)
+    children[i]->init(agent);
 }
-ProbabilityNode::ProbabilityNode()
+
+ProbabilityNode::ProbabilityNode(BehaviorTreeNode** children_, uint8_t nChildren_, float* weighting_)
+  : BehaviorTreeInternalNode(children_, nChildren_)
 {
 	totalSum = 0;
 	currentNode = NULL;
 	random.seed((unsigned long)time(NULL));
-}
-BehaviorTreeInternalNode* ProbabilityNode::addChild(BehaviorTreeNode* node, double weighting)
-{
-	weightingMap[node] = weighting;
-	totalSum += weighting;
-	BehaviorTreeInternalNode::children.push_back(node);
-	return this;
+
+	weighting = (float*)Alloc::malloc(nChildren*sizeof(float));
+	for (uint8_t i=0; i<nChildren; i++) {
+	  weighting[i] = (weighting_ ? weighting_[i] : 1);
+	  totalSum += weighting[i];
+	}
 }
 
-BehaviorTreeInternalNode* ProbabilityNode::addChild(BehaviorTreeNode* node)
-{
-	weightingMap[node] = 1;
-	totalSum += 1;
-	BehaviorTreeInternalNode::addChild(node);
-	return this;
+ProbabilityNode::~ProbabilityNode() {
+  Alloc::free(weighting);
 }
 
 BEHAVIOR_STATUS ProbabilityNode::execute(void* agent)
@@ -46,18 +41,19 @@ BEHAVIOR_STATUS ProbabilityNode::execute(void* agent)
 		return status;
 	}
 
+	// TODO: Use Qualia random instead of the stuff provided here
 	double chosen = random() * totalSum; //generate a number between 0 and the sum of the weights
 
 	double sum = 0;
-	for (std::map<BehaviorTreeNode*,double>::iterator itr = weightingMap.begin() ; itr!=weightingMap.end() ; itr++)
+	for (uint8_t i=0; i<nChildren; i++)
 	{
-		sum += (*itr).second;
+		sum += weighting[i];
 		if (sum >= chosen) //execute this node
 		{
-			BEHAVIOR_STATUS status = (*itr).first->execute(agent);
+			BEHAVIOR_STATUS status = children[i]->execute(agent);
 
 			if (status == BT_RUNNING)
-				currentNode = itr->first;
+				currentNode = children[i];
 			else
 				currentNode = NULL;
 			return status;

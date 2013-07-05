@@ -14,17 +14,13 @@ class ProbabilityNode:public BehaviorTreeInternalNode
 public:
 	void init(void* object);
 	BEHAVIOR_STATUS execute(void* object);
-	ProbabilityNode();
-	///Add a child to this node, with the given weight.
-	BehaviorTreeInternalNode* addChild( BehaviorTreeNode* node, double weighting);
-	///Add a child to this node, with a weight of 1.
-	BehaviorTreeInternalNode* addChild( BehaviorTreeNode* node);
+	ProbabilityNode(BehaviorTreeNode** children_, uint8_t nChildren_, float* weighting_ = 0);
+	virtual ~ProbabilityNode();
 private:
 	MTRand_closed random;
-	double totalSum;
+	float totalSum;
 	BehaviorTreeNode* currentNode;
-	std::map<BehaviorTreeNode*,double> weightingMap;
-
+	float* weighting;
 };
 
 }

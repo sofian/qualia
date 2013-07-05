@@ -12,7 +12,7 @@ class PriorityNode:public BehaviorTreeInternalNode
 public:
 	BEHAVIOR_STATUS execute(void* agent);
 	int currentPosition;
-	PriorityNode();
+	PriorityNode(BehaviorTreeNode** children_, uint8_t nChildren_);
 	void init(void* agent);
 
 };

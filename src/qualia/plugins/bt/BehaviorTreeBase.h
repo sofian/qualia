@@ -11,10 +11,6 @@ namespace BehaviorTree
 	*/
 	enum BEHAVIOR_STATUS {BT_SUCCESS,BT_FAILURE,BT_RUNNING};
 	class BehaviorTreeNode;
-	/// A standard vector of Behavior Tree nodes. Provided for convenience.
-	typedef std::vector<BehaviorTreeNode*> BehaviorTreeList;
-	/// A standard iterator of a BehaviorTreeList. Provided for convenience.
-	typedef BehaviorTreeList::iterator BehaviorTreeListIter;
 
 	/// Enumerates the options for when a parallel node is considered to have failed.
 	/**
@@ -49,26 +45,22 @@ namespace BehaviorTree
 	{
 
 	public:
+	  BehaviorTreeInternalNode(BehaviorTreeNode** children_, uint8_t nChildren_) : nChildren(nChildren_) {
+	    children = (BehaviorTreeNode**) Alloc::malloc(nChildren * sizeof(BehaviorTreeNode*));
+	    memcpy(children, children_, nChildren*sizeof(BehaviorTreeNode*));
+	  }
 		virtual BEHAVIOR_STATUS execute(void* agent) = 0;
 		virtual void init(void* object) = 0;
-		/// Add a child to this node. Takes ownership of the child.
-		virtual BehaviorTreeInternalNode* addChild(BehaviorTreeNode* newChild)
-		{
-			children.push_back(newChild);
-			return this;
-		};
+    BehaviorTreeInternalNode* addChild( BehaviorTreeNode* newChild );
 
     virtual ~BehaviorTreeInternalNode()
     {
-      BehaviorTreeListIter iter;
-      for (iter = children.begin(); iter!= children.end(); iter++)
-      {
-        delete *iter;
-      }
+      for (uint8_t i=0; i<nChildren; i++)
+        Alloc::free(children[i]);
     }
-
-	protected:
-		BehaviorTreeList children;
+  public: // used to be protected
+    BehaviorTreeNode** children;
+    uint8_t nChildren;
 	};
 
 	///Always returns the BT_RUNNING status

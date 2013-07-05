@@ -12,11 +12,11 @@ public:
 	void init(void* agent);
 	/* \param failurePolicy Determines how many of the node's children must fail before the node fails
 	   \param successPolicy Determines how many of the node's children must succeed before the node succeeds */
-	ParallelNode( FAILURE_POLICY failurePolicy = FAIL_ON_ALL, SUCCESS_POLICY successPolicy = SUCCEED_ON_ALL);
+	ParallelNode( BehaviorTreeNode** children_, uint8_t nChildren_, FAILURE_POLICY failurePolicy = FAIL_ON_ALL, SUCCESS_POLICY successPolicy = SUCCEED_ON_ALL);
+	virtual ~ParallelNode();
 
 private:
-	typedef std::map<BehaviorTreeNode*,BEHAVIOR_STATUS> ChildrenStatusMap;
-	ChildrenStatusMap* childrenStatus;
+	BEHAVIOR_STATUS* childrenStatus;
 	FAILURE_POLICY failPolicy;
 	SUCCESS_POLICY succeedPolicy;
 };
