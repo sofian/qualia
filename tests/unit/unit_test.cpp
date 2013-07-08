@@ -847,40 +847,23 @@ void testBehaviorTree() {
    * NOTE: À cause qu'on ne semble pas pouvoir déclrare
    */
   BehaviorTreeInternalNode* root = (BehaviorTreeInternalNode*)
-                            BT_PARALLEL(FAIL_ON_ALL, SUCCEED_ON_ONE)
-                              ->CHILDREN(
-                                  Q_NEW(PrintNode)(),
-                                  BT_PRIORITY()
-                                    ->CHILDREN(
-                                      BT_SEQUENTIAL()
-                                        ->CHILDREN(
-                                            Q_NEW(FloatCondition<TestBTreeElem>)(&TestBTreeElem::getValue, GREATER_THAN_FP, 5.0f),
-                                            BT_PROBABILITY()
-                                              ->WEIGHTED_CHILDREN(
-                                                  _WEIGHTED(0.25, Q_NEW(ChangeNode)(-5)),
-                                                  _WEIGHTED(0.75, Q_NEW(ChangeNode)(0))
-                                               )
-                                        ),
+                            BT_PARALLEL(FAIL_ON_ALL, SUCCEED_ON_ONE)->CHILDREN(
+                                Q_NEW(PrintNode)(),
 
-                                        Q_NEW(ChangeNode)(+1)
-                                   )
-                               );
+                                BT_PRIORITY()->CHILDREN(
 
-//  BehaviorTreeInternalNode* root = (BehaviorTreeInternalNode*)
-//                            BT_SEQUENTIAL()
-//                              _BT_NODES(
-//                                Q_NEW(PrintNode)(),
-//                                BT_SEQUENTIAL()
-//                                  _BT_NODES(
-////                                      Q_NEW(FloatCondition<>)(&TestBTreeElem::getValue, GREATER_THAN_FP, 5.0f)),
-//                                      BT_PROBABILITY()
-//                                        _BT_WEIGHTED_NODES(
-//                                            _WNODE(0.1, Q_NEW(ChangeNode)(-5.0)),
-//                                            _WNODE(0.9, Q_NEW(ChangeNode(0)))
-//                                        )
-//                                  )
-//                               );
+                                    BT_SEQUENTIAL()->CHILDREN(
+                                        Q_NEW(FloatCondition<TestBTreeElem>)(&TestBTreeElem::getValue, GREATER_THAN_FP, 5.0f),
 
+                                        BT_PROBABILITY()->WEIGHTED_CHILDREN(
+                                            _WEIGHTED(0.25, Q_NEW(ChangeNode)(-5)),
+                                            _WEIGHTED(0.75, Q_NEW(ChangeNode)(0))
+                                        )
+                                    ),
+
+                                    Q_NEW(ChangeNode)(+1)
+                                )
+                            );
 
  // Q_ASSERT_ERROR_MESSAGE( root->nChildren == 2, "Should have 3 children but has: %d.", (int)root->nChildren);
 
