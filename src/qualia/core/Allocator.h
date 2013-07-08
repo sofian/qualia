@@ -25,6 +25,10 @@
 
 #include "common.h"
 
+#if is_computer()
+#include <new>
+#endif
+
 #include <stddef.h>
 #include <stdlib.h>
 
@@ -58,10 +62,14 @@ public:
  * #endif
  *
  * Alloc::init(&allocator);
+ *
  * int* val = (int*) Alloc::malloc(10*sizeof(int));
- * MyObject* obj = new(Alloc::instance()) MyObject;
+ * MyClass* obj = Q_NEW(MyClass)(1, 2);    // MyClass* bbj = new MyClass(1,2);
+ * MyClass* arr = Q_ARRAY_NEW(MyClass,10); // MyClass* arr = new MyClass[10];
  * ...
  * Alloc::free(val);
+ * Q_DELETE(MyClass, ptr);
+ * Q_ARRAY_DELETE(arr);
  * @endcode
 */
 class Alloc {
@@ -76,6 +84,48 @@ public:
   static Allocator* instance() { return inst; }
 };
 
-void* operator new(size_t size, Allocator* alloc);
+// TODO: Test with arduino.
+
+/// Macro equivalent of *new* operator: allocates memory using Alloc::malloc().
+#define Q_NEW(T) new( Alloc::malloc(sizeof(T)) ) T
+
+/// Template equivalent of *delete* operator: explicitely calls destuctor and releases memory using Alloc::free().
+template<class T>
+void Q_DELETE(T* obj) {
+  obj->~T(); free(obj);
+}
+
+template<class T>
+T* __Q_ARRAY_NEW(size_t n) {
+  size_t* ptr = (size_t*) Alloc::malloc(2*sizeof(size_t) + n * sizeof(T));
+  *ptr++ = n;
+  *ptr++ = sizeof(T);
+  return new( ptr ) T[n];
+}
+
+/**
+ * Macro equivalent of *new[]* operator: allocates memory using Alloc::malloc().
+ * Notice that this method allocates an extra (size_t) space to retrieve the number of
+ * allocated elements when calling Q_ARRAY_DELETE().
+ */
+#define Q_ARRAY_NEW(T,n) __Q_ARRAY_NEW<T>(n)
+
+/**
+ * Template equivalent of *delete[]* operator: explicitely calls destuctors and releases memory
+ * using Alloc::free().
+ */
+template<class T>
+void Q_ARRAY_DELETE(T* array) {
+  size_t* ptr = (size_t*) array;
+  ptr-=2;
+  size_t n = ptr[0];
+  size_t elemSize = ptr[1];
+  unsigned char* iter = (unsigned char*)array;
+  while (n--) {
+    ((T*)iter)->~T();
+    iter += elemSize;
+  }
+  Alloc::free( ptr );
+}
 
 #endif /* ALLOCATOR_H_ */

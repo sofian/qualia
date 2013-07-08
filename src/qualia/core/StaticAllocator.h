@@ -59,6 +59,7 @@ public:
   unsigned char* buffer;
   size_t bufferSize;
   unsigned int bufferIdx;
+  unsigned char* lastPtr;
 
   // Keeps track of leaks, for debugging.
   unsigned int nLeaks;

@@ -68,17 +68,3 @@ void Alloc::free(void* ptr) {
 void Alloc::init(Allocator* alloc) {
   inst = alloc;
 }
-
-void* operator new(size_t size, Allocator* alloc)
-{
-  if (!alloc)
-    return ::malloc(size);
-  else
-    return alloc->malloc(size);
-}
-
-//void operator delete(void* ptr)
-//{
-//  Alloc::free(ptr);
-//}
-

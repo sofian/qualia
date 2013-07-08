@@ -82,66 +82,66 @@ void CmdLine::addCmdOption(CmdOption *option)
 
 void CmdLine::addMasterSwitch(const char *text)
 {
-  CmdOption *option = new(Alloc::instance()) CmdOption(text, "", "", false);
+  CmdOption *option = Q_NEW(CmdOption)(text, "", "", false);
   option->isMasterSwitch(true);
   addCmdOption(option);
 }
 
 void CmdLine::addICmdOption(const char *name, int *ptr, int init_value, const char *help, bool save_it)
 {
-  IntCmdOption *option = new(Alloc::instance()) IntCmdOption(name, ptr, init_value, help, save_it);
+  IntCmdOption *option = Q_NEW(IntCmdOption)(name, ptr, init_value, help, save_it);
   addCmdOption(option);
 }
 
 void CmdLine::addBCmdOption(const char *name, bool *ptr, bool init_value, const char *help, bool save_it)
 {
-  BoolCmdOption *option = new(Alloc::instance()) BoolCmdOption(name, ptr, init_value, help, save_it);
+  BoolCmdOption *option = Q_NEW(BoolCmdOption)(name, ptr, init_value, help, save_it);
   addCmdOption(option);
 }
 
 void CmdLine::addRCmdOption(const char *name, real *ptr, real init_value, const char *help, bool save_it)
 {
-  RealCmdOption *option = new(Alloc::instance()) RealCmdOption(name, ptr, init_value, help, save_it);
+  RealCmdOption *option = Q_NEW(RealCmdOption)(name, ptr, init_value, help, save_it);
   addCmdOption(option);
 }
 
 void CmdLine::addSCmdOption(const char *name, char **ptr, const char *init_value, const char *help, bool save_it)
 {
-  StringCmdOption *option = new(Alloc::instance()) StringCmdOption(name, ptr, init_value, help, save_it);
+  StringCmdOption *option = Q_NEW(StringCmdOption)(name, ptr, init_value, help, save_it);
   addCmdOption(option);
 }
 
 void CmdLine::addICmdArg(const char *name, int *ptr, const char *help, bool save_it)
 {
-  IntCmdOption *option = new(Alloc::instance()) IntCmdOption(name, ptr, 0, help, save_it);
+  IntCmdOption *option = Q_NEW(IntCmdOption)(name, ptr, 0, help, save_it);
   option->isArgument(true);
   addCmdOption(option);
 }
 
 void CmdLine::addBCmdArg(const char *name, bool *ptr, const char *help, bool save_it)
 {
-  BoolCmdOption *option = new(Alloc::instance()) BoolCmdOption(name, ptr, false, help, save_it);
+  BoolCmdOption *option = Q_NEW(BoolCmdOption)(name, ptr, false, help, save_it);
   option->isArgument(true);
   addCmdOption(option);
 }
 
 void CmdLine::addRCmdArg(const char *name, real *ptr, const char *help, bool save_it)
 {
-  RealCmdOption *option = new(Alloc::instance()) RealCmdOption(name, ptr, 0., help, save_it);
+  RealCmdOption *option = Q_NEW(RealCmdOption)(name, ptr, 0., help, save_it);
   option->isArgument(true);
   addCmdOption(option);
 }
 
 void CmdLine::addSCmdArg(const char *name, char **ptr, const char *help, bool save_it)
 {
-  StringCmdOption *option = new(Alloc::instance()) StringCmdOption(name, ptr, "", help, save_it);
+  StringCmdOption *option = Q_NEW(StringCmdOption)(name, ptr, "", help, save_it);
   option->isArgument(true);
   addCmdOption(option);
 }
 
 void CmdLine::addText(const char *text)
 {
-  CmdOption *option = new(Alloc::instance()) CmdOption(text, "", "", false);
+  CmdOption *option = Q_NEW(CmdOption)(text, "", "", false);
   option->isText(true);
   addCmdOption(option);
 }
@@ -367,7 +367,7 @@ char *CmdLine::getPath(const char *filename)
 DiskXFile *CmdLine::getXFile(const char *filename)
 {
   char *full_file_name = this->getPath(filename);
-  DiskXFile *file_ = new(Alloc::instance()) DiskXFile(full_file_name, "w");
+  DiskXFile *file_ = Q_NEW(DiskXFile)(full_file_name, "w");
   return file_;
 }
 
