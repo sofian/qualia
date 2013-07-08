@@ -3,12 +3,10 @@
 using namespace BehaviorTree;
 using namespace std;
 
-ParallelNode::ParallelNode(BehaviorTreeNode** children_, uint8_t nChildren_, FAILURE_POLICY failurePolicy, SUCCESS_POLICY successPolicy)
-  : BehaviorTreeInternalNode(children_, nChildren_)
+ParallelNode::ParallelNode(FAILURE_POLICY failurePolicy, SUCCESS_POLICY successPolicy) : childrenStatus(0)
 {
 	failPolicy = failurePolicy;
 	succeedPolicy = successPolicy;
-	childrenStatus = (BEHAVIOR_STATUS*) Alloc::malloc(nChildren*sizeof(BEHAVIOR_STATUS));
 }
 
 ParallelNode::~ParallelNode() {
@@ -17,6 +15,9 @@ ParallelNode::~ParallelNode() {
 
 void ParallelNode::init(void* agent)
 {
+  if (!childrenStatus)
+    childrenStatus = (BEHAVIOR_STATUS*) Alloc::malloc(nChildren*sizeof(BEHAVIOR_STATUS));
+
   for (uint8_t i=0; i<nChildren; i++)
     children[i]->init(agent);
 
