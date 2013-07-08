@@ -796,14 +796,127 @@ void testArduinoCompat() {
   printf("-> PASSED\n");
 }
 
+#include <qualia/plugins/bt/BehaviorTree.h>
+using namespace BehaviorTree;
+
+ProbabilityNode* BT_PROBABILITY()       { return Q_NEW(ProbabilityNode)(); }
+SequentialNode*  BT_SEQUENTIAL()        { return Q_NEW(SequentialNode)(); }
+PriorityNode*    BT_PRIORITY()          { return Q_NEW(PriorityNode)(); }
+ParallelNode*    BT_PARALLEL(FAILURE_POLICY failurePolicy = FAIL_ON_ALL, SUCCESS_POLICY successPolicy = SUCCEED_ON_ALL)
+  { return Q_NEW(ParallelNode)(failurePolicy, successPolicy); }
+RepeatNode*      BT_REPEAT(int repeats) { return Q_NEW(RepeatNode)(repeats); }
+CountLimitNode*  BT_COUNT_LIMIT(int limit, bool allow_reinitialize = true)
+  { return Q_NEW(CountLimitNode)(limit, allow_reinitialize); }
+
+#define NODES(...) setChildren(__VA_ARGS__, NULL)
+#define WEIGHTED_NODES(...) setWeightedChildren(__VA_ARGS__, WeightedBehaviorTreeNode::NULL_WEIGHTED_NODE)
+
+#define _BT_NODES(...) ->setChildren(__VA_ARGS__, NULL)
+#define _BT_WEIGHTED_NODES(...) ->setWeightedChildren(__VA_ARGS__, WeightedBehaviorTreeNode::NULL_WEIGHTED_NODE);
+
+WeightedBehaviorTreeNode _WNODE(double weight, BehaviorTreeNode* node) {
+  return WeightedBehaviorTreeNode(weight, node);
+}
+
+struct TestBTreeElem {
+  float val;
+  TestBTreeElem() : val(0) {}
+
+  float getValue() const { return val; }
+};
+
+class PrintNode : public BehaviorTreeNode {
+public:
+  virtual BEHAVIOR_STATUS execute(void* agent) {
+    TestBTreeElem* e = (TestBTreeElem*)agent;
+    printf("%f\n", e->val);
+    return BT_SUCCESS;
+  }
+
+  /// This method will be invoked before the node is executed for the first time.
+  virtual void init(void* agent) {
+    TestBTreeElem* e = (TestBTreeElem*)agent;
+    printf("Init: %f\n", e->val);
+  }
+};
+
+class ChangeNode : public BehaviorTreeNode {
+public:
+  float inc;
+  ChangeNode(float increment) : inc(increment) {}
+  virtual BEHAVIOR_STATUS execute(void* agent) {
+    TestBTreeElem* e = (TestBTreeElem*)agent;
+    printf("Apply change: %f %f\n", e->val, inc);
+    e->val += inc;
+    return BT_SUCCESS;
+  }
+
+  /// This method will be invoked before the node is executed for the first time.
+  virtual void init(void* agent) {
+  }
+};
+
+
+void testBehaviorTree() {
+  printf("== TEST BEHAVIOR TREE ==\n");
+
+  /*
+   * NOTE: À cause qu'on ne semble pas pouvoir déclrare
+   */
+  BehaviorTreeInternalNode* root = (BehaviorTreeInternalNode*)
+                            BT_PARALLEL(FAIL_ON_ALL, SUCCEED_ON_ONE)->NODES(
+                                  Q_NEW(PrintNode)(),
+                                  Q_NEW(ChangeNode)(+1),
+                                  BT_SEQUENTIAL()->NODES(
+                                        Q_NEW(FloatCondition<TestBTreeElem>)(&TestBTreeElem::getValue, GREATER_THAN_FP, 5.0f),
+                                        BT_PROBABILITY()->WEIGHTED_NODES(
+                                            _WNODE(0.1, Q_NEW(ChangeNode)(-5)),
+                                            _WNODE(0.9, Q_NEW(ChangeNode)(0))
+                                        )
+                                    )
+                               );
+
+//  BehaviorTreeInternalNode* root = (BehaviorTreeInternalNode*)
+//                            BT_SEQUENTIAL()
+//                              _BT_NODES(
+//                                Q_NEW(PrintNode)(),
+//                                BT_SEQUENTIAL()
+//                                  _BT_NODES(
+////                                      Q_NEW(FloatCondition<>)(&TestBTreeElem::getValue, GREATER_THAN_FP, 5.0f)),
+//                                      BT_PROBABILITY()
+//                                        _BT_WEIGHTED_NODES(
+//                                            _WNODE(0.1, Q_NEW(ChangeNode)(-5.0)),
+//                                            _WNODE(0.9, Q_NEW(ChangeNode(0)))
+//                                        )
+//                                  )
+//                               );
+
+
+ // Q_ASSERT_ERROR_MESSAGE( root->nChildren == 2, "Should have 3 children but has: %d.", (int)root->nChildren);
+
+  TestBTreeElem elem;
+  printf("Init ----------\n");
+  root->init(&elem);
+  for (int i=0; i<10; i++)
+  {
+    printf("Step # %d ----------\n", i);
+    root->execute(&elem);
+  }
+
+  Q_DELETE(root);
+  printf("-> PASSED\n");
+
+}
+
 int main() {
-  testActions();
-  testObservations();
-  testPolicies();
-  testLearning();
-  testData();
-  testBits();
-  testBinaryChromosomes();
-  testDataSet();
-  testArduinoCompat();
+//  testActions();
+//  testObservations();
+//  testPolicies();
+//  testLearning();
+//  testData();
+//  testBits();
+//  testBinaryChromosomes();
+//  testDataSet();
+//  testArduinoCompat();
+  testBehaviorTree();
 }
