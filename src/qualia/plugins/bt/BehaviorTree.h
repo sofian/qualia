@@ -2,6 +2,7 @@
 #define BEHAVIORTREE_H_
 
 #include <qualia/core/common.h>
+
 #include "Common.h"
 #include "BehaviorTreeBase.h"
 #include "BoolCondition.h"
@@ -14,5 +15,6 @@
 #include "SequentialNode.h"
 #include "CountLimitNode.h"
 #include "FunctionCall.h"
+#include "BehaviorTreeUtil.h"
 
 #endif

@@ -799,24 +799,6 @@ void testArduinoCompat() {
 #include <qualia/plugins/bt/BehaviorTree.h>
 using namespace BehaviorTree;
 
-ProbabilityNode* BT_PROBABILITY()       { return Q_NEW(ProbabilityNode)(); }
-SequentialNode*  BT_SEQUENTIAL()        { return Q_NEW(SequentialNode)(); }
-PriorityNode*    BT_PRIORITY()          { return Q_NEW(PriorityNode)(); }
-ParallelNode*    BT_PARALLEL(FAILURE_POLICY failurePolicy = FAIL_ON_ALL, SUCCESS_POLICY successPolicy = SUCCEED_ON_ALL)
-  { return Q_NEW(ParallelNode)(failurePolicy, successPolicy); }
-RepeatNode*      BT_REPEAT(int repeats) { return Q_NEW(RepeatNode)(repeats); }
-CountLimitNode*  BT_COUNT_LIMIT(int limit, bool allow_reinitialize = true)
-  { return Q_NEW(CountLimitNode)(limit, allow_reinitialize); }
-
-#define NODES(...) setChildren(__VA_ARGS__, NULL)
-#define WEIGHTED_NODES(...) setWeightedChildren(__VA_ARGS__, WeightedBehaviorTreeNode::NULL_WEIGHTED_NODE)
-
-#define _BT_NODES(...) ->setChildren(__VA_ARGS__, NULL)
-#define _BT_WEIGHTED_NODES(...) ->setWeightedChildren(__VA_ARGS__, WeightedBehaviorTreeNode::NULL_WEIGHTED_NODE);
-
-WeightedBehaviorTreeNode _WNODE(double weight, BehaviorTreeNode* node) {
-  return WeightedBehaviorTreeNode(weight, node);
-}
 
 struct TestBTreeElem {
   float val;
@@ -829,7 +811,7 @@ class PrintNode : public BehaviorTreeNode {
 public:
   virtual BEHAVIOR_STATUS execute(void* agent) {
     TestBTreeElem* e = (TestBTreeElem*)agent;
-    printf("%f\n", e->val);
+    printf("::::: %f\n", e->val);
     return BT_SUCCESS;
   }
 
@@ -846,8 +828,9 @@ public:
   ChangeNode(float increment) : inc(increment) {}
   virtual BEHAVIOR_STATUS execute(void* agent) {
     TestBTreeElem* e = (TestBTreeElem*)agent;
-    printf("Apply change: %f %f\n", e->val, inc);
+    printf("Apply change: %f + %f =  %f\n", e->val, inc, e->val+inc);
     e->val += inc;
+    e->val = max(e->val, 0.0f);
     return BT_SUCCESS;
   }
 
@@ -864,16 +847,23 @@ void testBehaviorTree() {
    * NOTE: À cause qu'on ne semble pas pouvoir déclrare
    */
   BehaviorTreeInternalNode* root = (BehaviorTreeInternalNode*)
-                            BT_PARALLEL(FAIL_ON_ALL, SUCCEED_ON_ONE)->NODES(
+                            BT_PARALLEL(FAIL_ON_ALL, SUCCEED_ON_ONE)
+                              ->CHILDREN(
                                   Q_NEW(PrintNode)(),
-                                  Q_NEW(ChangeNode)(+1),
-                                  BT_SEQUENTIAL()->NODES(
-                                        Q_NEW(FloatCondition<TestBTreeElem>)(&TestBTreeElem::getValue, GREATER_THAN_FP, 5.0f),
-                                        BT_PROBABILITY()->WEIGHTED_NODES(
-                                            _WNODE(0.1, Q_NEW(ChangeNode)(-5)),
-                                            _WNODE(0.9, Q_NEW(ChangeNode)(0))
-                                        )
-                                    )
+                                  BT_PRIORITY()
+                                    ->CHILDREN(
+                                      BT_SEQUENTIAL()
+                                        ->CHILDREN(
+                                            Q_NEW(FloatCondition<TestBTreeElem>)(&TestBTreeElem::getValue, GREATER_THAN_FP, 5.0f),
+                                            BT_PROBABILITY()
+                                              ->WEIGHTED_CHILDREN(
+                                                  _WEIGHTED(0.25, Q_NEW(ChangeNode)(-5)),
+                                                  _WEIGHTED(0.75, Q_NEW(ChangeNode)(0))
+                                               )
+                                        ),
+
+                                        Q_NEW(ChangeNode)(+1)
+                                   )
                                );
 
 //  BehaviorTreeInternalNode* root = (BehaviorTreeInternalNode*)
@@ -901,6 +891,7 @@ void testBehaviorTree() {
   {
     printf("Step # %d ----------\n", i);
     root->execute(&elem);
+    printf("\n");
   }
 
   Q_DELETE(root);
