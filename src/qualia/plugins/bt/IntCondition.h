@@ -3,6 +3,7 @@ namespace BehaviorTree
 {
 	/// These are the numerical tests that are available for integers
 	enum INT_TEST {LESS_THAN,GREATER_THAN,LESS_OR_EQ,GREATER_OR_EQ,EQUAL,NOT_EQUAL};
+
 	template <class T = NoClass>
 	/// Wraps a function or member pointer that returns an integer value into a conditional node
 	/** To wrap a function pointer or static class member that takes no arguments and returns an int, instantiate IntCondition without a type argument.

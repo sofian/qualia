@@ -9,8 +9,7 @@ void SequentialNode::init(void* agent)
     children[i]->init(agent);
 }
 
-SequentialNode::SequentialNode(BehaviorTreeNode** children_, uint8_t nChildren_)
-: BehaviorTreeInternalNode(children_, nChildren_)
+SequentialNode::SequentialNode()
 {
 	currentPosition = -1;
 }

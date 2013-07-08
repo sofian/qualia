@@ -6,11 +6,12 @@ namespace BehaviorTree
 class RepeatNode: public BehaviorTreeInternalNode
 {
 public:
-	/** \param repeats the number of times to repeat the execution of the node's child before returning BT_SUCCESS
-	*/
-	RepeatNode(BehaviorTreeNode* child, int repeats);
+  /** \param repeats The number of times to repeat. An argument of -1 indicates the node should repeat indefinitely. Other negative numbers have undefined behavior */
+	RepeatNode(int repeats);
+
 	BEHAVIOR_STATUS execute(void* agent);
 	void init(void* agent);
+
 protected:
 	int count;
 	int target;

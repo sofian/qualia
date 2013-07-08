@@ -5,6 +5,7 @@ namespace BehaviorTree
 	/// These are the numerical tests that are available for floating point numbers.
 	/**Because of Floating Point precision and rounding issues, testing for exact equalities is unwise. Therefore, the FloatCondition constructor accepts an optional value to determine how strict equality checks are. */
 	enum FLOAT_TEST {LESS_THAN_FP,GREATER_THAN_FP,LESS_OR_CLOSE,GREATER_OR_CLOSE,CLOSE,NOT_CLOSE};
+
 	template <class T = NoClass>
 	/// Wraps a function or member pointer that returns a float value into a conditional node
 	/** To wrap a function pointer or static class member that takes no arguments and returns a float, instantiate FloatCondition without a type argument.

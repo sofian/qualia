@@ -2,8 +2,7 @@
 using namespace BehaviorTree;
 using namespace std;
 
-PriorityNode::PriorityNode(BehaviorTreeNode** children_, uint8_t nChildren_)
-  : BehaviorTreeInternalNode(children_, nChildren_)
+PriorityNode::PriorityNode()
 {
 	currentPosition = -1;
 }
@@ -14,7 +13,6 @@ void PriorityNode::init(void* agent)
 	for (uint8_t i=0; i<nChildren; i++)
 	  children[i]->init(agent);
 }
-
 
 BEHAVIOR_STATUS PriorityNode::execute(void* agent)
 {
