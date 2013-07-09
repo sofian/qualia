@@ -3,33 +3,38 @@
 using namespace BehaviorTree;
 using namespace std;
 
-ParallelNode::ParallelNode(FAILURE_POLICY failurePolicy, SUCCESS_POLICY successPolicy)
+ParallelNode::ParallelNode(FAILURE_POLICY failurePolicy, SUCCESS_POLICY successPolicy) : childrenStatus(0)
 {
 	failPolicy = failurePolicy;
 	succeedPolicy = successPolicy;
-	childrenStatus = NULL;
 }
+
+ParallelNode::~ParallelNode() {
+  Alloc::free(childrenStatus);
+}
+
 void ParallelNode::init(void* agent)
 {
-	for (BehaviorTreeListIter iter = children.begin(); iter!= children.end(); iter++)
-		(*iter)->init(agent);
+  if (!childrenStatus)
+    childrenStatus = (BEHAVIOR_STATUS*) Alloc::malloc(nChildren*sizeof(BEHAVIOR_STATUS));
 
-	if (childrenStatus != NULL)
-		delete childrenStatus;
-	childrenStatus = new ChildrenStatusMap();
-	for (unsigned int i = 0 ; i<children.size(); i++)
-		childrenStatus->insert( make_pair(children.at(i),BT_RUNNING));
+  for (uint8_t i=0; i<nChildren; i++)
+    children[i]->init(agent);
+
+	for (uint8_t i = 0 ; i<nChildren; i++)
+	  childrenStatus[i] = BT_RUNNING;
 }
 
 BEHAVIOR_STATUS ParallelNode::execute(void* agent)
 {
-	if (childrenStatus == NULL)
-		init(agent);
+//	if (childrenStatus == NULL)
+//		init(agent);
+
 	// go through all children and update the childrenStatus
-	for (unsigned int i = 0 ; i<children.size(); i++)
+	for (uint8_t i = 0 ; i<nChildren; i++)
 	{
 		BehaviorTreeNode* node = children[i];
-		if ((*childrenStatus)[node] == BT_RUNNING)
+		if (childrenStatus[i] == BT_RUNNING)
 		{
 			BEHAVIOR_STATUS status = node->execute(agent);
 			if (status == BT_FAILURE)
@@ -41,27 +46,26 @@ BEHAVIOR_STATUS ParallelNode::execute(void* agent)
 				}
 				else
 				{
-					(*childrenStatus)[node] = BT_FAILURE;
+					childrenStatus[i] = BT_FAILURE;
 				}
 			}
 			if (status == BT_SUCCESS)
-				(*childrenStatus)[node] = BT_SUCCESS;
+				childrenStatus[i] = BT_SUCCESS;
 		}
-		if ((*childrenStatus)[node] == BT_FAILURE && failPolicy == FAIL_ON_ALL) //theoretically the failPolicy check is not needed
+		if (childrenStatus[i] == BT_FAILURE && failPolicy == FAIL_ON_ALL) //theoretically the failPolicy check is not needed
 		{
 			BEHAVIOR_STATUS status = node->execute(agent);
-			(*childrenStatus)[node] = status;
+			childrenStatus[i] = status;
 		}
 	}
 
 	//look through the childrenStatus and see if we have met any of our end conditions
-	ChildrenStatusMap::iterator iter;
 	bool sawSuccess = false;
 	bool sawAllFails = true;
 	bool sawAllSuccess = true;
-	for (iter = childrenStatus->begin(); iter != childrenStatus->end() ; iter++)
+	for (uint8_t i = 0 ; i<nChildren; i++)
 	{
-		switch((*iter).second)
+		switch(childrenStatus[i])
 		{
 		case BT_SUCCESS:
 			//can't instantly return success for succeedOnOne policy if failOnOne is also true, because failOnOne overrides succeedOnOne

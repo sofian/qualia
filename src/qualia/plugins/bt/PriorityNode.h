@@ -11,9 +11,10 @@ class PriorityNode:public BehaviorTreeInternalNode
 {
 public:
 	BEHAVIOR_STATUS execute(void* agent);
-	int currentPosition;
 	PriorityNode();
 	void init(void* agent);
 
+  int currentPosition;
 };
+
 }

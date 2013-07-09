@@ -796,14 +796,101 @@ void testArduinoCompat() {
   printf("-> PASSED\n");
 }
 
+#include <qualia/plugins/bt/BehaviorTree.h>
+using namespace BehaviorTree;
+
+
+struct TestBTreeElem {
+  float val;
+  TestBTreeElem() : val(0) {}
+
+  float getValue() const { return val; }
+};
+
+class PrintNode : public BehaviorTreeNode {
+public:
+  virtual BEHAVIOR_STATUS execute(void* agent) {
+    TestBTreeElem* e = (TestBTreeElem*)agent;
+    printf("::::: %f\n", e->val);
+    return BT_SUCCESS;
+  }
+
+  /// This method will be invoked before the node is executed for the first time.
+  virtual void init(void* agent) {
+    TestBTreeElem* e = (TestBTreeElem*)agent;
+    printf("Init: %f\n", e->val);
+  }
+};
+
+class ChangeNode : public BehaviorTreeNode {
+public:
+  float inc;
+  ChangeNode(float increment) : inc(increment) {}
+  virtual BEHAVIOR_STATUS execute(void* agent) {
+    TestBTreeElem* e = (TestBTreeElem*)agent;
+    printf("Apply change: %f + %f =  %f\n", e->val, inc, e->val+inc);
+    e->val += inc;
+    e->val = max(e->val, 0.0f);
+    return BT_SUCCESS;
+  }
+
+  /// This method will be invoked before the node is executed for the first time.
+  virtual void init(void* agent) {
+  }
+};
+
+
+void testBehaviorTree() {
+  printf("== TEST BEHAVIOR TREE ==\n");
+
+  /*
+   * NOTE: À cause qu'on ne semble pas pouvoir déclrare
+   */
+  BehaviorTreeInternalNode* root = (BehaviorTreeInternalNode*)
+                            BT_PARALLEL(FAIL_ON_ALL, SUCCEED_ON_ONE)->CHILDREN(
+                                Q_NEW(PrintNode)(),
+
+                                BT_PRIORITY()->CHILDREN(
+
+                                    BT_SEQUENTIAL()->CHILDREN(
+                                        Q_NEW(FloatCondition<TestBTreeElem>)(&TestBTreeElem::getValue, GREATER_THAN_FP, 5.0f),
+
+                                        BT_PROBABILITY()->WEIGHTED_CHILDREN(
+                                            _WEIGHTED(0.25, Q_NEW(ChangeNode)(-5)),
+                                            _WEIGHTED(0.75, Q_NEW(ChangeNode)(0))
+                                        )
+                                    ),
+
+                                    Q_NEW(ChangeNode)(+1)
+                                )
+                            );
+
+ // Q_ASSERT_ERROR_MESSAGE( root->nChildren == 2, "Should have 3 children but has: %d.", (int)root->nChildren);
+
+  TestBTreeElem elem;
+  printf("Init ----------\n");
+  root->init(&elem);
+  for (int i=0; i<10; i++)
+  {
+    printf("Step # %d ----------\n", i);
+    root->execute(&elem);
+    printf("\n");
+  }
+
+  Q_DELETE(root);
+  printf("-> PASSED\n");
+
+}
+
 int main() {
-  testActions();
-  testObservations();
-  testPolicies();
-  testLearning();
-  testData();
-  testBits();
-  testBinaryChromosomes();
-  testDataSet();
-  testArduinoCompat();
+//  testActions();
+//  testObservations();
+//  testPolicies();
+//  testLearning();
+//  testData();
+//  testBits();
+//  testBinaryChromosomes();
+//  testDataSet();
+//  testArduinoCompat();
+  testBehaviorTree();
 }

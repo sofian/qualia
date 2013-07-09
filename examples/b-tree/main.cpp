@@ -230,42 +230,82 @@ int main(int argc, char** argv) {
   ActionProperties actionProperties(ACTION_DIM, N_ACTIONS);
 
 #if ATTRACTION_MODE
-  BehaviorTreeInternalNode* root = new PriorityNode();
   int nRepeat = (agentId + 1) * 10;
 
-  ProbabilityNode* probNode = new ProbabilityNode();
-  probNode->addChild(new ChooseAction(&actionProperties, ATTRACT), 0.99f);
-  probNode->addChild(new AlwaysFailure(), 0.01f);
+  BehaviorTreeNode* root =
+      BT_PRIORITY()->CHILDREN(
+        BT_SEQUENTIAL()->CHILDREN(
+          Q_NEW(BoolCondition<TestBTreeAgent>)(&TestBTreeAgent::hasClosest, false),
+          BT_PRIORITY()->CHILDREN(
+            BT_REPEAT(-1)->CHILDREN(
+              BT_SEQUENTIAL()->CHILDREN(
+                Q_NEW(FloatCondition<TestBTreeAgent>)(&TestBTreeAgent::getClosestDistance, GREATER_OR_CLOSE, 0.05),
+                Q_NEW(ChooseAction)(&actionProperties, ATTRACT)
+              )
+            ),
+            BT_REPEAT(-1)->CHILDREN(
+              BT_PROBABILITY()->WEIGHTED_CHILDREN(
+                _WEIGHTED(0.99, Q_NEW(ChooseAction)(&actionProperties, ATTRACT)),
+                _WEIGHTED(0.01, Q_NEW(AlwaysFailure)())
+              )
+            )
+          )
+        ),
+        BT_SEQUENTIAL()->CHILDREN(
+          Q_NEW(BoolCondition<TestBTreeAgent>)(&TestBTreeAgent::hasClosest, true),
+          BT_REPEAT(500)->CHILDREN(
+              Q_NEW(ChooseAction)(&actionProperties, REPEL)
+          )
+        )
 
-  root->addChild((new SequentialNode())
-        ->addChild(new BoolCondition<TestBTreeAgent>(&TestBTreeAgent::hasClosest, false))
-        ->addChild((new PriorityNode())
-          ->addChild((new RepeatNode(-1))
-            ->addChild((new SequentialNode)
-              ->addChild(new FloatCondition<TestBTreeAgent>(&TestBTreeAgent::getClosestDistance, GREATER_OR_CLOSE, 0.05))
-              ->addChild(new ChooseAction(&actionProperties, ATTRACT))))
-          ->addChild((new RepeatNode(-1))
-            ->addChild(probNode))))
+      );
 
-      ->addChild((new SequentialNode())
-        ->addChild(new BoolCondition<TestBTreeAgent>(&TestBTreeAgent::hasClosest, true))
-        ->addChild((new RepeatNode(500))
-            ->addChild(new ChooseAction(&actionProperties, REPEL))));
+//  BehaviorTreeInternalNode* root = new PriorityNode();
+//  ProbabilityNode* probNode = new ProbabilityNode();
+//  probNode->addChild(new ChooseAction(&actionProperties, ATTRACT), 0.99f);
+//  probNode->addChild(new AlwaysFailure(), 0.01f);
+//
+//  root->addChild((new SequentialNode())
+//        ->addChild(new BoolCondition<TestBTreeAgent>(&TestBTreeAgent::hasClosest, false))
+//        ->addChild((new PriorityNode())
+//          ->addChild((new RepeatNode(-1))
 //            ->addChild((new SequentialNode)
-//              ->addChild(new BoolCondition<TestBTreeAgent>(&TestBTreeAgent::isCornered, false))
-//              ->addChild(new ChooseAction(&actionProperties, REPEL)))));
+//              ->addChild(new FloatCondition<TestBTreeAgent>(&TestBTreeAgent::getClosestDistance, GREATER_OR_CLOSE, 0.05))
+//              ->addChild(new ChooseAction(&actionProperties, ATTRACT))))
+//          ->addChild((new RepeatNode(-1))
+//            ->addChild(probNode))))
+//
+//      ->addChild((new SequentialNode())
+//        ->addChild(new BoolCondition<TestBTreeAgent>(&TestBTreeAgent::hasClosest, true))
+//        ->addChild((new RepeatNode(500))
+//            ->addChild(new ChooseAction(&actionProperties, REPEL))));
 
 #else
   int nRepeat = (agentId + 1) * 10;
-  BehaviorTreeInternalNode* root = new SequentialNode();
-  root->addChild((new RepeatNode(nRepeat))
-        ->addChild((new ChooseAction(&actionProperties, UP))))
-      ->addChild((new RepeatNode(nRepeat))
-        ->addChild((new ChooseAction(&actionProperties, RIGHT))))
-      ->addChild((new RepeatNode(nRepeat))
-        ->addChild((new ChooseAction(&actionProperties, DOWN))))
-      ->addChild((new RepeatNode(nRepeat))
-        ->addChild((new ChooseAction(&actionProperties, LEFT))));
+  BehaviorTreeNode* root =
+      BT_SEQUENTIAL()->CHILDREN(
+          BT_REPEAT(nRepeat)->CHILDREN(
+              BT_NEW(ChooseAction)(&actionProperties, UP)
+          ),
+          BT_REPEAT(nRepeat)->CHILDREN(
+              BT_NEW(ChooseAction)(&actionProperties, RIGHT)
+          ),
+          BT_REPEAT(nRepeat)->CHILDREN(
+              BT_NEW(ChooseAction)(&actionProperties, DOWN)
+          ),
+          BT_REPEAT(nRepeat)->CHILDREN(
+              BT_NEW(ChooseAction)(&actionProperties, LEFT)
+          )
+      );
+//  BehaviorTreeInternalNode* root = new SequentialNode();
+//  root->addChild((new RepeatNode(nRepeat))
+//        ->addChild((new ChooseAction(&actionProperties, UP))))
+//      ->addChild((new RepeatNode(nRepeat))
+//        ->addChild((new ChooseAction(&actionProperties, RIGHT))))
+//      ->addChild((new RepeatNode(nRepeat))
+//        ->addChild((new ChooseAction(&actionProperties, DOWN))))
+//      ->addChild((new RepeatNode(nRepeat))
+//        ->addChild((new ChooseAction(&actionProperties, LEFT))));
 #endif
 
   Agent* agent = new TestBTreeAgent(&actionProperties, root);
@@ -299,7 +339,8 @@ int main(int argc, char** argv) {
   delete qualia;
   delete agent;
   delete env;
-  delete root;
+  Q_DELETE(root);
+  //delete root;
 
   return 0;
 }

@@ -20,19 +20,35 @@
 #include "StaticAllocator.h"
 
 StaticAllocator::StaticAllocator(unsigned char* _buffer, size_t size) :
-  buffer(_buffer), bufferSize(size), bufferIdx(0), nLeaks(0), lastLeak(0) { }
+  buffer(_buffer), bufferSize(size), bufferIdx(0), lastPtr(0), nLeaks(0), lastLeak(0) { }
 
 void* StaticAllocator::malloc(size_t size) {
   if (bufferIdx + size > bufferSize)
     return NULL;
-  unsigned char* tmp = (buffer + bufferIdx);
+  lastPtr = (buffer + bufferIdx); // &buffer[bufferIdx]
   bufferIdx += size;
-  return (void*)tmp;
+  return lastPtr;
+}
+
+void* Allocator::calloc(size_t num, size_t size) {
+  return malloc(size * num);
 }
 
 void* StaticAllocator::realloc(void* ptr, size_t size) {
-  free(ptr);
-  return malloc(size);
+  if (ptr == NULL)
+    return malloc(size);
+  else if (ptr == lastPtr) { // reallocating last allocated pointer
+    //void* currentPtr = (buffer + bufferIdx);
+//    bufferIdx -= (unsigned int)(buffer + bufferIdx - lastPtr);
+//    Q_ASSERT_WARNING(&buffer[bufferIdx] == lastPtr);
+//    bufferIdx += size;
+    bufferIdx += (unsigned int)( (buffer + size) - lastPtr); // reassign bufferIdx
+    return lastPtr;
+  } else {
+    Q_WARNING("StaticAllocator:realloc() call will result in memory block lost at %p.", ptr);
+    free(ptr);
+    return malloc(size);
+  }
 }
 
 void StaticAllocator::free(void* ptr) {

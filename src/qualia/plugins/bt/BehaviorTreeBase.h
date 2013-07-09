@@ -1,5 +1,8 @@
-#include <vector>
-#include <map>
+#include <qualia/core/common.h>
+#include <stdarg.h>
+
+#ifndef BEHAVIOR_TREE_BASE_H_
+#define BEHAVIOR_TREE_BASE_H_
 
 namespace BehaviorTree
 {
@@ -10,13 +13,8 @@ namespace BehaviorTree
 	- BT_RUNNING indicates that the node has successfully moved forward during this time step, but the task is not yet complete.
 	*/
 	enum BEHAVIOR_STATUS {BT_SUCCESS,BT_FAILURE,BT_RUNNING};
-	class BehaviorTreeNode;
-	/// A standard vector of Behavior Tree nodes. Provided for convenience.
-	typedef std::vector<BehaviorTreeNode*> BehaviorTreeList;
-	/// A standard iterator of a BehaviorTreeList. Provided for convenience.
-	typedef BehaviorTreeList::iterator BehaviorTreeListIter;
 
-	/// Enumerates the options for when a parallel node is considered to have failed.
+		/// Enumerates the options for when a parallel node is considered to have failed.
 	/**
 	- FAIL_ON_ONE indicates that the node will return failure as soon as one of its children fails.
 	- FAIL_ON_ALL indicates that all of the node's children must fail before it returns failure.
@@ -24,6 +22,7 @@ namespace BehaviorTree
 	If FAIL_ON_ONE and SUCEED_ON_ONE are both active and are both trigerred in the same time step, failure will take precedence.
 	*/
 	enum FAILURE_POLICY {FAIL_ON_ONE,FAIL_ON_ALL};
+
 	/// Enumerates the options for when a parallel node is considered to have succeeded.
 	/**
 	- SUCCEED_ON_ONE indicates that the node will return success as soon as one of its children succeeds.
@@ -31,44 +30,57 @@ namespace BehaviorTree
 	*/
 	enum SUCCESS_POLICY {SUCCEED_ON_ONE,SUCCEED_ON_ALL};
 
-
-	///Abstract base clase for Behavior Tree Nodes
+	///Abstract base clase for Behavior Tree Nodes.
 	class BehaviorTreeNode
 	{
 	public:
 		/// This method is invoked by the node's parent when the node should be run.
 		virtual BEHAVIOR_STATUS execute(void* agent) = 0;
+
 		/// This method will be invoked before the node is executed for the first time.
 		virtual void init(void* agent) = 0;
 
 		virtual ~BehaviorTreeNode(){}
 	};
 
-	/// Abstract base class for Behavior Tree nodes with children
+	/// Abstract base class for Behavior Tree nodes with children.
 	class BehaviorTreeInternalNode:public BehaviorTreeNode
 	{
 
 	public:
-		virtual BEHAVIOR_STATUS execute(void* agent) = 0;
+	  BehaviorTreeInternalNode();
+    virtual ~BehaviorTreeInternalNode();
+
+	  virtual BEHAVIOR_STATUS execute(void* agent) = 0;
 		virtual void init(void* object) = 0;
-		/// Add a child to this node. Takes ownership of the child.
-		virtual BehaviorTreeInternalNode* addChild(BehaviorTreeNode* newChild)
-		{
-			children.push_back(newChild);
-			return this;
-		};
 
-    virtual ~BehaviorTreeInternalNode()
-    {
-      BehaviorTreeListIter iter;
-      for (iter = children.begin(); iter!= children.end(); iter++)
-      {
-        delete *iter;
-      }
-    }
+		/**
+		 * Sets the children nodes of this node. Adds children to node. The method will add all
+		 * arguments (read as BehaviorTreeNode*) until NULL is reached.
+		 *
+		 * Example use:
+		 * @code
+		 * node->setChildren(child1, child2, child3, NULL);
+		 * @endcode
+		 */
+		virtual BehaviorTreeNode* setChildren(BehaviorTreeNode* node, ...);
 
-	protected:
-		BehaviorTreeList children;
+		/**
+		 * Adds a child to the node. Deprecated: use setChildren() method instead.
+		 * @deprecated
+		 */
+#if is_computer()
+		virtual BehaviorTreeInternalNode* addChild(BehaviorTreeNode* node);
+#endif
+
+		/// Helper method for setChildren().
+    virtual BehaviorTreeNode* _setChildren(BehaviorTreeNode* node, va_list nodeList);
+
+    /// This node's children nodes.
+    BehaviorTreeNode** children;
+
+    /// The number of children of this node.
+    uint8_t nChildren;
 	};
 
 	///Always returns the BT_RUNNING status
@@ -159,3 +171,5 @@ namespace BehaviorTree
 		}
 	};
 }
+
+#endif

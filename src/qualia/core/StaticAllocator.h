@@ -59,6 +59,7 @@ public:
   unsigned char* buffer;
   size_t bufferSize;
   unsigned int bufferIdx;
+  unsigned char* lastPtr;
 
   // Keeps track of leaks, for debugging.
   unsigned int nLeaks;
@@ -69,6 +70,8 @@ public:
 
 protected:
   virtual void* malloc(size_t size);
+
+  virtual void* calloc(size_t num, size_t size);
 
   // You should not use that method for static allocators.
   virtual void* realloc(void* ptr, size_t size);

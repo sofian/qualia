@@ -10,16 +10,15 @@ PriorityNode::PriorityNode()
 void PriorityNode::init(void* agent)
 {
 	currentPosition = -1;
-	for (BehaviorTreeListIter iter = children.begin(); iter!= children.end(); iter++)
-		(*iter)->init(agent);
+	for (uint8_t i=0; i<nChildren; i++)
+	  children[i]->init(agent);
 }
-
 
 BEHAVIOR_STATUS PriorityNode::execute(void* agent)
 {
 	if (currentPosition != -1) //there's one still running
 	{
-		BEHAVIOR_STATUS status = (children.at(currentPosition))->execute(agent);
+		BEHAVIOR_STATUS status = (children[currentPosition])->execute(agent);
 		if (status == BT_RUNNING)
 			return BT_RUNNING;
 		else if (status == BT_SUCCESS)
@@ -30,7 +29,7 @@ BEHAVIOR_STATUS PriorityNode::execute(void* agent)
 		else if (status == BT_FAILURE)
 		{
 			currentPosition++;
-			if (currentPosition == (int)children.size())
+			if (currentPosition == (int)nChildren)
 			{
 				currentPosition = -1;
 				return BT_FAILURE;
@@ -42,21 +41,21 @@ BEHAVIOR_STATUS PriorityNode::execute(void* agent)
 		init(agent);
 		currentPosition = 0;
 	}
-	if (children.size() == 0)
+	if (nChildren == 0)
 		return BT_SUCCESS;
 
-	BehaviorTreeNode* currentlyRunningNode = children.at(currentPosition);
+	BehaviorTreeNode* currentlyRunningNode = children[currentPosition];
 	BEHAVIOR_STATUS status;
 	while ((status = (*currentlyRunningNode).execute(agent)) == BT_FAILURE) //keep trying children until one doesn't fail
 	{
 		currentPosition++;
-		if (currentPosition == (int)children.size()) //all of the children failed
+		if (currentPosition == (int)nChildren) //all of the children failed
 		{
 			currentPosition = -1;
 			return BT_FAILURE;
 		}
 		else
-		  currentlyRunningNode = children.at(currentPosition);
+		  currentlyRunningNode = children[currentPosition];
 	}
 	return status;
 
