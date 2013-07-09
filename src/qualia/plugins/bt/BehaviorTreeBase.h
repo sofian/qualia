@@ -65,6 +65,14 @@ namespace BehaviorTree
 		 */
 		virtual BehaviorTreeNode* setChildren(BehaviorTreeNode* node, ...);
 
+		/**
+		 * Adds a child to the node. Deprecated: use setChildren() method instead.
+		 * @deprecated
+		 */
+#if is_computer()
+		virtual BehaviorTreeInternalNode* addChild(BehaviorTreeNode* node);
+#endif
+
 		/// Helper method for setChildren().
     virtual BehaviorTreeNode* _setChildren(BehaviorTreeNode* node, va_list nodeList);
 

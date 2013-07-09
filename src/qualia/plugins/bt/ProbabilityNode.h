@@ -39,6 +39,14 @@ public:
    */
   virtual BehaviorTreeNode* setWeightedChildren(WeightedBehaviorTreeNode weightedNode, ...);
 
+  /**
+   * Adds a child to the node with specific weight. Deprecated: use setWeightedChildren() method instead.
+   * @deprecated
+   */
+#if is_computer()
+  virtual ProbabilityNode* addChild(BehaviorTreeNode* node, float weight);
+#endif
+
   void init(void* object);
 	BEHAVIOR_STATUS execute(void* object);
 

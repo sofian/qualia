@@ -82,6 +82,17 @@ BehaviorTreeNode* ProbabilityNode::setWeightedChildren(WeightedBehaviorTreeNode 
  return this;
 }
 
+#if is_computer()
+ProbabilityNode* ProbabilityNode::addChild(BehaviorTreeNode* node, float weight) {
+  nChildren++;
+  weighting = (float*) Alloc::realloc(weighting, nChildren*sizeof(float));
+  children = (BehaviorTreeNode**) Alloc::realloc(children, nChildren*sizeof(BehaviorTreeNode*));
+  weighting[nChildren-1] = weight;
+  children[nChildren-1] = node;
+  return this;
+}
+#endif
+
 void ProbabilityNode::init(void* agent)
 {
 	currentNode = NULL;

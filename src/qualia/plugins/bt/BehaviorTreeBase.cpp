@@ -36,4 +36,14 @@ BehaviorTreeNode* BehaviorTreeInternalNode::_setChildren(BehaviorTreeNode* node,
   return this;
 }
 
+#if is_computer()
+BehaviorTreeInternalNode* BehaviorTreeInternalNode::addChild(BehaviorTreeNode* node) {
+  nChildren++;
+  children = (BehaviorTreeNode**) Alloc::realloc(children, nChildren*sizeof(BehaviorTreeNode*));
+  children[nChildren-1] = node;
+  return this;
+}
+#endif
+
+
 }
