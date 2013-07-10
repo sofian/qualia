@@ -1,15 +1,16 @@
 import Mapper.*;
 import Mapper.Db.*;
 
-final Device dev = new Device("polytopes", 9000);
+final Device dev = new Device("test", 9000);
 Device.Signal observation;
 Device.Signal observationTerminal;
 Device.Signal action;
 
-final int DIM_OBSERVATIONS = 144+48;
-final int DIM_ACTIONS = 144;
+final int DIM_OBSERVATIONS = 1;
+final int DIM_ACTIONS = 1;
 
 int nextAction = 0;
+int obs = 100000;
 
 void setup()
 {
@@ -29,8 +30,9 @@ void draw() {
   // Background.
   background(128,128,128);
   
-  float[] obs = new float[DIM_OBSERVATIONS];
-  for (int i=0; i<obs.length; i++) obs[i] = nextAction;
+  //float[] obs = new float[DIM_OBSERVATIONS];
+  //for (int i=0; i<obs.length; i++) obs[i] = nextAction;
+  obs--;
   observation.update( obs );
 }
 
@@ -38,7 +40,11 @@ void initMapper() {
   
   action = dev.add_input("/node/1/action", DIM_ACTIONS, 'i', "", new Double(0.0), null, 
     new InputListener() {
-      public void onInput(int[] x) {
+      public void onInput(Mapper.Device.Signal sig,
+                          Mapper.Db.Signal props,
+                          int instance_id,
+                          int[] x,
+                          TimeTag tt) {
         System.out.println("Receiving action: "+Arrays.toString(x));
         nextAction = x[0];
       }
