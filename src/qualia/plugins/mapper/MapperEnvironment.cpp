@@ -20,7 +20,7 @@
 #include "MapperEnvironment.h"
 
 MapperEnvironment::MapperEnvironment(MapperConnector* connector_) : connector(connector_) {
-  assert( connector );
+  Q_ASSERT_ERROR( connector );
 }
 
 MapperEnvironment::~MapperEnvironment() {

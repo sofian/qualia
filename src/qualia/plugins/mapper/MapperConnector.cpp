@@ -121,26 +121,26 @@ void MapperConnector::addOutput(const char* name, int length, char type, const c
 
 void MapperConnector::readInput(const char* name, float* data) {
   SignalData* input = inputData[name];
-  assert( input );
+  Q_ASSERT_ERROR( input );
   memcpy(data, input->data, input->n*sizeof(float));
 }
 
 void MapperConnector::readInput(const char* name, int* data) {
   SignalData* input = inputData[name];
-  assert( input );
+  Q_ASSERT_ERROR( input );
   for (int i=0; i<input->n; i++)
     data[i] = (int)input->data[i];
 }
 
 void MapperConnector::writeOutput(const char* name, const float* data) {
   SignalData* output = outputData[name];
-  assert( output );
+  Q_ASSERT_ERROR( output );
   memcpy(output->data, data, output->n*sizeof(float));
 }
 
 void MapperConnector::writeOutput(const char* name, const int* data) {
   SignalData* output = outputData[name];
-  assert( output );
+  Q_ASSERT_ERROR( output );
   for (int i=0; i<output->n; i++)
     output->data[i] = (float)data[i];
 }
@@ -185,7 +185,7 @@ void MapperConnector::devDbCallback(mapper_db_device record,
                                            void *user)
 {
   MapperConnector* connector = (MapperConnector*)user;
-  assert( connector );
+  Q_ASSERT_ERROR( connector );
   printf("dev_db_callback: action %d: record=%s, device=%s\n", (int)action, record->name, connector->peerDeviceName);
 
   if (action == MDB_NEW) {
@@ -207,7 +207,7 @@ void MapperConnector::linkDbCallback(mapper_db_link record,
                                             void *user)
 {
   MapperConnector* connector = (MapperConnector*)user;
-  assert( connector );
+  Q_ASSERT_ERROR( connector );
 
   printf("link_db_callback: action %d: src=%s, dst=%s\n", (int)action, record->src_name, record->dest_name);
 
@@ -236,7 +236,7 @@ void MapperConnector::updateInput(mapper_signal sig, mapper_db_signal props,
     name = name.substr(1); // remove "/"
 
   SignalData* signalData = ((MapperConnector*)props->user_data)->inputData[name];
-  assert(signalData);
+  Q_ASSERT_ERROR(signalData);
   if (props->type == 'f')
     memcpy(signalData->data, value, signalData->n*sizeof(float));
   else {
