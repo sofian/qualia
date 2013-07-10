@@ -3,7 +3,7 @@
 // Definitions (could go somewhere else...)
 #if is_computer()
 
-  #include <time.h>
+  #include <sys/time.h>
 
   unsigned long millis(void) {
     return micros() / 1000;
@@ -11,17 +11,17 @@
 
   // TODO: Reimplement for Windows
   unsigned long micros(void) {
-    static struct timespec start = { 0, 0 };
-    if (start.tv_sec == 0 && start.tv_nsec == 0)
-      clock_gettime(CLOCK_REALTIME, &start);
+    static struct timeval start = { 0, 0 };
+    if (start.tv_sec == 0 && start.tv_usec == 0)
+      gettimeofday(&start, NULL);
 
-    struct timespec end;
-    clock_gettime(CLOCK_REALTIME, &end);
+    struct timeval end;
+      gettimeofday(&end, NULL);
 
     unsigned long long seconds  = end.tv_sec  - start.tv_sec;
-    unsigned long long nseconds      = end.tv_nsec - start.tv_nsec;
+    unsigned long long useconds = end.tv_usec - start.tv_usec;
 
-    return (seconds * 1000000UL + nseconds / 1000) /* + 0.5 */;
+    return (seconds * 1000000UL + useconds) /* + 0.5 */;
   }
 
   #ifdef WIN32

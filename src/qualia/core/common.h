@@ -48,7 +48,7 @@
 #endif
 
 #include <stdlib.h>
-//#include <float.h>
+#include <float.h>
 //#include <limits.h>
 #include <stdint.h>
 #include <math.h>
