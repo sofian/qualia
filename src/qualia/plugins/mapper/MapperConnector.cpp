@@ -168,12 +168,12 @@ void MapperConnector::waitForBlockingInputs() {
 void MapperConnector::sendAllOutputs() {
   for (SignalDataMap::iterator it = outputData.begin(); it != outputData.end(); ++it) {
     if (msig_properties(it->second->sig)->type == 'f')
-      msig_update(it->second->sig, it->second->data);
+      msig_update(it->second->sig, it->second->data, 1, MAPPER_NOW);
     else {
       int* intData = (int*)malloc(it->second->n*sizeof(int));
       for (int i=0; i<it->second->n; i++)
         intData[i] = (int)it->second->data[i];
-      msig_update(it->second->sig, intData);
+      msig_update(it->second->sig, intData, 1, MAPPER_NOW);
       free(intData);
     }
 
