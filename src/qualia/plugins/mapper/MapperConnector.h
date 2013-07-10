@@ -63,7 +63,7 @@ public:
   void sendAllOutputs();
 
   // Internal use.
-  static void updateInput(mapper_signal sig, mapper_db_signal props, mapper_timetag_t *timetag, void *value);
+  static void updateInput(mapper_signal sig, mapper_db_signal props, int instance_id, void *value, int count, mapper_timetag_t *timetag);
   static void devDbCallback(mapper_db_device record, mapper_db_action_t action, void *user);
   static void linkDbCallback(mapper_db_link record, mapper_db_action_t action, void *user);
 };

@@ -44,7 +44,7 @@ void MapperConnector::init() {
     fflush(stdout);
 
     // add monitor and monitor callbacks
-    mon = mapper_monitor_new(admin, 0);
+    mon = mapper_monitor_new(admin, (mapper_monitor_autoreq_mode_t)0);
     db  = mapper_monitor_get_db(mon);
   }
 
@@ -83,7 +83,7 @@ void MapperConnector::createConnections() {
 //  mapper_monitor_poll(mon, 0);
 //  mapper_monitor_request_devices(mon);
 //  mapper_monitor_autorequest(mon, 1);
-  mapper_monitor_request_signals_by_name(mon, mdev_name(dev));
+  mapper_monitor_request_signals_by_device_name(mon, mdev_name(dev));
   mapper_monitor_poll(mon, 0);
 
   // Autoconnect all inputs.
@@ -190,8 +190,8 @@ void MapperConnector::devDbCallback(mapper_db_device record,
 
   if (action == MDB_NEW) {
     if (strcmp(record->name, connector->peerDeviceName) == 0) {
-      mapper_monitor_link(connector->mon, mdev_name(connector->dev), record->name);
-      mapper_monitor_link(connector->mon, record->name, mdev_name(connector->dev));
+      mapper_monitor_link(connector->mon, mdev_name(connector->dev), record->name, 0, 0);
+      mapper_monitor_link(connector->mon, record->name, mdev_name(connector->dev), 0, 0);
     }
 
   } else if (action == MDB_REMOVE) {
@@ -229,7 +229,8 @@ void MapperConnector::linkDbCallback(mapper_db_link record,
 }
 
 void MapperConnector::updateInput(mapper_signal sig, mapper_db_signal props,
-                                       mapper_timetag_t *timetag, void *value) {
+                                  int instance_id, void *value, int count,
+                                  mapper_timetag_t *timetag) {
   std::string name = props->name;
   if (name[0] == '/')
     name = name.substr(1); // remove "/"
