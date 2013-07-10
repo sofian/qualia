@@ -182,9 +182,9 @@ int main(int argc, char** argv) {
     NeuralNetwork* net = new NeuralNetwork(dimObservations + actionProperties.dim(), nHidden, 1,
                                            learningRate, learningRateDecay, weightDecay, false);
     QFunction* qFunc = new QFunction(net, dimObservations, &actionProperties);
-    Policy* policy = useSoftmax ?
-                       new QLearningSoftmaxPolicy(temperature, epsilon) :
-                       new QLearningEDecreasingPolicy(epsilon, epsilonDecay);
+    Policy* policy = (useSoftmax ?
+                       (Policy*)new QLearningSoftmaxPolicy(temperature, epsilon) :
+                       (Policy*)new QLearningEDecreasingPolicy(epsilon, epsilonDecay));
     QLearningAgent* qAgent = new QLearningAgent(
                                   qFunc,
                                   policy,
