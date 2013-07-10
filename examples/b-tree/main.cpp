@@ -93,9 +93,9 @@ class TestBTreeAgent : public Agent {
 public:
   Action* currentAction;
   const Observation* currentObservation;
-  BehaviorTreeInternalNode* root;
+  BehaviorTreeNode* root;
 
-  TestBTreeAgent(ActionProperties* actionProperties, BehaviorTreeInternalNode* root);
+  TestBTreeAgent(ActionProperties* actionProperties, BehaviorTreeNode* root);
   virtual ~TestBTreeAgent();
 
   virtual void init();
@@ -353,7 +353,7 @@ void stop(int sig) {
 }
 
 
-TestBTreeAgent::TestBTreeAgent(ActionProperties* actionProperties, BehaviorTreeInternalNode* root_)
+TestBTreeAgent::TestBTreeAgent(ActionProperties* actionProperties, BehaviorTreeNode* root_)
   : currentAction(0), currentObservation(0), root(root_) {
   currentAction = new Action(actionProperties);
 }
