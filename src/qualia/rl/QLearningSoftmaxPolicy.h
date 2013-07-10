@@ -25,9 +25,9 @@
 #include <math.h>
 
 /**
- * Implements the softmax policy. The class contains an optional ϵ parameter that behaves in a
- * similar fashion as the ϵ-greedy policy, meaning that there is a probability ϵ that the action is chosen
- * randomly uniformly accross the action state and a probability of (1-ϵ) that it resorts to the
+ * Implements the softmax policy. The class contains an optional \epsilon (*epsilon*) parameter that behaves in a
+ * similar fashion as the \epsilon-greedy policy, meaning that there is a probability \epsilon that the action is chosen
+ * randomly uniformly accross the action state and a probability of (1-\epsilon) that it resorts to the
  * softmax policy ie. picks randomly, but this time according to the softmax distribution.
  */
 class QLearningSoftmaxPolicy : public Policy {
@@ -36,7 +36,7 @@ public:
   /// peaky/greedy distribution, whereas lower temperatures results in more flat / uniformly distributed choices.
   float temperature;
 
-  /// An optional ϵ parameter.
+  /// An optional \epsilon parameter.
   /// @see QLearningEGreedyPolicy
   float epsilon;
 

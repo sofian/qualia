@@ -92,12 +92,12 @@ BEHAVIOR_STATUS ParallelNode::execute(void* agent)
 			break;
 		}
 	}
-	if (failPolicy == FAIL_ON_ALL && sawAllFails)
+	if (sawAllFails && failPolicy == FAIL_ON_ALL)
 	{
 		init(agent);
 		return BT_FAILURE;
 	}
-	else if (succeedPolicy == SUCCEED_ON_ALL && sawAllSuccess || succeedPolicy == SUCCEED_ON_ONE && sawSuccess)
+	else if ( sawSuccess && (succeedPolicy == SUCCEED_ON_ALL || succeedPolicy == SUCCEED_ON_ONE) )
 	{
 		init(agent);
 		return BT_SUCCESS;

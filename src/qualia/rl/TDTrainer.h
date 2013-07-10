@@ -27,7 +27,7 @@
 #include <qualia/rl/RLObservation.h>
 
 /**
- * This class trains a QFunction using the Temporal-Difference (TD-λ) algorithm.
+ * This class trains a QFunction using the Temporal-Difference (TD-\lambda) algorithm.
  */
 class TDTrainer : public Trainer {
 public:

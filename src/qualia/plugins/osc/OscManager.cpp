@@ -50,6 +50,6 @@ void OscManager::repeatChar(char* dst, char c, int times) {
 
 void OscManager::error(int num, const char *msg, const char *path)
 {
-  ERROR("liblo server error %d in path %s: %s\n", num, path, msg);
   fflush(stdout);
+  Q_ERROR("liblo server error %d in path %s: %s\n", num, path, msg);
 }

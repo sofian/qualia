@@ -43,7 +43,7 @@ BehaviorTreeInternalNode* CountLimitNode::addChild( BehaviorTreeNode* newChild )
   if (children.size() == 0)
     BehaviorTreeInternalNode::addChild(newChild);
   else
-    ERROR("Cannot add more than one child to a count limit node");
+    Q_ERROR("Cannot add more than one child to a count limit node");
 
   return this;
 }

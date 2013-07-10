@@ -64,7 +64,7 @@ BEHAVIOR_STATUS ProbabilityNode::execute(void* agent)
 		}
 	}
 
-
-	ERROR("This shouldn't happen");
+	Q_ERROR("This shouldn't happen");
+	return BT_FAILURE;
 	//throw new exception();//"shouldn't be here"); //theoretically fp error can put us here, but it's so uncommon that it should raise a flag if it ever happens
 }

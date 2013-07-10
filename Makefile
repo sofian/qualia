@@ -1,6 +1,6 @@
 EXAMPLES=$(wildcard tests/*)
-MODE = debug
-PLATFORM = arduino
+MODE = release
+PLATFORM = computer
 PLUGINS = 
 SCONS = `which scons`
 SCONS += mode=$(MODE) platform=$(PLATFORM) PLUGINS=$(PLUGINS)

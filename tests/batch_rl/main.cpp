@@ -114,10 +114,10 @@ int main(int argc, char** argv) {
   strcpy(tmp, stringNActions);
   int k=0;
   for (int i=0; i<dimActions-1; i++, k++) {
-    ASSERT_ERROR_MESSAGE( sscanf(tmp, "%d,%s", &nActions[k], tmp) > 0, "Malformed argument <n_actions>: %s", stringNActions);
+    Q_ASSERT_ERROR_MESSAGE( sscanf(tmp, "%d,%s", &nActions[k], tmp) > 0, "Malformed argument <n_actions>: %s", stringNActions);
     printf("%d ", nActions[k]);
   }
-  ASSERT_ERROR_MESSAGE( sscanf(tmp, "%d", &nActions[k]), "Malformed argument <n_actions>: %s", stringNActions);
+  Q_ASSERT_ERROR_MESSAGE( sscanf(tmp, "%d", &nActions[k]), "Malformed argument <n_actions>: %s", stringNActions);
   printf("%d \n", nActions[k]);
 
   ActionProperties actionProperties(dimActions, nActions);
