@@ -1,5 +1,5 @@
-#ifndef DRUNK_COMMON_H_
-#define DRUNK_COMMON_H_
+#ifndef DRUNK_H_
+#define DRUNK_H_
 
 #include <qualia/core/common.h>
 #include <qualia/core/Agent.h>
