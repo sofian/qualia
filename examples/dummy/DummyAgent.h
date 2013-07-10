@@ -30,9 +30,10 @@ const unsigned int DUMMY_AGENT_N_ACTIONS[] = {100};
 class DummyAgent : public Agent {
 
 public:
+  ActionProperties props;
   Action currentAction;
 
-  DummyAgent() : currentAction(DUMMY_AGENT_ACTIONS_DIM, DUMMY_AGENT_N_ACTIONS) {}
+  DummyAgent() : props(DUMMY_AGENT_ACTIONS_DIM, DUMMY_AGENT_N_ACTIONS), currentAction(&props) {}
 
   virtual void init() {
     currentAction.reset();
@@ -45,7 +46,6 @@ public:
 
   virtual Action* step(const Observation* observation) {
     currentAction.next();
-//    printf("%d\n", currentAction.conflated());
     return &currentAction;
   }
 

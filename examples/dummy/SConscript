@@ -1,22 +1,37 @@
-CONFIG = ['INCLUDE_PATH', 'MCU', 'F_CPU', 'EXTRA_LIBS', 'AVR_GCC_DIR', 'TARGET', 'LIBS', 'LIBPATH', 'SOURCEPATH', 'QUALIA_DIR', 'platform', 'mode']
+# Don't change these lines
+Import(['CONFIG', 'platform', 'mode'])
+for (k, v) in CONFIG.items():
+  vars()[k] = v
+# ------------------------
 
-Import(CONFIG)
+# Begin: editable zone #######################################
 
-QUALIA_DIR = "../../"
-QUALIA_BUILD_DIR = QUALIA_DIR + "/build/" + platform
+from os import path
 
-INCLUDE_PATH = QUALIA_BUILD_DIR
-LIBPATH      = QUALIA_BUILD_DIR
-
-LIBS = 'qualia,m,lo'
-
-MCU = 'atmega328p'
-F_CPU = 16000000
-EXTRA_LIBS = ""
-
-if (platform == 'arduino'):
-  TARGET = 'MainTest'
+# Program-specific settings
+if platform == 'arduino':
+  TARGET = "DummyArduino"
 else:
-  TARGET = "main_test"
+  TARGET = "dummy"
 
-Return(CONFIG)
+#ARDUINO_EXTRA_LIBRARIES = "Streaming,SoftPWM"
+ARDUINO_BOARD = 'mega'
+
+# Edit these to match your system configuration.
+ARDUINO_SKETCHBOOK_HOME = "~/Documents/Arduino/"
+QUALIA_DIR = "../../"
+
+# Extra options
+INCPATH = ":".join([path.join(QUALIA_DIR, "src")])
+LIBPATH = ":".join([path.join(QUALIA_DIR, "build/" + platform + "/qualia")])
+LIBS    = ["qualia"]
+
+# End:   editable zone #######################################
+
+# Don't change these lines
+for (k, v) in CONFIG.items():
+  CONFIG[k] = vars()[k]
+CONFIG['platform'] = platform
+CONFIG['mode'] = mode
+Return('CONFIG')
+# ------------------------

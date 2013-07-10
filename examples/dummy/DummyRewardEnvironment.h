@@ -42,7 +42,7 @@ public:
 
   virtual RLObservation* doAction(const Action* action) {
     for (int i=0; i<DUMMY_ENVIRONMENT_OBSERVATIONS_DIM; i++)
-      currentObservation[i] = (real)action->actions[i] / (real)action->nActions[i]; // observation = action
+      currentObservation[i] = (real)action->actions[i] / (real)action->nActions(i); // observation = action
     return &currentObservation;
   }
 };
@@ -50,7 +50,7 @@ public:
 class BigDummyReward : public Reward {
 public:
   virtual real reward(const Observation* before, const Action* action, const Observation* after) {
-    real val = (real)action->actions[0] / (real)action->nActions[0];
+    real val = (real)action->actions[0] / (real)action->nActions(0);
     return ( val < 0.5f ?
              0 :
              2*(val - 0.5f) );
@@ -60,7 +60,7 @@ public:
 class SmallDummyReward : public Reward {
 public:
   virtual real reward(const Observation* before, const Action* action, const Observation* after) {
-    real val = (real)action->actions[0] / (real)action->nActions[0];
+    real val = (real)action->actions[0] / (real)action->nActions(0);
     return ( val > 0.5f ?
              0 :
              1-2*val);
