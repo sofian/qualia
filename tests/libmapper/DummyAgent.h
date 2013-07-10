@@ -21,14 +21,15 @@
 #ifndef DUMMYAGENT_H_
 #define DUMMYAGENT_H_
 
-#include <core/Agent.h>
+#include <qualia/core/Agent.h>
 
 class DummyAgent : public Agent {
 
 public:
+  ActionProperties props;
   Action currentAction;
 
-  DummyAgent(int actionsDim, const unsigned int* nActions) : currentAction(actionsDim, nActions) {}
+  DummyAgent(int actionsDim, const unsigned int* nActions) : props(actionsDim, nActions), currentAction(&props) {}
 
   virtual void init() {
     currentAction.reset();

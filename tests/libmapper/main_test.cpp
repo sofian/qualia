@@ -1,6 +1,6 @@
 #include "DummyAgent.h"
-#include <core/Qualia.h>
-#include <plugins/mapper/MapperBasicEnvironment.h>
+#include <qualia/core/Qualia.h>
+#include <qualia/plugins/mapper/MapperBasicEnvironment.h>
 
 #define DIM_OBSERVATIONS 1
 #define DIM_ACTIONS 1
@@ -12,7 +12,8 @@ const unsigned int N_ACTIONS[] = { 100 };
 
 int main() {
   DummyAgent agent(DIM_ACTIONS, N_ACTIONS);
-  MapperBasicEnvironment env(DIM_OBSERVATIONS, DIM_ACTIONS, "agent", PEER_DEVICE_NAME, true, 9000);
+  MapperConnector connector("agent", PEER_DEVICE_NAME, true, 9000);
+  MapperBasicEnvironment env(DIM_OBSERVATIONS, DIM_ACTIONS, &connector);
   Qualia qualia(&agent, &env);
 
   qualia.init();
