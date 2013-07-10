@@ -18,6 +18,7 @@ build/
 *.docx
 *.xls
 *.ppt
+*.txt
 
 # Own formats
 *.raw
@@ -47,3 +48,4 @@ latex/
 
 # Other
 externalcode
+*.orig
