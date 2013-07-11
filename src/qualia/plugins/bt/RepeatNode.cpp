@@ -2,13 +2,30 @@
 #include <assert.h>
 using namespace BehaviorTree;
 using namespace std;
+
+RepeatNode::RepeatNode(int repeats)
+{
+  target = repeats;
+  count = 0;
+};
+
+//BehaviorTreeNode* RepeatNode::setChildren(BehaviorTreeNode* node, ...)
+//{
+//  va_list vl;
+//  va_start(vl, node);
+//  BehaviorTreeInternalNode::setChildren(node, vl);
+//  va_end(vl);
+//  Q_ASSERT_ERROR_MESSAGE(nChildren <= 1, "RepeatNode accepts maximum one (1) children node.");
+//  return this;
+//}
+
 BEHAVIOR_STATUS RepeatNode::execute(void* agent)
 {
-	if (children.size()== 0)
+	if (nChildren == 0)
 		return BT_SUCCESS;
 	else
 	{
-		BEHAVIOR_STATUS status = children.at(0)->execute(agent);
+		BEHAVIOR_STATUS status = children[0]->execute(agent);
 		if (status == BT_SUCCESS)
 		{
 			count++;
@@ -27,20 +44,6 @@ BEHAVIOR_STATUS RepeatNode::execute(void* agent)
 void BehaviorTree::RepeatNode::init( void* agent )
 {
 	count = 0;
-	if (children.size() == 1)
-		children.at(0)->init(agent);
+	if (nChildren == 1)
+	  children[0]->init(agent);
 }
-
-BehaviorTreeInternalNode* BehaviorTree::RepeatNode::addChild( BehaviorTreeNode* newChild )
-{
-	Q_ASSERT_ERROR_MESSAGE(children.size() == 0, "RepeatNode can only contain one child.");
-	BehaviorTreeInternalNode::addChild(newChild);
-	return this;
-}
-
-/** \param repeats The number of times to repeat. An argument of -1 indicates the node should repeat indefinitely. Other negative numbers have undefined behavior */
-RepeatNode::RepeatNode(int repeats)
-{
-	target = repeats;
-	count = 0;
-};

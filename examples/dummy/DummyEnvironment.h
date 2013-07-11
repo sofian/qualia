@@ -46,10 +46,10 @@ public:
 
   virtual Observation* step(const Action* action) {
     for (int i=0; i<DUMMY_ENVIRONMENT_OBSERVATIONS_DIM; i++)
-      currentObservation[i] = (real)action->actions[i] / (real)action->nActions[i]; // observation = action
+      currentObservation[i] = (real)action->actions[i] / (real)action->nActions(i); // observation = action
 
     // Reward is only based on first action.
-    real val = (real)action->actions[0] / (real)action->nActions[0];
+    real val = (real)action->actions[0] / (real)action->nActions(0);
     // Favors "big" actions, small actions are equally bad
     currentObservation.reward = ( val < 0.5f ?
                                   0 :

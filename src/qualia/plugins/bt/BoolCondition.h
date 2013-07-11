@@ -33,6 +33,7 @@ namespace BehaviorTree
 		void init(void* agent)
 		{
 		};
+
 		/** \param _func the address of the (non-static) class member
 			\param _check the value that is being tested for
 		*/
@@ -54,6 +55,7 @@ namespace BehaviorTree
 		{
 			check = _check;
 		}
+
 	private:
 		bool (T::* const func)();
 		bool (* const func2)();

@@ -8,8 +8,9 @@ If the currently executing child returns BT_SUCCESS, this begins executing the n
 class SequentialNode:public BehaviorTreeInternalNode
 {
 public:
-	/// construct a sequentialNode
+	/// Construct a sequentialNode.
 	SequentialNode();
+
 	BEHAVIOR_STATUS execute(void* agent);
 	void init(void* agent);
 

@@ -1,0 +1,37 @@
+# Don't change these lines
+Import(['CONFIG', 'platform', 'mode'])
+for (k, v) in CONFIG.items():
+  vars()[k] = v
+# ------------------------
+
+# Begin: editable zone #######################################
+
+from os import path
+
+# Program-specific settings
+if platform == 'arduino':
+  TARGET = "DummyArduino"
+else:
+  TARGET = "dummy"
+
+#ARDUINO_EXTRA_LIBRARIES = "Streaming,SoftPWM"
+ARDUINO_BOARD = 'mega'
+
+# Edit these to match your system configuration.
+ARDUINO_SKETCHBOOK_HOME = "~/Documents/Arduino/"
+QUALIA_DIR = "../../"
+
+# Extra options
+INCPATH = ":".join([path.join(QUALIA_DIR, "src")])
+LIBPATH = ":".join([path.join(QUALIA_DIR, "build/" + platform + "/qualia")])
+LIBS    = ["qualia"]
+
+# End:   editable zone #######################################
+
+# Don't change these lines
+for (k, v) in CONFIG.items():
+  CONFIG[k] = vars()[k]
+CONFIG['platform'] = platform
+CONFIG['mode'] = mode
+Return('CONFIG')
+# ------------------------

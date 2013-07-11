@@ -35,7 +35,8 @@
  * pre-allocated static memory pool/buffer. Useful to manage memory on
  * architectures that don't support well dynamic allocation (such as
  * AVR-based systems). On such systems, it is usually recommended NOT
- * to use dynamic allocation to avoid problems.
+ * to use dynamic allocation to avoid problems. StaticAllocator makes
+ * sure the memory is allocated from the stack rather than from the heap.
  *
  * WARNING: Calling StaticAllocator::free() does NOT free the pointer at all. You should in fact
  * NEVER have to call that function (because the memory then becomes completely useless). The
@@ -50,7 +51,7 @@
  * unsigned char mybuffer[100];
  * StaticAllocator alloc(mybuffer, 100);
  * int* myarray = (int*)alloc.malloc(10*sizeof(int));
- * Object myobject = new(&alloc) Object(1,2);
+ * Object* myobject = new(alloc.malloc(sizeof(Object)) Object(1,2);
  * @endcode
 */
 class StaticAllocator: public Allocator {
@@ -58,6 +59,7 @@ public:
   unsigned char* buffer;
   size_t bufferSize;
   unsigned int bufferIdx;
+  unsigned char* lastPtr;
 
   // Keeps track of leaks, for debugging.
   unsigned int nLeaks;
@@ -69,7 +71,9 @@ public:
 protected:
   virtual void* malloc(size_t size);
 
-  // You should not use that method for static allocators.
+  virtual void* calloc(size_t num, size_t size);
+
+  // WARNING: You should not use that method for static allocators unless you know what you are doing.
   virtual void* realloc(void* ptr, size_t size);
 
   // WARNING: Calling StaticAllocator::free() does NOT free the pointer at all. See note above.

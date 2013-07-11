@@ -94,7 +94,6 @@ int main(int argc, char** argv) {
   // Put the help line at the beginning
   cmd.info("Open Sound Control Q-Learning Agent");
 
-  // Train mode
   cmd.addText("\nArguments:");
   cmd.addICmdArg("agent_id", &agentId, "the id of the agent", true);
   cmd.addICmdArg("dim_observations", &dimObservations, "observation dimension (without the reward)", true);
@@ -144,54 +143,48 @@ int main(int argc, char** argv) {
   cmd.read(argc, argv);
 
   // Parse n actions.
-  printf("Parsing actions: ");
+  Q_MESSAGE("Parsing actions: ");
   unsigned int nActions[100];
   char tmp[1000];
   strcpy(tmp, stringNActions);
   int k=0;
   for (int i=0; i<dimActions-1; i++, k++) {
     Q_ASSERT_ERROR_MESSAGE( sscanf(tmp, "%d,%s", &nActions[k], tmp) > 0, "Malformed argument <n_actions>: %s", stringNActions);
-    printf("%d ", nActions[k]);
   }
   Q_ASSERT_ERROR_MESSAGE( sscanf(tmp, "%d", &nActions[k]), "Malformed argument <n_actions>: %s", stringNActions);
-  printf("%d \n", nActions[k]);
 
   oscPort += agentId;
   char oscPortStr[100];
   char oscRemotePortStr[100];
   sprintf(oscPortStr, "%d", oscPort);
   sprintf(oscRemotePortStr, "%d", oscRemotePort);
-  printf("Opening OSC connection for agent id=%d (ip=%s, port=%s, remote_port=%s)\n", agentId, oscIP, oscPortStr, oscRemotePortStr);
+  Q_MESSAGE("Opening OSC connection for agent id=%d (ip=%s, port=%s, remote_port=%s)", agentId, oscIP, oscPortStr, oscRemotePortStr);
+
+ // Initializes OSC.
   OscManager::initOsc(oscIP, oscPortStr, oscRemotePortStr);
 
   // Set random seed.
-  if (seed == -1)
-  {
-    randomSeed(time(NULL) + agentId);
-  }
-  else
-  {
-    randomSeed(seed);
-  }
+  randomSeed(seed == -1 ? time(NULL) + agentId : seed);
 
   if (!isLearning)
-    printf("Learning switched off\n");
+    Q_MESSAGE("Learning switched off\n");
 
-  printf("--- Creating agent ---\n");
+  Q_MESSAGE("--- Creating agent ---\n");
   ActionProperties actionProperties(dimActions, nActions);
 
   Agent* agent;
   if (isRemoteAgent) {
+    // Agent is remotely controlled: actions are sent by OSC from a remote process.
     agent = new OscBasicAgent(agentId, dimObservations, dimObservations+1, &actionProperties);
+
   } else {
+    // Agent is a Q-Learning agent.
     NeuralNetwork* net = new NeuralNetwork(dimObservations + actionProperties.dim(), nHidden, 1,
                                            learningRate, learningRateDecay, weightDecay, false);
     QFunction* qFunc = new QFunction(net, dimObservations, &actionProperties);
-    Policy* policy = 0;
-    if (useSoftmax)
-      policy = new QLearningSoftmaxPolicy(temperature, epsilon);
-    else
-      policy = new QLearningEDecreasingPolicy(epsilon, epsilonDecay);
+    Policy* policy = (useSoftmax ?
+                       (Policy*)new QLearningSoftmaxPolicy(temperature, epsilon) :
+                       (Policy*)new QLearningEDecreasingPolicy(epsilon, epsilonDecay));
     QLearningAgent* qAgent = new QLearningAgent(
                                   qFunc,
                                   policy,
@@ -201,10 +194,11 @@ int main(int argc, char** argv) {
     agent = qAgent;
   }
 
-  printf("--- Creating environment ---\n");
+  Q_MESSAGE("--- Creating environment ---\n");
   Environment* env;
   Environment* oscEnv = new OscRLEnvironment(agentId, dimObservations, actionProperties.dim());
   if (exportData) {
+    // Export data using a FileExportEnvironment.
     char fileName[1000];
     sprintf(fileName, "export-%d.raw", agentId);
     DiskXFile* f = new(Alloc::instance()) DiskXFile(fileName, "w+");
@@ -214,7 +208,7 @@ int main(int argc, char** argv) {
 
   Qualia* qualia = new RLQualia(agent, env);
 
-  printf("--- Assigning OSC parameters ---\n");
+  Q_MESSAGE("--- Assigning OSC parameters ---\n");
   if (!isRemoteAgent) {
     QLearningAgent* qla = (QLearningAgent*)agent;
     initOscParameter(agentId, "gamma",  &qla->trainer.gamma);
@@ -237,7 +231,7 @@ int main(int argc, char** argv) {
     }
   }
 
-  printf("--- Initialising ---\n");
+  Q_MESSAGE("--- Initialising ---\n");
   qualia->init();
 
   // Check if load needed.
@@ -246,11 +240,11 @@ int main(int argc, char** argv) {
     ((QLearningAgent*)agent)->qFunction->load(&loadFile);
   }
 
-  printf("--- Starting ---\n");
+  Q_MESSAGE("--- Starting ---\n");
   qualia->start();
 
   stopTraining = false;
-  printf("--- Looping ---\n");
+  Q_MESSAGE("--- Looping ---\n");
   while (!stopTraining) {
     unsigned long nSteps = 0;
     float totalReward = 0;
@@ -259,15 +253,15 @@ int main(int argc, char** argv) {
       totalReward += ((RLObservation*)oa->observation)->reward;
       nSteps++;
     }
-    printf("Mean reward (agent #%d): %f\n", agentId, (double) totalReward / nSteps);
+    Q_MESSAGE("Mean reward (agent #%d): %f\n", agentId, (double) totalReward / nSteps);
   }
 
   // Check if load needed.
   if (strcmp(saveModelFileName, "") != 0) {
-    printf("--- Saving (NOT IMPLEMENTED FOR NOW) ---\n");
+    Q_MESSAGE("--- Saving (NOT IMPLEMENTED FOR NOW) ---\n");
   }
 
-  printf("--- Cleaning up ---\n");
+  Q_MESSAGE("--- Cleaning up ---\n");
   if (isRemoteAgent)
     delete agent;
   else {
@@ -295,7 +289,7 @@ void stop(int sig) {
 static int handlerOscParameter(const char *path, const char *types, lo_arg **argv,
                                int argc, void *data, void *user_data) {
   Q_ASSERT_ERROR( argc == 1 );
-  printf("Received osc message: %s %c %d\n", path, types[0], argc);
+  Q_MESSAGE("Received osc message: %s %c %d\n", path, types[0], argc);
   float f;
   switch (types[0]) {
   case LO_FLOAT:
