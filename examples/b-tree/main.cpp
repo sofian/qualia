@@ -31,6 +31,7 @@
 #include <qualia/core/FileExportEnvironment.h>
 
 #include <qualia/plugins/bt/BehaviorTree.h>
+#include <qualia/plugins/bt/BehaviorTreeAgent.h>
 
 #include <qualia/core/Qualia.h>
 #include <qualia/rl/RLQualia.h>
@@ -89,18 +90,11 @@ enum ObservationIndices {
 
 const real CORNERED_THRESHOLD = (10.0/640.0f);
 
-class TestBTreeAgent : public Agent {
+class TestBTreeAgent : public BehaviorTreeAgent {
 public:
-  Action* currentAction;
-  const Observation* currentObservation;
-  BehaviorTreeNode* root;
-
-  TestBTreeAgent(ActionProperties* actionProperties, BehaviorTreeNode* root);
-  virtual ~TestBTreeAgent();
-
-  virtual void init();
-  virtual Action* start(const Observation* observation);
-  virtual Action* step(const Observation* observation);
+  TestBTreeAgent(ActionProperties* actionProperties, BehaviorTreeNode* root)
+    : BehaviorTreeAgent(actionProperties, root) {}
+  virtual ~TestBTreeAgent() {}
 
   bool hasClosest() const { return (currentObservation->observations[HAS_CLOSEST] > 0.5); }
   float getClosestDistance() const { return (float)(currentObservation->observations[DIST_CLOSEST]); }
@@ -353,38 +347,12 @@ void stop(int sig) {
 }
 
 
-TestBTreeAgent::TestBTreeAgent(ActionProperties* actionProperties, BehaviorTreeNode* root_)
-  : currentAction(0), currentObservation(0), root(root_) {
-  currentAction = new Action(actionProperties);
-}
-
-TestBTreeAgent::~TestBTreeAgent() {
-  delete currentAction;
-}
-
-void TestBTreeAgent::init() {
-  root->init(this);
-}
-
-Action* TestBTreeAgent::start(const Observation* observation) {
-  return step(observation);
-}
-
-Action* TestBTreeAgent::step(const Observation* observation) {
-  currentObservation = observation;
-
-  root->execute(this);
-
-  return currentAction;
-}
-
-
 ChooseAction::ChooseAction(ActionProperties* props, const action_dim_t* actions) : action(props) {
   for (int i=0; i<props->dim(); i++)
     action[i] = actions[i];
 }
 
 BehaviorTree::BEHAVIOR_STATUS ChooseAction::execute(void* agent) {
-  ((TestBTreeAgent*)agent)->currentAction->copyFrom(action);
+  ((TestBTreeAgent*)agent)->getCurrentAction().copyFrom(action);
   return BT_SUCCESS;
 }
