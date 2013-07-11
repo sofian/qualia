@@ -151,7 +151,7 @@ void MapperConnector::waitForBlockingInputs() {
 
   bool keepBlocking;
   do {
-    mdev_poll(dev, 0);
+    mdev_poll(dev, 10);
 
     keepBlocking = false;
     for (SignalDataMap::iterator it = inputData.begin(); it != inputData.end(); ++it)
