@@ -2,11 +2,17 @@ CONFIG = ['INCLUDE_PATH', 'MCU', 'F_CPU', 'EXTRA_LIBS', 'AVR_GCC_DIR', 'TARGET',
 
 Import(CONFIG)
 
-INCLUDE_PATH = "../../src:/usr/local/include/mapper-0"
+QUALIA_DIR = "../../"
+QUALIA_BUILD_DIR = QUALIA_DIR + "/build/" + platform
 
-if (platform == 'computer'):
-  LIBS = "libmapper-0,liblo"
+INCLUDE_PATH = QUALIA_BUILD_DIR + ":" + "/usr/local/include/mapper-0"
+LIBPATH      = QUALIA_BUILD_DIR + ":" + "/usr/local/lib"
 
-TARGET = "main_test"
+LIBS = "qualia,m,mapper-0,lo"
+
+if (platform != 'computer'):
+  raise RuntimeError("Arduino mode not supported for this program")
+else:
+  TARGET = "main"
 
 Return(CONFIG)
