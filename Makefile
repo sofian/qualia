@@ -1,4 +1,5 @@
-EXAMPLES=$(wildcard tests/*)
+EXAMPLES=$(wildcard examples/*)
+TESTS=$(wildcard tests/*)
 MODE = release
 PLATFORM = computer
 PLUGINS = 
@@ -26,3 +27,10 @@ examples: $(EXAMPLES)
 $(EXAMPLES): all
 	@echo "== Building example $@ in mode $(MODE) =="
 	@cd $@ && $(SCONS)
+
+tests: $(TESTS)
+
+$(TESTS): all
+	@echo "== Building test $@ in mode $(MODE) =="
+	@cd $@ && $(SCONS)
+
