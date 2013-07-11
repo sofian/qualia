@@ -144,7 +144,7 @@ int OscAgent::handlerStartStep(const char *path, const char *types, lo_arg **arg
   OscAgent *obj = ((OscAgent*)user_data);
   Q_ASSERT_ERROR( argc == obj->actionDim );
   for (int i=0; i<argc; i++) {
-    float x;
+    float x = 0;
     switch (types[i]) {
     case LO_INT32:
       x = (action_dim_t)argv[i]->i;

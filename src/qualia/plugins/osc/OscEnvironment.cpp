@@ -133,7 +133,7 @@ int OscEnvironment::handlerStartStep(const char *path, const char *types, lo_arg
   OscEnvironment *obj = ((OscEnvironment*)user_data);
   Q_ASSERT_ERROR( argc == obj->observationBufferDim );
   for (int i=0; i<argc; i++) {
-    float x;
+    float x = 0;
     switch (types[i]) {
     case LO_INT32:
       x = (observation_t)argv[i]->i;
