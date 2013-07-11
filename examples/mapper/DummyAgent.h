@@ -26,10 +26,9 @@
 class DummyAgent : public Agent {
 
 public:
-  ActionProperties props;
   Action currentAction;
 
-  DummyAgent(int actionsDim, const unsigned int* nActions) : props(actionsDim, nActions), currentAction(&props) {}
+  DummyAgent(ActionProperties* props) : currentAction(props) {}
 
   virtual void init() {
     currentAction.reset();
