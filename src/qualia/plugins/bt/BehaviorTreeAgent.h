@@ -45,7 +45,7 @@ public:
   const Observation* getCurrentObservation() const { return currentObservation; }
 
   /// Can be used by leaf nodes to access the current observation under scrutiny.
-  Action& getCurrentAction() const { return currentAction; }
+  Action& getCurrentAction() { return currentAction; }
 };
 
 #endif /* BEHAVIORTREEAGENT_H_ */
