@@ -327,6 +327,6 @@ void StringCmdOption::save(DiskXFile *file)
 
 StringCmdOption::~StringCmdOption()
 {
-  Alloc::free(ptr);
+  //Alloc::free(ptr);
   Alloc::free(init_value);
 }

@@ -536,7 +536,7 @@ CmdLine::~CmdLine()
   for (int i=0; i<n_master_switches; i++)
   {
     for (int j=0; j<n_cmd_options[i]; j++)
-      delete cmd_options[i][j];
+      Q_DELETE(cmd_options[i][j]);
     Alloc::free(cmd_options[i]);
   }
   Alloc::free(n_cmd_options);

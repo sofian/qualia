@@ -24,6 +24,7 @@ BehaviorTreeAgent::BehaviorTreeAgent(ActionProperties* properties, BehaviorTree:
 }
 
 BehaviorTreeAgent::~BehaviorTreeAgent() {
+  Q_DELETE(root);
 }
 
 void BehaviorTreeAgent::init() {

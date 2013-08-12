@@ -52,7 +52,7 @@ SubDataSet* SubDataSet::getShuffledDataSet(DataSet* dataSet, int nExamples) {
 
   int* indices = (int*) Alloc::malloc(nExamples * sizeof(int));
   randomShuffledIndices(indices, nExamples);
-  SubDataSet* sub = new(Alloc::instance()) SubDataSet(dataSet, indices, nExamples);
+  SubDataSet* sub = Q_NEW(SubDataSet)(dataSet, indices, nExamples);
 
   Alloc::free(indices);
   return sub;
@@ -75,9 +75,9 @@ void SubDataSet::getStandardDataSets(SubDataSet** train, SubDataSet** valid,
   Q_NOTICE("Splitting in train=%d / valid=%d / test=%d examples", nTrain, nValid, nTest);
 
   // Create data sets.
-  *train = new(Alloc::instance()) SubDataSet(dataSet, indices,               nTrain);
-  *valid = new(Alloc::instance()) SubDataSet(dataSet, indices+nTrain,        nValid);
-  *test  = new(Alloc::instance()) SubDataSet(dataSet, indices+nTrain+nValid, nTest);
+  *train = Q_NEW(SubDataSet)(dataSet, indices,               nTrain);
+  *valid = Q_NEW(SubDataSet)(dataSet, indices+nTrain,        nValid);
+  *test  = Q_NEW(SubDataSet)(dataSet, indices+nTrain+nValid, nTest);
 
   // Free shuffled indices.
   Alloc::free(indices);
