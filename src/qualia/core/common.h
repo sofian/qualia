@@ -81,9 +81,6 @@
   #else
     #include "WProgram.h"
   #endif
-
-#else
-
 #endif
 
 
@@ -115,8 +112,12 @@
   #define RANDOM_MAX RAND_MAX
 #endif
 
-#if (!is_arduino())
+#if !is_arduino()
 #include <qualia/compat/Arduino.h>
+#endif
+
+#if is_avr()
+#include <qualia/compat/placement_new.h>
 #endif
 
 #include <qualia/core/error.h>

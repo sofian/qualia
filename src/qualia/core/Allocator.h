@@ -84,8 +84,6 @@ public:
   static Allocator* instance() { return inst; }
 };
 
-// TODO: Test with arduino.
-
 /// Macro equivalent of *new* operator: allocates memory using Alloc::malloc().
 #define Q_NEW(T) new( Alloc::malloc(sizeof(T)) ) T
 
