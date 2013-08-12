@@ -19,7 +19,8 @@ void setup()
   colorMode(RGB, 255);
   initMapper();
 
-//  observation.update( new float[] { 1 } );
+  observation.update( 2.0 );
+//  observation.update( new float[] { 1, 1 } );
 }
 
 void draw() {
@@ -30,10 +31,7 @@ void draw() {
   // Background.
   background(128,128,128);
   
-  //float[] obs = new float[DIM_OBSERVATIONS];
-  //for (int i=0; i<obs.length; i++) obs[i] = nextAction;
-  obs--;
-  observation.update( obs );
+  observation.update( 2.0 );
 }
 
 void initMapper() {
