@@ -130,9 +130,9 @@ else:
   env = Environment()
   env.Append(CPPPATH=["/usr/local/include", "/usr/include", os.getcwd()])
   if (mode == 'debug'):
-    env.Append(CPPFLAGS=['-Wall', '-g', '-DDEBUG=1'])
+    env.Append(CCFLAGS=['-Wall', '-g', '-DDEBUG=1'])
   else:
-    env.Append(CPPFLAGS=['-O2'])
+    env.Append(CCFLAGS=['-O2'])
 
   env.VariantDir(BUILD_DIR, ".", duplicate=0)
   sources += Glob(BUILD_DIR + "*.cpp")
