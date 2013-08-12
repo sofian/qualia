@@ -24,7 +24,8 @@ TupleDataSet::TupleDataSet(XFile* file_, unsigned int observationDim_, ActionPro
     file(file_),
     lastObservation(observationDim_),
     lastAction(actionProperties_),
-    observation(observationDim_) {
+    observation(observationDim_),
+    currentExampleIndex(-1) {
   Q_ASSERT_ERROR( file );
 }
 

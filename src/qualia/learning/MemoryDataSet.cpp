@@ -19,7 +19,7 @@
 
 #include "MemoryDataSet.h"
 
-MemoryDataSet::MemoryDataSet(DataSet* dataSet) {
+MemoryDataSet::MemoryDataSet(DataSet* dataSet) : DataSet(), data(0) {
   Q_ASSERT_ERROR( dataSet );
 
   dataSet->init();
@@ -39,6 +39,7 @@ MemoryDataSet::MemoryDataSet(DataSet* dataSet) {
 }
 
 MemoryDataSet::~MemoryDataSet() {
+  Alloc::free(data);
 }
 
 void MemoryDataSet::setExample(int t) {

@@ -27,6 +27,7 @@ DataSet::DataSet(int nExamples_, int dim_)
   : _nExamples(nExamples_), _dim(dim_), example(0) {}
 
 DataSet::~DataSet() {
+  Alloc::free(example);
 }
 
 void DataSet::init() {
