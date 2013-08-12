@@ -40,10 +40,10 @@ public:
   }
 
   virtual Action* step(const Observation* observation) {
-//    if (currentAction.hasNext())
-    currentAction.next();
-//    else
-//      currentAction.reset();
+    if (currentAction.hasNext())
+      currentAction.next();
+    else
+      currentAction.reset();
     return &currentAction;
   }
 
