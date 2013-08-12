@@ -59,8 +59,10 @@ void* Alloc::realloc(void* ptr, size_t size) {
 }
 
 void Alloc::free(void* ptr) {
-  if (!inst)
-    ::free(ptr);
+  if (!inst) {
+    if (ptr)
+      ::free(ptr);
+  }
   else
     inst->free(ptr);
 }
