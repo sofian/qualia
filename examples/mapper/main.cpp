@@ -1,6 +1,7 @@
 #include <qualia/core/common.h>
 #include <qualia/computer/CmdLine.h>
 #include <qualia/plugins/mapper/MapperBasicEnvironment.h>
+#include <qualia/plugins/bt/BehaviorTree.h>
 
 #include <qualia/core/Qualia.h>
 #include <qualia/learning/NeuralNetwork.h>
@@ -12,6 +13,7 @@
 #include <qualia/core/FileExportEnvironment.h>
 
 #include "DummyAgent.h"
+#include "SimpleBehaviorTreeAgent.h"
 
 #if ! is_computer()
 #error "This program only works on computer platforms. Please recompile using platform=computer option."
@@ -23,9 +25,11 @@ enum AgentType {
   BT
 };
 
-bool stopTraining = true; // uninitialized
+bool stopTraining = true;
 
 static void stop(int);
+
+using namespace BehaviorTree;
 
 int main(int argc, char** argv) {
   signal(SIGINT, stop);
@@ -81,7 +85,7 @@ int main(int argc, char** argv) {
   cmd.addText("\nLibmapper Options:");
   cmd.addSCmdOption("-device", &deviceName, "agent", "the device name (without ordinal)", false);
   cmd.addSCmdOption("-peer-device", &peerDeviceName, "test.1", "the peer device name (with ordinal)", false);
-  cmd.addBCmdOption("-autoconnect", &autoConnect, true, "Autoconnect the libmapper signals", false);
+  cmd.addBCmdOption("-autoconnect", &autoConnect, false, "Autoconnect the libmapper signals", false);
   cmd.addICmdOption("-port", &port, 9000, "Initial mapper port", false);
 
   cmd.addText("\nAgent Options:");
@@ -170,12 +174,34 @@ int main(int argc, char** argv) {
                 epsilon) :
                 (Policy*) new QLearningEDecreasingPolicy(epsilon, epsilonDecay));
         QLearningAgent* qAgent = new QLearningAgent(qFunc, policy, dimObservations,
-            &actionProperties, lambda, gamma);
+                                                    &actionProperties, lambda, gamma);
         qAgent->isLearning = isLearning;
         agent = qAgent;
       }
       break;
-    case BT:
+    case BT: {
+      // Here we will presuppose that we have actions and obs. of dim. 2.
+        Q_ASSERT_WARNING_MESSAGE(dimActions == 2 && dimObservations == 2, "Using the behavior tree supposes that dim_actions = 2 and dim_observations = 2.");
+
+        action_dim_t idle[] = { nActions[0]/2, nActions[1] / 2  };
+
+        BehaviorTreeNode* root =
+            BT_SEQUENTIAL()->CHILDREN(
+              Q_NEW(ChooseAction)(&actionProperties, idle),
+              Q_NEW(FloatCondition<SimpleBehaviorTreeAgent>)(&SimpleBehaviorTreeAgent::getInfluenceNorm, LESS_THAN_FP, 0.5),
+              Q_NEW(FunctionCall<SimpleBehaviorTreeAgent>(&SimpleBehaviorTreeAgent::moveTowardsInfluence))
+            );
+
+        agent = new SimpleBehaviorTreeAgent(&actionProperties, root);
+
+//            BT_PARALLEL(FAIL_ON_ALL, SUCCEED_ON_ONE)->CHILDREN(
+//                                   BT_SEQUENTIAL()->CHILDREN(
+//                                     Q_NEW(FloatCondition<SimpleBehaviorTreeAgent>)(&SimpleBehaviorTreeAgent::getInfluenceX, GREATER_THAN_FP, 0.0),
+//                                     Q_NEW(SetActionDim)
+//                                   )
+//
+//            );
+      }
     default:
       Q_WARNING("BT agent not implemented yet.");
       break;
@@ -194,7 +220,7 @@ int main(int argc, char** argv) {
   } else
     env = mapperEnv;
 
-  Qualia* qualia = new RLQualia(agent, env);
+  Qualia* qualia = new Qualia(agent, env);
 
   Q_MESSAGE("--- Initialising ---\n");
   qualia->init();
@@ -215,10 +241,12 @@ int main(int argc, char** argv) {
     float totalReward = 0;
     for (int i=0; i<outputEvery; i++) {
       ObservationAction* oa = qualia->step();
-      totalReward += ((RLObservation*)oa->observation)->reward;
+      if (agentType == RL)
+        totalReward += ((RLObservation*)oa->observation)->reward;
       nSteps++;
     }
-    Q_MESSAGE("Mean reward (agent #%d): %f\n", agentId, (double) totalReward / nSteps);
+    if (agentType == RL)
+      Q_MESSAGE("Mean reward (agent #%d): %f\n", agentId, (double) totalReward / nSteps);
   }
 
   // Check if load needed.
@@ -241,6 +269,8 @@ int main(int argc, char** argv) {
       }
       break;
     case BT:
+      delete agent;
+      break;
     default:
       Q_WARNING("BT agent not implemented yet.");
       break;
