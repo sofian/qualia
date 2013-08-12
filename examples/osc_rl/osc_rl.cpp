@@ -78,6 +78,7 @@ int main(int argc, char** argv) {
   int agentId;
 
   bool exportData;
+  char* exportDir;
   int outputEvery;
   int seed;
 
@@ -126,6 +127,7 @@ int main(int argc, char** argv) {
 
   cmd.addText("\nMisc Options:");
   cmd.addBCmdOption("-export-data", &exportData, false, "export the data to files", false );
+  cmd.addSCmdOption("-export-dir", &exportDir, ".", "directory where to export the data (if -export-data selected)", false );
   cmd.addBCmdOption("-no-learning", &isLearning, true, "don't learn (just apply policy)", false );
   cmd.addBCmdOption("-remote-agent", &isRemoteAgent, false, "remote controlled agent (ie. actions sent by OSC)", false );
   cmd.addICmdOption("-every", &outputEvery, 100, "output mean reward every X steps", false );
@@ -200,8 +202,9 @@ int main(int argc, char** argv) {
   if (exportData) {
     // Export data using a FileExportEnvironment.
     char fileName[1000];
-    sprintf(fileName, "export-%d.raw", agentId);
-    DiskXFile* f = new(Alloc::instance()) DiskXFile(fileName, "w+");
+    sprintf(fileName, "%s/export-%d.raw", exportDir, agentId);
+    Q_MESSAGE("Data export file: %s.", fileName);
+    DiskXFile* f = new DiskXFile(fileName, "w+");
     env = new FileExportEnvironment(oscEnv, f, dimObservations, actionProperties.dim());
   } else
     env = oscEnv;
@@ -272,8 +275,10 @@ int main(int argc, char** argv) {
     delete qAgent;
   }
   delete oscEnv;
-  if (exportData)
+  if (exportData) {
+    delete ((FileExportEnvironment*)env)->file;
     delete env;
+  }
   delete qualia;
 
   return 0;
