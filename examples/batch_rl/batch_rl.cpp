@@ -132,8 +132,8 @@ int main(int argc, char** argv) {
       break;
 
     trainFileNames[nTrainFiles][strlen(trainFileNames[nTrainFiles])-1] = '\0'; // remove \n
-    trainFiles[nTrainFiles] = new(Alloc::instance()) DiskXFile(trainFileNames[nTrainFiles], "r+");
-    tupleSets[nTrainFiles] = new(Alloc::instance()) TupleDataSet(trainFiles[nTrainFiles], dimObservations, &actionProperties);
+    trainFiles[nTrainFiles] = Q_NEW(DiskXFile)(trainFileNames[nTrainFiles], "r+");
+    tupleSets[nTrainFiles] = Q_NEW(TupleDataSet)(trainFiles[nTrainFiles], dimObservations, &actionProperties);
     tupleSets[nTrainFiles]->init(); // TODO: ceci est mauvais: on ne devrait pas avoir à penser à faire ça. dans le constructeur le init() devrait etre appele. (???)
     nTrainFiles++;
   }
@@ -162,10 +162,10 @@ int main(int argc, char** argv) {
     net.save(&modelFile);
   }
 
-  delete(data);
+  Q_DELETE(data);
   for (int i=0; i<nTrainFiles; i++) {
-    delete trainFiles[i];
-    delete tupleSets[i];
+    Q_DELETE(trainFiles[i]);
+    Q_DELETE(tupleSets[i]);
   }
   return 0;
 }
