@@ -5,23 +5,34 @@
 
 namespace BehaviorTree {
 
-PriorityNode*    BT_PRIORITY();
+class BehaviorTreeUtil {
+public:
+  PriorityNode*    priority();
 
-SequentialNode*  BT_SEQUENTIAL();
+  SequentialNode*  sequential();
 
-ParallelNode*    BT_PARALLEL(FAILURE_POLICY failurePolicy = FAIL_ON_ALL, SUCCESS_POLICY successPolicy = SUCCEED_ON_ALL);
+  ParallelNode*    parallel(FAILURE_POLICY failurePolicy = FAIL_ON_ALL, SUCCESS_POLICY successPolicy = SUCCEED_ON_ALL);
 
-ProbabilityNode* BT_PROBABILITY();
+  ProbabilityNode* probability();
 
-RepeatNode*      BT_REPEAT(int repeats);
+  RepeatNode*      repeat(int repeats);
 
-CountLimitNode*  BT_COUNT_LIMIT(int limit, bool allow_reinitialize = true);
+  CountLimitNode*  countLimit(int limit, bool allow_reinitialize = true);
 
-#define CHILDREN(...) setChildren(__VA_ARGS__, NULL)
+  AlwaysRunning*   running();
+  AlwaysSuccess*   success();
+  AlwaysFailure*   failure();
 
+  SuccessAfter*    successAfter(int t);
+  FailureAfter*    failureAfter(int t);
+
+  WeightedBehaviorTreeNode weighted(double weight, BehaviorTreeNode* node);
+};
+
+extern BehaviorTreeUtil BT;
+
+#define CHILDREN(...)          setChildren(__VA_ARGS__, NULL)
 #define WEIGHTED_CHILDREN(...) setWeightedChildren(__VA_ARGS__, WeightedBehaviorTreeNode::NULL_WEIGHTED_NODE)
-
-WeightedBehaviorTreeNode _WEIGHTED(double weight, BehaviorTreeNode* node);
 
 }
 

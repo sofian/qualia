@@ -22,7 +22,7 @@
 enum AgentType {
   DUMMY,
   RL,
-  BT
+  BTREE
 };
 
 bool stopTraining = true;
@@ -151,7 +151,7 @@ int main(int argc, char** argv) {
   else if (strcmp(agentTypeStr, "rl") == 0)
     agentType = RL;
   else if (strcmp(agentTypeStr, "bt") == 0)
-    agentType = BT;
+    agentType = BTREE;
   else
     Q_ERROR("Unsupported -agent-type parameter: %s.", agentType);
 
@@ -179,14 +179,14 @@ int main(int argc, char** argv) {
         agent = qAgent;
       }
       break;
-    case BT: {
+    case BTREE: {
       // Here we will presuppose that we have actions and obs. of dim. 2.
         Q_ASSERT_WARNING_MESSAGE(dimActions == 2 && dimObservations == 2, "Using the behavior tree supposes that dim_actions = 2 and dim_observations = 2.");
 
         action_dim_t idle[] = { nActions[0]/2, nActions[1] / 2  };
 
         BehaviorTreeNode* root =
-            BT_SEQUENTIAL()->CHILDREN(
+            BT.sequential()->CHILDREN(
               Q_NEW(ChooseAction)(&actionProperties, idle),
               Q_NEW(FloatCondition<SimpleBehaviorTreeAgent>)(&SimpleBehaviorTreeAgent::getInfluenceNorm, LESS_THAN_FP, 0.5),
               Q_NEW(FunctionCall<SimpleBehaviorTreeAgent>(&SimpleBehaviorTreeAgent::moveTowardsInfluence))
@@ -268,7 +268,7 @@ int main(int argc, char** argv) {
         delete qAgent;
       }
       break;
-    case BT:
+    case BTREE:
       delete agent;
       break;
     default:

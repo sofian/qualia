@@ -227,27 +227,27 @@ int main(int argc, char** argv) {
   int nRepeat = (agentId + 1) * 10;
 
   BehaviorTreeNode* root =
-      BT_PRIORITY()->CHILDREN(
-        BT_SEQUENTIAL()->CHILDREN(
+      BT.priority()->CHILDREN(
+          BT.sequential()->CHILDREN(
           Q_NEW(BoolCondition<TestBTreeAgent>)(&TestBTreeAgent::hasClosest, false),
-          BT_PRIORITY()->CHILDREN(
-            BT_REPEAT(-1)->CHILDREN(
-              BT_SEQUENTIAL()->CHILDREN(
+          BT.priority()->CHILDREN(
+              BT.repeat(-1)->CHILDREN(
+                  BT.sequential()->CHILDREN(
                 Q_NEW(FloatCondition<TestBTreeAgent>)(&TestBTreeAgent::getClosestDistance, GREATER_OR_CLOSE, 0.05),
                 Q_NEW(ChooseAction)(&actionProperties, ATTRACT)
               )
             ),
-            BT_REPEAT(-1)->CHILDREN(
-              BT_PROBABILITY()->WEIGHTED_CHILDREN(
-                _WEIGHTED(0.99, Q_NEW(ChooseAction)(&actionProperties, ATTRACT)),
-                _WEIGHTED(0.01, Q_NEW(AlwaysFailure)())
+            BT.repeat(-1)->CHILDREN(
+                BT.probability()->WEIGHTED_CHILDREN(
+                    BT.weighted(0.99, Q_NEW(ChooseAction)(&actionProperties, ATTRACT)),
+                    BT.weighted(0.01, BT.failure())
               )
             )
           )
         ),
-        BT_SEQUENTIAL()->CHILDREN(
+        BT.sequential()->CHILDREN(
           Q_NEW(BoolCondition<TestBTreeAgent>)(&TestBTreeAgent::hasClosest, true),
-          BT_REPEAT(500)->CHILDREN(
+          BT.repeat(500)->CHILDREN(
               Q_NEW(ChooseAction)(&actionProperties, REPEL)
           )
         )
@@ -277,17 +277,17 @@ int main(int argc, char** argv) {
 #else
   int nRepeat = (agentId + 1) * 10;
   BehaviorTreeNode* root =
-      BT_SEQUENTIAL()->CHILDREN(
-          BT_REPEAT(nRepeat)->CHILDREN(
+      sequential()->CHILDREN(
+          repeat(nRepeat)->CHILDREN(
               BT_NEW(ChooseAction)(&actionProperties, UP)
           ),
-          BT_REPEAT(nRepeat)->CHILDREN(
+          repeat(nRepeat)->CHILDREN(
               BT_NEW(ChooseAction)(&actionProperties, RIGHT)
           ),
-          BT_REPEAT(nRepeat)->CHILDREN(
+          repeat(nRepeat)->CHILDREN(
               BT_NEW(ChooseAction)(&actionProperties, DOWN)
           ),
-          BT_REPEAT(nRepeat)->CHILDREN(
+          repeat(nRepeat)->CHILDREN(
               BT_NEW(ChooseAction)(&actionProperties, LEFT)
           )
       );

@@ -2,22 +2,48 @@
 
 namespace BehaviorTree {
 
-PriorityNode*    BT_PRIORITY()          { return Q_NEW(PriorityNode)(); }
+PriorityNode*    BehaviorTreeUtil::priority()
+{ return Q_NEW(PriorityNode)(); }
 
-SequentialNode*  BT_SEQUENTIAL()        { return Q_NEW(SequentialNode)(); }
+SequentialNode*  BehaviorTreeUtil::sequential()
+{ return Q_NEW(SequentialNode)(); }
 
-ParallelNode*    BT_PARALLEL(FAILURE_POLICY failurePolicy, SUCCESS_POLICY successPolicy)
-  { return Q_NEW(ParallelNode)(failurePolicy, successPolicy); }
+ParallelNode*    BehaviorTreeUtil::parallel(FAILURE_POLICY failurePolicy, SUCCESS_POLICY successPolicy)
+{ return Q_NEW(ParallelNode)(failurePolicy, successPolicy); }
 
-ProbabilityNode* BT_PROBABILITY()       { return Q_NEW(ProbabilityNode)(); }
+ProbabilityNode* BehaviorTreeUtil::probability()
+{ return Q_NEW(ProbabilityNode)(); }
 
-RepeatNode*      BT_REPEAT(int repeats) { return Q_NEW(RepeatNode)(repeats); }
+RepeatNode*      BehaviorTreeUtil::repeat(int repeats)
+{ return Q_NEW(RepeatNode)(repeats); }
 
-CountLimitNode*  BT_COUNT_LIMIT(int limit, bool allow_reinitialize)
-  { return Q_NEW(CountLimitNode)(limit, allow_reinitialize); }
+CountLimitNode*  BehaviorTreeUtil::countLimit(int limit, bool allow_reinitialize)
+{ return Q_NEW(CountLimitNode)(limit, allow_reinitialize); }
 
-WeightedBehaviorTreeNode _WEIGHTED(double weight, BehaviorTreeNode* node) {
+WeightedBehaviorTreeNode BehaviorTreeUtil::weighted(double weight, BehaviorTreeNode* node) {
   return WeightedBehaviorTreeNode(weight, node);
 }
+
+AlwaysRunning* BehaviorTreeUtil::running() {
+  return Q_NEW(AlwaysRunning)();
+}
+
+AlwaysSuccess* BehaviorTreeUtil::success() {
+  return Q_NEW(AlwaysSuccess)();
+}
+
+AlwaysFailure* BehaviorTreeUtil::failure() {
+  return Q_NEW(AlwaysFailure)();
+}
+
+SuccessAfter* BehaviorTreeUtil::successAfter(int t) {
+  return Q_NEW(SuccessAfter)(t);
+}
+
+FailureAfter* BehaviorTreeUtil::failureAfter(int t) {
+  return Q_NEW(FailureAfter)(t);
+}
+
+BehaviorTreeUtil BT;
 
 }
