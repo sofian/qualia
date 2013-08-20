@@ -1,6 +1,6 @@
 #include "BehaviorTree.h"
+
 using namespace BehaviorTree;
-using namespace std;
 
 void SequentialNode::init(void* agent)
 {

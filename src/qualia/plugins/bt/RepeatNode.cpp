@@ -1,7 +1,6 @@
 #include "BehaviorTree.h"
-#include <assert.h>
+
 using namespace BehaviorTree;
-using namespace std;
 
 RepeatNode::RepeatNode(int repeats)
 {

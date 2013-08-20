@@ -1,7 +1,6 @@
 #include "BehaviorTree.h"
 
 using namespace BehaviorTree;
-using namespace std;
 
 CountLimitNode::CountLimitNode(int _limit, bool _allow_reinitialize)
 {

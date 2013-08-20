@@ -5,14 +5,11 @@ integer operations
 Original Author: Bruce Dawson
 */
 
+#include "FPCompare.h"
+
 #include <float.h>
 #include <math.h>
-#include <assert.h>
 #include <stdio.h>
-
-#ifndef abs
-#define abs(a) (((a) < 0) ? -(a) : (a))
-#endif
 
 // Initial AlmostEqualULPs version - fast and simple, but
 // some limitations.
@@ -31,7 +28,7 @@ bool AlmostEqual2sComplement(float A, float B, int maxUlps)
 {
     // Make sure maxUlps is non-negative and small enough that the
     // default NAN won't compare as equal to anything.
-    assert(maxUlps > 0 && maxUlps < 4 * 1024 * 1024);
+    Q_ASSERT_ERROR(maxUlps > 0 && maxUlps < 4 * 1024 * 1024);
     int aInt = *(int*)&A;
     // Make aInt lexicographically ordered as a twos-complement int
     if (aInt < 0)

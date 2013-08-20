@@ -1,9 +1,7 @@
 
 #include "BehaviorTree.h"
-using namespace BehaviorTree;
-using namespace std;
 
-#include <time.h>
+using namespace BehaviorTree;
 
 const WeightedBehaviorTreeNode WeightedBehaviorTreeNode::NULL_WEIGHTED_NODE = WeightedBehaviorTreeNode(0, NULL);
 
@@ -12,7 +10,7 @@ ProbabilityNode::ProbabilityNode() : weighting(0)
   totalSum = 0;
   currentNode = NULL;
 //  weighting = NULL;
-  random.seed((unsigned long)time(NULL));
+  random.seed(millis());
 }
 
 ProbabilityNode::~ProbabilityNode() {

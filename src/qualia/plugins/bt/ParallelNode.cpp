@@ -1,7 +1,6 @@
 #include "BehaviorTree.h"
-#include <iostream>
+
 using namespace BehaviorTree;
-using namespace std;
 
 ParallelNode::ParallelNode(FAILURE_POLICY failurePolicy, SUCCESS_POLICY successPolicy) : childrenStatus(NULL)
 {
