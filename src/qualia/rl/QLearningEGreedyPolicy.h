@@ -20,6 +20,8 @@
 #ifndef QLEARNINGEGREEDYPOLICY_H_
 #define QLEARNINGEGREEDYPOLICY_H_
 
+#include <qualia/core/common.h>
+
 #include <qualia/util/random.h>
 
 #include "Policy.h"
