@@ -47,6 +47,10 @@
   #endif
 #endif
 
+#ifndef __STDC_LIMIT_MACROS
+#define __STDC_LIMIT_MACROS
+#endif
+
 #include <stdlib.h>
 #include <float.h>
 //#include <limits.h>
