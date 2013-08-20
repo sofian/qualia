@@ -3,7 +3,7 @@
 using namespace BehaviorTree;
 using namespace std;
 
-ParallelNode::ParallelNode(FAILURE_POLICY failurePolicy, SUCCESS_POLICY successPolicy) : childrenStatus(0)
+ParallelNode::ParallelNode(FAILURE_POLICY failurePolicy, SUCCESS_POLICY successPolicy) : childrenStatus(NULL)
 {
 	failPolicy = failurePolicy;
 	succeedPolicy = successPolicy;
@@ -27,8 +27,9 @@ void ParallelNode::init(void* agent)
 
 BEHAVIOR_STATUS ParallelNode::execute(void* agent)
 {
-//	if (childrenStatus == NULL)
-//		init(agent);
+  // This means init() wasn't called...
+	if (childrenStatus == NULL)
+		init(agent);
 
 	// go through all children and update the childrenStatus
 	for (uint8_t i = 0 ; i<nChildren; i++)
