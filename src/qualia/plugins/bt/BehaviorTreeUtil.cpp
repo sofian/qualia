@@ -2,8 +2,8 @@
 
 namespace BehaviorTree {
 
-PriorityNode*    BehaviorTreeUtil::priority()
-{ return Q_NEW(PriorityNode)(); }
+PriorityNode*    BehaviorTreeUtil::priority(TRAVERSAL_POLICY traversalPolicy)
+{ return Q_NEW(PriorityNode)(traversalPolicy); }
 
 SequentialNode*  BehaviorTreeUtil::sequential()
 { return Q_NEW(SequentialNode)(); }
