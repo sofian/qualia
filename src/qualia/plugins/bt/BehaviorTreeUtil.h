@@ -7,7 +7,7 @@ namespace BehaviorTree {
 
 class BehaviorTreeUtil {
 public:
-  PriorityNode*    priority();
+  PriorityNode*    priority(TRAVERSAL_POLICY traversalPolicy = RESTART);
 
   SequentialNode*  sequential();
 
