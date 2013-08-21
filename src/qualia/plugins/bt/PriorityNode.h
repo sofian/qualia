@@ -11,10 +11,11 @@ class PriorityNode:public BehaviorTreeInternalNode
 {
 public:
 	BEHAVIOR_STATUS execute(void* agent);
-	PriorityNode();
+	PriorityNode(TRAVERSAL_POLICY traversalPolicy=RESTART);
 	void init(void* agent);
 
   int currentPosition;
+  TRAVERSAL_POLICY traversalPolicy;
 };
 
 }

@@ -30,6 +30,13 @@ namespace BehaviorTree
 	*/
 	enum SUCCESS_POLICY {SUCCEED_ON_ONE,SUCCEED_ON_ALL};
 
+	/// Enumerates the options for when a priority node returns BT_RUNNING.
+	/**
+	 - RESTART indicates that the priority node will restart from the beginning, thus ignoring the BT_RUNNING value
+	 - CONTINUE indicates that the priority node will continue at the node that returned the BT_RUNNING value
+	 */
+	enum TRAVERSAL_POLICY {RESTART,CONTINUE};
+
 	///Abstract base clase for Behavior Tree Nodes.
 	class BehaviorTreeNode
 	{
