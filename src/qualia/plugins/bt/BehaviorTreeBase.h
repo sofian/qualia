@@ -21,14 +21,18 @@ namespace BehaviorTree
 
 	If FAIL_ON_ONE and SUCEED_ON_ONE are both active and are both trigerred in the same time step, failure will take precedence.
 	*/
-	enum FAILURE_POLICY {FAIL_ON_ONE,FAIL_ON_ALL};
+	typedef uint8_t FAILURE_POLICY;
+	static const FAILURE_POLICY FAIL_ON_ONE = 1;
+	static const FAILURE_POLICY FAIL_ON_ALL = 255;
 
 	/// Enumerates the options for when a parallel node is considered to have succeeded.
 	/**
 	- SUCCEED_ON_ONE indicates that the node will return success as soon as one of its children succeeds.
 	- SUCCEED_ON_ALL indicates that all of the node's children must succeed before it returns success.
 	*/
-	enum SUCCESS_POLICY {SUCCEED_ON_ONE,SUCCEED_ON_ALL};
+  typedef uint8_t SUCCESS_POLICY;
+  static const SUCCESS_POLICY SUCCEED_ON_ONE = 1;
+  static const SUCCESS_POLICY SUCCEED_ON_ALL = 255;
 
 	/// Enumerates the options for when a priority node returns BT_RUNNING.
 	/**
@@ -53,7 +57,6 @@ namespace BehaviorTree
 	/// Abstract base class for Behavior Tree nodes with children.
 	class BehaviorTreeInternalNode:public BehaviorTreeNode
 	{
-
 	public:
 	  BehaviorTreeInternalNode();
     virtual ~BehaviorTreeInternalNode();

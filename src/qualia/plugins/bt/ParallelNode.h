@@ -17,8 +17,11 @@ public:
 	virtual ~ParallelNode();
 
 private:
-	BEHAVIOR_STATUS* childrenStatus;
+	bool *childrenRunning;
+
 	FAILURE_POLICY failPolicy;
 	SUCCESS_POLICY succeedPolicy;
+  uint8_t nFailure;
+  uint8_t nSuccess;
 };
 }

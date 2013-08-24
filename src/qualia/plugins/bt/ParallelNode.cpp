@@ -2,112 +2,64 @@
 
 using namespace BehaviorTree;
 
-ParallelNode::ParallelNode(FAILURE_POLICY failurePolicy, SUCCESS_POLICY successPolicy) : childrenStatus(NULL)
+ParallelNode::ParallelNode(FAILURE_POLICY failurePolicy, SUCCESS_POLICY successPolicy)
+  : childrenRunning(NULL), nFailure(0), nSuccess(0)
 {
 	failPolicy = failurePolicy;
 	succeedPolicy = successPolicy;
 }
 
 ParallelNode::~ParallelNode() {
-  Alloc::free(childrenStatus);
+  Alloc::free(childrenRunning);
 }
 
 void ParallelNode::init(void* agent)
 {
-  if (!childrenStatus)
-    childrenStatus = (BEHAVIOR_STATUS*) Alloc::malloc(nChildren*sizeof(BEHAVIOR_STATUS));
+  if (!childrenRunning)
+    childrenRunning = (bool*) Alloc::malloc(nChildren*sizeof(bool));
 
   for (uint8_t i=0; i<nChildren; i++)
     children[i]->init(agent);
 
 	for (uint8_t i = 0 ; i<nChildren; i++)
-	  childrenStatus[i] = BT_RUNNING;
+	  childrenRunning[i] = false;
+
+	nSuccess = 0;
+	nFailure = 0;
 }
 
 BEHAVIOR_STATUS ParallelNode::execute(void* agent)
 {
   // This means init() wasn't called...
-	if (childrenStatus == NULL)
+	if (!childrenRunning)
 		init(agent);
 
-	// go through all children and update the childrenStatus
+	// go through all children and update the childrenRunning
+	// TODO: implement avec ceci: https://github.com/NetEase/pomelo-bt/blob/master/lib/node/parallel.js
 	for (uint8_t i = 0 ; i<nChildren; i++)
 	{
-		BehaviorTreeNode* node = children[i];
-		if (childrenStatus[i] == BT_RUNNING)
-		{
-			BEHAVIOR_STATUS status = node->execute(agent);
-			if (status == BT_FAILURE)
-			{
-				if (failPolicy == FAIL_ON_ONE)
-				{
-					init(agent);
-					return BT_FAILURE;
-				}
-				else
-				{
-					childrenStatus[i] = BT_FAILURE;
-				}
-			}
-			if (status == BT_SUCCESS)
-				childrenStatus[i] = BT_SUCCESS;
-		}
-		if (childrenStatus[i] == BT_FAILURE && failPolicy == FAIL_ON_ALL) //theoretically the failPolicy check is not needed
-		{
-			BEHAVIOR_STATUS status = node->execute(agent);
-			childrenStatus[i] = status;
-		}
+	  if (childrenRunning[i])
+	  {
+      BEHAVIOR_STATUS status = children[i]->execute(agent);
+      childrenRunning[i] = (status == BT_RUNNING);
+
+      if (status == BT_SUCCESS)
+        nSuccess++;
+      else if (status == BT_FAILURE)
+        nFailure++;
+	  }
 	}
 
-	//look through the childrenStatus and see if we have met any of our end conditions
-	bool sawSuccess = false;
-	bool sawAllFails = true;
-	bool sawAllSuccess = true;
-	for (uint8_t i = 0 ; i<nChildren; i++)
+	if (nSuccess == nChildren || nSuccess >= succeedPolicy)
 	{
-		switch(childrenStatus[i])
-		{
-		case BT_SUCCESS:
-			//can't instantly return success for succeedOnOne policy if failOnOne is also true, because failOnOne overrides succeedOnOne
-			if (succeedPolicy == SUCCEED_ON_ONE && failPolicy != FAIL_ON_ONE)
-			{
-				init(agent);
-				return BT_SUCCESS;
-			}
-			sawSuccess = true;
-			sawAllFails = false;
-			break;
-		case BT_FAILURE:
-			if (failPolicy == FAIL_ON_ONE)
-			{
-				init(agent);
-				return BT_FAILURE;
-			}
-			sawAllSuccess = false;
-			break;
-		case BT_RUNNING:
-			sawAllFails = false;
-			sawAllSuccess = false;
-			//optimization for early exit
-			if (failPolicy == FAIL_ON_ALL && succeedPolicy == SUCCEED_ON_ALL)
-			{
-				return BT_RUNNING;
-			}
-			break;
-		}
+	  init(agent);
+	  return BT_SUCCESS;
 	}
-	if (sawAllFails && failPolicy == FAIL_ON_ALL)
+	else if (nFailure == nChildren || nFailure >= failPolicy)
 	{
-		init(agent);
-		return BT_FAILURE;
-	}
-	else if ( (sawAllSuccess && succeedPolicy == SUCCEED_ON_ALL) || (sawSuccess && succeedPolicy == SUCCEED_ON_ONE) )
-	{
-		init(agent);
-		return BT_SUCCESS;
+	  init(agent);
+	  return BT_FAILURE;
 	}
 	else
-	{
-		return BT_RUNNING;
-	}
+	  return BT_RUNNING;
 }
