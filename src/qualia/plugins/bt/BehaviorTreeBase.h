@@ -90,6 +90,23 @@ namespace BehaviorTree
     uint8_t nChildren;
 	};
 
+  /// Abstract base class for Behavior Tree nodes with exactly one child.
+  class BehaviorTreeDecoratorNode:public BehaviorTreeNode
+  {
+  public:
+    BehaviorTreeDecoratorNode();
+    virtual ~BehaviorTreeDecoratorNode();
+
+    virtual BEHAVIOR_STATUS execute(void* agent) = 0;
+    virtual void init(void* object) = 0;
+
+    /// Sets the child node of this node.
+    virtual BehaviorTreeNode* setChild(BehaviorTreeNode* node);
+
+    /// This node's child node.
+    BehaviorTreeNode* child;
+  };
+
 	///Always returns the BT_RUNNING status
 	class AlwaysRunning: public BehaviorTreeNode
 	{

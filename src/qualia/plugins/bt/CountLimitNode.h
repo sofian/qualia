@@ -1,7 +1,7 @@
 namespace BehaviorTree
 {
 	///Limit the number of times this tree section can execute before it becomes blocked off
-	class CountLimitNode:public BehaviorTreeInternalNode
+	class CountLimitNode:public BehaviorTreeDecoratorNode
 	{
 	public:
     /**
@@ -17,6 +17,6 @@ namespace BehaviorTree
 		int current_rep;
 		bool allow_reinitialize;
 
-		void initChildren(void* agent);
+		void initChild(void* agent);
 	};
 }

@@ -45,5 +45,15 @@ BehaviorTreeInternalNode* BehaviorTreeInternalNode::addChild(BehaviorTreeNode* n
 }
 #endif
 
+BehaviorTreeDecoratorNode::BehaviorTreeDecoratorNode() : child(0) { }
+
+BehaviorTreeDecoratorNode::~BehaviorTreeDecoratorNode() {
+  if (child)
+    Q_DELETE(child);
+}
+
+BehaviorTreeNode* BehaviorTreeDecoratorNode::setChild(BehaviorTreeNode* node) {
+  child = node;
+}
 
 }
