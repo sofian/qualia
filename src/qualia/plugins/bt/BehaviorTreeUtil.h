@@ -29,6 +29,9 @@ public:
   WeightedBehaviorTreeNode weighted(double weight, BehaviorTreeNode* node);
 };
 
+#define BT_END NULL
+#define BT_END_WEIGHTED WeightedBehaviorTreeNode::NULL_WEIGHTED_NODE
+
 extern BehaviorTreeUtil BT;
 
 #define CHILDREN(...)          setChildren(__VA_ARGS__, NULL)
