@@ -227,32 +227,31 @@ int main(int argc, char** argv) {
   int nRepeat = (agentId + 1) * 10;
 
   BehaviorTreeNode* root =
-      BT.priority()->CHILDREN(
-          BT.sequential()->CHILDREN(
-          Q_NEW(BoolCondition<TestBTreeAgent>)(&TestBTreeAgent::hasClosest, false),
-          BT.priority()->CHILDREN(
-              BT.repeat(-1)->CHILDREN(
-                  BT.sequential()->CHILDREN(
-                Q_NEW(FloatCondition<TestBTreeAgent>)(&TestBTreeAgent::getClosestDistance, GREATER_OR_CLOSE, 0.05),
-                Q_NEW(ChooseAction)(&actionProperties, ATTRACT)
-              )
-            ),
-            BT.repeat(-1)->CHILDREN(
-                BT.probability()->WEIGHTED_CHILDREN(
-                    BT.weighted(0.99, Q_NEW(ChooseAction)(&actionProperties, ATTRACT)),
-                    BT.weighted(0.01, BT.failure())
-              )
-            )
-          )
-        ),
-        BT.sequential()->CHILDREN(
-          Q_NEW(BoolCondition<TestBTreeAgent>)(&TestBTreeAgent::hasClosest, true),
-          BT.repeat(500)->CHILDREN(
-              Q_NEW(ChooseAction)(&actionProperties, REPEL)
-          )
-        )
 
-      );
+      BT.priority()->setChildren(
+          BT.sequential()->setChildren(
+              Q_NEW(BoolCondition<TestBTreeAgent>)(&TestBTreeAgent::hasClosest, false),
+              BT.repeat(-1)->setChild(
+                  BT.sequential()->setChildren(
+                      Q_NEW(FloatCondition<TestBTreeAgent>)(&TestBTreeAgent::getClosestDistance, GREATER_OR_CLOSE, 0.05),
+                      Q_NEW(ChooseAction)(&actionProperties, ATTRACT),
+                      BT_END)
+                  ),
+              BT_END),
+          BT.repeat(-1)->setChild(
+              BT.probability()->setWeightedChildren(
+                  BT.weighted(0.99, Q_NEW(ChooseAction)(&actionProperties, ATTRACT)),
+                  BT.weighted(0.01, BT.failure()),
+                  BT_END)
+              ),
+          BT.sequential()->setChildren(
+            Q_NEW(BoolCondition<TestBTreeAgent>)(&TestBTreeAgent::hasClosest, true),
+            BT.repeat(500)->setChild(
+                Q_NEW(ChooseAction)(&actionProperties, REPEL)
+            ),
+            BT_END),
+
+          BT_END);
 
 //  BehaviorTreeInternalNode* root = new PriorityNode();
 //  ProbabilityNode* probNode = new ProbabilityNode();
