@@ -20,10 +20,6 @@ RepeatNode*      BehaviorTreeUtil::repeat(int repeats)
 CountLimitNode*  BehaviorTreeUtil::countLimit(int limit, bool allow_reinitialize)
 { return Q_NEW(CountLimitNode)(limit, allow_reinitialize); }
 
-WeightedBehaviorTreeNode BehaviorTreeUtil::weighted(double weight, BehaviorTreeNode* node) {
-  return WeightedBehaviorTreeNode(weight, node);
-}
-
 AlwaysRunning* BehaviorTreeUtil::running() {
   return Q_NEW(AlwaysRunning)();
 }
@@ -42,6 +38,10 @@ SuccessAfter* BehaviorTreeUtil::successAfter(int t) {
 
 FailureAfter* BehaviorTreeUtil::failureAfter(int t) {
   return Q_NEW(FailureAfter)(t);
+}
+
+WeightedBehaviorTreeNode BehaviorTreeUtil::weighted(double weight, BehaviorTreeNode* node) {
+  return WeightedBehaviorTreeNode(weight, node);
 }
 
 BehaviorTreeUtil BT;
