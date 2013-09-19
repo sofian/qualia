@@ -1,7 +1,7 @@
 /*
- * MapperBasicEnvironment.h
+ * MapperRLEnvironment.h
  *
- * (c) 2012 Sofian Audry -- info(@)sofianaudry(.)com
+ * (c) 2013 Sofian Audry -- info(@)sofianaudry(.)com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,25 +17,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MAPPERBASICENVIRONMENT_H_
-#define MAPPERBASICENVIRONMENT_H_
+#ifndef MAPPERRLENVIRONMENT_H_
+#define MAPPERRLENVIRONMENT_H_
 
-#include "MapperEnvironment.h"
-#include <qualia/core/Observation.h>
+#include "MapperBasicEnvironment.h"
+#include <qualia/rl/RLObservation.h>
 
-class MapperBasicEnvironment : public MapperEnvironment {
+class MapperRLEnvironment : public MapperBasicEnvironment {
 public:
-  Observation* currentObservation;
-  int observationDim;
-  ActionProperties* actionProperties;
-
-  MapperBasicEnvironment(int observationDim, ActionProperties* actionProps, MapperConnector* connector);
-  virtual ~MapperBasicEnvironment();
+  MapperRLEnvironment(int observationDim, ActionProperties* actionProps, MapperConnector* connector);
+  virtual ~MapperRLEnvironment();
 
   virtual void init();
   virtual void addSignals();
-  virtual void writeOutputs(const Action* action);
   virtual Observation* readInputs();
 };
 
-#endif /* MAPPERBASICENVIRONMENT_H_ */
+#endif /* MAPPERRLENVIRONMENT_H_ */

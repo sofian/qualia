@@ -19,16 +19,25 @@
 
 #include "MapperBasicEnvironment.h"
 
-MapperBasicEnvironment::MapperBasicEnvironment(int observationDim, int actionDim_, MapperConnector* connector)
+MapperBasicEnvironment::MapperBasicEnvironment(int observationDim_, ActionProperties* actionProps, MapperConnector* connector)
   : MapperEnvironment(connector),
-    currentObservation(observationDim), actionDim(actionDim_) { }
+    currentObservation(0),
+    observationDim(observationDim_),
+    actionProperties(actionProps) { }
 
 MapperBasicEnvironment::~MapperBasicEnvironment() {
+  if (currentObservation)
+    Q_DELETE(currentObservation);
+}
+
+void MapperBasicEnvironment::init() {
+  if (!currentObservation)
+    currentObservation = Q_NEW(Observation)(observationDim);
 }
 
 void MapperBasicEnvironment::addSignals() {
   // Add inputs observation.
-  connector->addInput("observation", currentObservation.dim(), 'f', "norm", 0, 0);
+  connector->addInput("observation", currentObservation->dim(), 'f', "norm", 0, 0);
   float terminalFalse = 0;
   connector->addInput("observation_terminal", 1, 'i', "bool", 0, 0, false, &terminalFalse);
 
@@ -43,8 +52,8 @@ void MapperBasicEnvironment::writeOutputs(const Action* action) {
 
 Observation* MapperBasicEnvironment::readInputs() {
   // Read observations.
-  connector->readInput("observation", currentObservation.observations);
-  connector->readInput("observation_terminal", (int*)&currentObservation.terminal);
-  return &currentObservation;
+  connector->readInput("observation", currentObservation->observations);
+  connector->readInput("observation_terminal", (int*)&currentObservation->terminal);
+  return currentObservation;
 }
 

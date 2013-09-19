@@ -66,6 +66,7 @@ int main(int argc, char** argv) {
   char* saveModelFileName;
   char* loadModelFileName;
   bool isLearning;
+
 //  bool isRemoteAgent;
 
   //=================== The command-line ==========================
@@ -210,7 +211,7 @@ int main(int argc, char** argv) {
   Q_MESSAGE("--- Creating environment ---\n");
   MapperConnector connector(deviceName, peerDeviceName, autoConnect, port);
   Environment* env;
-  MapperEnvironment* mapperEnv = new MapperBasicEnvironment(dimObservations, actionProperties.dim(), &connector);
+  MapperEnvironment* mapperEnv = new MapperBasicEnvironment(dimObservations, &actionProperties, &connector);
   if (exportData) {
     // Export data using a FileExportEnvironment.
     char fileName[1000];
