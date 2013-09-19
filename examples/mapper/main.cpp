@@ -135,8 +135,13 @@ int main(int argc, char** argv) {
   char tmp[1000];
   strcpy(tmp, stringNActions);
   int k=0;
+  int nActions0 = -1;
   for (int i=0; i<dimActions-1; i++, k++) {
     Q_ASSERT_ERROR_MESSAGE( sscanf(tmp, "%d,%s", &nActions[k], tmp) > 0, "Malformed argument <n_actions>: %s", stringNActions);
+    if (nActions0 == -1)
+      nActions0 = nActions[k];
+    else
+      Q_ASSERT_ERROR_MESSAGE( nActions0 == nActions[k], "Invalid n. action string: %s. Qualia's mapper plugin only supports actions with the name number of actions component per dimension.");
   }
   Q_ASSERT_ERROR_MESSAGE( sscanf(tmp, "%d", &nActions[k]), "Malformed argument <n_actions>: %s", stringNActions);
 

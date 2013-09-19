@@ -42,7 +42,19 @@ void MapperBasicEnvironment::addSignals() {
   connector->addInput("observation_terminal", 1, 'i', "bool", 0, 0, false, &terminalFalse);
 
   // Add output action.
-  connector->addOutput("action", actionDim, 'i', 0, 0, 0);
+  int minAction = 0;
+  int maxActions[actionProperties->dim()];
+#if DEBUG_WARNING
+  action_dim_t maxOneAction = (actionProperties->dim() > 0 ? actionProperties->nActions(0) - 1: 0);
+#endif
+  for (unsigned int i=0; i<actionProperties->dim(); i++) {
+    maxActions[i] = actionProperties->nActions(i)-1;
+#if DEBUG_WARNING
+    Q_ASSERT_WARNING_MESSAGE(maxOneAction == maxActions[i], "Action properties with different nActions is currently not supported by the mapper plugin."
+                                                            "Make sure all action dimention have the same number of possible actions.");
+#endif
+  }
+  connector->addOutput("action", (int)actionProperties->dim(), 'i', 0, &minAction, maxActions, 0);
 }
 
 void MapperBasicEnvironment::writeOutputs(const Action* action) {
