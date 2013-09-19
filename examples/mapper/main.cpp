@@ -1,6 +1,7 @@
 #include <qualia/core/common.h>
 #include <qualia/computer/CmdLine.h>
 #include <qualia/plugins/mapper/MapperBasicEnvironment.h>
+#include <qualia/plugins/mapper/MapperRLEnvironment.h>
 #include <qualia/plugins/bt/BehaviorTree.h>
 
 #include <qualia/core/Qualia.h>
@@ -216,7 +217,11 @@ int main(int argc, char** argv) {
   Q_MESSAGE("--- Creating environment ---\n");
   MapperConnector connector(deviceName, peerDeviceName, autoConnect, port);
   Environment* env;
-  MapperEnvironment* mapperEnv = new MapperBasicEnvironment(dimObservations, &actionProperties, &connector);
+  MapperEnvironment* mapperEnv;
+  if (agentType == RL)
+    mapperEnv = new MapperRLEnvironment(dimObservations, &actionProperties, &connector);
+  else
+    mapperEnv = new MapperBasicEnvironment(dimObservations, &actionProperties, &connector);
   if (exportData) {
     // Export data using a FileExportEnvironment.
     char fileName[1000];
