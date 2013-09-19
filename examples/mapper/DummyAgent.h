@@ -31,19 +31,16 @@ public:
   DummyAgent(ActionProperties* props) : currentAction(props) {}
 
   virtual void init() {
-    currentAction.reset();
-  }
+    currentAction.setConflated( currentAction.properties->random() );
+ }
 
   virtual Action* start(const Observation* observation) {
-    currentAction.reset();
     return &currentAction;
   }
 
   virtual Action* step(const Observation* observation) {
-    if (currentAction.hasNext())
-      currentAction.next();
-    else
-      currentAction.reset();
+    if (randomUniform() < 0.1f)
+      currentAction.setConflated( currentAction.properties->random() );
     return &currentAction;
   }
 
