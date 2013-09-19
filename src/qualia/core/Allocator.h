@@ -90,7 +90,7 @@ public:
 /// Template equivalent of *delete* operator: explicitely calls destuctor and releases memory using Alloc::free().
 template<class T>
 void Q_DELETE(T* obj) {
-  obj->~T(); free(obj);
+  obj->~T(); Alloc::free(obj);
 }
 
 template<class T>
