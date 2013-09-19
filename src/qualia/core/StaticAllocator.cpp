@@ -30,7 +30,7 @@ void* StaticAllocator::malloc(size_t size) {
   return lastPtr;
 }
 
-void* Allocator::calloc(size_t num, size_t size) {
+void* StaticAllocator::calloc(size_t num, size_t size) {
   return malloc(size * num);
 }
 
