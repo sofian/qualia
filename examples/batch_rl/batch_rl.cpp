@@ -55,6 +55,7 @@ int main(int argc, char** argv) {
   int dimActions;
   char* stringNActions;
   char* modelFileName;
+  bool dumpWeights;
   int seed;
 
   //=================== The command-line ==========================
@@ -81,6 +82,7 @@ int main(int argc, char** argv) {
   cmd.addRCmdOption("-lrd", &learningRateDecay, 0.001, "learning rate decay", true);
   cmd.addRCmdOption("-wd", &weightDecay, 0, "weight decay", true);
   cmd.addSCmdOption("-save", &modelFileName, "", "the model trainFile");
+  cmd.addBCmdOption("-dump-weights", &dumpWeights, false, "dump the weights to stdout after training (useful for integrating into AVR code)");
 
   cmd.addText("\nReinforcement Learning Options:");
   cmd.addRCmdOption("-gamma", &gamma, 0.999, "the gamma value", true);
@@ -160,6 +162,15 @@ int main(int argc, char** argv) {
     printf("--- Saving ---\n");
     DiskXFile modelFile(modelFileName, "w");
     net.save(&modelFile);
+  }
+
+  if (dumpWeights) {
+    printf("=== BEGIN DUMP WEIGHTS ===\n");
+    printf("const real WEIGHTS[] = { ");
+    for (int i=0; i<net.nParams(); i++)
+      printf("%f, ", net.weights[i]);
+    printf("};\n");
+    printf("==== END DUMP WEIGHTS ====\n");
   }
 
   Q_DELETE(data);
