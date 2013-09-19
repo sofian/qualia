@@ -110,7 +110,7 @@ namespace BehaviorTree
     BehaviorTreeNode* child;
   };
 
-	///Always returns the BT_RUNNING status
+  ///Always returns the BT_RUNNING status
 	class AlwaysRunning: public BehaviorTreeNode
 	{
 		BEHAVIOR_STATUS execute(void* agent)
