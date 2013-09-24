@@ -31,6 +31,7 @@ MapperRLEnvironment::~MapperRLEnvironment() {
 void MapperRLEnvironment::init() {
   if (!currentObservation)
     currentObservation = Q_NEW(RLObservation)(observationDim);
+  MapperBasicEnvironment::init();
 }
 
 void MapperRLEnvironment::addSignals() {

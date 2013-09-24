@@ -33,6 +33,7 @@ MapperBasicEnvironment::~MapperBasicEnvironment() {
 void MapperBasicEnvironment::init() {
   if (!currentObservation)
     currentObservation = Q_NEW(Observation)(observationDim);
+  MapperEnvironment::init();
 }
 
 void MapperBasicEnvironment::addSignals() {
