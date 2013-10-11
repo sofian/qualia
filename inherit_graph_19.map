@@ -1,6 +1,7 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classPolicy.html" title="Policy" alt="" coords="5,32,64,61"/>
-<area shape="rect" id="node3" href="$classQLearningEGreedyPolicy.html" title="QLearningEGreedyPolicy" alt="" coords="112,5,280,35"/>
-<area shape="rect" id="node7" href="$classQLearningSoftmaxPolicy.html" title="QLearningSoftmaxPolicy" alt="" coords="113,59,279,88"/>
-<area shape="rect" id="node5" href="$classQLearningEDecreasingPolicy.html" title="QLearningEDecreasingPolicy" alt="" coords="328,5,520,35"/>
+<area shape="rect" id="node1" href="$classMTRand__int32.html" title="MTRand_int32" alt="" coords="5,85,112,115"/>
+<area shape="rect" id="node3" href="$classMTRand.html" title="MTRand" alt="" coords="183,5,255,35"/>
+<area shape="rect" id="node5" href="$classMTRand53.html" title="MTRand53" alt="" coords="176,59,261,88"/>
+<area shape="rect" id="node7" href="$classMTRand__closed.html" title="MTRand_closed" alt="" coords="160,112,277,141"/>
+<area shape="rect" id="node9" href="$classMTRand__open.html" title="MTRand_open" alt="" coords="165,165,272,195"/>
 </map>

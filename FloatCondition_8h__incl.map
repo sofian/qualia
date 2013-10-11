@@ -1,0 +1,9 @@
+<map id="src/qualia/plugins/bt/FloatCondition.h" name="src/qualia/plugins/bt/FloatCondition.h">
+<area shape="rect" id="node3" href="$Common_8h.html" title="Common.h" alt="" coords="751,179,836,208"/>
+<area shape="rect" id="node7" href="$FPCompare_8h.html" title="FPCompare.h" alt="" coords="476,101,577,131"/>
+<area shape="rect" id="node9" href="$common_8h.html" title="qualia/core/common.h" alt="" coords="425,179,575,208"/>
+<area shape="rect" id="node21" href="$Arduino_8h.html" title="qualia/compat/Arduino.h" alt="" coords="57,256,220,285"/>
+<area shape="rect" id="node31" href="$error_8h.html" title="qualia/core/error.h" alt="" coords="559,256,684,285"/>
+<area shape="rect" id="node34" href="$Allocator_8h.html" title="qualia/core/Allocator.h" alt="" coords="759,256,908,285"/>
+<area shape="rect" id="node28" href="$binary_8h.html" title="binary.h" alt="" coords="295,333,361,363"/>
+</map>

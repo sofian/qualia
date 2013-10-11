@@ -1,0 +1,7 @@
+<map id="BehaviorTree::BehaviorTreeInternalNode" name="BehaviorTree::BehaviorTreeInternalNode">
+<area shape="rect" id="node5" href="$classBehaviorTree_1_1ParallelNode.html" title="Execute behaviors in parallel." alt="" coords="511,5,692,35"/>
+<area shape="rect" id="node7" href="$classBehaviorTree_1_1PriorityNode.html" title="Executes behaviors in priority order until one of them is successful." alt="" coords="512,59,691,88"/>
+<area shape="rect" id="node9" href="$classBehaviorTree_1_1ProbabilityNode.html" title="Executes behaviors randomly, based on a given set of weights." alt="" coords="503,112,700,141"/>
+<area shape="rect" id="node11" href="$classBehaviorTree_1_1SequentialNode.html" title="Executes behaviors in order." alt="" coords="503,165,700,195"/>
+<area shape="rect" id="node2" href="$classBehaviorTree_1_1BehaviorTreeNode.html" title="Abstract base clase for Behavior Tree Nodes." alt="" coords="7,85,220,115"/>
+</map>

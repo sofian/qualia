@@ -1,7 +1,8 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classAgent.html" title="Agent" alt="" coords="5,59,61,88"/>
-<area shape="rect" id="node3" href="$classMultiAgent.html" title="MultiAgent" alt="" coords="125,5,208,35"/>
-<area shape="rect" id="node5" href="$classOscAgent.html" title="OscAgent" alt="" coords="127,59,207,88"/>
-<area shape="rect" id="node9" href="$classQLearningAgent.html" title="QLearningAgent" alt="" coords="109,112,224,141"/>
-<area shape="rect" id="node7" href="$classOscBasicAgent.html" title="OscBasicAgent" alt="" coords="273,59,385,88"/>
+<area shape="rect" id="node1" href="$classAgent.html" title="Agent" alt="" coords="5,85,61,115"/>
+<area shape="rect" id="node3" href="$classBehaviorTreeAgent.html" title="BehaviorTreeAgent" alt="" coords="109,5,243,35"/>
+<area shape="rect" id="node5" href="$classMultiAgent.html" title="MultiAgent" alt="" coords="135,59,217,88"/>
+<area shape="rect" id="node7" href="$classOscAgent.html" title="OscAgent" alt="" coords="136,112,216,141"/>
+<area shape="rect" id="node11" href="$classQLearningAgent.html" title="QLearningAgent" alt="" coords="119,165,233,195"/>
+<area shape="rect" id="node9" href="$classOscBasicAgent.html" title="OscBasicAgent" alt="" coords="292,112,404,141"/>
 </map>

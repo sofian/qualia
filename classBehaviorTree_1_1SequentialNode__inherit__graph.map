@@ -1,0 +1,4 @@
+<map id="BehaviorTree::SequentialNode" name="BehaviorTree::SequentialNode">
+<area shape="rect" id="node2" href="$classBehaviorTree_1_1BehaviorTreeInternalNode.html" title="Abstract base class for Behavior Tree nodes with children." alt="" coords="20,83,204,130"/>
+<area shape="rect" id="node4" href="$classBehaviorTree_1_1BehaviorTreeNode.html" title="Abstract base clase for Behavior Tree Nodes." alt="" coords="5,5,219,35"/>
+</map>

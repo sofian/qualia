@@ -1,0 +1,5 @@
+<map id="BehaviorTree::BehaviorTreeDecoratorNode" name="BehaviorTree::BehaviorTreeDecoratorNode">
+<area shape="rect" id="node5" href="$classBehaviorTree_1_1CountLimitNode.html" title="Limit the number of times this tree section can execute before it becomes blocked off..." alt="" coords="5,179,205,208"/>
+<area shape="rect" id="node7" href="$classBehaviorTree_1_1RepeatNode.html" title="A node that repeats its child a specified number of times." alt="" coords="229,179,408,208"/>
+<area shape="rect" id="node2" href="$classBehaviorTree_1_1BehaviorTreeNode.html" title="Abstract base clase for Behavior Tree Nodes." alt="" coords="105,5,319,35"/>
+</map>

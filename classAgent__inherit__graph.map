@@ -1,6 +1,7 @@
 <map id="Agent" name="Agent">
-<area shape="rect" id="node3" href="$classMultiAgent.html" title="MultiAgent" alt="" coords="5,83,88,112"/>
-<area shape="rect" id="node5" href="$classOscAgent.html" title="OscAgent" alt="" coords="112,83,192,112"/>
-<area shape="rect" id="node9" href="$classQLearningAgent.html" title="QLearningAgent" alt="" coords="216,83,331,112"/>
-<area shape="rect" id="node7" href="$classOscBasicAgent.html" title="OscBasicAgent" alt="" coords="96,160,208,189"/>
+<area shape="rect" id="node3" href="$classBehaviorTreeAgent.html" title="BehaviorTreeAgent" alt="" coords="5,83,139,112"/>
+<area shape="rect" id="node5" href="$classMultiAgent.html" title="MultiAgent" alt="" coords="163,83,245,112"/>
+<area shape="rect" id="node7" href="$classOscAgent.html" title="OscAgent" alt="" coords="269,83,349,112"/>
+<area shape="rect" id="node11" href="$classQLearningAgent.html" title="QLearningAgent" alt="" coords="373,83,488,112"/>
+<area shape="rect" id="node9" href="$classOscBasicAgent.html" title="OscBasicAgent" alt="" coords="253,160,365,189"/>
 </map>
