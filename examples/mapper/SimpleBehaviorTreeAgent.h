@@ -7,16 +7,33 @@ using namespace BehaviorTree;
 
 class SimpleBehaviorTreeAgent : public BehaviorTreeAgent {
 public:
-  SimpleBehaviorTreeAgent(ActionProperties* actionProperties, BehaviorTreeNode* root)
-    : BehaviorTreeAgent(actionProperties, root) {}
+  int agentId;
+  float energy;
+
+  SimpleBehaviorTreeAgent(int agentId_, ActionProperties* actionProperties, BehaviorTreeNode* root)
+    : BehaviorTreeAgent(actionProperties, root), agentId(agentId_), energy(0) {}
   virtual ~SimpleBehaviorTreeAgent() {}
 
   float getInfluenceX() const { return currentObservation->observations[0]; }
   float getInfluenceY() const { return currentObservation->observations[1]; }
+  float getEnergy() const { return energy; }
+
   float getInfluenceNorm() const { return sqrt( pow(getInfluenceX(), 2) + pow(getInfluenceY(), 2)); }
+  void accumulateEnergy(void*) { energy += getInfluenceNorm(); }
+  void resetEnergy(void*) { energy = 0; }
+
+  void debug(void*) {
+    printf("%d: %f %f\n", agentId, getInfluenceX(), getInfluenceY());
+  }
   void moveTowardsInfluence(void*) {
+    printf("GOTO: %d: %f %f (%f)\n", agentId, getInfluenceX(), getInfluenceY(), getEnergy());
     currentAction[0] = getInfluenceX() < 0 ? 0 : currentAction.nActions(0) - 1;
     currentAction[1] = getInfluenceY() < 0 ? 0 : currentAction.nActions(1) - 1;
+  }
+  void moveAwayFromInfluence(void *) {
+    printf("AWAY: %d: %f %f (%f)\n", agentId, getInfluenceX(), getInfluenceY(), getEnergy());
+    currentAction[0] = getInfluenceX() > 0 ? 0 : currentAction.nActions(0) - 1;
+    currentAction[1] = getInfluenceY() > 0 ? 0 : currentAction.nActions(1) - 1;
   }
 };
 
@@ -31,6 +48,22 @@ public:
   virtual ~ChooseAction() {}
 
   BehaviorTree::BEHAVIOR_STATUS execute(void* agent) {
+    ((BehaviorTreeAgent*)agent)->getCurrentAction().copyFrom(action);
+    return BT_SUCCESS;
+  }
+  virtual void init(void* agent) {}
+};
+
+class RandomAction : public BehaviorTreeNode
+{
+public:
+  Action action;
+  RandomAction(ActionProperties* props) : action(props) {
+  }
+  virtual ~RandomAction() {}
+
+  BehaviorTree::BEHAVIOR_STATUS execute(void* agent) {
+    action.setConflated(action.properties->random());
     ((BehaviorTreeAgent*)agent)->getCurrentAction().copyFrom(action);
     return BT_SUCCESS;
   }

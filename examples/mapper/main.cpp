@@ -15,6 +15,7 @@
 
 #include "DummyAgent.h"
 #include "SimpleBehaviorTreeAgent.h"
+#include "InfluenceRemappingEnvironment.h"
 
 #if ! is_computer()
 #error "This program only works on computer platforms. Please recompile using platform=computer option."
@@ -193,13 +194,35 @@ int main(int argc, char** argv) {
         action_dim_t idle[] = { nActions[0]/2, nActions[1] / 2  };
 
         BehaviorTreeNode* root =
-            BT.sequential()->CHILDREN(
-              Q_NEW(ChooseAction)(&actionProperties, idle),
-              Q_NEW(FloatCondition<SimpleBehaviorTreeAgent>)(&SimpleBehaviorTreeAgent::getInfluenceNorm, LESS_THAN_FP, 0.5),
-              Q_NEW(FunctionCall<SimpleBehaviorTreeAgent>(&SimpleBehaviorTreeAgent::moveTowardsInfluence))
-            );
 
-        agent = new SimpleBehaviorTreeAgent(&actionProperties, root);
+            BT.priority(CONTINUE)->setChildren(
+
+              BT.sequential()->setChildren(
+                Q_NEW(FloatCondition<SimpleBehaviorTreeAgent>)(&SimpleBehaviorTreeAgent::getEnergy, LESS_THAN_FP, 12.0),
+                Q_NEW(FunctionCall<SimpleBehaviorTreeAgent>(&SimpleBehaviorTreeAgent::debug)),
+                BT.probability()->setWeightedChildren(
+                  BT.weighted(0.5, Q_NEW(FunctionCall<SimpleBehaviorTreeAgent>(&SimpleBehaviorTreeAgent::moveTowardsInfluence))),
+                  BT.weighted(0.5, Q_NEW(RandomAction)(&actionProperties)),
+                  BT_END_WEIGHTED),
+//                Q_NEW(RandomAction)(&actionProperties),
+                Q_NEW(FunctionCall<SimpleBehaviorTreeAgent>(&SimpleBehaviorTreeAgent::accumulateEnergy)),
+                BT_END),
+
+              BT.sequential()->setChildren(
+                Q_NEW(FunctionCall<SimpleBehaviorTreeAgent>(&SimpleBehaviorTreeAgent::resetEnergy)),
+                BT.repeat(1000)->setChild(
+                  BT.sequential()->setChildren(
+                    Q_NEW(FloatCondition<SimpleBehaviorTreeAgent>)(&SimpleBehaviorTreeAgent::getInfluenceNorm, LESS_THAN_FP, 1.0),
+                    BT.probability()->setWeightedChildren(
+                      BT.weighted(0.5, Q_NEW(FunctionCall<SimpleBehaviorTreeAgent>(&SimpleBehaviorTreeAgent::moveAwayFromInfluence))),
+                      BT.weighted(0.5, Q_NEW(RandomAction)(&actionProperties)),
+                      BT_END_WEIGHTED),
+                    BT_END)),
+                BT_END),
+
+              BT_END);
+
+        agent = new SimpleBehaviorTreeAgent(agentId, &actionProperties, root);
 
 //            BT_PARALLEL(FAIL_ON_ALL, SUCCEED_ON_ONE)->CHILDREN(
 //                                   BT_SEQUENTIAL()->CHILDREN(
@@ -222,16 +245,19 @@ int main(int argc, char** argv) {
     mapperEnv = new MapperRLEnvironment(dimObservations, &actionProperties, &connector);
   else
     mapperEnv = new MapperBasicEnvironment(dimObservations, &actionProperties, &connector);
+
   if (exportData) {
     // Export data using a FileExportEnvironment.
     char fileName[1000];
     sprintf(fileName, "export-%d.raw", agentId);
-    DiskXFile* f = new(Alloc::instance()) DiskXFile(fileName, "w+");
+    DiskXFile* f = Q_NEW(DiskXFile)(fileName, "w+");
     env = new FileExportEnvironment(mapperEnv, f, dimObservations, actionProperties.dim());
   } else
     env = mapperEnv;
 
-  Qualia* qualia = new Qualia(agent, env);
+  InfluenceRemappingEnvironment infEnv(env);
+
+  Qualia* qualia = new Qualia(agent, &infEnv);
 
   Q_MESSAGE("--- Initialising ---\n");
   qualia->init();
