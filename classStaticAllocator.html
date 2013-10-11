@@ -86,6 +86,8 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a1a13fa231730af8fb1557c2a15c1bf06"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a01a786caeace93a4308db1b8f1784237"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStaticAllocator.html#a01a786caeace93a4308db1b8f1784237">bufferIdx</a></td></tr>
 <tr class="separator:a01a786caeace93a4308db1b8f1784237"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38216f31d27f9d38f6e5411d46b7bd0d"><td class="memItemLeft" align="right" valign="top">unsigned char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStaticAllocator.html#a38216f31d27f9d38f6e5411d46b7bd0d">lastPtr</a></td></tr>
+<tr class="separator:a38216f31d27f9d38f6e5411d46b7bd0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aee105d3aa6b6480bd8e82d4487d848c4"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStaticAllocator.html#aee105d3aa6b6480bd8e82d4487d848c4">nLeaks</a></td></tr>
 <tr class="separator:aee105d3aa6b6480bd8e82d4487d848c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa6276acbd69767e8310802b22c770290"><td class="memItemLeft" align="right" valign="top">unsigned char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStaticAllocator.html#aa6276acbd69767e8310802b22c770290">lastLeak</a></td></tr>
@@ -95,6 +97,8 @@ Public Attributes</h2></td></tr>
 Protected Member Functions</h2></td></tr>
 <tr class="memitem:a711b23637fef77c591d58fc5968e7a3d"><td class="memItemLeft" align="right" valign="top">virtual void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStaticAllocator.html#a711b23637fef77c591d58fc5968e7a3d">malloc</a> (size_t size)</td></tr>
 <tr class="separator:a711b23637fef77c591d58fc5968e7a3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60aadf4ade6ea2e075586557d87fe7fa"><td class="memItemLeft" align="right" valign="top">virtual void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStaticAllocator.html#a60aadf4ade6ea2e075586557d87fe7fa">calloc</a> (size_t num, size_t size)</td></tr>
+<tr class="separator:a60aadf4ade6ea2e075586557d87fe7fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a75d9c5498d915517b105603d8320a3d1"><td class="memItemLeft" align="right" valign="top">virtual void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStaticAllocator.html#a75d9c5498d915517b105603d8320a3d1">realloc</a> (void *ptr, size_t size)</td></tr>
 <tr class="separator:a75d9c5498d915517b105603d8320a3d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa4bdfecdf3b2ef2588aae288ae5ff0f6"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStaticAllocator.html#aa4bdfecdf3b2ef2588aae288ae5ff0f6">free</a> (void *ptr)</td></tr>
@@ -103,14 +107,14 @@ Protected Member Functions</h2></td></tr>
 <tr class="separator:ae478b942de73b6762218cb611de5610b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>An allocator (see <a class="el" href="classAllocator.html">Allocator</a>) that "allocates" memory based on a pre-allocated static memory pool/buffer. Useful to manage memory on architectures that don't support well dynamic allocation (such as AVR-based systems). On such systems, it is usually recommended NOT to use dynamic allocation to avoid problems.</p>
+<div class="textblock"><p>An allocator (see <a class="el" href="classAllocator.html">Allocator</a>) that "allocates" memory based on a pre-allocated static memory pool/buffer. Useful to manage memory on architectures that don't support well dynamic allocation (such as AVR-based systems). On such systems, it is usually recommended NOT to use dynamic allocation to avoid problems. <a class="el" href="classStaticAllocator.html">StaticAllocator</a> makes sure the memory is allocated from the stack rather than from the heap.</p>
 <p>WARNING: Calling <a class="el" href="classStaticAllocator.html#aa4bdfecdf3b2ef2588aae288ae5ff0f6">StaticAllocator::free()</a> does NOT free the pointer at all. You should in fact NEVER have to call that function (because the memory then becomes completely useless). The object keeps track of any calls to <a class="el" href="classStaticAllocator.html#aa4bdfecdf3b2ef2588aae288ae5ff0f6">free()</a> by incrementing the nLeaks counter. The variable lastLeak is also updated with the value of the pointer on which <a class="el" href="classStaticAllocator.html#aa4bdfecdf3b2ef2588aae288ae5ff0f6">free()</a> was called last.</p>
 <p>NOTE: An alternative is to tune the heap start and end in malloc. <a href="http://www.nongnu.org/avr-libc/user-manual/malloc.html">http://www.nongnu.org/avr-libc/user-manual/malloc.html</a></p>
 <p>Usage: </p>
 <div class="fragment"><div class="line"><span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> mybuffer[100];</div>
 <div class="line"><a class="code" href="classStaticAllocator.html">StaticAllocator</a> alloc(mybuffer, 100);</div>
 <div class="line"><span class="keywordtype">int</span>* myarray = (<span class="keywordtype">int</span>*)alloc.malloc(10*<span class="keyword">sizeof</span>(<span class="keywordtype">int</span>));</div>
-<div class="line">Object myobject = <span class="keyword">new</span>(&amp;alloc) Object(1,2);</div>
+<div class="line">Object* myobject = <span class="keyword">new</span>(alloc.malloc(<span class="keyword">sizeof</span>(Object)) Object(1,2);</div>
 </div><!-- fragment --> </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a7e904df1683aea75da65f433b50157c3"></a>
 <div class="memitem">
@@ -139,6 +143,42 @@ Protected Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a60aadf4ade6ea2e075586557d87fe7fa"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void * StaticAllocator::calloc </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>num</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classAllocator.html#a6d99faf795395fb017ec5abe5e366f40">Allocator</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="aa4bdfecdf3b2ef2588aae288ae5ff0f6"></a>
 <div class="memitem">
 <div class="memproto">
@@ -299,6 +339,18 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a38216f31d27f9d38f6e5411d46b7bd0d"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char* StaticAllocator::lastPtr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="aee105d3aa6b6480bd8e82d4487d848c4"></a>
 <div class="memitem">
 <div class="memproto">
@@ -318,7 +370,7 @@ Protected Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jul 4 2013 00:56:24 for Qualia by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Oct 11 2013 18:47:22 for Qualia by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.3.1
 </small></address>

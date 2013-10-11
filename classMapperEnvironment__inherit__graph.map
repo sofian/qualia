@@ -1,4 +1,5 @@
 <map id="MapperEnvironment" name="MapperEnvironment">
 <area shape="rect" id="node5" href="$classMapperBasicEnvironment.html" title="MapperBasicEnvironment" alt="" coords="5,160,176,189"/>
 <area shape="rect" id="node2" href="$classEnvironment.html" title="Environment" alt="" coords="44,5,137,35"/>
+<area shape="rect" id="node7" href="$classMapperRLEnvironment.html" title="MapperRLEnvironment" alt="" coords="13,237,168,267"/>
 </map>

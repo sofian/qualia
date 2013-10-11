@@ -1,12 +1,13 @@
 <map id="src/qualia/plugins" name="src/qualia/plugins">
 <area shape="rect" id="node4" href="dir_f6bfae1acd8ee2c4715896627d1d9348.html" title="mapper" alt="" coords="37,65,109,113"/>
-<area shape="rect" id="node6" href="dir_dd7da0eb43e2b5e776daa4e97a3f1dc5.html" title="core" alt="" coords="88,257,160,305"/>
-<area shape="rect" id="edge8" href="dir_000008_000004.html" title="3" alt="" coords="117,229,125,246"/>
+<area shape="rect" id="node6" href="dir_dd7da0eb43e2b5e776daa4e97a3f1dc5.html" title="core" alt="" coords="85,257,157,305"/>
+<area shape="rect" id="edge8" href="dir_000008_000004.html" title="3" alt="" coords="92,229,100,246"/>
+<area shape="rect" id="node7" href="dir_800b859a563efde414e4b0b332d3a1c4.html" title="rl" alt="" coords="85,161,157,209"/>
+<area shape="rect" id="edge10" href="dir_000008_000010.html" title="1" alt="" coords="105,132,113,149"/>
 <area shape="rect" id="node5" href="dir_60af279fab373e4552740bc04d8c53a8.html" title="osc" alt="" coords="133,65,205,113"/>
-<area shape="rect" id="edge4" href="dir_000009_000004.html" title="3" alt="" coords="136,233,144,250"/>
-<area shape="rect" id="node7" href="dir_800b859a563efde414e4b0b332d3a1c4.html" title="rl" alt="" coords="161,161,233,209"/>
-<area shape="rect" id="edge6" href="dir_000009_000010.html" title="1" alt="" coords="189,132,197,150"/>
-<area shape="rect" id="edge10" href="dir_000010_000004.html" title="16" alt="" coords="153,239,168,256"/>
+<area shape="rect" id="edge4" href="dir_000009_000004.html" title="3" alt="" coords="156,239,164,256"/>
+<area shape="rect" id="edge6" href="dir_000009_000010.html" title="1" alt="" coords="145,140,153,157"/>
+<area shape="rect" id="edge12" href="dir_000010_000004.html" title="17" alt="" coords="122,230,137,247"/>
 <area shape="rect" id="graph3" href="dir_614d520955d6a79a4b900935063caa8e.html" alt="" coords="27,55,312,124"/>
 <area shape="rect" id="graph2" href="dir_0668cf3d5adc15b485aff550958bf699.html" title="qualia" alt="" coords="16,16,323,135"/>
 </map>

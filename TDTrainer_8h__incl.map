@@ -1,17 +1,17 @@
 <map id="src/qualia/rl/TDTrainer.h" name="src/qualia/rl/TDTrainer.h">
-<area shape="rect" id="node3" href="$common_8h.html" title="qualia/core/common.h" alt="" coords="599,411,749,440"/>
-<area shape="rect" id="node32" href="$Action_8h.html" title="qualia/core/Action.h" alt="" coords="666,256,802,285"/>
-<area shape="rect" id="node46" href="$Trainer_8h.html" title="qualia/learning/Trainer.h" alt="" coords="279,83,439,112"/>
-<area shape="rect" id="node52" href="$QFunction_8h.html" title="qualia/rl/QFunction.h" alt="" coords="507,83,649,112"/>
-<area shape="rect" id="node69" href="$RLObservation_8h.html" title="qualia/rl/RLObservation.h" alt="" coords="25,169,193,199"/>
-<area shape="rect" id="node13" href="$Arduino_8h.html" title="qualia/compat/Arduino.h" alt="" coords="410,488,573,517"/>
-<area shape="rect" id="node23" href="$error_8h.html" title="qualia/core/error.h" alt="" coords="829,488,954,517"/>
-<area shape="rect" id="node26" href="$Allocator_8h.html" title="qualia/core/Allocator.h" alt="" coords="978,488,1127,517"/>
-<area shape="rect" id="node20" href="$binary_8h.html" title="binary.h" alt="" coords="517,565,583,595"/>
-<area shape="rect" id="node35" href="$XFile_8h.html" title="qualia/core/XFile.h" alt="" coords="258,333,389,363"/>
-<area shape="rect" id="node39" href="$random_8h.html" title="qualia/util/random.h" alt="" coords="1013,333,1146,363"/>
-<area shape="rect" id="node48" href="$Function_8h.html" title="qualia/learning/Function.h" alt="" coords="269,256,439,285"/>
-<area shape="rect" id="node56" href="$Observation_8h.html" title="qualia/core/Observation.h" alt="" coords="23,256,194,285"/>
-<area shape="rect" id="node61" href="$GradientFunction_8h.html" title="qualia/learning/Gradient\lFunction.h" alt="" coords="383,161,541,207"/>
-<area shape="rect" id="node66" href="$map_8h.html" title="qualia/util/map.h" alt="" coords="615,333,733,363"/>
+<area shape="rect" id="node3" href="$common_8h.html" title="qualia/core/common.h" alt="" coords="468,411,617,440"/>
+<area shape="rect" id="node36" href="$Action_8h.html" title="qualia/core/Action.h" alt="" coords="504,256,640,285"/>
+<area shape="rect" id="node50" href="$Trainer_8h.html" title="qualia/learning/Trainer.h" alt="" coords="724,83,884,112"/>
+<area shape="rect" id="node56" href="$QFunction_8h.html" title="qualia/rl/QFunction.h" alt="" coords="559,83,700,112"/>
+<area shape="rect" id="node73" href="$RLObservation_8h.html" title="qualia/rl/RLObservation.h" alt="" coords="961,169,1129,199"/>
+<area shape="rect" id="node15" href="$Arduino_8h.html" title="qualia/compat/Arduino.h" alt="" coords="461,488,624,517"/>
+<area shape="rect" id="node25" href="$error_8h.html" title="qualia/core/error.h" alt="" coords="792,488,917,517"/>
+<area shape="rect" id="node28" href="$Allocator_8h.html" title="qualia/core/Allocator.h" alt="" coords="67,488,216,517"/>
+<area shape="rect" id="node22" href="$binary_8h.html" title="binary.h" alt="" coords="588,565,655,595"/>
+<area shape="rect" id="node39" href="$XFile_8h.html" title="qualia/core/XFile.h" alt="" coords="816,333,947,363"/>
+<area shape="rect" id="node43" href="$random_8h.html" title="qualia/util/random.h" alt="" coords="195,333,328,363"/>
+<area shape="rect" id="node52" href="$Function_8h.html" title="qualia/learning/Function.h" alt="" coords="715,256,885,285"/>
+<area shape="rect" id="node60" href="$Observation_8h.html" title="qualia/core/Observation.h" alt="" coords="960,256,1131,285"/>
+<area shape="rect" id="node65" href="$GradientFunction_8h.html" title="qualia/learning/Gradient\lFunction.h" alt="" coords="609,161,767,207"/>
+<area shape="rect" id="node70" href="$map_8h.html" title="qualia/util/map.h" alt="" coords="453,333,571,363"/>
 </map>

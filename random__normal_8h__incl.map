@@ -1,8 +1,8 @@
 <map id="src/qualia/util/random_normal.h" name="src/qualia/util/random_normal.h">
-<area shape="rect" id="node3" href="$random_8h.html" title="random.h" alt="" coords="344,101,419,131"/>
-<area shape="rect" id="node5" href="$common_8h.html" title="qualia/core/common.h" alt="" coords="372,179,522,208"/>
-<area shape="rect" id="node15" href="$Arduino_8h.html" title="qualia/compat/Arduino.h" alt="" coords="247,256,410,285"/>
-<area shape="rect" id="node25" href="$error_8h.html" title="qualia/core/error.h" alt="" coords="666,256,791,285"/>
-<area shape="rect" id="node28" href="$Allocator_8h.html" title="qualia/core/Allocator.h" alt="" coords="23,256,172,285"/>
-<area shape="rect" id="node22" href="$binary_8h.html" title="binary.h" alt="" coords="399,333,466,363"/>
+<area shape="rect" id="node3" href="$random_8h.html" title="random.h" alt="" coords="361,101,436,131"/>
+<area shape="rect" id="node5" href="$common_8h.html" title="qualia/core/common.h" alt="" coords="389,179,539,208"/>
+<area shape="rect" id="node17" href="$Arduino_8h.html" title="qualia/compat/Arduino.h" alt="" coords="717,256,880,285"/>
+<area shape="rect" id="node27" href="$error_8h.html" title="qualia/core/error.h" alt="" coords="568,256,693,285"/>
+<area shape="rect" id="node30" href="$Allocator_8h.html" title="qualia/core/Allocator.h" alt="" coords="29,256,179,285"/>
+<area shape="rect" id="node24" href="$binary_8h.html" title="binary.h" alt="" coords="469,333,536,363"/>
 </map>

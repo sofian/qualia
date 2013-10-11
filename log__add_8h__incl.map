@@ -1,7 +1,7 @@
 <map id="src/qualia/util/log_add.h" name="src/qualia/util/log_add.h">
-<area shape="rect" id="node3" href="$common_8h.html" title="qualia/core/common.h" alt="" coords="323,101,472,131"/>
-<area shape="rect" id="node13" href="$Arduino_8h.html" title="qualia/compat/Arduino.h" alt="" coords="316,179,479,208"/>
-<area shape="rect" id="node23" href="$error_8h.html" title="qualia/core/error.h" alt="" coords="167,179,292,208"/>
-<area shape="rect" id="node26" href="$Allocator_8h.html" title="qualia/core/Allocator.h" alt="" coords="692,179,841,208"/>
-<area shape="rect" id="node20" href="$binary_8h.html" title="binary.h" alt="" coords="448,256,515,285"/>
+<area shape="rect" id="node3" href="$common_8h.html" title="qualia/core/common.h" alt="" coords="391,101,540,131"/>
+<area shape="rect" id="node15" href="$Arduino_8h.html" title="qualia/compat/Arduino.h" alt="" coords="73,179,236,208"/>
+<area shape="rect" id="node25" href="$error_8h.html" title="qualia/core/error.h" alt="" coords="524,179,649,208"/>
+<area shape="rect" id="node28" href="$Allocator_8h.html" title="qualia/core/Allocator.h" alt="" coords="775,179,924,208"/>
+<area shape="rect" id="node22" href="$binary_8h.html" title="binary.h" alt="" coords="412,256,479,285"/>
 </map>

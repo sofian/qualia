@@ -77,36 +77,78 @@
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="common_8h.html">common.h</a>&quot;</span></div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#include &lt;stddef.h&gt;</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &lt;stdlib.h&gt;</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
-<div class="line"><a name="l00036"></a><span class="lineno"><a class="code" href="classAllocator.html">   36</a></span>&#160;<span class="keyword">class </span><a class="code" href="classAllocator.html">Allocator</a> {</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00038"></a><span class="lineno"><a class="code" href="classAllocator.html#aa025defb13e9a70b6dd7239aff4f9ed6">   38</a></span>&#160;  <span class="keyword">virtual</span> <a class="code" href="classAllocator.html#aa025defb13e9a70b6dd7239aff4f9ed6">~Allocator</a>() {}</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span>* <a class="code" href="classAllocator.html#ae4f4b525cc6c677b45a9f50f81ab9f93">malloc</a>(<span class="keywordtype">size_t</span> size);</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span>* <a class="code" href="classAllocator.html#abbb6950614e0dc2cb6833054e374ebd6">realloc</a>(<span class="keywordtype">void</span>* ptr, <span class="keywordtype">size_t</span> size);</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classAllocator.html#ae2a7bfc7386a74f600cc5d8233f42509">free</a>(<span class="keywordtype">void</span>* ptr);</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;};</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
-<div class="line"><a name="l00066"></a><span class="lineno"><a class="code" href="classAlloc.html">   66</a></span>&#160;<span class="keyword">class </span><a class="code" href="classAlloc.html">Alloc</a> {</div>
-<div class="line"><a name="l00067"></a><span class="lineno"><a class="code" href="classAlloc.html#a472ec5f5acbe6893d75dc409efeb5a4f">   67</a></span>&#160;  <span class="keyword">static</span> <a class="code" href="classAllocator.html">Allocator</a>* <a class="code" href="classAlloc.html#a472ec5f5acbe6893d75dc409efeb5a4f">inst</a>;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="keyword">static</span> <span class="keywordtype">void</span>* <a class="code" href="classAlloc.html#a699afef2b14275f32e30554c01c4a44e">malloc</a>(<span class="keywordtype">size_t</span> size);</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <span class="keyword">static</span> <span class="keywordtype">void</span>* <a class="code" href="classAlloc.html#a2dfe30b5fdce25a697c39787be498e6f">realloc</a>(<span class="keywordtype">void</span>* ptr, <span class="keywordtype">size_t</span> size);</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="classAlloc.html#a7d5fad26b0f1685f6972ea3df42e9bc3">free</a>(<span class="keywordtype">void</span>* ptr);</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="classAlloc.html#a1f6e1f722cbb8846c7abce07f619ac14">init</a>(<a class="code" href="classAllocator.html">Allocator</a>* alloc);</div>
-<div class="line"><a name="l00074"></a><span class="lineno"><a class="code" href="classAlloc.html#a261c78b55e8ef4fa9610a66371fed33f">   74</a></span>&#160;  <span class="keyword">static</span> <a class="code" href="classAllocator.html">Allocator</a>* <a class="code" href="classAlloc.html#a261c78b55e8ef4fa9610a66371fed33f">instance</a>() { <span class="keywordflow">return</span> <a class="code" href="classAlloc.html#a472ec5f5acbe6893d75dc409efeb5a4f">inst</a>; }</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;};</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="keywordtype">void</span>* <span class="keyword">operator</span> <span class="keyword">new</span>(<span class="keywordtype">size_t</span> size, <a class="code" href="classAllocator.html">Allocator</a>* alloc);</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* ALLOCATOR_H_ */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#if is_computer()</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &lt;new&gt;</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#include &lt;stddef.h&gt;</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">#include &lt;stdlib.h&gt;</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
+<div class="line"><a name="l00040"></a><span class="lineno"><a class="code" href="classAllocator.html">   40</a></span>&#160;<span class="keyword">class </span><a class="code" href="classAllocator.html">Allocator</a> {</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00042"></a><span class="lineno"><a class="code" href="classAllocator.html#aa025defb13e9a70b6dd7239aff4f9ed6">   42</a></span>&#160;  <span class="keyword">virtual</span> <a class="code" href="classAllocator.html#aa025defb13e9a70b6dd7239aff4f9ed6">~Allocator</a>() {}</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span>* <a class="code" href="classAllocator.html#ae4f4b525cc6c677b45a9f50f81ab9f93">malloc</a>(<span class="keywordtype">size_t</span> size);</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span>* <a class="code" href="classAllocator.html#a6d99faf795395fb017ec5abe5e366f40">calloc</a>(<span class="keywordtype">size_t</span> num, <span class="keywordtype">size_t</span> size);</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span>* <a class="code" href="classAllocator.html#abbb6950614e0dc2cb6833054e374ebd6">realloc</a>(<span class="keywordtype">void</span>* ptr, <span class="keywordtype">size_t</span> size);</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classAllocator.html#ae2a7bfc7386a74f600cc5d8233f42509">free</a>(<span class="keywordtype">void</span>* ptr);</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;};</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
+<div class="line"><a name="l00075"></a><span class="lineno"><a class="code" href="classAlloc.html">   75</a></span>&#160;<span class="keyword">class </span><a class="code" href="classAlloc.html">Alloc</a> {</div>
+<div class="line"><a name="l00076"></a><span class="lineno"><a class="code" href="classAlloc.html#a472ec5f5acbe6893d75dc409efeb5a4f">   76</a></span>&#160;  <span class="keyword">static</span> <a class="code" href="classAllocator.html">Allocator</a>* <a class="code" href="classAlloc.html#a472ec5f5acbe6893d75dc409efeb5a4f">inst</a>;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="keyword">static</span> <span class="keywordtype">void</span>* <a class="code" href="classAlloc.html#a699afef2b14275f32e30554c01c4a44e">malloc</a>(<span class="keywordtype">size_t</span> size);</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="keyword">static</span> <span class="keywordtype">void</span>* <a class="code" href="classAlloc.html#a30cb8fcdcb39ca96975058a7c0185234">calloc</a>(<span class="keywordtype">size_t</span> num, <span class="keywordtype">size_t</span> size);</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="keyword">static</span> <span class="keywordtype">void</span>* <a class="code" href="classAlloc.html#a2dfe30b5fdce25a697c39787be498e6f">realloc</a>(<span class="keywordtype">void</span>* ptr, <span class="keywordtype">size_t</span> size);</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="classAlloc.html#a7d5fad26b0f1685f6972ea3df42e9bc3">free</a>(<span class="keywordtype">void</span>* ptr);</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="classAlloc.html#a1f6e1f722cbb8846c7abce07f619ac14">init</a>(<a class="code" href="classAllocator.html">Allocator</a>* alloc);</div>
+<div class="line"><a name="l00084"></a><span class="lineno"><a class="code" href="classAlloc.html#a261c78b55e8ef4fa9610a66371fed33f">   84</a></span>&#160;  <span class="keyword">static</span> <a class="code" href="classAllocator.html">Allocator</a>* <a class="code" href="classAlloc.html#a261c78b55e8ef4fa9610a66371fed33f">instance</a>() { <span class="keywordflow">return</span> <a class="code" href="classAlloc.html#a472ec5f5acbe6893d75dc409efeb5a4f">inst</a>; }</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;};</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;</div>
+<div class="line"><a name="l00088"></a><span class="lineno"><a class="code" href="Allocator_8h.html#a62162a61c5dee45882b27db1435c46f6">   88</a></span>&#160;<span class="preprocessor">#define Q_NEW(T) new( Alloc::malloc(sizeof(T)) ) T</span></div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="comment">//void * operator new(size_t size, Allocator* alloc);</span></div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="comment">//#define Q_NEW(T) new( Alloc::instance() ) T</span></div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="comment">//#define _NEW new( Alloc::instance() )</span></div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="comment">//template&lt;class T&gt; T* _Q_ALLOC() { return Alloc::malloc(sizeof(T)); }</span></div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a name="l00099"></a><span class="lineno"><a class="code" href="Allocator_8h.html#acb466571769a5830620c06e0f1f9e9c0">   99</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="Allocator_8h.html#acb466571769a5830620c06e0f1f9e9c0" title="Template equivalent of delete operator: explicitely calls destuctor and releases memory using Alloc::...">Q_DELETE</a>(T* obj) {</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  obj-&gt;~T(); <a class="code" href="classAlloc.html#a7d5fad26b0f1685f6972ea3df42e9bc3">Alloc::free</a>(obj);</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;}</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a name="l00104"></a><span class="lineno"><a class="code" href="Allocator_8h.html#a742ae5b20d7a9ed5daca8f1644fd28a9">  104</a></span>&#160;T* <a class="code" href="Allocator_8h.html#a742ae5b20d7a9ed5daca8f1644fd28a9">__Q_ARRAY_NEW</a>(<span class="keywordtype">size_t</span> n) {</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  <span class="keywordtype">size_t</span>* ptr = (<span class="keywordtype">size_t</span>*) <a class="code" href="classAlloc.html#a699afef2b14275f32e30554c01c4a44e">Alloc::malloc</a>(2*<span class="keyword">sizeof</span>(<span class="keywordtype">size_t</span>) + n * <span class="keyword">sizeof</span>(T));</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  *ptr++ = n;</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  *ptr++ = <span class="keyword">sizeof</span>(T);</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">new</span>( ptr ) T[n];</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;}</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;</div>
+<div class="line"><a name="l00116"></a><span class="lineno"><a class="code" href="Allocator_8h.html#a63f610340c32d7fbefd8c7fc1659c57a">  116</a></span>&#160;<span class="preprocessor">#define Q_ARRAY_NEW(T,n) __Q_ARRAY_NEW&lt;T&gt;(n)</span></div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a name="l00123"></a><span class="lineno"><a class="code" href="Allocator_8h.html#aca099e8dfe090edac34294959610a996">  123</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="Allocator_8h.html#aca099e8dfe090edac34294959610a996">Q_ARRAY_DELETE</a>(T* array) {</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;  <span class="keywordtype">size_t</span>* ptr = (<span class="keywordtype">size_t</span>*) array;</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;  ptr-=2;</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;  <span class="keywordtype">size_t</span> n = ptr[0];</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;  <span class="keywordtype">size_t</span> elemSize = ptr[1];</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span>* iter = (<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span>*)array;</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  <span class="keywordflow">while</span> (n--) {</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;    ((T*)iter)-&gt;~T();</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;    iter += elemSize;</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;  }</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;  <a class="code" href="classAlloc.html#a7d5fad26b0f1685f6972ea3df42e9bc3">Alloc::free</a>( ptr );</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;}</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* ALLOCATOR_H_ */</span><span class="preprocessor"></span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jul 4 2013 00:56:24 for Qualia by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Oct 11 2013 18:47:21 for Qualia by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.3.1
 </small></address>

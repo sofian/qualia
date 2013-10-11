@@ -1,15 +1,15 @@
 <map id="src/qualia/plugins/osc/OscRLEnvironment.h" name="src/qualia/plugins/osc/OscRLEnvironment.h">
-<area shape="rect" id="node3" href="$RLObservation_8h.html" title="qualia/rl/RLObservation.h" alt="" coords="831,179,999,208"/>
-<area shape="rect" id="node42" href="$OscEnvironment_8h.html" title="OscEnvironment.h" alt="" coords="531,101,661,131"/>
-<area shape="rect" id="node5" href="$common_8h.html" title="qualia/core/common.h" alt="" coords="487,411,636,440"/>
-<area shape="rect" id="node34" href="$Observation_8h.html" title="qualia/core/Observation.h" alt="" coords="813,256,984,285"/>
-<area shape="rect" id="node15" href="$Arduino_8h.html" title="qualia/compat/Arduino.h" alt="" coords="288,488,451,517"/>
-<area shape="rect" id="node25" href="$error_8h.html" title="qualia/core/error.h" alt="" coords="568,488,693,517"/>
-<area shape="rect" id="node28" href="$Allocator_8h.html" title="qualia/core/Allocator.h" alt="" coords="64,488,213,517"/>
-<area shape="rect" id="node22" href="$binary_8h.html" title="binary.h" alt="" coords="560,565,627,595"/>
-<area shape="rect" id="node37" href="$XFile_8h.html" title="qualia/core/XFile.h" alt="" coords="803,333,933,363"/>
-<area shape="rect" id="node44" href="$Environment_8h.html" title="qualia/core/Environment.h" alt="" coords="633,179,807,208"/>
-<area shape="rect" id="node63" href="$OscManager_8h.html" title="OscManager.h" alt="" coords="445,179,552,208"/>
-<area shape="rect" id="node48" href="$Action_8h.html" title="Action.h" alt="" coords="720,256,789,285"/>
-<area shape="rect" id="node52" href="$random_8h.html" title="qualia/util/random.h" alt="" coords="240,333,373,363"/>
+<area shape="rect" id="node3" href="$RLObservation_8h.html" title="qualia/rl/RLObservation.h" alt="" coords="313,179,481,208"/>
+<area shape="rect" id="node46" href="$OscEnvironment_8h.html" title="OscEnvironment.h" alt="" coords="200,101,331,131"/>
+<area shape="rect" id="node5" href="$common_8h.html" title="qualia/core/common.h" alt="" coords="576,411,725,440"/>
+<area shape="rect" id="node38" href="$Observation_8h.html" title="qualia/core/Observation.h" alt="" coords="312,256,483,285"/>
+<area shape="rect" id="node17" href="$Arduino_8h.html" title="qualia/compat/Arduino.h" alt="" coords="569,488,732,517"/>
+<area shape="rect" id="node27" href="$error_8h.html" title="qualia/core/error.h" alt="" coords="849,488,975,517"/>
+<area shape="rect" id="node30" href="$Allocator_8h.html" title="qualia/core/Allocator.h" alt="" coords="1151,488,1300,517"/>
+<area shape="rect" id="node24" href="$binary_8h.html" title="binary.h" alt="" coords="779,565,845,595"/>
+<area shape="rect" id="node41" href="$XFile_8h.html" title="qualia/core/XFile.h" alt="" coords="247,333,377,363"/>
+<area shape="rect" id="node48" href="$Environment_8h.html" title="qualia/core/Environment.h" alt="" coords="531,179,704,208"/>
+<area shape="rect" id="node67" href="$OscManager_8h.html" title="OscManager.h" alt="" coords="121,179,228,208"/>
+<area shape="rect" id="node52" href="$Action_8h.html" title="Action.h" alt="" coords="608,256,677,285"/>
+<area shape="rect" id="node56" href="$random_8h.html" title="qualia/util/random.h" alt="" coords="752,333,885,363"/>
 </map>

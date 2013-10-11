@@ -100,8 +100,8 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:ae6019fd03b9a1eb97ea47da42e8640bf"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMapperConnector.html#ae6019fd03b9a1eb97ea47da42e8640bf">updateInput</a> (mapper_signal sig, mapper_db_signal props, mapper_timetag_t *timetag, void *value)</td></tr>
-<tr class="separator:ae6019fd03b9a1eb97ea47da42e8640bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7fcfebae78cfc6f5b862466c1915a089"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMapperConnector.html#a7fcfebae78cfc6f5b862466c1915a089">updateInput</a> (mapper_signal sig, mapper_db_signal props, int instance_id, void *value, int count, mapper_timetag_t *timetag)</td></tr>
+<tr class="separator:a7fcfebae78cfc6f5b862466c1915a089"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adc17a496bb78502f168cff68b0cace38"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMapperConnector.html#adc17a496bb78502f168cff68b0cace38">devDbCallback</a> (mapper_db_device record, mapper_db_action_t action, void *user)</td></tr>
 <tr class="separator:adc17a496bb78502f168cff68b0cace38"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a118e003f67d716a9ccfb230633d2c95d"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMapperConnector.html#a118e003f67d716a9ccfb230633d2c95d">linkDbCallback</a> (mapper_db_link record, mapper_db_action_t action, void *user)</td></tr>
@@ -518,7 +518,7 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ae6019fd03b9a1eb97ea47da42e8640bf"></a>
+<a class="anchor" id="a7fcfebae78cfc6f5b862466c1915a089"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -540,14 +540,26 @@ Public Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">mapper_timetag_t *&#160;</td>
-          <td class="paramname"><em>timetag</em>, </td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>instance_id</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>value</em>&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>count</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">mapper_timetag_t *&#160;</td>
+          <td class="paramname"><em>timetag</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -771,7 +783,7 @@ Public Attributes</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jul 4 2013 00:56:24 for Qualia by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Oct 11 2013 18:47:22 for Qualia by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.3.1
 </small></address>

@@ -1,7 +1,9 @@
 <map id="src/qualia/plugins/mapper/MapperConnector.h" name="src/qualia/plugins/mapper/MapperConnector.h">
-<area shape="rect" id="node3" href="$MapperEnvironment_8h.html" title="src/qualia/plugins\l/mapper/MapperEnvironment.h" alt="" coords="151,102,351,149"/>
-<area shape="rect" id="node11" href="$MapperConnector_8cpp.html" title="src/qualia/plugins\l/mapper/MapperConnector.cpp" alt="" coords="375,102,575,149"/>
-<area shape="rect" id="node5" href="$MapperBasicEnvironment_8h.html" title="src/qualia/plugins\l/mapper/MapperBasicEnvironment.h" alt="" coords="12,198,244,245"/>
-<area shape="rect" id="node9" href="$MapperEnvironment_8cpp.html" title="src/qualia/plugins\l/mapper/MapperEnvironment.cpp" alt="" coords="268,198,481,245"/>
+<area shape="rect" id="node3" href="$MapperEnvironment_8h.html" title="src/qualia/plugins\l/mapper/MapperEnvironment.h" alt="" coords="277,102,477,149"/>
+<area shape="rect" id="node15" href="$MapperConnector_8cpp.html" title="src/qualia/plugins\l/mapper/MapperConnector.cpp" alt="" coords="501,102,701,149"/>
+<area shape="rect" id="node5" href="$MapperBasicEnvironment_8h.html" title="src/qualia/plugins\l/mapper/MapperBasicEnvironment.h" alt="" coords="139,198,371,245"/>
+<area shape="rect" id="node13" href="$MapperEnvironment_8cpp.html" title="src/qualia/plugins\l/mapper/MapperEnvironment.cpp" alt="" coords="395,198,608,245"/>
 <area shape="rect" id="node7" href="$MapperBasicEnvironment_8cpp.html" title="src/qualia/plugins\l/mapper/MapperBasicEnvironment.cpp" alt="" coords="5,294,251,341"/>
+<area shape="rect" id="node9" href="$MapperRLEnvironment_8h.html" title="src/qualia/plugins\l/mapper/MapperRLEnvironment.h" alt="" coords="275,294,491,341"/>
+<area shape="rect" id="node11" href="$MapperRLEnvironment_8cpp.html" title="src/qualia/plugins\l/mapper/MapperRLEnvironment.cpp" alt="" coords="268,390,497,437"/>
 </map>

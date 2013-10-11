@@ -82,37 +82,40 @@
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="Allocator_8h.html">Allocator.h</a>&quot;</span></div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
-<div class="line"><a name="l00056"></a><span class="lineno"><a class="code" href="classStaticAllocator.html">   56</a></span>&#160;<span class="keyword">class </span><a class="code" href="classStaticAllocator.html">StaticAllocator</a>: <span class="keyword">public</span> <a class="code" href="classAllocator.html">Allocator</a> {</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00058"></a><span class="lineno"><a class="code" href="classStaticAllocator.html#a3a64195e2b634b87ee4c262ce67d3866">   58</a></span>&#160;  <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span>* <a class="code" href="classStaticAllocator.html#a3a64195e2b634b87ee4c262ce67d3866">buffer</a>;</div>
-<div class="line"><a name="l00059"></a><span class="lineno"><a class="code" href="classStaticAllocator.html#a1a13fa231730af8fb1557c2a15c1bf06">   59</a></span>&#160;  <span class="keywordtype">size_t</span> <a class="code" href="classStaticAllocator.html#a1a13fa231730af8fb1557c2a15c1bf06">bufferSize</a>;</div>
-<div class="line"><a name="l00060"></a><span class="lineno"><a class="code" href="classStaticAllocator.html#a01a786caeace93a4308db1b8f1784237">   60</a></span>&#160;  <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code" href="classStaticAllocator.html#a01a786caeace93a4308db1b8f1784237">bufferIdx</a>;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="comment">// Keeps track of leaks, for debugging.</span></div>
-<div class="line"><a name="l00063"></a><span class="lineno"><a class="code" href="classStaticAllocator.html#aee105d3aa6b6480bd8e82d4487d848c4">   63</a></span>&#160;  <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code" href="classStaticAllocator.html#aee105d3aa6b6480bd8e82d4487d848c4">nLeaks</a>;</div>
-<div class="line"><a name="l00064"></a><span class="lineno"><a class="code" href="classStaticAllocator.html#aa6276acbd69767e8310802b22c770290">   64</a></span>&#160;  <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span>* <a class="code" href="classStaticAllocator.html#aa6276acbd69767e8310802b22c770290">lastLeak</a>;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <a class="code" href="classStaticAllocator.html#a7e904df1683aea75da65f433b50157c3">StaticAllocator</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span>* <a class="code" href="classStaticAllocator.html#a3a64195e2b634b87ee4c262ce67d3866">buffer</a>, <span class="keywordtype">size_t</span> size);</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span>* <a class="code" href="classStaticAllocator.html#a711b23637fef77c591d58fc5968e7a3d">malloc</a>(<span class="keywordtype">size_t</span> size);</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <span class="comment">// You should not use that method for static allocators.</span></div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span>* <a class="code" href="classStaticAllocator.html#a75d9c5498d915517b105603d8320a3d1">realloc</a>(<span class="keywordtype">void</span>* ptr, <span class="keywordtype">size_t</span> size);</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="comment">// WARNING: Calling StaticAllocator::free() does NOT free the pointer at all. See note above.</span></div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classStaticAllocator.html#aa4bdfecdf3b2ef2588aae288ae5ff0f6">free</a>(<span class="keywordtype">void</span>* ptr);</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="comment">// Frees all pointers.</span></div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classStaticAllocator.html#ae478b942de73b6762218cb611de5610b">freeAll</a>();</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;};</div>
+<div class="line"><a name="l00057"></a><span class="lineno"><a class="code" href="classStaticAllocator.html">   57</a></span>&#160;<span class="keyword">class </span><a class="code" href="classStaticAllocator.html">StaticAllocator</a>: <span class="keyword">public</span> <a class="code" href="classAllocator.html">Allocator</a> {</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00059"></a><span class="lineno"><a class="code" href="classStaticAllocator.html#a3a64195e2b634b87ee4c262ce67d3866">   59</a></span>&#160;  <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span>* <a class="code" href="classStaticAllocator.html#a3a64195e2b634b87ee4c262ce67d3866">buffer</a>;</div>
+<div class="line"><a name="l00060"></a><span class="lineno"><a class="code" href="classStaticAllocator.html#a1a13fa231730af8fb1557c2a15c1bf06">   60</a></span>&#160;  <span class="keywordtype">size_t</span> <a class="code" href="classStaticAllocator.html#a1a13fa231730af8fb1557c2a15c1bf06">bufferSize</a>;</div>
+<div class="line"><a name="l00061"></a><span class="lineno"><a class="code" href="classStaticAllocator.html#a01a786caeace93a4308db1b8f1784237">   61</a></span>&#160;  <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code" href="classStaticAllocator.html#a01a786caeace93a4308db1b8f1784237">bufferIdx</a>;</div>
+<div class="line"><a name="l00062"></a><span class="lineno"><a class="code" href="classStaticAllocator.html#a38216f31d27f9d38f6e5411d46b7bd0d">   62</a></span>&#160;  <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span>* <a class="code" href="classStaticAllocator.html#a38216f31d27f9d38f6e5411d46b7bd0d">lastPtr</a>;</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <span class="comment">// Keeps track of leaks, for debugging.</span></div>
+<div class="line"><a name="l00065"></a><span class="lineno"><a class="code" href="classStaticAllocator.html#aee105d3aa6b6480bd8e82d4487d848c4">   65</a></span>&#160;  <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code" href="classStaticAllocator.html#aee105d3aa6b6480bd8e82d4487d848c4">nLeaks</a>;</div>
+<div class="line"><a name="l00066"></a><span class="lineno"><a class="code" href="classStaticAllocator.html#aa6276acbd69767e8310802b22c770290">   66</a></span>&#160;  <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span>* <a class="code" href="classStaticAllocator.html#aa6276acbd69767e8310802b22c770290">lastLeak</a>;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  <a class="code" href="classStaticAllocator.html#a7e904df1683aea75da65f433b50157c3">StaticAllocator</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span>* <a class="code" href="classStaticAllocator.html#a3a64195e2b634b87ee4c262ce67d3866">buffer</a>, <span class="keywordtype">size_t</span> size);</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span>* <a class="code" href="classStaticAllocator.html#a711b23637fef77c591d58fc5968e7a3d">malloc</a>(<span class="keywordtype">size_t</span> size);</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span>* <a class="code" href="classStaticAllocator.html#a60aadf4ade6ea2e075586557d87fe7fa">calloc</a>(<span class="keywordtype">size_t</span> num, <span class="keywordtype">size_t</span> size);</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <span class="comment">// WARNING: You should not use that method for static allocators unless you know what you are doing.</span></div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span>* <a class="code" href="classStaticAllocator.html#a75d9c5498d915517b105603d8320a3d1">realloc</a>(<span class="keywordtype">void</span>* ptr, <span class="keywordtype">size_t</span> size);</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="comment">// WARNING: Calling StaticAllocator::free() does NOT free the pointer at all. See note above.</span></div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classStaticAllocator.html#aa4bdfecdf3b2ef2588aae288ae5ff0f6">free</a>(<span class="keywordtype">void</span>* ptr);</div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* STATICALLOCATOR_H_ */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="comment">// Frees all pointers.</span></div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classStaticAllocator.html#ae478b942de73b6762218cb611de5610b">freeAll</a>();</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;};</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* STATICALLOCATOR_H_ */</span><span class="preprocessor"></span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jul 4 2013 00:56:24 for Qualia by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Oct 11 2013 18:47:21 for Qualia by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.3.1
 </small></address>

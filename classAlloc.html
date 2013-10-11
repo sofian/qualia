@@ -66,6 +66,8 @@ Collaboration diagram for Alloc:</div>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a699afef2b14275f32e30554c01c4a44e"><td class="memItemLeft" align="right" valign="top">static void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAlloc.html#a699afef2b14275f32e30554c01c4a44e">malloc</a> (size_t size)</td></tr>
 <tr class="separator:a699afef2b14275f32e30554c01c4a44e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30cb8fcdcb39ca96975058a7c0185234"><td class="memItemLeft" align="right" valign="top">static void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAlloc.html#a30cb8fcdcb39ca96975058a7c0185234">calloc</a> (size_t num, size_t size)</td></tr>
+<tr class="separator:a30cb8fcdcb39ca96975058a7c0185234"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2dfe30b5fdce25a697c39787be498e6f"><td class="memItemLeft" align="right" valign="top">static void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAlloc.html#a2dfe30b5fdce25a697c39787be498e6f">realloc</a> (void *ptr, size_t size)</td></tr>
 <tr class="separator:a2dfe30b5fdce25a697c39787be498e6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7d5fad26b0f1685f6972ea3df42e9bc3"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAlloc.html#a7d5fad26b0f1685f6972ea3df42e9bc3">free</a> (void *ptr)</td></tr>
@@ -91,11 +93,49 @@ Static Private Attributes</h2></td></tr>
 <div class="line"><span class="preprocessor">#endif</span></div>
 <div class="line"><span class="preprocessor"></span></div>
 <div class="line"><a class="code" href="classAlloc.html#a1f6e1f722cbb8846c7abce07f619ac14">Alloc::init</a>(&amp;allocator);</div>
+<div class="line"></div>
 <div class="line"><span class="keywordtype">int</span>* val = (<span class="keywordtype">int</span>*) <a class="code" href="classAlloc.html#a699afef2b14275f32e30554c01c4a44e">Alloc::malloc</a>(10*<span class="keyword">sizeof</span>(<span class="keywordtype">int</span>));</div>
-<div class="line">MyObject* obj = <span class="keyword">new</span>(<a class="code" href="classAlloc.html#a261c78b55e8ef4fa9610a66371fed33f">Alloc::instance</a>()) MyObject;</div>
+<div class="line">MyClass* obj = <a class="code" href="Allocator_8h.html#a62162a61c5dee45882b27db1435c46f6" title="Macro equivalent of new operator: allocates memory using Alloc::malloc().">Q_NEW</a>(MyClass)(1, 2);    <span class="comment">// MyClass* bbj = new MyClass(1,2);</span></div>
+<div class="line">MyClass* arr = <a class="code" href="Allocator_8h.html#a63f610340c32d7fbefd8c7fc1659c57a">Q_ARRAY_NEW</a>(MyClass,10); <span class="comment">// MyClass* arr = new MyClass[10];</span></div>
 <div class="line">...</div>
 <div class="line">Alloc::free(val);</div>
+<div class="line"><a class="code" href="Allocator_8h.html#acb466571769a5830620c06e0f1f9e9c0" title="Template equivalent of delete operator: explicitely calls destuctor and releases memory using Alloc::...">Q_DELETE</a>(MyClass, ptr);</div>
+<div class="line"><a class="code" href="Allocator_8h.html#aca099e8dfe090edac34294959610a996">Q_ARRAY_DELETE</a>(arr);</div>
 </div><!-- fragment --> </div><h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a30cb8fcdcb39ca96975058a7c0185234"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void * Alloc::calloc </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>num</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="a7d5fad26b0f1685f6972ea3df42e9bc3"></a>
 <div class="memitem">
 <div class="memproto">
@@ -253,7 +293,7 @@ Static Private Attributes</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jul 4 2013 00:56:24 for Qualia by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Oct 11 2013 18:47:22 for Qualia by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.3.1
 </small></address>

@@ -48,12 +48,14 @@
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
+<a href="#define-members">Macros</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">Allocator.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="common_8h_source.html">common.h</a>&quot;</code><br/>
+<code>#include &lt;new&gt;</code><br/>
 <code>#include &lt;stddef.h&gt;</code><br/>
 <code>#include &lt;stdlib.h&gt;</code><br/>
 </div><div class="textblock"><div class="dynheader">
@@ -61,14 +63,14 @@ Include dependency graph for Allocator.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="Allocator_8h__incl.png" border="0" usemap="#src_2qualia_2core_2Allocator_8h" alt=""/></div>
 <map name="src_2qualia_2core_2Allocator_8h" id="src_2qualia_2core_2Allocator_8h">
-<area shape="rect" id="node3" href="common_8h.html" title="common.h" alt="" coords="277,83,360,112"/><area shape="rect" id="node13" href="Arduino_8h.html" title="qualia/compat/Arduino.h" alt="" coords="456,160,619,189"/><area shape="rect" id="node23" href="error_8h.html" title="qualia/core/error.h" alt="" coords="256,160,381,189"/><area shape="rect" id="node20" href="binary_8h.html" title="binary.h" alt="" coords="608,237,675,267"/></map>
+<area shape="rect" id="node3" href="common_8h.html" title="common.h" alt="" coords="360,83,443,112"/><area shape="rect" id="node15" href="Arduino_8h.html" title="qualia/compat/Arduino.h" alt="" coords="539,160,701,189"/><area shape="rect" id="node25" href="error_8h.html" title="qualia/core/error.h" alt="" coords="339,160,464,189"/><area shape="rect" id="node22" href="binary_8h.html" title="binary.h" alt="" coords="691,237,757,267"/></map>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="Allocator_8h__dep__incl.png" border="0" usemap="#src_2qualia_2core_2Allocator_8hdep" alt=""/></div>
 <map name="src_2qualia_2core_2Allocator_8hdep" id="src_2qualia_2core_2Allocator_8hdep">
-<area shape="rect" id="node3" href="Allocator_8cpp.html" title="src/qualia/core/Allocator.cpp" alt="" coords="1673,83,1860,112"/><area shape="rect" id="node5" href="common_8h.html" title="src/qualia/core/common.h" alt="" coords="1884,83,2055,112"/><area shape="rect" id="node143" href="StaticAllocator_8h.html" title="src/qualia/core/StaticAllocator.h" alt="" coords="3044,83,3249,112"/><area shape="rect" id="node7" href="Arduino_8h.html" title="src/qualia/compat/Arduino.h" alt="" coords="672,265,856,295"/><area shape="rect" id="node16" href="binary_8h.html" title="src/qualia/compat/binary.h" alt="" coords="883,169,1056,199"/><area shape="rect" id="node19" href="new_8h.html" title="src/qualia/compat/new.h" alt="" coords="17,169,180,199"/><area shape="rect" id="node23" href="Print_8h.html" title="src/qualia/compat/Print.h" alt="" coords="259,265,424,295"/><area shape="rect" id="node26" href="Stream_8h.html" title="src/qualia/compat/Stream.h" alt="" coords="147,361,328,391"/><area shape="rect" id="node30" href="WMath_8cpp.html" title="src/qualia/compat/WMath.cpp" alt="" coords="589,169,784,199"/><area shape="rect" id="node32" href="WString_8h.html" title="src/qualia/compat/WString.h" alt="" coords="379,169,565,199"/><area shape="rect" id="node37" href="CmdLine_8h.html" title="src/qualia/computer\l/CmdLine.h" alt="" coords="1040,449,1176,495"/><area shape="rect" id="node41" href="DiskXFile_8h.html" title="src/qualia/computer\l/DiskXFile.h" alt="" coords="1091,257,1227,303"/><area shape="rect" id="node49" href="string__utils_8h.html" title="src/qualia/computer\l/string_utils.h" alt="" coords="931,257,1067,303"/><area shape="rect" id="node52" href="random__shuffle_8h.html" title="src/qualia/computer\l/random_shuffle.h" alt="" coords="2349,257,2485,303"/><area shape="rect" id="node54" href="Action_8h.html" title="src/qualia/core/Action.h" alt="" coords="1851,265,2008,295"/><area shape="rect" id="node56" href="Agent_8h.html" title="src/qualia/core/Agent.h" alt="" coords="1352,361,1507,391"/><area shape="rect" id="node58" href="Qualia_8h.html" title="src/qualia/core/Qualia.h" alt="" coords="1351,457,1508,487"/><area shape="rect" id="node60" href="Environment_8h.html" title="src/qualia/core/Environment.h" alt="" coords="1531,361,1725,391"/><area shape="rect" id="node63" href="BatchRLTrainer_8h.html" title="src/qualia/rl/BatchRLTrainer.h" alt="" coords="2229,553,2424,583"/><area shape="rect" id="node65" href="QFunction_8h.html" title="src/qualia/rl/QFunction.h" alt="" coords="1877,457,2040,487"/><area shape="rect" id="node68" href="TDTrainer_8h.html" title="src/qualia/rl/TDTrainer.h" alt="" coords="1804,553,1967,583"/><area shape="rect" id="node71" href="TupleDataSet_8h.html" title="src/qualia/rl/TupleDataSet.h" alt="" coords="2300,457,2484,487"/><area shape="rect" id="node77" href="Observation_8h.html" title="src/qualia/core/Observation.h" alt="" coords="1584,265,1776,295"/><area shape="rect" id="node82" href="RLObservation_8h.html" title="src/qualia/rl/RLObservation.h" alt="" coords="2165,361,2355,391"/><area shape="rect" id="node87" href="error_8h.html" title="src/qualia/core/error.h" alt="" coords="2032,169,2179,199"/><area shape="rect" id="node91" href="XFile_8h.html" title="src/qualia/core/XFile.h" alt="" coords="1584,169,1736,199"/><area shape="rect" id="node97" href="Function_8h.html" title="src/qualia/learning\l/Function.h" alt="" coords="2133,257,2259,303"/><area shape="rect" id="node99" href="GradientFunction_8h.html" title="src/qualia/learning\l/GradientFunction.h" alt="" coords="2429,353,2565,399"/><area shape="rect" id="node101" href="NeuralNetwork_8h.html" title="src/qualia/learning\l/NeuralNetwork.h" alt="" coords="2641,449,2767,495"/><area shape="rect" id="node104" href="BinaryChromosome_8h.html" title="src/qualia/ga/BinaryChromosome.h" alt="" coords="3317,265,3544,295"/><area shape="rect" id="node106" href="DataSet_8h.html" title="src/qualia/learning\l/DataSet.h" alt="" coords="2637,161,2763,207"/><area shape="rect" id="node108" href="DataSetTrainer_8h.html" title="src/qualia/learning\l/DataSetTrainer.h" alt="" coords="2743,257,2868,303"/><area shape="rect" id="node116" href="MapperConnector_8h.html" title="src/qualia/plugins\l/mapper/MapperConnector.h" alt="" coords="2787,161,2973,207"/><area shape="rect" id="node118" href="OscManager_8h.html" title="src/qualia/plugins\l/osc/OscManager.h" alt="" coords="2997,161,3133,207"/><area shape="rect" id="node125" href="bitarray_8h.html" title="src/qualia/util/bitarray.h" alt="" coords="3352,169,3509,199"/><area shape="rect" id="node128" href="log__add_8h.html" title="src/qualia/util/log\l_add.h" alt="" coords="3208,161,3328,207"/><area shape="rect" id="node130" href="map_8h.html" title="src/qualia/util/map.h" alt="" coords="1851,361,1989,391"/><area shape="rect" id="node133" href="random_8h.html" title="src/qualia/util/random.h" alt="" coords="2355,169,2512,199"/><area shape="rect" id="node139" href="random__dist_8cpp.html" title="src/qualia/util/random\l_dist.cpp" alt="" coords="3584,161,3731,207"/><area shape="rect" id="node141" href="random__normal_8cpp.html" title="src/qualia/util/random\l_normal.cpp" alt="" coords="3755,161,3901,207"/><area shape="rect" id="node9" href="Arduino_8cpp.html" title="src/qualia/compat/Arduino.cpp" alt="" coords="608,361,805,391"/><area shape="rect" id="node11" href="Print_8cpp.html" title="src/qualia/compat/Print.cpp" alt="" coords="352,361,533,391"/><area shape="rect" id="node13" href="Stream_8cpp.html" title="src/qualia/compat/Stream.cpp" alt="" coords="307,457,501,487"/><area shape="rect" id="node21" href="new_8cpp.html" title="src/qualia/compat/new.cpp" alt="" coords="5,265,184,295"/><area shape="rect" id="node35" href="WString_8cpp.html" title="src/qualia/compat/WString.cpp" alt="" coords="448,265,648,295"/><area shape="rect" id="node39" href="CmdLine_8cpp.html" title="src/qualia/computer\l/CmdLine.cpp" alt="" coords="1040,545,1176,591"/><area shape="rect" id="node44" href="CmdOption_8h.html" title="src/qualia/computer\l/CmdOption.h" alt="" coords="1040,353,1176,399"/><area shape="rect" id="node47" href="DiskXFile_8cpp.html" title="src/qualia/computer\l/DiskXFile.cpp" alt="" coords="880,353,1016,399"/><area shape="rect" id="node145" href="StaticAllocator_8cpp.html" title="src/qualia/core/StaticAllocator.cpp" alt="" coords="3976,169,4197,199"/></map>
+<area shape="rect" id="node3" href="Allocator_8cpp.html" title="src/qualia/core/Allocator.cpp" alt="" coords="1647,83,1834,112"/><area shape="rect" id="node5" href="common_8h.html" title="src/qualia/core/common.h" alt="" coords="1858,83,2028,112"/><area shape="rect" id="node142" href="StaticAllocator_8h.html" title="src/qualia/core/StaticAllocator.h" alt="" coords="3187,83,3392,112"/><area shape="rect" id="node7" href="Arduino_8h.html" title="src/qualia/compat/Arduino.h" alt="" coords="467,265,651,295"/><area shape="rect" id="node16" href="binary_8h.html" title="src/qualia/compat/binary.h" alt="" coords="604,169,778,199"/><area shape="rect" id="node19" href="new_8h.html" title="src/qualia/compat/new.h" alt="" coords="3810,169,3972,199"/><area shape="rect" id="node23" href="placement__new_8h.html" title="src/qualia/compat/placement\l_new.h" alt="" coords="3996,161,4186,207"/><area shape="rect" id="node27" href="Print_8h.html" title="src/qualia/compat/Print.h" alt="" coords="267,265,432,295"/><area shape="rect" id="node30" href="Stream_8h.html" title="src/qualia/compat/Stream.h" alt="" coords="51,361,232,391"/><area shape="rect" id="node34" href="WMath_8cpp.html" title="src/qualia/compat/WMath.cpp" alt="" coords="260,169,455,199"/><area shape="rect" id="node36" href="WString_8h.html" title="src/qualia/compat/WString.h" alt="" coords="50,169,236,199"/><area shape="rect" id="node41" href="CmdLine_8h.html" title="src/qualia/computer\l/CmdLine.h" alt="" coords="2028,353,2164,399"/><area shape="rect" id="node43" href="DiskXFile_8h.html" title="src/qualia/computer\l/DiskXFile.h" alt="" coords="1839,257,1975,303"/><area shape="rect" id="node46" href="string__utils_8h.html" title="src/qualia/computer\l/string_utils.h" alt="" coords="802,161,938,207"/><area shape="rect" id="node48" href="random__shuffle_8h.html" title="src/qualia/computer\l/random_shuffle.h" alt="" coords="2760,257,2896,303"/><area shape="rect" id="node50" href="Action_8h.html" title="src/qualia/core/Action.h" alt="" coords="1431,265,1588,295"/><area shape="rect" id="node52" href="Agent_8h.html" title="src/qualia/core/Agent.h" alt="" coords="900,361,1055,391"/><area shape="rect" id="node54" href="Qualia_8h.html" title="src/qualia/core/Qualia.h" alt="" coords="899,457,1056,487"/><area shape="rect" id="node56" href="Environment_8h.html" title="src/qualia/core/Environment.h" alt="" coords="1079,361,1274,391"/><area shape="rect" id="node59" href="BatchRLTrainer_8h.html" title="src/qualia/rl/BatchRLTrainer.h" alt="" coords="1778,544,1972,573"/><area shape="rect" id="node61" href="QFunction_8h.html" title="src/qualia/rl/QFunction.h" alt="" coords="1488,457,1651,487"/><area shape="rect" id="node64" href="TDTrainer_8h.html" title="src/qualia/rl/TDTrainer.h" alt="" coords="1384,544,1547,573"/><area shape="rect" id="node67" href="TupleDataSet_8h.html" title="src/qualia/rl/TupleDataSet.h" alt="" coords="1848,457,2032,487"/><area shape="rect" id="node73" href="Observation_8h.html" title="src/qualia/core/Observation.h" alt="" coords="1215,265,1407,295"/><area shape="rect" id="node78" href="RLObservation_8h.html" title="src/qualia/rl/RLObservation.h" alt="" coords="1714,361,1903,391"/><area shape="rect" id="node83" href="error_8h.html" title="src/qualia/core/error.h" alt="" coords="1815,169,1962,199"/><area shape="rect" id="node87" href="XFile_8h.html" title="src/qualia/core/XFile.h" alt="" coords="1436,169,1588,199"/><area shape="rect" id="node93" href="Function_8h.html" title="src/qualia/learning\l/Function.h" alt="" coords="2050,257,2175,303"/><area shape="rect" id="node95" href="GradientFunction_8h.html" title="src/qualia/learning\l/GradientFunction.h" alt="" coords="2188,353,2324,399"/><area shape="rect" id="node97" href="NeuralNetwork_8h.html" title="src/qualia/learning\l/NeuralNetwork.h" alt="" coords="2876,449,3002,495"/><area shape="rect" id="node100" href="BinaryChromosome_8h.html" title="src/qualia/ga/BinaryChromosome.h" alt="" coords="3151,265,3378,295"/><area shape="rect" id="node102" href="DataSet_8h.html" title="src/qualia/learning\l/DataSet.h" alt="" coords="2188,161,2314,207"/><area shape="rect" id="node104" href="DataSetTrainer_8h.html" title="src/qualia/learning\l/DataSetTrainer.h" alt="" coords="2300,257,2426,303"/><area shape="rect" id="node112" href="MapperConnector_8h.html" title="src/qualia/plugins\l/mapper/MapperConnector.h" alt="" coords="2439,161,2626,207"/><area shape="rect" id="node114" href="OscManager_8h.html" title="src/qualia/plugins\l/osc/OscManager.h" alt="" coords="2650,161,2786,207"/><area shape="rect" id="node119" href="QLearningEGreedyPolicy_8h.html" title="src/qualia/rl/QLearningEGreedy\lPolicy.h" alt="" coords="3484,257,3687,303"/><area shape="rect" id="node123" href="bitarray_8h.html" title="src/qualia/util/bitarray.h" alt="" coords="3186,169,3343,199"/><area shape="rect" id="node126" href="log__add_8h.html" title="src/qualia/util/log\l_add.h" alt="" coords="3042,161,3162,207"/><area shape="rect" id="node128" href="map_8h.html" title="src/qualia/util/map.h" alt="" coords="1500,361,1639,391"/><area shape="rect" id="node131" href="random_8h.html" title="src/qualia/util/random.h" alt="" coords="2860,169,3018,199"/><area shape="rect" id="node138" href="random__dist_8cpp.html" title="src/qualia/util/random\l_dist.cpp" alt="" coords="3418,161,3564,207"/><area shape="rect" id="node140" href="random__normal_8cpp.html" title="src/qualia/util/random\l_normal.cpp" alt="" coords="3588,161,3735,207"/><area shape="rect" id="node9" href="Arduino_8cpp.html" title="src/qualia/compat/Arduino.cpp" alt="" coords="462,361,659,391"/><area shape="rect" id="node11" href="Print_8cpp.html" title="src/qualia/compat/Print.cpp" alt="" coords="256,361,438,391"/><area shape="rect" id="node13" href="Stream_8cpp.html" title="src/qualia/compat/Stream.cpp" alt="" coords="312,457,507,487"/><area shape="rect" id="node21" href="new_8cpp.html" title="src/qualia/compat/new.cpp" alt="" coords="3794,265,3972,295"/><area shape="rect" id="node25" href="placement__new_8cpp.html" title="src/qualia/compat/placement\l_new.cpp" alt="" coords="3996,257,4186,303"/><area shape="rect" id="node39" href="WString_8cpp.html" title="src/qualia/compat/WString.cpp" alt="" coords="43,265,243,295"/><area shape="rect" id="node144" href="StaticAllocator_8cpp.html" title="src/qualia/core/StaticAllocator.cpp" alt="" coords="4260,169,4482,199"/></map>
 </div>
 </div>
 <p><a href="Allocator_8h_source.html">Go to the source code of this file.</a></p>
@@ -80,42 +82,135 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAlloc.html">Alloc</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:a62162a61c5dee45882b27db1435c46f6"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Allocator_8h.html#a62162a61c5dee45882b27db1435c46f6">Q_NEW</a>(T)&#160;&#160;&#160;new( <a class="el" href="classAlloc.html#a699afef2b14275f32e30554c01c4a44e">Alloc::malloc</a>(sizeof(T)) ) T</td></tr>
+<tr class="memdesc:a62162a61c5dee45882b27db1435c46f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Macro equivalent of <em>new</em> operator: allocates memory using <a class="el" href="classAlloc.html#a699afef2b14275f32e30554c01c4a44e">Alloc::malloc()</a>.  <a href="#a62162a61c5dee45882b27db1435c46f6">More...</a><br/></td></tr>
+<tr class="separator:a62162a61c5dee45882b27db1435c46f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63f610340c32d7fbefd8c7fc1659c57a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Allocator_8h.html#a63f610340c32d7fbefd8c7fc1659c57a">Q_ARRAY_NEW</a>(T, n)&#160;&#160;&#160;<a class="el" href="Allocator_8h.html#a742ae5b20d7a9ed5daca8f1644fd28a9">__Q_ARRAY_NEW</a>&lt;T&gt;(n)</td></tr>
+<tr class="separator:a63f610340c32d7fbefd8c7fc1659c57a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a316fbb07a0a9aa4c762c511ab0dc1b3a"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Allocator_8h.html#a316fbb07a0a9aa4c762c511ab0dc1b3a">operator new</a> (size_t size, <a class="el" href="classAllocator.html">Allocator</a> *alloc)</td></tr>
-<tr class="separator:a316fbb07a0a9aa4c762c511ab0dc1b3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb466571769a5830620c06e0f1f9e9c0"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:acb466571769a5830620c06e0f1f9e9c0"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="Allocator_8h.html#acb466571769a5830620c06e0f1f9e9c0">Q_DELETE</a> (T *obj)</td></tr>
+<tr class="memdesc:acb466571769a5830620c06e0f1f9e9c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Template equivalent of <em>delete</em> operator: explicitely calls destuctor and releases memory using <a class="el" href="classAlloc.html#a7d5fad26b0f1685f6972ea3df42e9bc3">Alloc::free()</a>.  <a href="#acb466571769a5830620c06e0f1f9e9c0">More...</a><br/></td></tr>
+<tr class="separator:acb466571769a5830620c06e0f1f9e9c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a742ae5b20d7a9ed5daca8f1644fd28a9"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:a742ae5b20d7a9ed5daca8f1644fd28a9"><td class="memTemplItemLeft" align="right" valign="top">T *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="Allocator_8h.html#a742ae5b20d7a9ed5daca8f1644fd28a9">__Q_ARRAY_NEW</a> (size_t n)</td></tr>
+<tr class="separator:a742ae5b20d7a9ed5daca8f1644fd28a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca099e8dfe090edac34294959610a996"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:aca099e8dfe090edac34294959610a996"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="Allocator_8h.html#aca099e8dfe090edac34294959610a996">Q_ARRAY_DELETE</a> (T *array)</td></tr>
+<tr class="separator:aca099e8dfe090edac34294959610a996"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="a316fbb07a0a9aa4c762c511ab0dc1b3a"></a>
+<h2 class="groupheader">Macro Definition Documentation</h2>
+<a class="anchor" id="a63f610340c32d7fbefd8c7fc1659c57a"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void* operator new </td>
+          <td class="memname">#define Q_ARRAY_NEW</td>
           <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>size</em>, </td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">T, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classAllocator.html">Allocator</a> *&#160;</td>
-          <td class="paramname"><em>alloc</em>&#160;</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">n&#160;</td>
         </tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td>
+          <td></td><td>&#160;&#160;&#160;<a class="el" href="Allocator_8h.html#a742ae5b20d7a9ed5daca8f1644fd28a9">__Q_ARRAY_NEW</a>&lt;T&gt;(n)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Macro equivalent of <em>new[]</em> operator: allocates memory using <a class="el" href="classAlloc.html#a699afef2b14275f32e30554c01c4a44e">Alloc::malloc()</a>. Notice that this method allocates an extra (size_t) space to retrieve the number of allocated elements when calling <a class="el" href="Allocator_8h.html#aca099e8dfe090edac34294959610a996">Q_ARRAY_DELETE()</a>. </p>
+
+</div>
+</div>
+<a class="anchor" id="a62162a61c5dee45882b27db1435c46f6"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define Q_NEW</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">T</td><td>)</td>
+          <td>&#160;&#160;&#160;new( <a class="el" href="classAlloc.html#a699afef2b14275f32e30554c01c4a44e">Alloc::malloc</a>(sizeof(T)) ) T</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Macro equivalent of <em>new</em> operator: allocates memory using <a class="el" href="classAlloc.html#a699afef2b14275f32e30554c01c4a44e">Alloc::malloc()</a>. </p>
+
+</div>
+</div>
+<h2 class="groupheader">Function Documentation</h2>
+<a class="anchor" id="a742ae5b20d7a9ed5daca8f1644fd28a9"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">T* __Q_ARRAY_NEW </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>n</em></td><td>)</td>
+          <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
+<a class="anchor" id="aca099e8dfe090edac34294959610a996"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void Q_ARRAY_DELETE </td>
+          <td>(</td>
+          <td class="paramtype">T *&#160;</td>
+          <td class="paramname"><em>array</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Template equivalent of <em>delete[]</em> operator: explicitely calls destuctors and releases memory using <a class="el" href="classAlloc.html#a7d5fad26b0f1685f6972ea3df42e9bc3">Alloc::free()</a>. </p>
+
+</div>
+</div>
+<a class="anchor" id="acb466571769a5830620c06e0f1f9e9c0"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void Q_DELETE </td>
+          <td>(</td>
+          <td class="paramtype">T *&#160;</td>
+          <td class="paramname"><em>obj</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Template equivalent of <em>delete</em> operator: explicitely calls destuctor and releases memory using <a class="el" href="classAlloc.html#a7d5fad26b0f1685f6972ea3df42e9bc3">Alloc::free()</a>. </p>
+
+</div>
+</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jul 4 2013 00:56:24 for Qualia by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Oct 11 2013 18:47:22 for Qualia by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.3.1
 </small></address>

@@ -1,11 +1,11 @@
 <map id="src/qualia/computer/DiskXFileDataSet.h" name="src/qualia/computer/DiskXFileDataSet.h">
-<area shape="rect" id="node3" href="$XFileDataSet_8h.html" title="qualia/learning/XFileData\lSet.h" alt="" coords="327,102,492,149"/>
-<area shape="rect" id="node40" href="$DiskXFile_8h.html" title="qualia/computer/DiskXFile.h" alt="" coords="516,111,703,140"/>
-<area shape="rect" id="node5" href="$DataSet_8h.html" title="qualia/learning/DataSet.h" alt="" coords="249,197,417,227"/>
-<area shape="rect" id="node36" href="$XFile_8h.html" title="qualia/core/XFile.h" alt="" coords="441,197,572,227"/>
-<area shape="rect" id="node7" href="$common_8h.html" title="qualia/core/common.h" alt="" coords="345,275,495,304"/>
-<area shape="rect" id="node17" href="$Arduino_8h.html" title="qualia/compat/Arduino.h" alt="" coords="280,352,443,381"/>
-<area shape="rect" id="node27" href="$error_8h.html" title="qualia/core/error.h" alt="" coords="699,352,824,381"/>
-<area shape="rect" id="node30" href="$Allocator_8h.html" title="qualia/core/Allocator.h" alt="" coords="5,352,155,381"/>
-<area shape="rect" id="node24" href="$binary_8h.html" title="binary.h" alt="" coords="411,429,477,459"/>
+<area shape="rect" id="node3" href="$XFileDataSet_8h.html" title="qualia/learning/XFileData\lSet.h" alt="" coords="405,102,571,149"/>
+<area shape="rect" id="node44" href="$DiskXFile_8h.html" title="qualia/computer/DiskXFile.h" alt="" coords="595,111,781,140"/>
+<area shape="rect" id="node5" href="$DataSet_8h.html" title="qualia/learning/DataSet.h" alt="" coords="328,197,496,227"/>
+<area shape="rect" id="node40" href="$XFile_8h.html" title="qualia/core/XFile.h" alt="" coords="520,197,651,227"/>
+<area shape="rect" id="node7" href="$common_8h.html" title="qualia/core/common.h" alt="" coords="424,275,573,304"/>
+<area shape="rect" id="node19" href="$Arduino_8h.html" title="qualia/compat/Arduino.h" alt="" coords="299,352,461,381"/>
+<area shape="rect" id="node29" href="$error_8h.html" title="qualia/core/error.h" alt="" coords="800,352,925,381"/>
+<area shape="rect" id="node32" href="$Allocator_8h.html" title="qualia/core/Allocator.h" alt="" coords="24,352,173,381"/>
+<area shape="rect" id="node26" href="$binary_8h.html" title="binary.h" alt="" coords="429,429,496,459"/>
 </map>
