@@ -37,12 +37,23 @@ ActionProperties::ActionProperties(unsigned int dim, const unsigned int* nAction
   memcpy(_nActions, nActions, _dim * sizeof(unsigned int));
 
   // Set nConflated.
-  // XXX: problem here: if nActions is changed later (eg. if nActionsInit is set to 0)
-  // nConflated will not be properly pre-compiled
-  // We thus need to either force the nActionsInit_ to be non-null or to find some other way
-  _nConflated = 1;
+  _computeNConflated();
+}
+
+ActionProperties::ActionProperties(unsigned int dim, unsigned int nActionsPerDim) : _dim(dim)
+{
+  Q_ASSERT_ERROR( _dim > 0 );
+  Q_ASSERT_ERROR( nActionsPerDim > 0 );
+
+  // Allocate.
+  _nActions = (unsigned int*) Alloc::malloc(_dim * sizeof(unsigned int));
+
+  // Init.
   for (unsigned int i=0; i<_dim; i++)
-    _nConflated *= _nActions[i];
+    _nActions[i] = nActionsPerDim;
+
+  // Set nConflated.
+  _computeNConflated();
 }
 
 ActionProperties::~ActionProperties() {
@@ -51,6 +62,13 @@ ActionProperties::~ActionProperties() {
 
 bool ActionProperties::equals(const ActionProperties& p) const {
   return (_dim == p._dim && (memcmp(_nActions, p._nActions, _dim*sizeof(unsigned int)) == 0));
+}
+
+void ActionProperties::_computeNConflated() {
+  // Set nConflated.
+  _nConflated = 1;
+  for (unsigned int i=0; i<_dim; i++)
+    _nConflated *= _nActions[i];
 }
 
 Action::Action(ActionProperties* properties_) : properties(properties_), _undefined(false) {

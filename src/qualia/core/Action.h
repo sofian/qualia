@@ -49,6 +49,9 @@ public:
   /// Class constructor.
   ActionProperties(unsigned int dim, const unsigned int* nActions);
 
+  /// Special class constructor for properties where each dimension has the same number of actions.
+  ActionProperties(unsigned int dim, unsigned int nActionsPerDim);
+
   /// Class destructor.
   virtual ~ActionProperties();
 
@@ -66,6 +69,9 @@ public:
 
   /// Returns a random action.
   action_t random() const { return (action_t) ::random(nConflated()); }
+
+  // Internal use.
+  void _computeNConflated();
 };
 
 /**
