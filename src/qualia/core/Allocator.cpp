@@ -70,3 +70,7 @@ void Alloc::free(void* ptr) {
 void Alloc::init(Allocator* alloc) {
   inst = alloc;
 }
+
+//void * operator new(size_t size, Allocator* alloc) {
+//  return Alloc::malloc(size);
+//}

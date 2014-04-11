@@ -87,6 +87,13 @@ public:
 /// Macro equivalent of *new* operator: allocates memory using Alloc::malloc().
 #define Q_NEW(T) new( Alloc::malloc(sizeof(T)) ) T
 
+//void * operator new(size_t size, Allocator* alloc);
+//#define Q_NEW(T) new( Alloc::instance() ) T
+//#define _NEW new( Alloc::instance() )
+
+//template<class T> T* _Q_ALLOC() { return Alloc::malloc(sizeof(T)); }
+
+
 /// Template equivalent of *delete* operator: explicitely calls destuctor and releases memory using Alloc::free().
 template<class T>
 void Q_DELETE(T* obj) {
