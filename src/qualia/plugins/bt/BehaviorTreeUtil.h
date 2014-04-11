@@ -27,6 +27,9 @@ public:
   FailureAfter*    failureAfter(int t);
 
   WeightedBehaviorTreeNode weighted(double weight, BehaviorTreeNode* node);
+
+  BehaviorTreeNode* end();
+  WeightedBehaviorTreeNode endWeighted();
 };
 
 #define BT_END NULL

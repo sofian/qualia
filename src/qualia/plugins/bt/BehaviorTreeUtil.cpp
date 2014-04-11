@@ -44,6 +44,15 @@ WeightedBehaviorTreeNode BehaviorTreeUtil::weighted(double weight, BehaviorTreeN
   return WeightedBehaviorTreeNode(weight, node);
 }
 
+BehaviorTreeNode* end() {
+  return BT_END;
+}
+
+WeightedBehaviorTreeNode endWeighted() {
+  return BT_END_WEIGHTED;
+}
+
+
 BehaviorTreeUtil BT;
 
 }
