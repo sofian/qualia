@@ -51,8 +51,9 @@ void MapperBasicEnvironment::addSignals() {
   for (unsigned int i=0; i<actionProperties->dim(); i++) {
     maxActions[i] = actionProperties->nActions(i)-1;
 #if DEBUG_WARNING
-    Q_ASSERT_WARNING_MESSAGE(maxOneAction == maxActions[i], "Action properties with different nActions is currently not supported by the mapper plugin."
-                                                            "Make sure all action dimention have the same number of possible actions.");
+    Q_ASSERT_WARNING_MESSAGE((int)maxOneAction == maxActions[i],
+                             "Action properties with different nActions is currently not supported by the mapper plugin."
+                             "Make sure all action dimention have the same number of possible actions.");
 #endif
   }
   connector->addOutput("action", (int)actionProperties->dim(), 'i', 0, &minAction, maxActions, 0);
