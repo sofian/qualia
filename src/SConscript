@@ -125,6 +125,7 @@ if ('osc' in PLUGINS):
   SUBDIRS += ["qualia/plugins/osc"]
 if ('mapper' in PLUGINS):
   LIBS += ["mapper-0", "lo"]
+  INCLUDE_PATH += ["/usr/local/include/mapper-0"]
   SUBDIRS += ["qualia/plugins/mapper"]
 if ('bt' in PLUGINS):
   SUBDIRS += ["qualia/plugins/bt"]
