@@ -84,8 +84,8 @@ void BatchRLTrainer::_doTrainEpisode(DataSet* data) {
   int nIter = 0;
   do {
 
-    lastMse = mse;
     mse     = 0;
+    lastMse = mse;
 
     data->reset();
     for (int t=0; t<n; t++) {
