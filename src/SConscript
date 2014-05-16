@@ -53,7 +53,7 @@ def fnCompress(target, source, env):
         run(AVR_BIN_PREFIX+'ar rcs %s %s'%(target[0], file))
 
 Import(["platform", "mode"])
-SUBDIRS = ["qualia/core", "qualia/util", "qualia/rl", "qualia/ga", "qualia/learning"]
+SUBDIRS = ["qualia/core", "qualia/util", "qualia/agents", "qualia/rl", "qualia/ga", "qualia/learning"]
 
 if (platform == 'computer'):
 	SUBDIRS += ["qualia/computer"]
