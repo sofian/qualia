@@ -64,6 +64,9 @@ public:
   /// Number of possible actions in dimension #i#.
   unsigned int nActions(int i) const { return _nActions[i]; }
 
+  /// The maximum action index in dimension #i#.
+  action_dim_t maxAction(int i) const { return _nActions[i]-1; }
+
   /// Comparison method.
   bool equals(const ActionProperties& p) const;
 
