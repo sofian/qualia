@@ -5,7 +5,7 @@
  *
  * This agent has a single input and a single "flash" action. It mimicks
  * synchronizing fireflies. Based on the paper:
- * Tyrrell & Auer (2006) "Fireflies as Role Models for Synchronization in Ad Hoc Networks
+ * Tyrrell & Auer (2006) "Fireflies as Role Models for Synchronization in Ad Hoc Networks"
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,14 +33,25 @@ class FireflyAgent : public Agent {
 public:
   static ActionProperties fireflyProperties;
 
-  /// Threshold over which the agent flashes.
-  int flashThreshold;
+  enum State {
+    IDLE,
+    BLIND,
+    FLASH,
+    REFRACT
+  };
 
-  /// Number of steps for which the agent is "blind" after flashing.
-  int blindTime;
+  /// Threshold over which the agent flashes.
+  uint flashThreshold;
+
+  /// Number of steps for which the agent is refractory ie. blind right after flashing.
+  uint refractoryTime;
+
+  /// Number of steps for which the agent is blind after seeing a flash (usually equal to the
+  /// flashTime of its neighbors).
+  uint blindTime;
 
   /// Number of steps the flash stays on.
-  int flashTime;
+  uint flashTime;
 
   /// Adjustment to power when a neighbor flashes as a proportion of flashThreshold (should be in [0,1]).
   real flashAdjust;
@@ -53,23 +64,27 @@ public:
   // Current accumulated power.
   real power;
 
-  // Counters.
-  int blind;
-  int flash;
+  // Current state.
+  State state;
+
+  // Multi-purpose timer.
+  uint timer;
 
   // Mean counter.
   MovingAverage mean;
 
-  FireflyAgent(int flashThreshold,
-               int blindTime,
-               int flashTime=1,
-               real flashAdjust=0.05);
+  FireflyAgent(uint flashThreshold,
+               real flashAdjust=0.05f,
+               uint refractoryTime=1,
+               uint blindTime=1,
+               uint flashTime=1);
   virtual ~FireflyAgent();
 
   virtual void init();
   virtual Action* start(const Observation* observation);
   virtual Action* step(const Observation* observation);
 
+  bool _checkFlash();
   void _stepFlash();
 };
 
