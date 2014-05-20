@@ -137,5 +137,6 @@ void Q_ARRAY_DELETE(T* array) {
 #define Q_FREE(ptr) Alloc::free(ptr)
 
 #define Q_ARRAY_CLEAR(ptr,T,n) memset(ptr, 0, sizeof(T)*n)
+#define Q_ARRAY_COPY(to, from, T, n) memcpy(to, from, sizeof(T)*(size_t)n);
 
 #endif /* ALLOCATOR_H_ */
