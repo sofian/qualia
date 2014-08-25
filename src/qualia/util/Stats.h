@@ -1,5 +1,5 @@
 /*
- * MovingStats.cpp
+ * Stats.h
  *
  * (c) 2014 Sofian Audry -- info(@)sofianaudry(.)com
  *
@@ -17,24 +17,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "MovingStats.h"
+#ifndef STATS_H_
+#define STATS_H_
 
-MovingStats::MovingStats(float alphaOrN, real startMean, real startVar) {
-  Q_ASSERT_ERROR(alphaOrN >= 0);
-  _alpha = (alphaOrN > 1 ?
-      2 / (alphaOrN - 1) :
-      alphaOrN);
-  reset(startMean, startVar);
-}
+#include <qualia/core/common.h>
 
-void MovingStats::reset(real startMean, real startVar)
-{
-  _mean = startMean;
-  _var = startVar;
-}
+class Stats {
+public:
+  Stats() {}
+  virtual ~Stats() {}
 
-real MovingStats::update(real value) {
-  _mean  -= _alpha * (_mean - value);
-  _var   -= _alpha * (_var  - sq(value-_mean));
-  return _mean;
-}
+  /// Resets the statistics.
+  virtual void reset(real startMean=0, real startVar=0) = 0;
+
+  /// Adds a value to the statistics (returns the mean).
+  virtual real update(real value) = 0;
+
+  /// The statistics.
+  virtual real mean() const = 0;
+  virtual real var() const  = 0;
+  virtual real stddev() const;
+
+  /// Returns the normalized value according to the computed statistics (mean and variance).
+  real normalize(real value) const;
+};
+
+#endif /* STATS_H_ */

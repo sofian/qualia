@@ -19,16 +19,16 @@
 
 #include "SimpleStats.h"
 
-SimpleStats::SimpleStats() {
-  reset();
+SimpleStats::SimpleStats(real startMean, real startVar) {
+  reset(startMean, startVar);
 }
 
-void SimpleStats::reset() {
-  _mean = 0;
-  _mean2 = 0;
+void SimpleStats::reset(real startMean, real startVar) {
+  _mean = startMean;
+  _mean2 = startVar + sq(_mean);
   _nSamples = 0;
-  _min = FLT_MAX;
-  _max = -FLT_MAX;
+//  _min = FLT_MAX;
+//  _max = -FLT_MAX;
 }
 
 real SimpleStats::update(real value) {
@@ -44,19 +44,13 @@ real SimpleStats::update(real value) {
   _mean2 = _mean2 * prop + sq(value) / _nSamples;
 
   // Update min and max
-  _min = min(_min, value);
-  _max = max(_max, value);
+//  _min = min(_min, value);
+//  _max = max(_max, value);
 
   return _mean;
 }
 
 real SimpleStats::var() const {
   real v = (_mean2 - sq(_mean));
-  return max(v, 0.0f);
-}
-
-real SimpleStats::stddev() const { return sqrt(var()); }
-
-real SimpleStats::normalize(real value) const {
-  return ( value - mean() ) / (stddev() + REAL_MIN);
+  return max(v, 0.0f); // make sure the result is >= 0
 }

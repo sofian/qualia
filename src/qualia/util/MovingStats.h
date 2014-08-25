@@ -23,9 +23,9 @@
 #ifndef MOVINGSTATS_H_
 #define MOVINGSTATS_H_
 
-#include <qualia/core/common.h>
+#include "Stats.h"
 
-class MovingStats {
+class MovingStats : public Stats {
 public:
   float _alpha;
   real _mean;
@@ -42,18 +42,14 @@ public:
   virtual ~MovingStats() {}
 
   /// Resets the statistics.
-  void reset(real startMean, real startVar);
+  virtual void reset(real startMean=0, real startVar=0);
 
   /// Adds a value to the statistics (returns the mean).
-  real update(real value);
+  virtual real update(real value);
 
   /// The statistics.
-  real mean() const { return _mean; }
-  real var() const { return _var; }
-  real stddev() const;
-
-  /// Returns the normalized value according to the computed statistics.
-  real normalize(real value) const;
+  virtual real mean() const { return _mean; }
+  virtual real var() const { return _var; }
 };
 
 #endif /* MOVINGSTATS_H_ */

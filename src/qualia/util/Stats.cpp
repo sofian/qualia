@@ -1,5 +1,5 @@
 /*
- * MovingStats.cpp
+ * Stats.cpp
  *
  * (c) 2014 Sofian Audry -- info(@)sofianaudry(.)com
  *
@@ -17,24 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "MovingStats.h"
+#include "Stats.h"
 
-MovingStats::MovingStats(float alphaOrN, real startMean, real startVar) {
-  Q_ASSERT_ERROR(alphaOrN >= 0);
-  _alpha = (alphaOrN > 1 ?
-      2 / (alphaOrN - 1) :
-      alphaOrN);
-  reset(startMean, startVar);
+real Stats::stddev() const {
+  return sqrt(var());
 }
 
-void MovingStats::reset(real startMean, real startVar)
-{
-  _mean = startMean;
-  _var = startVar;
-}
-
-real MovingStats::update(real value) {
-  _mean  -= _alpha * (_mean - value);
-  _var   -= _alpha * (_var  - sq(value-_mean));
-  return _mean;
+real Stats::normalize(real value) const {
+  return ( value - mean() ) / (stddev() + REAL_MIN);
 }
