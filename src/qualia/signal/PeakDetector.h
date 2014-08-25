@@ -27,7 +27,7 @@
 #ifndef PEAKDETECTOR_H_
 #define PEAKDETECTOR_H_
 
-#include <qualia/util/Stats.h>
+#include <qualia/signal/Stats.h>
 
 class PeakDetector {
 public:

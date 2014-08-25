@@ -27,7 +27,7 @@
 #include <qualia/core/common.h>
 #include <qualia/core/Action.h>
 #include <qualia/core/Agent.h>
-#include <qualia/util/MovingAverage.h>
+#include <qualia/signal/MovingAverage.h>
 
 class FireflyAgent : public Agent {
 public:

@@ -28,7 +28,7 @@
 #ifndef SIMPLESTATS_H_
 #define SIMPLESTATS_H_
 
-#include "Stats.h"
+#include <qualia/signal/Stats.h>
 
 class SimpleStats : public Stats {
 public:

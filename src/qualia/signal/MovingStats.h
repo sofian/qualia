@@ -23,7 +23,7 @@
 #ifndef MOVINGSTATS_H_
 #define MOVINGSTATS_H_
 
-#include "Stats.h"
+#include <qualia/signal/Stats.h>
 
 class MovingStats : public Stats {
 public:
