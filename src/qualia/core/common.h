@@ -53,7 +53,7 @@
 
 #include <stdlib.h>
 #include <float.h>
-//#include <limits.h>
+#include <limits.h>
 #include <stdint.h>
 #include <math.h>
 
@@ -100,9 +100,13 @@
 
 #ifdef USE_DOUBLE
   typedef double real;
+  #define REAL_MAX DBL_MAX
+  #define REAL_MIN DBL_MIN
   #define INF DBL_MAX
 #else
   typedef float real;
+  #define REAL_MAX FLT_MAX
+  #define REAL_MIN FLT_MIN
   #define INF FLT_MAX
 #endif
 

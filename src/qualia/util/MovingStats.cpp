@@ -19,7 +19,7 @@
 
 #include "MovingStats.h"
 
-MovingStats::MovingStats(float alphaOrN, float startMean, float startVar) {
+MovingStats::MovingStats(float alphaOrN, real startMean, real startVar) {
   Q_ASSERT_ERROR(alphaOrN >= 0);
   _alpha = (alphaOrN > 1 ?
       2 / (alphaOrN - 1) :
@@ -27,20 +27,20 @@ MovingStats::MovingStats(float alphaOrN, float startMean, float startVar) {
   reset(startMean, startVar);
 }
 
-void MovingStats::reset(float startMean, float startVar)
+void MovingStats::reset(real startMean, real startVar)
 {
    _mean = startMean;
    _var = startVar;
  }
 
-float MovingStats::update(float value) {
+real MovingStats::update(real value) {
   _mean  -= _alpha * (_mean - value);
   _var   -= _alpha * (_var  - sq(value-_mean));
   return _mean;
 }
 
-float MovingStats::stddev() const { return sqrt(var()); }
+real MovingStats::stddev() const { return sqrt(var()); }
 
-float MovingStats::normalize(float value) const {
-  return ( value - mean() ) / (stddev() + FLT_MIN);
+real MovingStats::normalize(real value) const {
+  return ( value - mean() ) / (stddev() + REAL_MIN);
 }

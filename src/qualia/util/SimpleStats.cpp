@@ -31,7 +31,7 @@ void SimpleStats::reset() {
   _max = -FLT_MAX;
 }
 
-float SimpleStats::update(float value) {
+real SimpleStats::update(real value) {
   if (_nSamples == ULONG_MAX)
     _nSamples = (ULONG_MAX / 4) * 3; // simple trick that makes sure we don't overflow
 
@@ -39,7 +39,7 @@ float SimpleStats::update(float value) {
   _nSamples++;
 
   // Update mean and mean2
-  float prop = (float)(_nSamples-1) / (float)_nSamples;
+  real prop = (real)(_nSamples-1) / (real)_nSamples;
   _mean  = _mean  * prop + value     / _nSamples;
   _mean2 = _mean2 * prop + sq(value) / _nSamples;
 
@@ -50,11 +50,13 @@ float SimpleStats::update(float value) {
   return _mean;
 }
 
-float SimpleStats::var() const {
-  float v = (_mean2 - sq(_mean));
+real SimpleStats::var() const {
+  real v = (_mean2 - sq(_mean));
   return max(v, 0.0f);
 }
 
-float SimpleStats::stddev() const { return sqrt(var()); }
+real SimpleStats::stddev() const { return sqrt(var()); }
 
-float SimpleStats::normalize(float value) const { return ( value - mean() ) / (stddev() + FLT_MIN); }
+real SimpleStats::normalize(real value) const {
+  return ( value - mean() ) / (stddev() + REAL_MIN);
+}

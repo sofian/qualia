@@ -29,40 +29,38 @@
 #define SIMPLESTATS_H_
 
 #include <qualia/core/common.h>
-#include <float.h>
-#include <limits.h>
-#include <math.h>
 
 class SimpleStats {
 public:
-  float _mean;
-  float _mean2; // mean of squared values
-  float _min;
-  float _max;
+  real _mean;
+  real _mean2; // mean of squared values
+  real _min;
+  real _max;
   unsigned long _nSamples;
 
   /// Constructor.
   SimpleStats();
+  virtual ~SimpleStats() {}
 
   /// Resets the statistics.
   void reset();
 
   /// Adds a value to the statistics (returns the mean).
-  float update(float value);
+  real update(real value);
 
   /// The statistics.
-  float mean() const { return _mean; }
+  real mean() const { return _mean; }
   // The var() and stddev() are the population (ie. not the sample) variance and standard dev, so technically
   // they should be readjusted by multiplying it by _nSamples / (_nSamples-1). But with a lot of samples the
   // difference vanishes and we priviledged less floating points computations over precision.
-  float var() const;
-  float stddev() const;
-  float minimum() const { return _min; }
-  float maximum() const { return _max; }
+  real var() const;
+  real stddev() const;
+  real minimum() const { return _min; }
+  real maximum() const { return _max; }
   unsigned long nSamples() const { return _nSamples; }
 
   /// Returns the normalized value according to the computed statistics (mean and variance).
-  float normalize(float value) const;
+  real normalize(real value) const;
 };
 
 #endif /* SIMPLESTATS_H_ */

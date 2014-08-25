@@ -30,7 +30,7 @@
 class MovingAverage {
 public:
   float _alpha;
-  float _value;
+  real _value;
 
   /**
    * Constructs the moving average, starting with #startValue# as its value. The #alphaOrN# argument
@@ -39,22 +39,23 @@ public:
    * - if > 1 then it's used as the "number of items that are considered from the past" (*)
    * (*) Of course this is an approximation. It actually sets the alpha value to 2 / (n - 1)
    */
-  MovingAverage(float alphaOrN, float startValue);
+  MovingAverage(float alphaOrN, real startValue);
+  virtual ~MovingAverage() {}
 
   /**
    * Updates the moving average with new value #v# (also returns the current value).
    */
-  float update(float v);
+  real update(real v);
 
   /**
    * Returns the value of the moving average.
    */
-  float get() const { return _value; }
+  real get() const { return _value; }
 
   /**
    * Resets the moving average to #startValue#.
    */
-  void reset(float startValue);
+  void reset(real startValue);
 };
 
 #endif /* MOVINGAVERAGE_H_ */

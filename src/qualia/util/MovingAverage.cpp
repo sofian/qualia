@@ -25,17 +25,17 @@
 
 #include "MovingAverage.h"
 
-MovingAverage::MovingAverage(float alphaOrN, float startValue) : _value(startValue) {
+MovingAverage::MovingAverage(float alphaOrN, real startValue) : _value(startValue) {
   Q_ASSERT_ERROR(alphaOrN >= 0);
   _alpha = (alphaOrN > 1 ?
       2 / (alphaOrN - 1) :
       alphaOrN);
 }
 
-float MovingAverage::update(float v) {
+real MovingAverage::update(real v) {
   return (_value -= _alpha * (_value - v));
 }
 
-void MovingAverage::reset(float startValue) {
+void MovingAverage::reset(real startValue) {
   _value = startValue;
 }

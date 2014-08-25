@@ -27,9 +27,9 @@
 
 class MovingStats {
 public:
-  float _mean;
-  float _var;
   float _alpha;
+  real _mean;
+  real _var;
 
   /**
    * Constructs the moving statistics, starting with #startMean# and #startVar# as initial mean and
@@ -38,21 +38,22 @@ public:
    * - if > 1 then it's used as the "number of items that are considered from the past" (*)
    * (*) Of course this is an approximation. It actually sets the alpha value to 2 / (n - 1)
    */
-  MovingStats(float alphaOrN, float startMean, float startVar);
+  MovingStats(float alphaOrN, real startMean, real startVar);
+  virtual ~MovingStats() {}
 
   /// Resets the statistics.
-  void reset(float startMean, float startVar);
+  void reset(real startMean, real startVar);
 
   /// Adds a value to the statistics (returns the mean).
-  float update(float value);
+  real update(real value);
 
   /// The statistics.
-  float mean() const { return _mean; }
-  float var() const { return _var; }
-  float stddev() const;
+  real mean() const { return _mean; }
+  real var() const { return _var; }
+  real stddev() const;
 
   /// Returns the normalized value according to the computed statistics.
-  float normalize(float value);
+  real normalize(real value) const;
 };
 
 #endif /* MOVINGSTATS_H_ */
