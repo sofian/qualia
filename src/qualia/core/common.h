@@ -122,6 +122,7 @@
 
 #if is_avr()
 #include <qualia/compat/placement_new.h>
+#include <qualia/compat/computer.h>
 #endif
 
 #include <qualia/core/error.h>
