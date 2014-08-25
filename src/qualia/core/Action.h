@@ -143,6 +143,9 @@ public:
   /// Number of possible actions in dimension *i*.
   unsigned int nActions(int i) const { return properties->nActions(i); }
 
+  /// The maximum action index in dimension #i#.
+  action_dim_t maxAction(int i) const { return properties->maxAction(i); }
+
   // TODO: remove dim / nAtions / etc from class and put it in some sort of TemplateAction class
   // otherwise the save/load are not really what they look like. This is why I named them saveData/loadData
   // instead of just save/load.
