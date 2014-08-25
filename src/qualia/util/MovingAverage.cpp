@@ -32,10 +32,10 @@ MovingAverage::MovingAverage(float alphaOrN, real startValue) : _value(startValu
       alphaOrN);
 }
 
-real MovingAverage::update(real v) {
-  return (_value -= _alpha * (_value - v));
-}
-
 void MovingAverage::reset(real startValue) {
   _value = startValue;
+}
+
+real MovingAverage::update(real v) {
+  return (_value -= _alpha * (_value - v));
 }

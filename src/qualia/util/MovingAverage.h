@@ -43,6 +43,11 @@ public:
   virtual ~MovingAverage() {}
 
   /**
+   * Resets the moving average to #startValue#.
+   */
+  void reset(real startValue);
+
+  /**
    * Updates the moving average with new value #v# (also returns the current value).
    */
   real update(real v);
@@ -52,10 +57,6 @@ public:
    */
   real get() const { return _value; }
 
-  /**
-   * Resets the moving average to #startValue#.
-   */
-  void reset(real startValue);
 };
 
 #endif /* MOVINGAVERAGE_H_ */
