@@ -45,7 +45,9 @@ public:
   virtual void init() {}
 
   /// Chooses the first action in the episode.
-  virtual Action* start(const Observation* observation) = 0;
+  virtual Action* start(const Observation* observation) {
+    return step(observation); // default
+  }
 
   /// Performs an episode step.
   virtual Action* step(const Observation* observation) = 0;
