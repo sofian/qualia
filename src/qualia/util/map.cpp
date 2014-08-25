@@ -19,9 +19,9 @@
 
 #include "map.h"
 
-real mapReal(real x, real in_min, real in_max, real out_min, real out_max)
+real mapReal(real x, real inMin, real inMax, real outMin, real outMax)
 {
-  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+  return (x - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
 }
 
 
