@@ -25,11 +25,13 @@
 #ifndef MOVINGAVERAGE_H_
 #define MOVINGAVERAGE_H_
 
+#include <qualia/core/common.h>
+
 class MovingAverage {
+public:
   float _alpha;
   float _value;
 
-public:
   /**
    * Constructs the moving average, starting with #startValue# as its value. The #alphaOrN# argument
    * has two options:
@@ -37,18 +39,12 @@ public:
    * - if > 1 then it's used as the "number of items that are considered from the past" (*)
    * (*) Of course this is an approximation. It actually sets the alpha value to 2 / (n - 1)
    */
-  MovingAverage(float startValue, float alphaOrN) : _value(startValue) {
-    _alpha = (alphaOrN > 1 ?
-        2 / (alphaOrN - 1) :
-        alphaOrN);
-  }
+  MovingAverage(float alphaOrN, float startValue);
 
   /**
-   * Updates the moving average with new value #v#.
+   * Updates the moving average with new value #v# (also returns the current value).
    */
-  void update(float v) {
-    _value -= _alpha * (_value - v);
-  }
+  float update(float v);
 
   /**
    * Returns the value of the moving average.
@@ -58,9 +54,7 @@ public:
   /**
    * Resets the moving average to #startValue#.
    */
-  void reset(float startValue) {
-    _value = startValue;
-  }
+  void reset(float startValue);
 };
 
 #endif /* MOVINGAVERAGE_H_ */
