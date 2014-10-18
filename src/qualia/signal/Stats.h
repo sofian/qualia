@@ -24,7 +24,6 @@
 
 class Stats {
 public:
-  Stats() {}
   virtual ~Stats() {}
 
   /// Resets the statistics.
