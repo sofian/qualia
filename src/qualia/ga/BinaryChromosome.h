@@ -102,7 +102,7 @@ public:
   }
 
   /// Returns the value of gene #gene# remapped to given value.
-  float getMappedGeneValue(int gene, float minValue, float maxValue) {
+  real getMappedRealGeneValue(int gene, float minValue, float maxValue) {
     return mapReal(getGeneValue(gene), 0, maxGeneValue(gene), minValue, maxValue);
   }
 
