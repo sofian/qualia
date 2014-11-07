@@ -31,10 +31,10 @@ BinaryChromosomeProperties::BinaryChromosomeProperties(unsigned int nGenes, cons
 #endif
 
   // Allocate.
-  _geneSizes = (uint8_t*) Alloc::malloc(_nGenes * sizeof(uint8_t));
+  _geneSizes = Q_ARRAY(uint8_t, _nGenes);
 
   // Init.
-  memcpy(_geneSizes, geneSizes, _nGenes * sizeof(uint8_t));
+  Q_ARRAY_COPY(_geneSizes, geneSizes, uint8_t, _nGenes);
 }
 
 unsigned int BinaryChromosomeProperties::bitSize() const {
