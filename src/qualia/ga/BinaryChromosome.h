@@ -22,6 +22,7 @@
 
 #include <qualia/core/common.h>
 #include <qualia/util/bitarray.h>
+#include <qualia/util/map.h>
 #include <qualia/util/random.h>
 
 #include "Chromosome.h"
@@ -52,6 +53,9 @@ public:
   /// Returns the size (in bits) of gene #gene#.
   uint8_t geneSize(int gene) const { return _geneSizes[gene]; }
 
+  /// Returns the max value of gene #gene#.
+  uint64_t maxGeneValue(int gene) const { return (1ULL << _geneSizes[gene]) - 1; } // 2^s - 1
+
   /// Returns the total size (in bits) of the chromosome.
   unsigned int bitSize() const;
 
@@ -73,14 +77,34 @@ public:
   BinaryChromosome(BinaryChromosomeProperties* info);
   virtual ~BinaryChromosome();
 
+  /// Copy from other chromosome (must be a binary chromosome).
   virtual void copyFrom(const Chromosome& c);
 
   virtual void init();
   virtual void mutate(float p);
   virtual bool equals(const Chromosome& c) const;
 
+  /// Explicitely set DNA code.
+  void setCode(const uint8_t* code_);
+
+  /// Explicitely get DNA code.
+  void getCode(uint8_t* code_);
+
+  /// Returns the max value of gene #i#.
+  uint64_t maxGeneValue(int gene) const { return info->maxGeneValue(gene); }
+
   /// Returns the value of gene #gene# as a 64-bit integer.
   uint64_t getGeneValue(int gene) const;
+
+  /// Returns the value of gene #gene# remapped to given value.
+  long getMappedGeneValue(int gene, long minValue, long maxValue) {
+    return map(getGeneValue(gene), 0, maxGeneValue(gene), minValue, maxValue);
+  }
+
+  /// Returns the value of gene #gene# remapped to given value.
+  float getMappedGeneValue(int gene, float minValue, float maxValue) {
+    return mapReal(getGeneValue(gene), 0, maxGeneValue(gene), minValue, maxValue);
+  }
 
   /// Sets the value of gene #gene# to #value# (max. 64-bit).
   void setGeneValue(int gene, uint64_t value);

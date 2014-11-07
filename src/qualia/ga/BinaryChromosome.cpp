@@ -75,7 +75,7 @@ void BinaryChromosome::copyFrom(const Chromosome& c) {
   Q_ASSERT_ERROR( bc );
 //  ASSERT_ERROR( *info == *bc->info );
   Q_ASSERT_ERROR( info->equals(*bc->info) );
-  memcpy(code, bc->code, info->byteSize());
+  setCode(bc->code);
 }
 
 void BinaryChromosome::init() {
@@ -103,6 +103,14 @@ bool BinaryChromosome::equals(const Chromosome& c) const {
         return false;
     return true;
   }
+}
+
+void BinaryChromosome::setCode(const uint8_t* code_) {
+  memcpy(code, code_, info->byteSize());
+}
+
+void BinaryChromosome::getCode(uint8_t* code_) {
+  memcpy(code_, code, info->byteSize());
 }
 
 //int BinaryChromosome::compare(const Chromosome& g) {
