@@ -49,8 +49,8 @@ public:
   /// Returns the number of genes in the chromosome.
   unsigned int nGenes() const { return _nGenes; }
 
-  /// Returns the size (in bits) of gene #i#.
-  uint8_t geneSize(int i) const { return _geneSizes[i]; }
+  /// Returns the size (in bits) of gene #gene#.
+  uint8_t geneSize(int gene) const { return _geneSizes[gene]; }
 
   /// Returns the total size (in bits) of the chromosome.
   unsigned int bitSize() const;
