@@ -97,12 +97,12 @@ public:
   uint64_t getGeneValue(int gene) const;
 
   /// Returns the value of gene #gene# remapped to given value.
-  long getMappedGeneValue(int gene, long minValue, long maxValue) {
+  long getMappedGeneValue(int gene, long minValue, long maxValue) const {
     return map(getGeneValue(gene), 0, maxGeneValue(gene), minValue, maxValue);
   }
 
   /// Returns the value of gene #gene# remapped to given value.
-  real getMappedRealGeneValue(int gene, float minValue, float maxValue) {
+  real getMappedRealGeneValue(int gene, float minValue, float maxValue) const {
     return mapReal(getGeneValue(gene), 0, maxGeneValue(gene), minValue, maxValue);
   }
 
