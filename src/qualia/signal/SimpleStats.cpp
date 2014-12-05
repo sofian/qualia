@@ -52,5 +52,5 @@ real SimpleStats::update(real value) {
 
 real SimpleStats::var() const {
   real v = (_mean2 - sq(_mean));
-  return max(v, 0.0f); // make sure the result is >= 0
+  return max(v, (real)0); // make sure the result is >= 0
 }

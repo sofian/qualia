@@ -55,7 +55,7 @@ public:
   virtual void setInput(int i, real x) = 0;
 
   /// Get output *i*.
-  virtual float getOutput(int i) const = 0;
+  virtual real getOutput(int i) const = 0;
 
   /// Propagates inputs to outputs.
   virtual void propagate() = 0;
