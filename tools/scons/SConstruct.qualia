@@ -12,8 +12,9 @@ def unique(seq, keepstr=True):
 # General arguments
 
 # Get mode.
-platform = ARGUMENTS.get("platform", "computer")
-mode     = ARGUMENTS.get("mode", "release")
+platform  = ARGUMENTS.get("platform", "computer")
+mode      = ARGUMENTS.get("mode", "release")
+precision = ARGUMENTS.get("precision", "float")
 
 TARGET = None
 
@@ -90,13 +91,16 @@ if (platform == 'avr' or platform == 'arduino'):
   cFlags = ['-ffunction-sections', '-fdata-sections', '-fno-exceptions',
             '-funsigned-char', '-funsigned-bitfields', '-fpack-struct', '-fshort-enums',
             '-Os', '-mmcu=%s'%MCU]
+  cppDefs = {'F_CPU':F_CPU};
+  if (precision == 'double'):
+    cppDefs['USE_DOUBLE'] = 1
   env = Environment(CC = AVR_BIN_PREFIX+'gcc',
                     CXX = AVR_BIN_PREFIX+'g++',
                     AS = AVR_BIN_PREFIX + 'gcc',
                     CPPPATH = INCLUDE_PATH,
                     LIBPATH = LIBPATH, # path to qualia static lib
                     LIBS = LIBS, 
-                    CPPDEFINES = {'F_CPU':F_CPU}, 
+                    CPPDEFINES = cppDefs,
                     CFLAGS = cFlags + ['-std=gnu99'], 
                     CCFLAGS = cFlags, 
                     ASFLAGS = ['-assembler-with-cpp','-mmcu=%s' % MCU],
@@ -133,6 +137,9 @@ else:
     env.Append(CCFLAGS=['-Wall', '-g', '-DDEBUG=1'])
   else:
     env.Append(CCFLAGS=['-O2'])
+
+  if (precision == 'double'):
+    env.Append(CCFLAGS=['-DUSE_DOUBLE'])
 
   env.VariantDir(BUILD_DIR, ".", duplicate=0)
   sources += Glob(BUILD_DIR + "*.cpp")
