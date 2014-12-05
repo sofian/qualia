@@ -109,6 +109,17 @@ public:
   /// Sets the value of gene #gene# to #value# (max. 64-bit).
   void setGeneValue(int gene, uint64_t value);
 
+  /// Sets the value of gene #gene# by first remapping given value.
+  void setMappedGeneValue(int gene, long value, long minValue, long maxValue) {
+    setGeneValue(gene, map(value, minValue, maxValue, 0, maxGeneValue(gene)));
+  }
+
+  /// Sets the value of gene #gene# by first remapping given value.
+  void setMappedRealGeneValue(int gene, float value, float minValue, float maxValue) {
+    real val = mapReal(value, minValue, maxValue, 0, maxGeneValue(gene));
+    setGeneValue(gene, round(val));
+  }
+
   // Static methods.
   static void initializeRandom(Chromosome& chromosome);
 
