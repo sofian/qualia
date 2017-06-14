@@ -28,6 +28,7 @@
 #include "Chromosome.h"
 
 #include <string.h>
+#include "gray.h"
 //void defaultMutator(Chromosome& chromosome, float);
 //void defaultInitializer(Chromosome& chromosome);
 
@@ -38,6 +39,9 @@ public:
 
   /// The size (in bits) of each gene.
   uint8_t* _geneSizes;
+
+	/// Use graycode.
+	bool _useGrayCode;
 
   /// The initializer, mutator and evaluator functions.
   Initializer initializer;
@@ -64,6 +68,9 @@ public:
 
   /// Returns the bit at which gene #gene# starts.
   int getStartBitPosition(int gene) const;
+
+	/// Does this use gray code?
+	bool useGrayCode() const { return _useGrayCode; }
 
   /// Tests equality.
   virtual bool equals(const BinaryChromosomeProperties& info);

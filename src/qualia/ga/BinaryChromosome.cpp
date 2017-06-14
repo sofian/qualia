@@ -20,8 +20,9 @@
 #include "BinaryChromosome.h"
 
 BinaryChromosomeProperties::BinaryChromosomeProperties(unsigned int nGenes, const uint8_t* geneSizes,
+																					 bool useGrayCode,
                                            Initializer initializer_, Mutator mutator_)
-  : _nGenes(nGenes), _geneSizes(0), initializer(initializer_), mutator(mutator_) {
+  : _nGenes(nGenes), _geneSizes(0), _useGrayCode(useGrayCode), initializer(initializer_), mutator(mutator_) {
   Q_ASSERT_ERROR( geneSizes );
   Q_ASSERT_ERROR( _nGenes > 0 );
 #if DEBUG_ERROR
@@ -130,10 +131,20 @@ void BinaryChromosome::getCode(uint8_t* code_) {
 uint64_t BinaryChromosome::getGeneValue(int gene) const {
   uint64_t val;
   arrayBlockCopy(&val, code, info->getStartBitPosition(gene), info->_geneSizes[gene], sizeof(uint64_t));
+
+	if (info->useGrayCode()) {
+		uint64_t valGray = val;
+		arrayGrayToBinary((uint8_t*)&val, (uint8_t*)&valGray, info->_geneSizes[gene]);
+	}
+
   return val;
 }
 
 void BinaryChromosome::setGeneValue(int gene, uint64_t value) {
+	if (info->useGrayCode()) {
+		uint64_t valBin = value;
+		arrayBinaryToGray((uint8_t*)&value, (uint8_t*)&valBin, info->_geneSizes[gene]);
+	}
   arrayBlockWrite(code, &value, info->getStartBitPosition(gene), 0, info->_geneSizes[gene]);
 }
 
